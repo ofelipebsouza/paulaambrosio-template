@@ -11,6 +11,11 @@ import { ResidentialPage } from './pages/ResidentialPage';
 import { HospitalityPage } from './pages/HospitalityPage';
 import { LocationsHubPage } from './pages/LocationsHubPage';
 import { LocationDetailPage } from './pages/LocationDetailPage';
+import { SunnyIslesPage } from './pages/SunnyIslesPage';
+import { AventuraPage } from './pages/AventuraPage';
+import { BalHarbourPage } from './pages/BalHarbourPage';
+import { BocaRatonPage } from './pages/BocaRatonPage';
+import { PalmBeachPage } from './pages/PalmBeachPage';
 import { PortfolioPage } from './pages/PortfolioPage';
 import { ProjectDetailPage } from './pages/ProjectDetailPage';
 import { AboutPage } from './pages/AboutPage';
@@ -137,50 +142,65 @@ export default function App() {
       );
     }
 
-    if (path === '/interior-designer-sunny-isles') {
+    if (
+      path === '/interior-designer-sunny-isles' ||
+      path === '/locations/sunny-isles' ||
+      path === '/locations/interior-designer-sunny-isles'
+    ) {
       return (
-        <LocationDetailPage
-          slug="sunny-isles"
+        <SunnyIslesPage
           onNavigate={handleNavigate}
           onOpenConsultation={handleOpenConsultation}
         />
       );
     }
 
-    if (path === '/interior-designer-aventura') {
+    if (
+      path === '/interior-designer-aventura' ||
+      path === '/locations/aventura' ||
+      path === '/locations/interior-designer-aventura'
+    ) {
       return (
-        <LocationDetailPage
-          slug="aventura"
+        <AventuraPage
           onNavigate={handleNavigate}
           onOpenConsultation={handleOpenConsultation}
         />
       );
     }
 
-    if (path === '/interior-designer-bal-harbour') {
+    if (
+      path === '/interior-designer-bal-harbour' ||
+      path === '/locations/bal-harbour' ||
+      path === '/locations/interior-designer-bal-harbour'
+    ) {
       return (
-        <LocationDetailPage
-          slug="bal-harbour"
+        <BalHarbourPage
           onNavigate={handleNavigate}
           onOpenConsultation={handleOpenConsultation}
         />
       );
     }
 
-    if (path === '/interior-designer-boca-raton') {
+    if (
+      path === '/interior-designer-boca-raton' ||
+      path === '/locations/boca-raton' ||
+      path === '/locations/interior-designer-boca-raton'
+    ) {
       return (
-        <LocationDetailPage
-          slug="boca-raton"
+        <BocaRatonPage
           onNavigate={handleNavigate}
           onOpenConsultation={handleOpenConsultation}
         />
       );
     }
 
-    if (path === '/interior-designer-palm-beach') {
+    if (
+      path === '/interior-designer-palm-beach' ||
+      path === '/locations/palm-beach' ||
+      path === '/locations/interior-designer-palm-beach'
+    ) {
       return (
-        <LocationDetailPage
-          slug="palm-beach"
+        <PalmBeachPage
           onNavigate={handleNavigate}
           onOpenConsultation={handleOpenConsultation}
         />

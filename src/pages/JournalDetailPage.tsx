@@ -144,14 +144,14 @@ export const JournalDetailPage: React.FC<JournalDetailPageProps> = ({ slug, onNa
           {/* Author Bio Card */}
           <div className="p-8 bg-white border border-[#E5DFD7] flex flex-col sm:flex-row items-center gap-6 mt-12">
             <img
-              src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=85"
-              alt="Paula Ambrosio"
-              className="w-20 h-20 rounded-full object-cover shrink-0 border border-[#E5DFD7]"
+              src="/assets/PJnrVScMHWsoOcbfk4NqnXYjMyU.webp"
+              alt="Paula Ambrosio - Principal Interior Designer"
+              className="w-20 h-20 rounded-full object-cover object-top shrink-0 border border-[#E5DFD7]"
             />
             <div className="text-center sm:text-left space-y-1">
               <h4 className="font-serif-luxury text-lg text-[#1A1816]">About Paula Ambrosio</h4>
               <p className="text-xs text-[#68625B] font-light leading-relaxed">
-                Founder and Principal Designer of Paula Ambrosio Interiors. With more than two decades of interior design experience crafting bespoke residences across Miami and South Florida.
+                Co-Founder and Principal Interior Designer of Paula Ambrosio Interior Design. With nearly two decades of interior design mastery crafting bespoke residences and turnkey interiors across Miami, South Florida, and internationally.
               </p>
             </div>
           </div>

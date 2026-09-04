@@ -57,5 +57,24 @@ export const journalData: JournalArticle[] = [
     ],
     relatedServices: ['turnkey', 'residential'],
     relatedLocations: ['bal-harbour', 'aventura', 'miami']
+  },
+  {
+    id: 'hospitality-guest-experience-design',
+    slug: 'designing-guest-centric-hospitality-and-boutique-hotels-miami',
+    title: 'Designing Guest-Centric Hospitality: Balancing Atmospheric Intimacy & Commercial Performance in Miami',
+    subtitle: 'How boutique hotels, luxury lounges, and wellness sanctuaries craft memorable guest journeys through sensory design and durable materiality.',
+    category: 'Hospitality Design',
+    date: 'March 2025',
+    readTime: '6 min read',
+    author: 'Paula Ambrosio',
+    coverImage: 'https://images.unsplash.com/photo-1590381105924-c72589b9ef3f?auto=format&fit=crop&w=1200&q=85',
+    excerpt: 'In Miami’s competitive hospitality landscape, lasting guest loyalty is born in the micro-moments: arrival compression, acoustic warmth, layered illumination, and authentic materiality.',
+    content: [
+      'Boutique hospitality in Miami has outgrown loud spectacle in favor of nuanced intimacy. Modern travelers and cocktail connoisseurs seek destinations that offer residential warmth combined with cinematic ambiance.',
+      'From the arrival sequence and lighting gradient transitions to custom tactile banquet joinery and discrete service pathways, our hospitality practice choreographs every dimension of the guest journey.',
+      'By pairing contract-rated luxury materials—such as poured Venetian terrazzo, Crypton-treated performance velvets, and solid oiled teak—with bespoke architectural millwork, we deliver environments that withstand high operational volume while retaining timeless residential grace.'
+    ],
+    relatedServices: ['hospitality'],
+    relatedLocations: ['miami', 'miami-beach']
   }
 ];

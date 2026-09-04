@@ -15,7 +15,7 @@ interface ProcessTimelineProps {
 }
 
 export const ProcessTimeline: React.FC<ProcessTimelineProps> = ({
-  title = 'Our Architectural Design Process',
+  title = 'Our Interior Design Process',
   subtitle = 'A structured, disciplined methodology from initial discovery to the turnkey reveal.',
   steps,
   onStartProject

@@ -322,6 +322,13 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate, onOpenC
             >
               Contact Studio
             </a>
+            <a
+              href="/sitemap"
+              onClick={(e) => { e.preventDefault(); handleLinkClick('/sitemap'); }}
+              className="text-xs uppercase tracking-widest text-[#C9A986] font-medium"
+            >
+              Sitemap & Index
+            </a>
           </div>
 
           <div className="pt-4">

@@ -231,8 +231,8 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
                         >
                           <option value="Full-Service Interior Design">Full-Service Interior Design</option>
                           <option value="Turnkey Interior Design">Turnkey Interior Design (Move-in Ready)</option>
-                          <option value="Luxury Renovation & Architecture">Luxury Renovation & Architecture</option>
-                          <option value="New Construction Interior Architecture">New Construction Interior Architecture</option>
+                          <option value="Luxury Renovation Interior Design">Luxury Renovation Interior Design</option>
+                          <option value="New Construction Interior Design">New Construction Interior Design</option>
                           <option value="Hospitality & Commercial Design">Hospitality & Commercial Design</option>
                         </select>
                       </div>

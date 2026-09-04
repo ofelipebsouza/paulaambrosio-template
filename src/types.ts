@@ -27,6 +27,7 @@ export interface Project {
   clientVision: string;
   designChallenge: string;
   approach: string;
+  materialsNarrative?: string;
   materialsDetails: string[];
   result: string;
   featured?: boolean;

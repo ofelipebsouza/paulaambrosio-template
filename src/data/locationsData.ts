@@ -66,43 +66,55 @@ export const locationsData: LocationData[] = [
     heroHeadline: 'Luxury Interior Designer in Sunny Isles Beach',
     heroSubheadline: 'Full-service residential design for oceanfront condominiums, high-rise residences, second homes and turnkey interiors.',
     hubOneLiner: 'Sky mansion penthouses and oceanfront architectural landmarks (Regalia, Porsche Design, Armani/Casa, Estates at Acqualina).',
-    localIntro: 'Sunny Isles Beach has emerged as South Florida’s premier skyline for branded ultra-luxury high-rises and architectural marvels. Residences within towers like Regalia, Armani/Casa, Porsche Design Tower, and The Estates at Acqualina present monumental floor plans with 360-degree Atlantic Ocean and Intracoastal panoramas. In these vertical estates, our studio specializes in creating intimate, acoustically balanced environments. We soften expansive glass curtain walls with tailored drapery systems, introduce bespoke fluted wood partitions to define open floor plates, and engineer turnkey interior solutions that allow second-home owners to arrive to a flawless, fully realized residence.',
+    localIntro: 'Sunny Isles Beach represents one of South Florida’s most prestigious corridors of vertical luxury architecture, defined by internationally recognized oceanfront towers including The Regalia, Armani/Casa Residences, Porsche Design Tower, and The Estates at Acqualina. Residing at this altitude presents singular spatial and environmental conditions: dramatic 360-degree Atlantic Ocean and Intracoastal panoramas, soaring ceiling volumes, expansive floor-to-ceiling glass curtain walls, and intense high-altitude daylight glare. These open-concept floor plates demand nuanced acoustic buffering and thoughtful spatial delineation to feel intimate and welcoming. Our studio approaches Sunny Isles residences through a lens of tactile serenity and rigorous functional choreography. Rather than competing with the monumental ocean horizon, our interior designers frame it using warm, organic textures—honed travertine, rift-cut European oak millwork, neutral Belgian linens, and low-profile European furnishings that maintain unobstructed sightlines. Because many of our Sunny Isles clients reside internationally, our turnkey methodology removes the friction of remote ownership. We manage every layer—from condominium HOA architectural compliance, acoustic soundproofing underlayments, and elevator freight logistics to custom millwork fabrication, curated contemporary art, and white-glove staging—so owners step into a fully realized, move-in-ready coastal sanctuary.',
     services: [
-      'Turnkey Oceanfront High-Rise Furnishing',
-      'Ultra-Luxury Penthouse Space Planning',
+      'Full-Service Interior Design',
+      'Luxury Renovation',
+      'New Construction Interior Design',
+      'Turnkey Interior Design (Move-in Ready)',
       'Custom Millwork & Architectural Ceilings',
-      'Curated Contemporary Art & Lighting Schemes',
-      'HOA Coordination & Freight Logistics Management'
+      'Furniture, Art & Final Styling'
     ],
     featuredProjectSlug: 'the-regalia-penthouse',
     processSteps: [
-      { step: '01', title: 'Consultation & Spatial Audit', description: 'Comprehensive review of tower floor plates, HOA architectural guidelines, and personal lifestyle preferences.' },
-      { step: '02', title: 'Concept & 3D Renderings', description: 'Detailed spatial concept with photorealistic lighting scenarios and bespoke furniture selections.' },
-      { step: '03', title: 'Technical Documentation', description: 'Acoustic specifications, reflective ceiling plans, lighting drops, and custom millwork construction sets.' },
-      { step: '04', title: 'Procurement & Logistics', description: 'Carefully timed white-glove shipping and tower freight elevator coordination.' },
-      { step: '05', title: 'Turnkey Installation & Reveal', description: 'Complete move-in readiness including linens, tableware, curated accessories, and automated scenes.' }
+      { step: '01', title: 'Consultation', description: 'Comprehensive lifestyle discovery, reviewing tower floor plates, HOA architectural guidelines, and aesthetic aspirations.' },
+      { step: '02', title: 'Concept', description: 'Developing spatial layouts, sightline orientation toward the Atlantic, and curated noble material palettes.' },
+      { step: '03', title: 'Visualization', description: 'Photorealistic 3D renderings illustrating daylight scenarios, lighting scenes, and custom furniture proportions.' },
+      { step: '04', title: 'Design Development', description: 'Detailed interior design drawings, acoustic floor assemblies, reflective ceiling plans, and millwork shop details.' },
+      { step: '05', title: 'Procurement & Coordination', description: 'White-glove FF&E procurement, freight elevator scheduling, and collaborating with licensed general contractors.' },
+      { step: '06', title: 'Installation & Styling', description: 'Complete turnkey delivery: custom furniture assembly, motorized drapery, luxury linens, art installation, and final styling.' }
     ],
     faqs: [
       {
-        question: 'What does your turnkey interior design service include in Sunny Isles Beach?',
-        answer: 'Our turnkey service covers everything from initial space planning and custom furniture fabrication to the installation of lighting fixtures, custom drapery, luxury bedding, tabletop accessories, curated art, and home automation programming.'
+        question: 'How do you navigate Sunny Isles Beach condominium HOA regulations, acoustic testing, and construction hours?',
+        answer: 'We have extensive experience working with premier Sunny Isles condominium associations and property management teams (including The Regalia, Porsche Design Tower, Armani/Casa, and Acqualina). Our studio manages all administrative and technical requirements: submitting contractor licensing and certificates of insurance (COI), engineering soundproofing assemblies that exceed building impact isolation class (IIC) ratings, scheduling freight elevator bookings, and strictly observing restricted high-rise construction hours.'
       },
       {
-        question: 'How do you navigate strict Sunny Isles high-rise building regulations?',
-        answer: 'We have extensive experience with Sunny Isles condominium associations and building management teams. We oversee contractor licensing, COI compliance, acoustic underlayment certificates, freight elevator scheduling, and security protocols.'
+        question: 'What is the difference between your Full-Service Interior Design and Turnkey services for Sunny Isles second-home owners?',
+        answer: 'Full-Service Interior Design encompasses spatial planning, material selections, custom millwork, lighting design, and construction coordination alongside your builder. Turnkey Interior Design includes everything in full-service PLUS 100% white-glove furnishing: bespoke furniture procurement, custom motorized drapery, luxury Italian bed linens, designer tableware, curated accessories, and contemporary art installation. When you step through the doors for the first time, your home is completely finished and fully operational.'
       },
       {
-        question: 'Can you design custom furniture tailored to panoramic ocean views?',
-        answer: 'Yes. In high-rise oceanfront residences, standard commercial furniture often blocks sightlines. We custom design low-profile, curved seating silhouettes that preserve 360-degree horizon views while maximizing seating capacity.'
+        question: 'How do you solve high-altitude solar reflection and ocean glare while maintaining panoramic Atlantic views?',
+        answer: 'Direct coastal exposure at upper floor levels generates significant heat gain and glare that can wash out interior colors. We engineer multi-layered motorized window treatments using dual-band solar screen fabrics that filter UV radiation and reduce glare while keeping ocean sightlines crystal clear during the day, paired with acoustic blackout drapery for evening serenity.'
+      },
+      {
+        question: 'Can you design custom furniture that fits through Sunny Isles high-rise service elevators?',
+        answer: 'Yes. Tower service elevators have strict dimensional and weight thresholds that often prevent oversized one-piece sofas or monumental stone slabs from reaching upper penthouses. We custom design modular luxury furniture systems and precision-engineered stone assemblies that assemble seamlessly on-site, ensuring zero compromises on scale or aesthetic grandeur.'
+      },
+      {
+        question: 'How does Paula Ambrosio Interiors coordinate with general contractors and architects?',
+        answer: 'Paula Ambrosio Interiors is a luxury interior design studio. For construction, partition modifications, and structural work, we partner and coordinate directly with your licensed general contractor and architect. We provide comprehensive CAD interior drawing packages, electrical and plumbing rough-in schedules, millwork specifications, and conduct regular on-site design reviews to guarantee the design intent is faithfully executed.'
       }
     ],
     heroImage: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1600&q=85',
     galleryImages: [
-      { url: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=85', alt: 'Sunny Isles Beach sky salon with ocean views' },
-      { url: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1200&q=85', alt: 'Dining area overlooking Atlantic ocean' },
-      { url: 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=85', alt: 'Primary suite in Sunny Isles high rise' }
+      { url: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=85', alt: 'The Regalia Penthouse living salon with ocean views in Sunny Isles Beach' },
+      { url: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1200&q=85', alt: 'Dining area overlooking Atlantic ocean in Sunny Isles Beach' },
+      { url: 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=85', alt: 'Oceanfront primary suite with custom millwork in Sunny Isles Beach' },
+      { url: 'https://images.unsplash.com/photo-1600585152220-90363fe7e115?auto=format&fit=crop&w=1200&q=85', alt: 'Sky spa bath suite with panoramic Atlantic vista' },
+      { url: '/assets/uJDafV2OYdKY0ezWt4AhW3Dpj0.avif', alt: 'Honed Roman travertine and custom fluted oak millwork detail' }
     ],
-    highlights: ['The Regalia', 'Armani/Casa Residences', 'Porsche Design Tower', 'Estates at Acqualina', 'Turnberry Ocean Club']
+    highlights: ['The Regalia', 'Armani/Casa Residences', 'Porsche Design Tower', 'Estates at Acqualina', 'Turnberry Ocean Club', 'Bentley Residences', 'Ritz-Carlton Residences']
   },
   {
     id: 'aventura',
@@ -115,43 +127,55 @@ export const locationsData: LocationData[] = [
     heroHeadline: 'Luxury Interior Designer in Aventura',
     heroSubheadline: 'Full-service residential design for luxury condominiums, family residences, renovations and complete furnishing.',
     hubOneLiner: 'Prestigious island residences (Williams Island, Turnberry Isle, Marina Palms) blending nautical refinement with family-friendly luxury.',
-    localIntro: 'Aventura is celebrated for its lush island enclaves, world-class marinas, and distinguished golf communities like Williams Island, Turnberry Isle, and Marina Palms. Residences in Aventura frequently serve as primary homes for established families as well as seasonal retreats for yachting enthusiasts. Our design philosophy in Aventura balances refined sophistication with functional longevity—introducing open-concept flow, customized culinary centers, bespoke storage millwork, and high-performance textiles that support vibrant entertaining and daily family life with equal grace.',
+    localIntro: 'Aventura presents a distinguished residential enclave in Northeast Miami-Dade, shaped by private island sanctuaries, deepwater yacht marinas, and premier golf communities including Williams Island, Turnberry Isle, Marina Palms, and Porto Vita. Unlike the purely transient high-rise corridors of South Florida, Aventura’s residential landscape comprises both primary residences for established multigenerational families and seasonal waterfront retreats for yachting enthusiasts. Properties here—ranging from spacious 1980s and 1990s Mediterranean-revival condominium footprints to sleek modern waterfront penthouses—frequently call for extensive interior reconfiguration. Compartmentalized layouts, low dropped soffits, and dated finishes are transformed into expansive, light-filled open volumes that celebrate views of Dumfoundling Bay, the Intracoastal Waterway, and lush golf fairways. Our studio approaches Aventura projects by harmonizing quiet aesthetic luxury with the tactile demands of everyday family living. We prioritize European performance textiles, stain-treated bouclés, honed quartzites, and continuous European white oak flooring that withstand active family lifestyles without sacrificing visual elegance. Through custom architectural millwork—such as integrated media libraries, bespoke culinary centers, and playful, imaginative themed children’s suites—we create environments tailored for both sophisticated evening entertaining and effortless day-to-day comfort. With turnkey execution, our team oversees every stage from condominium HOA board submissions to white-glove staging, delivering homes of timeless warmth and enduring value.',
     services: [
-      'Full-Service Residential Renovation',
-      'Marina Front Condominium Redesigns',
-      'Family-Friendly Luxury Material Specification',
-      'Custom Kitchen & Bath Transformations',
-      'Turnkey Furnishing & Styling'
+      'Full-Service Interior Design',
+      'Luxury Renovation',
+      'New Construction Interior Design',
+      'Turnkey Interior Design (Move-in Ready)',
+      'Custom Millwork & Architectural Joinery',
+      'Furniture, Art & Final Styling'
     ],
-    featuredProjectSlug: 'aventura-marina-residence',
+    featuredProjectSlug: 'home-it',
     processSteps: [
-      { step: '01', title: 'Consultation & Discovery', description: 'Assessing property layout, lifestyle routines, and architectural possibilities.' },
-      { step: '02', title: 'Spatial Concept & 3D Previews', description: 'Developing functional space plans, custom kitchen elevations, and material boards.' },
-      { step: '03', title: 'Engineering & Construction Documents', description: 'Refining lighting layouts, cabinetry shop drawings, and permit-ready specifications.' },
-      { step: '04', title: 'Procurement & Project Coordination', description: 'Ordering furnishings, supervising contractor build-outs, and tracking deliveries.' },
-      { step: '05', title: 'Installation & Staging', description: 'Complete installation, window treatments, accessories, and final client walkthrough.' }
+      { step: '01', title: 'Consultation', description: 'Comprehensive lifestyle discovery, reviewing family routines, floor plan potentials, and HOA architectural criteria.' },
+      { step: '02', title: 'Concept', description: 'Developing open-concept spatial layouts, indoor-outdoor flow, and noble yet resilient material palettes.' },
+      { step: '03', title: 'Visualization', description: 'Photorealistic 3D renderings illustrating daylight balance, lighting scenes, and custom joinery proportions.' },
+      { step: '04', title: 'Design Development', description: 'Detailed architectural drawings, custom cabinetry elevations, reflective ceiling plans, and finish schedules.' },
+      { step: '05', title: 'Procurement & Coordination', description: 'White-glove FF&E procurement, freight elevator scheduling, and collaborating with licensed general contractors.' },
+      { step: '06', title: 'Installation & Styling', description: 'Complete turnkey delivery: bespoke furniture assembly, custom drapery, bedding, curated art, and final styling.' }
     ],
     faqs: [
       {
-        question: 'Do you renovate older condominiums in Aventura communities like Williams Island?',
-        answer: 'Yes. Many prestigious Aventura properties benefit immensely from full interior renovations. We frequently reconfigure compartmentalized floor plans into luminous open spaces, modernize infrastructure, and introduce custom Italian cabinetry.'
+        question: 'How do you approach renovating older condominium residences in established Aventura communities like Williams Island, Turnberry Isle, or Porto Vita?',
+        answer: 'Many prestigious Aventura residences feature expansive floor plates and exceptional waterfront or golf views, but suffer from compartmentalized 1980s or 1990s layouts, low dropped ceilings, and dated utilities. Our studio specializes in transforming these properties into luminous, contemporary open concepts. We coordinate closely with your licensed general contractor and structural engineers to remove non-structural partitions, raise ceiling heights where MEP runs permit, integrate flush architectural baseboards, and install modern acoustic underlayments compliant with building sound transmission class (STC) codes.'
       },
       {
-        question: 'How do you create spaces that are both child-friendly and luxurious?',
-        answer: 'We utilize high-performance European performance fabrics (such as stain-treated bouclés and treated linens), rounded architectural millwork corners, durable quartzite countertops, and concealed integrated storage solutions.'
+        question: 'How do you design spaces that feel elevated and luxurious, yet resilient enough for children, pets, and active family life?',
+        answer: 'We believe genuine luxury must be effortlessly livable. In family residences, we specify high-performance European textiles (such as stain-resistant Crypton and treated Italian bouclés), specify honed quartzites and durable natural stones rather than fragile high-polish marbles in high-traffic zones, detail soft rounded corners on custom millwork, and engineer seamless concealed storage systems that keep everyday clutter out of sight.'
       },
       {
-        question: 'Can you assist with kitchen and bathroom renovations in Aventura condos?',
-        answer: 'Yes, full-service kitchen and bath redesign is a core pillar of our studio. We design custom cabinetry, select bookmatched stones, detail plumbing fixtures, and coordinate with licensed contractors.'
+        question: 'What is the process for coordinating with Aventura condominium associations, freight elevators, and municipal permits?',
+        answer: 'Aventura condominium associations have rigorous review protocols, limited construction hours, and strict insurance requirements. Paula Ambrosio Interiors manages the full design submission package—including architectural drawings, finish schedules, licensed contractor COIs, and acoustic membrane specifications. We also coordinate closely with building management to schedule freight elevator reservations for seamless deliveries.'
+      },
+      {
+        question: 'Can you design custom children’s suites, study spaces, and playful themed bedrooms?',
+        answer: 'Yes, this is one of our studio’s signature specialties. As showcased in our featured Aventura project HOME IT, we design imaginative, architectural children’s suites—incorporating bespoke bunk systems with integrated LED reading niches, secret play lofts, ergonomic study stations, and whimsical yet tasteful wall murals that stimulate creativity while complementing the home’s overarching aesthetic.'
+      },
+      {
+        question: 'How does your Turnkey Interior Design service benefit seasonal residents and yacht owners in Aventura?',
+        answer: 'Our turnkey service provides complete peace of mind for clients living out of state or traveling abroad. We manage the entire project from concept through procurement, receiving, white-glove delivery, and final styling. When you arrive in Aventura—whether stepping off your yacht at the marina or arriving from the airport—your residence is fully furnished, complete with luxury linens, kitchenware, accessories, and curated art, ready for immediate enjoyment.'
       }
     ],
     heroImage: 'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=1600&q=85',
     galleryImages: [
-      { url: 'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=1200&q=85', alt: 'Aventura marina condominium living room' },
-      { url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=85', alt: 'Modern luxury kitchen in Aventura home' },
-      { url: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=85', alt: 'Elegant dining area overlooking marina' }
+      { url: 'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=1200&q=85', alt: 'HOME IT main family living salon in Aventura overlooking marina' },
+      { url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=85', alt: 'Gourmet kitchen with custom fluted barstools and Calacatta quartz island in Aventura' },
+      { url: 'https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=1200&q=85', alt: 'HOME IT bespoke themed children bedroom suite with architectural bunks in Aventura' },
+      { url: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=85', alt: 'Sophisticated open-concept dining area and casual lounge in Aventura' },
+      { url: '/assets/2Ssjz627D6EoynArvuU4h86sCc.avif', alt: 'Calacatta stone, white oak herringbone, and brushed bronze material detail' }
     ],
-    highlights: ['Williams Island', 'Turnberry Isle', 'Marina Palms Yacht Club', 'Porto Vita', 'Island Way']
+    highlights: ['Williams Island', 'Turnberry Isle', 'Marina Palms Yacht Club', 'Porto Vita', 'Island Way', 'The Waterways', 'Hamptons South']
   },
   {
     id: 'bal-harbour',
@@ -164,43 +188,55 @@ export const locationsData: LocationData[] = [
     heroHeadline: 'Luxury Interior Designer in Bal Harbour',
     heroSubheadline: 'Full-service residential design for high-end condominiums, refined residential interiors, art, custom furniture and turnkey execution.',
     hubOneLiner: 'The global pinnacle of quiet luxury, couture fashion heritage (Oceana Bal Harbour, St. Regis), and museum-grade art curation.',
-    localIntro: 'Bal Harbour represents the gold standard of understated, aristocratic luxury in South Florida. With landmark addresses including Oceana Bal Harbour, The St. Regis Bal Harbour Resort & Residences, and the private residential enclaves of Bal Harbour Village, the aesthetic expectation here is exceptionally elevated. Our studio works with collectors, business leaders, and global citizens to compose spaces of serene refinement. We prioritize tactile subtlety over flashiness: hand-applied lime plasters, Navona travertine plinths, acoustic silk wall coverings, and museum-grade lighting design that provides the ideal backdrop for blue-chip art collections.',
+    localIntro: 'Bal Harbour stands at the global pinnacle of understated residential prestige, distinguished by ultra-exclusive oceanfront towers—such as Oceana Bal Harbour, The St. Regis Bal Harbour Resort & Residences, and Bellini—alongside the secluded, guard-gated estate enclaves of Bal Harbour Village. The architectural context here is defined by extraordinary discretion, expansive ocean-to-bay flow-through residences, and a discerning international clientele whose lifestyle demands museum-level precision and refined living. Unlike louder coastal enclaves, Bal Harbour celebrates "quiet luxury"—a philosophy where elegance is expressed through authentic materiality, bespoke proportions, and serene spatial balance rather than ostentation. Many residents in Bal Harbour are avid collectors of blue-chip contemporary art, haute couture patrons of the Bal Harbour Shops, and seasonal bi-coastal or international homeowners. Our studio approaches Bal Harbour residences with architectural reverence: integrating flush perimeter baseboards, hand-applied Venetian marmorino plasters, honed Navona travertine, and custom 2700K museum-grade CRI 95+ lighting calibrated to protect and celebrate private art collections. Through full-service interior architecture and turnkey execution, we coordinate every detail—from condominium board technical approvals and acoustic decoupling to white-glove custom Italian millwork and art placement—delivering serene, move-in-ready sanctuaries of timeless distinction.',
     services: [
-      'High-End Condominium Interior Architecture',
-      'Turnkey Second Home Execution',
-      'Art Advisory & Museum-Grade Lighting Design',
-      'Custom European Millwork & Furniture Design',
-      'White-Glove FF&E Procurement & Styling'
+      'Full-Service Interior Design',
+      'Luxury Renovation',
+      'New Construction Interior Design',
+      'Turnkey Interior Design (Move-in Ready)',
+      'Custom Millwork & Architectural Joinery',
+      'Furniture, Art & Final Styling'
     ],
     featuredProjectSlug: 'bal-harbour-sanctuary',
     processSteps: [
-      { step: '01', title: 'Confidential Consultation', description: 'Understanding your aesthetic sensibilities, privacy requirements, and collection requirements.' },
-      { step: '02', title: 'Art & Material Scheme', description: 'Curating cohesive palettes of honed stones, rare woods, fine fabrics, and lighting angles.' },
-      { step: '03', title: 'Custom Atelier Production', description: 'Directing bespoke furniture fabrication with premier artisans across Europe and the US.' },
-      { step: '04', title: 'Logistics & Installation', description: 'Seamless scheduling adhering to the highest building standards in Bal Harbour.' },
-      { step: '05', title: 'Couture Styling & Handover', description: 'Meticulous placement of art, objects, accessories, and automated environmental scenes.' }
+      { step: '01', title: 'Consultation', description: 'Confidential discovery exploring aesthetic sensibilities, art collection requirements, and building architectural parameters.' },
+      { step: '02', title: 'Concept', description: 'Developing quiet luxury spatial narratives, flow-through sightlines, and tactile palettes of noble stones and rare woods.' },
+      { step: '03', title: 'Visualization', description: 'Photorealistic 3D renderings illustrating natural daylight balance, museum lighting angles, and custom furniture proportions.' },
+      { step: '04', title: 'Design Development', description: 'Comprehensive architectural drawing sets, custom millwork details, reflected ceiling plans, and finish schedules.' },
+      { step: '05', title: 'Procurement & Coordination', description: 'White-glove international procurement, freight elevator logistics, and close collaboration with licensed general contractors.' },
+      { step: '06', title: 'Installation & Styling', description: 'Turnkey delivery: bespoke Italian furniture installation, art hanging, fine Italian bed linens, and white-glove styling.' }
     ],
     faqs: [
       {
-        question: 'How do you incorporate art collections into Bal Harbour residential designs?',
-        answer: 'We integrate art from the initial concept phase. We design sightlines, calibrate 2700K museum-grade color rendering lighting, engineer structural blocking for heavy sculptures, and select wall finishes that complement rather than compete with your pieces.'
+        question: 'How do you incorporate valuable contemporary art collections into Bal Harbour residential interiors?',
+        answer: 'We treat private art collections as fundamental architectural elements rather than decorative afterthoughts. From the initial spatial planning phase, we engineer sightlines, specify 2700K museum-grade CRI 95+ directional lighting with precise beam spreads, ensure structural wall blocking for heavy bronzes and canvases, and select matte lime plasters and subtle natural stones that allow each piece to command focus without visual competition.'
       },
       {
-        question: 'What is your aesthetic philosophy for Bal Harbour residences?',
-        answer: 'We champion "quiet luxury"—an ethos defined by exceptional craftsmanship, natural materiality, subtle tonal variations, and impeccable proportion rather than ostentatious ornamentation.'
+        question: 'What defines the "Quiet Luxury" design ethos for Bal Harbour residences?',
+        answer: 'Quiet luxury in Bal Harbour is characterized by extraordinary craftsmanship, tactile natural materials, and mathematical proportion rather than flashy ornamentation. We compose environments using honed Navona travertine, wire-brushed European white oak, hand-applied Venetian marmorino, Loro Piana cashmeres, and acoustic silk wallcoverings that feel understated, warm, and deeply serene.'
       },
       {
-        question: 'Can you coordinate design for international second-home owners?',
-        answer: 'Absolutely. We regularly deliver complete turnkey homes for international clients in Oceana Bal Harbour and The St. Regis, providing transparent remote milestone reporting and full move-in readiness.'
+        question: 'How does your studio manage Bal Harbour condominium board approvals, acoustic regulations, and work restrictions?',
+        answer: 'Bal Harbour high-rise towers (including Oceana Bal Harbour and The St. Regis) enforce strict architectural review guidelines, rigorous insurance verification, acoustic impact isolation standards (IIC/STC acoustic floor membranes), and designated work hours. Our studio prepares complete technical submission packages, coordinates licensed contractor documentation, and works directly with property management to ensure seamless compliance.'
+      },
+      {
+        question: 'Can you coordinate complete turnkey interior design for international and second-home owners in Bal Harbour?',
+        answer: 'Yes. A substantial portion of our Bal Harbour clientele resides out-of-state or abroad. Through our turnkey service, we handle everything remotely: weekly milestone reporting, custom furniture manufacturing in Northern Italy, receiving at a secure climate-controlled warehouse, white-glove installation, window drapery automation, fine linens, and curated art placement. You arrive to a completely realized home ready for immediate living.'
+      },
+      {
+        question: 'Do you renovate established residences in Bal Harbour buildings like Bal Harbour 101 or Bal Harbour Tower?',
+        answer: 'Yes. Many landmark Bal Harbour properties offer generous square footage and incomparable ocean frontage, but require comprehensive modern re-engineering. We reconfigure closed-off layouts into light-filled open volumes, replace heavy dropped soffits with recessed architectural lighting channels, upgrade mechanical systems, and integrate modern floor-to-ceiling finishes.'
       }
     ],
     heroImage: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1600&q=85',
     galleryImages: [
-      { url: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=85', alt: 'Bal Harbour quiet luxury living room' },
-      { url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=85', alt: 'Custom Italian millwork in Bal Harbour' },
-      { url: 'https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=1200&q=85', alt: 'Serene primary bedroom suite in Bal Harbour' }
+      { url: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=85', alt: 'Bal Harbour quiet luxury oceanfront living salon' },
+      { url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=85', alt: 'Bespoke Italian fluted millwork and dining salon in Bal Harbour' },
+      { url: 'https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=1200&q=85', alt: 'Serene primary bedroom sanctuary with ocean vistas in Bal Harbour' },
+      { url: 'https://images.unsplash.com/photo-1600585152220-90363fe7e115?auto=format&fit=crop&w=1200&q=85', alt: 'Minimalist stone spa bath with freestanding soaking tub in Bal Harbour' },
+      { url: '/assets/2Ssjz627D6EoynArvuU4h86sCc.avif', alt: 'Navona travertine, acoustic silk, and brushed bronze material detail' }
     ],
-    highlights: ['Oceana Bal Harbour', 'The St. Regis Residences', 'Bal Harbour Village', 'The Ritz-Carlton Bal Harbour', 'Bellini']
+    highlights: ['Oceana Bal Harbour', 'The St. Regis Residences', 'Bal Harbour Village', 'The Ritz-Carlton Bal Harbour', 'Bellini', 'Bal Harbour Tower', 'Bal Harbour 101']
   },
   {
     id: 'boca-raton',
@@ -213,43 +249,55 @@ export const locationsData: LocationData[] = [
     heroHeadline: 'Luxury Interior Designer in Boca Raton',
     heroSubheadline: 'Full-service residential design for estate homes, waterfront residences, country-club communities, renovations and full-service design.',
     hubOneLiner: 'Grand architectural estates, gated country club enclaves (Royal Palm, The Sanctuary), and modern coastal Mediterranean living.',
-    localIntro: 'Boca Raton is renowned for its grand architectural scale, expansive private grounds, and esteemed gated enclaves such as Royal Palm Yacht & Country Club, The Sanctuary, St. Andrews, and Old Floresta. Whether refreshing a classic Mizner-inspired Mediterranean estate or crafting the interior architecture for a newly constructed contemporary waterfront villa, our studio brings clarity, proportion, and modern warmth to large-scale floor plans. We specialize in designing double-height volumes, cohesive outdoor loggias, tailored wine tasting salons, and state-of-the-art chef kitchens that celebrate South Florida’s gracious indoor-outdoor lifestyle.',
+    localIntro: 'Boca Raton is defined by its expansive private grounds, grand architectural proportions, and world-renowned gated enclaves—from the deepwater estates of Royal Palm Yacht & Country Club and The Sanctuary to prestigious country-club communities like St. Andrews, Woodfield, and the modern architectural enclaves of Boca Bridges and Lotus. Whether reimagining a Mediterranean-revival estate in historic Old Floresta or designing the complete interior architecture for a newly constructed contemporary waterfront compound along the Intracoastal Waterway, our studio brings clarity, human scale, and understated warmth to expansive square footage. Large-scale Boca Raton residences present unique spatial dynamics: soaring double-height ceilings, cavernous great rooms, and expansive loggias that require meticulous acoustic, lighting, and volumetric proportioning. Rather than allowing vast rooms to feel cold or cavernous, we layer architectural timber beamed ceilings, hand-finished lime plaster walls, honed natural limestones, and bespoke Italian millwork with integrated warm ambient LED reveals. We engineer cohesive transitions between lavish interior entertaining salons and outdoor living loggias, complete with summer kitchens and cabanas, while orchestrating custom wine tasting rooms, spa-grade wellness suites, and white-glove turnkey delivery for discerning families.',
     services: [
-      'New-Construction Interior Architecture',
-      'Estate Home Full-Scale Renovation',
-      'Country Club Residence Modernization',
-      'Custom Architectural Millwork & Ceilings',
-      'Outdoor Living & Loggia Design'
+      'Full-Service Interior Design',
+      'Luxury Renovation',
+      'New Construction Interior Design',
+      'Turnkey Interior Design (Move-in Ready)',
+      'Custom Millwork & Architectural Joinery',
+      'Furniture, Art & Final Styling'
     ],
     featuredProjectSlug: 'royal-palm-estate',
     processSteps: [
-      { step: '01', title: 'Consultation & Site Review', description: 'In-depth architectural analysis with your build team or on-site evaluation of existing estate conditions.' },
-      { step: '02', title: 'Interior Architecture & Concept', description: 'Developing volumetric solutions, scale elevations, material specifications, and 3D perspectives.' },
-      { step: '03', title: 'Construction Detailing', description: 'Comprehensive millwork drawing sets, tile layouts, electrical drops, and plumbing fixtures.' },
-      { step: '04', title: 'Procurement & Project Management', description: 'Overseeing custom artisan orders, material logistics, and on-site contractor coordination.' },
-      { step: '05', title: 'Full Installation & White-Glove Reveal', description: 'Placement of all bespoke furnishings, custom lighting, rugs, and decorative styling.' }
+      { step: '01', title: 'Consultation', description: 'Comprehensive site assessment, lifestyle discovery, and architectural plan review with your build team.' },
+      { step: '02', title: 'Concept', description: 'Developing volumetric space planning, indoor-outdoor sightlines, and tactile palettes of noble stones and timbers.' },
+      { step: '03', title: 'Visualization', description: 'Photorealistic 3D perspectives revealing double-height spatial balance, custom ceiling treatments, and lighting scenes.' },
+      { step: '04', title: 'Design Development', description: 'Exacting architectural drawing sets: custom millwork details, reflected ceiling plans, stone layouts, and finish schedules.' },
+      { step: '05', title: 'Procurement & Coordination', description: 'Overseeing bespoke artisan orders in Europe and North America, alongside rigorous on-site GC coordination.' },
+      { step: '06', title: 'Installation & Styling', description: 'Turnkey white-glove installation: fine furnishings, window automation, curated art, luxury linens, and final styling.' }
     ],
     faqs: [
       {
-        question: 'When should we engage Paula Ambrosio Interiors for a new construction home in Boca Raton?',
-        answer: 'We recommend involving our studio during the initial architectural schematic phase. By collaborating early with your architect and builder, we ensure ceiling drops, window placements, electrical locations, and spatial proportions are optimized from day one.'
+        question: 'When should we engage Paula Ambrosio Interiors for a new construction estate in Boca Raton?',
+        answer: 'We recommend involving our studio during the initial architectural schematic phase. By collaborating early with your architect and builder before framing and rough-ins, we optimize ceiling drops, window placements, electrical and plumbing locations, and volumetric spatial proportions from day one.'
       },
       {
-        question: 'How do you make large estate homes feel warm and inviting rather than cold?',
-        answer: 'We use architectural wood ceilings, rich texture layering (natural linens, wool rugs, bouclé fabrics), strategic scale furniture groupings, and multi-tiered warm lighting scenes to create human-scale intimacy within grand rooms.'
+        question: 'How do you address the acoustic and visual challenges of grand double-height great rooms in Boca Raton estates?',
+        answer: 'We deploy strategic architectural solutions: exposed oak timber ceiling beams with concealed LED reveals, textured lime plasters, acoustic fabric wall treatments, oversized bespoke area rugs, and custom modular seating scaled proportionally to human comfort rather than echoing cavernous voids.'
       },
       {
-        question: 'Do you design outdoor living and entertaining spaces in Boca Raton?',
-        answer: 'Yes. Outdoor loggias, summer kitchens, pool cabanas, and covered terraces are essential elements of Boca Raton residences. We specify durable luxury outdoor furnishings that flow seamlessly from interior living areas.'
+        question: 'Do you design outdoor living loggias, summer kitchens, and cabanas common in Boca Raton communities?',
+        answer: 'Yes. Outdoor entertaining is integral to Boca Raton living. We ensure seamless indoor-outdoor flooring continuity using honed natural limestones, specify weather-resistant custom millwork and marine-grade summer kitchens, and select luxury performance upholstery suited to South Florida climate.'
+      },
+      {
+        question: 'What is your experience navigating gated community ARC/HOA guidelines in Royal Palm, The Sanctuary, or St. Andrews?',
+        answer: 'We regularly prepare detailed design packages compliant with strict community Architectural Review Committees (ARCs). We manage technical submittals, construction delivery vehicle restrictions, and work directly with approved estate general contractors.'
+      },
+      {
+        question: 'Can you manage Boca Raton estate projects on a turnkey basis for seasonal or out-of-state homeowners?',
+        answer: 'Yes. A significant portion of our Boca Raton clientele spends summers out-of-state or abroad. Through our turnkey service, we manage procurement, climate-controlled warehousing, and white-glove staging down to fine Italian linens and tableware, providing remote milestone reporting so your estate is 100% move-in ready upon your arrival.'
       }
     ],
     heroImage: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=85',
     galleryImages: [
       { url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=85', alt: 'Boca Raton estate double-height great room' },
-      { url: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=85', alt: 'Luxury estate exterior loggia in Boca Raton' },
-      { url: 'https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=1200&q=85', alt: 'Primary bedroom retreat in Boca Raton home' }
+      { url: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=85', alt: 'Luxury estate exterior loggia and pool terrace in Boca Raton' },
+      { url: 'https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1200&q=85', alt: 'Bespoke chef kitchen and integrated wine cellar in Boca Raton' },
+      { url: 'https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=1200&q=85', alt: 'Primary suite sanctuary with garden terrace in Boca Raton' },
+      { url: '/assets/2Ssjz627D6EoynArvuU4h86sCc.avif', alt: 'White oak, honed limestone, and brushed bronze material detail' }
     ],
-    highlights: ['Royal Palm Yacht & Country Club', 'The Sanctuary', 'Old Floresta', 'St. Andrews Country Club', 'Boca Bridges']
+    highlights: ['Royal Palm Yacht & Country Club', 'The Sanctuary', 'Old Floresta', 'St. Andrews Country Club', 'Boca Bridges', 'Lotus', 'Woodfield Country Club']
   },
   {
     id: 'palm-beach',
@@ -262,43 +310,55 @@ export const locationsData: LocationData[] = [
     heroHeadline: 'Luxury Interior Designer in Palm Beach',
     heroSubheadline: 'Full-service residential design for refined residences, estates, second homes and full-service luxury interiors.',
     hubOneLiner: 'Historic lakefront and oceanfront estates on Worth Avenue, North County Road, balancing heritage architecture with modern vitality.',
-    localIntro: 'Palm Beach stands as an iconic bastion of American sophistication, historic pedigree, and refined coastal living. From historic Mizner-era courtyard villas and mid-century lakefront estates along the Lake Trail to stately properties on North County Road and South Ocean Boulevard, interior design in Palm Beach demands profound architectural reverence paired with modern livability. Our studio approaches Palm Beach residences by honoring classical proportions, restoring authentic plasterwork and stone elements, and infusing spaces with light-filled organic vitality, bespoke upholstery, and sophisticated coastal textures that feel timeless rather than nostalgic.',
+    localIntro: 'Palm Beach stands as an iconic bastion of American sophistication, architectural heritage, and refined island living. From historic Mizner-era Mediterranean revival courtyard villas and classical Georgian-inspired manors along North County Road to mid-century lakefront estates bordering the Lake Trail and oceanfront sanctuaries on South Ocean Boulevard, interior design in Palm Beach demands profound historical reverence paired with modern livability. The residential landscape here is uniquely discerning, catering to multi-generational American dynasties, prominent collectors, and international seasonal residents who value enduring elegance, pedigree, and craftsmanship over transient trends. Our studio approaches Palm Beach properties by honoring their authentic classical proportions—meticulously restoring reclaimed French limestone flags, handcrafted plaster cornices, and pecky cypress ceilings—while introducing airy contemporary volumes and whisper-quiet infrastructure. We eliminate dark, segmented corridors in favor of sun-drenched flow-through galleries that connect grand formal reception rooms with intimate private courtyards, loggias, and shaded poolside loggias. Through full-service interior architecture and turnkey execution, we integrate bespoke European millwork, museum-grade art illumination, tailored Pierre Frey and de Gournay textiles, and discreet smart-home technology, crafting timeless island residences that welcome winter seasons with effortless poise.',
     services: [
-      'Historic Estate Interior Restoration & Modernization',
-      'Full-Service Interior Architecture & Design',
-      'Custom Millwork & Hand-Crafted Cabinetry',
-      'Turnkey Seasonal Residence Setup',
-      'Antiques Curation & Bespoke Contemporary Blends'
+      'Full-Service Interior Design',
+      'Luxury Renovation',
+      'New Construction Interior Design',
+      'Turnkey Interior Design (Move-in Ready)',
+      'Custom Millwork & Architectural Joinery',
+      'Furniture, Art & Final Styling'
     ],
     featuredProjectSlug: 'ocean-palm-villa',
     processSteps: [
-      { step: '01', title: 'Consultation & Historical Review', description: 'Assessing architectural provenance, structural nuances, and personal lifestyle aspirations.' },
-      { step: '02', title: 'Concept & Material Curation', description: 'Selecting French limestones, custom hand-painted wallcoverings, natural linens, and tailored millwork.' },
-      { step: '03', title: 'Architectural Detailing & Coordination', description: 'Drafting precise millwork profiles, electrical plans, and coordinating with preservation boards where needed.' },
-      { step: '04', title: 'Artisan Sourcing & Procurement', description: 'Managing custom upholstery, imported stone fabrication, and international antique acquisitions.' },
-      { step: '05', title: 'Installation & Staged Reveal', description: 'White-glove placement of all furnishings, styling of accessories, table settings, and full reveal.' }
+      { step: '01', title: 'Consultation', description: 'Assessing architectural provenance, structural nuances, ARCOM guidelines, and personal lifestyle aspirations.' },
+      { step: '02', title: 'Concept', description: 'Curating historic and contemporary harmonies: French limestones, pecky cypress tones, and hand-painted murals.' },
+      { step: '03', title: 'Visualization', description: 'Photorealistic 3D perspectives illustrating daylight movement, ceiling moldings, and custom furniture proportions.' },
+      { step: '04', title: 'Design Development', description: 'Drafting exacting architectural millwork profiles, reflected ceiling plans, tile layouts, and electrical drops.' },
+      { step: '05', title: 'Procurement & Coordination', description: 'Managing custom upholstery, imported stone fabrication, antique acquisitions, and trusted GC coordination.' },
+      { step: '06', title: 'Installation & Styling', description: 'Turnkey seasonal setup: white-glove placement of furnishings, art curation, luxury linens, tableware, and floral staging.' }
     ],
     faqs: [
       {
-        question: 'How do you balance Palm Beach historic preservation with modern lifestyle comforts?',
-        answer: 'We respect the architectural integrity of the structure—restoring original moldings, stone flooring, and courtyard sightlines—while discretely integrating modern HVAC, smart home lighting, custom chef kitchens, and contemporary comfort furnishings.'
+        question: 'How do you balance Palm Beach historic preservation (ARCOM) with modern lifestyle comforts?',
+        answer: 'We respect the architectural integrity and historic pedigree of the structure—restoring original plaster moldings, French limestone flooring, and courtyard sightlines—while discretely integrating modern HVAC infrastructure, low-glare architectural lighting, custom chef kitchens, and contemporary comfort furnishings.'
       },
       {
-        question: 'Do you assist seasonal Palm Beach residents with turnkey preparation?',
-        answer: 'Yes. We manage complete seasonal residence setup, ensuring your home is fully furnished, accessorized, styled, and operating seamlessly prior to your arrival for the winter season.'
+        question: 'How do you approach the integration of historic antiques with modern bespoke furnishings in Palm Beach?',
+        answer: 'We champion a curated dialogue between eras. We pair authentic 18th- and 19th-century European antiques, de Gournay hand-painted wallcoverings, and reclaimed stone plinths with tailored low-slung Italian seating, textured Belgian linen draperies, and contemporary art.'
       },
       {
-        question: 'Can you source rare antiques and bespoke custom furniture pieces?',
-        answer: 'Yes. We have relationships with premier antique dealers and custom furniture ateliers across North America and Europe, allowing us to combine one-of-a-kind vintage treasures with custom-designed contemporary pieces.'
+        question: 'Can you coordinate seasonal residence preparation and turnkey move-in prior to the Palm Beach winter season?',
+        answer: 'Yes. A significant portion of our Palm Beach clientele arrives for the winter social season from New York, London, or Europe. Through our turnkey service, we oversee procurement, summer storage, and white-glove installation down to fine bed linens, stemware, and pantry essentials, ensuring your estate is 100% move-in ready upon arrival.'
+      },
+      {
+        question: 'What materials and finishes best withstand the coastal salt air and tropical climate of Palm Beach?',
+        answer: 'We specify authentic noble materials engineered for coastal resilience: hand-waxed Beaumaniere limestone, solid unlacquered brass that patinas gracefully, marine-varnished pecky cypress, and performance solution-dyed acrylic upholstery fabrics by Perennials and Loro Piana.'
+      },
+      {
+        question: 'Do you handle comprehensive renovations of condominiums along South Ocean Boulevard as well as private estates?',
+        answer: 'Yes. In addition to private estates on North County Road and Everglades Island, we renovate premier oceanfront condominiums along South Ocean Boulevard, handling building board review packets, freight logistics, acoustic membranes, and complete interior reconfiguration.'
       }
     ],
     heroImage: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1600&q=85',
     galleryImages: [
-      { url: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=85', alt: 'Palm Beach estate drawing room' },
-      { url: 'https://images.unsplash.com/photo-1600607687644-c7171b42498b?auto=format&fit=crop&w=1200&q=85', alt: 'Bespoke hand-crafted kitchen in Palm Beach' },
-      { url: 'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1200&q=85', alt: 'Morning loggia overlooking Palm Beach courtyard' }
+      { url: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=85', alt: 'Palm Beach estate formal drawing room with architectural coffered ceilings' },
+      { url: 'https://images.unsplash.com/photo-1600607687644-c7171b42498b?auto=format&fit=crop&w=1200&q=85', alt: 'Bespoke hand-crafted chef kitchen with painted millwork in Palm Beach' },
+      { url: 'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1200&q=85', alt: 'Morning loggia overlooking Mediterranean courtyard in Palm Beach' },
+      { url: 'https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=1200&q=85', alt: 'Serene guest bedroom retreat with French balcony in Palm Beach' },
+      { url: '/assets/2Ssjz627D6EoynArvuU4h86sCc.avif', alt: 'French limestone, aged brass, and textured Belgian linen material detail' }
     ],
-    highlights: ['North County Road', 'Worth Avenue Enclave', 'South Ocean Boulevard', 'Lake Trail Estates', 'Everglades Island']
+    highlights: ['North County Road', 'Worth Avenue Enclave', 'South Ocean Boulevard', 'Lake Trail Estates', 'Everglades Island', 'El Vedado', 'Breakers Row']
   },
   {
     id: 'miami',

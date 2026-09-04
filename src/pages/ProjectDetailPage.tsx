@@ -12,9 +12,23 @@ interface ProjectDetailPageProps {
 
 export const ProjectDetailPage: React.FC<ProjectDetailPageProps> = ({ slug, onNavigate, onOpenConsultation }) => {
   const project = projectsData.find(p => p.slug === slug) || projectsData[0];
-  const [activeImage, setActiveImage] = useState<string | null>(null);
+  const [activeImageIndex, setActiveImageIndex] = useState<number | null>(null);
 
   const nextProjects = projectsData.filter(p => p.slug !== project.slug).slice(0, 2);
+
+  const handlePrevImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (activeImageIndex !== null) {
+      setActiveImageIndex(activeImageIndex === 0 ? project.galleryImages.length - 1 : activeImageIndex - 1);
+    }
+  };
+
+  const handleNextImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (activeImageIndex !== null) {
+      setActiveImageIndex(activeImageIndex === project.galleryImages.length - 1 ? 0 : activeImageIndex + 1);
+    }
+  };
 
   return (
     <div className="min-h-screen pt-20">
@@ -24,23 +38,59 @@ export const ProjectDetailPage: React.FC<ProjectDetailPageProps> = ({ slug, onNa
         ogImage={project.coverImage}
       />
 
-      {/* Lightbox Modal */}
-      {activeImage && (
+      {/* Lightbox Modal with Index Navigation */}
+      {activeImageIndex !== null && project.galleryImages[activeImageIndex] && (
         <div 
-          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4"
-          onClick={() => setActiveImage(null)}
+          className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-4 sm:p-8 select-none"
+          onClick={() => setActiveImageIndex(null)}
         >
           <button
-            onClick={() => setActiveImage(null)}
-            className="absolute top-6 right-6 p-2 text-white/80 hover:text-white"
+            onClick={() => setActiveImageIndex(null)}
+            className="absolute top-6 right-6 z-20 p-2 text-white/70 hover:text-white bg-black/40 border border-white/20 transition-colors"
+            aria-label="Close image viewer"
           >
             <X className="w-6 h-6" />
           </button>
-          <img
-            src={activeImage}
-            alt="Full size view"
-            className="max-w-full max-h-[90vh] object-contain"
-          />
+
+          {/* Previous Button */}
+          <button
+            onClick={handlePrevImage}
+            className="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 z-20 p-3 bg-black/60 text-white/80 hover:text-white hover:bg-black/80 border border-white/20 transition-all"
+            aria-label="Previous image"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+
+          {/* Next Button */}
+          <button
+            onClick={handleNextImage}
+            className="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 z-20 p-3 bg-black/60 text-white/80 hover:text-white hover:bg-black/80 border border-white/20 transition-all"
+            aria-label="Next image"
+          >
+            <ArrowRight className="w-5 h-5" />
+          </button>
+
+          <div
+            className="relative max-w-5xl w-full max-h-[85vh] flex flex-col items-center justify-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={project.galleryImages[activeImageIndex].url}
+              alt={project.galleryImages[activeImageIndex].alt}
+              className="max-w-full max-h-[72vh] object-contain shadow-2xl border border-white/10"
+            />
+            <div className="mt-4 text-center max-w-2xl px-4">
+              <div className="text-[11px] uppercase tracking-widest text-[#C9A986] font-semibold mb-1">
+                Image {activeImageIndex + 1} of {project.galleryImages.length}
+              </div>
+              <p className="text-sm text-white font-serif-luxury font-light">
+                {project.galleryImages[activeImageIndex].caption || project.galleryImages[activeImageIndex].alt}
+              </p>
+              <p className="text-xs text-[#A8A199] mt-1 font-light">
+                {project.galleryImages[activeImageIndex].alt}
+              </p>
+            </div>
+          </div>
         </div>
       )}
 
@@ -107,20 +157,24 @@ export const ProjectDetailPage: React.FC<ProjectDetailPageProps> = ({ slug, onNa
           <div className="relative aspect-[21/10] overflow-hidden border border-[#2D2A26] shadow-2xl">
             <img
               src={project.heroImage || project.coverImage}
-              alt={`${project.title} - Main View`}
+              alt={`${project.title} - Main Architectural Overview`}
               className="w-full h-full object-cover"
             />
           </div>
         </div>
       </section>
 
-      {/* Project Facts Matrix */}
+      {/* Project Facts Matrix (Location | Category | Property Type | Services | Completion Year) */}
       <section className="bg-[#FAF9F6] border-b border-[#EAE4DB] py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-xs">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-6 text-xs">
             <div>
               <span className="text-[10px] uppercase tracking-widest text-[#8C847B] block font-semibold">Location</span>
               <p className="text-sm font-medium text-[#1A1816] mt-0.5">{project.location}</p>
+            </div>
+            <div>
+              <span className="text-[10px] uppercase tracking-widest text-[#8C847B] block font-semibold">Category</span>
+              <p className="text-sm font-medium text-[#1A1816] mt-0.5">{project.category}</p>
             </div>
             <div>
               <span className="text-[10px] uppercase tracking-widest text-[#8C847B] block font-semibold">Property Type</span>
@@ -203,7 +257,12 @@ export const ProjectDetailPage: React.FC<ProjectDetailPageProps> = ({ slug, onNa
                 Artisan Finishes & Sourcing
               </p>
             </div>
-            <div className="md:col-span-8">
+            <div className="md:col-span-8 space-y-4">
+              {project.materialsNarrative && (
+                <p className="text-sm sm:text-base text-[#524D47] leading-relaxed font-light">
+                  {project.materialsNarrative}
+                </p>
+              )}
               <ul className="space-y-3 text-xs sm:text-sm text-[#524D47] font-light">
                 {project.materialsDetails.map((mat, i) => (
                   <li key={i} className="flex items-start gap-3">
@@ -259,30 +318,35 @@ export const ProjectDetailPage: React.FC<ProjectDetailPageProps> = ({ slug, onNa
         </section>
       )}
 
-      {/* High-Resolution Project Gallery */}
+      {/* High-Resolution Project Gallery (12-25 images) */}
       <section className="py-24 bg-white border-b border-[#EAE4DB]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
               <div className="text-xs uppercase tracking-[0.2em] text-[#C9A986] font-semibold mb-1">
                 Visual Documentation
               </div>
               <h2 className="font-serif-luxury text-3xl sm:text-4xl text-[#1A1816] font-normal">
-                Curated Gallery
+                Curated Photographic Gallery
               </h2>
             </div>
-            <span className="text-xs text-[#7A746E] font-light">
-              Click any photo to view in full resolution
-            </span>
+            <div className="flex items-center gap-3">
+              <span className="px-3 py-1 bg-[#FAF9F6] border border-[#EAE4DB] text-xs text-[#7A746E] font-medium">
+                {project.galleryImages.length} Architectural & Detail Views
+              </span>
+              <span className="text-xs text-[#9E978F] hidden md:inline font-light">
+                Click any image to expand
+              </span>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {project.galleryImages.map((img, idx) => (
               <div
                 key={idx}
-                onClick={() => setActiveImage(img.url)}
-                className="group relative cursor-pointer aspect-[4/3] bg-[#E8E2D8] overflow-hidden border border-[#E5DFD7]"
+                onClick={() => setActiveImageIndex(idx)}
+                className="group relative cursor-pointer aspect-[4/3] bg-[#E8E2D8] overflow-hidden border border-[#E5DFD7] hover:border-[#C9A986] transition-all shadow-xs"
               >
                 <img
                   src={img.url}
@@ -290,10 +354,19 @@ export const ProjectDetailPage: React.FC<ProjectDetailPageProps> = ({ slug, onNa
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   loading="lazy"
                 />
-                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-                  <span className="text-[11px] text-white backdrop-blur-xs bg-black/60 px-2.5 py-1">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
+                  <span className="text-[10px] uppercase tracking-widest text-[#C9A986] font-semibold mb-0.5">
+                    View {idx + 1}
+                  </span>
+                  <span className="text-xs text-white font-medium line-clamp-1">
                     {img.caption || img.alt}
                   </span>
+                  <span className="text-[11px] text-white/80 font-light line-clamp-1 mt-0.5">
+                    {img.alt}
+                  </span>
+                </div>
+                <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 bg-black/60 text-white backdrop-blur-xs">
+                  <Eye className="w-3.5 h-3.5 text-[#C9A986]" />
                 </div>
               </div>
             ))}
@@ -305,24 +378,29 @@ export const ProjectDetailPage: React.FC<ProjectDetailPageProps> = ({ slug, onNa
       {/* CTAs as mandated by Template 13 */}
       <section className="py-20 bg-[#171513] text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 text-[#E8D8C8] text-xs uppercase tracking-widest backdrop-blur-xs">
+            <Sparkles className="w-3.5 h-3.5 text-[#C9A986]" />
+            <span>Private Architectural Commissions</span>
+          </div>
+
           <h2 className="font-serif-luxury text-3xl sm:text-5xl font-normal text-white">
             Discuss a Similar Project
           </h2>
           <p className="text-sm sm:text-base text-[#B8B1A8] max-w-xl mx-auto font-light">
-            Whether you are considering a property in {project.location} or elsewhere in South Florida, we welcome a private discussion about your vision.
+            Whether you are considering a property in {project.location} or elsewhere in South Florida, we welcome a private discussion about your architectural and interior aspirations.
           </p>
           <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
             <button
-              onClick={() => onOpenConsultation(`Inquiry inspired by ${project.title}`, project.city)}
+              onClick={() => onOpenConsultation(`Discuss a Similar Project inspired by ${project.title}`, project.city)}
               className="px-8 py-4 bg-[#C9A986] text-[#171513] text-xs uppercase tracking-widest font-semibold hover:bg-white transition-all shadow-lg"
             >
-              Discuss a Similar Project
+              DISCUSS A SIMILAR PROJECT
             </button>
             <button
               onClick={() => onNavigate('/portfolio')}
               className="px-8 py-4 bg-transparent border border-white/40 text-white text-xs uppercase tracking-widest font-medium hover:bg-white/10 transition-all"
             >
-              View More Projects
+              VIEW MORE PROJECTS
             </button>
           </div>
         </div>
@@ -337,7 +415,7 @@ export const ProjectDetailPage: React.FC<ProjectDetailPageProps> = ({ slug, onNa
               onClick={() => onNavigate('/portfolio')}
               className="text-xs uppercase tracking-wider text-[#C9A986] hover:underline"
             >
-              View All →
+              View All Projects →
             </button>
           </div>
 

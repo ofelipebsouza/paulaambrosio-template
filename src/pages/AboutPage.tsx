@@ -19,7 +19,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenConsulta
       <section className="relative min-h-[55vh] flex items-center bg-[#171513] text-white overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img
-            src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=2200&q=85"
+            src="/assets/cRTC5lm1QD9HiCvnd7TYPrsOuY.avif"
             alt="Paula & Amanda Ambrosio Interiors"
             className="w-full h-full object-cover object-center opacity-35"
           />
@@ -76,7 +76,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenConsulta
             <div className="lg:col-span-5">
               <div className="relative">
                 <img
-                  src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=1000&q=85"
+                  src="/assets/PJnrVScMHWsoOcbfk4NqnXYjMyU.webp"
                   alt="Amanda & Paula Ambrosio - Founders of Paula Ambrosio Interior Design"
                   className="w-full aspect-[4/5] object-cover object-top border border-[#E2DBD1] shadow-xl"
                 />
@@ -103,7 +103,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenConsulta
                   With nearly two decades of proven experience and more than <strong>2,300 completed projects worldwide</strong>, the studio is celebrated for its ability to marry architectural discipline with sensual organic textures, transforming spaces into move-in-ready sanctuaries of understated luxury.
                 </p>
                 <p>
-                  Headquartered in Miami, our team of 15 talented interior architects, designers, and project managers collaborates closely with world-class contractors, European ateliers, and master craftsmen. From bespoke millwork in Star Island estates to oceanfront sky penthouses in Sunny Isles Beach, we oversee every detail with unwavering precision.
+                  Headquartered in Miami, our multidisciplinary team of 15 talented interior designers, 3D visualization artists, FF&E specialists, and project managers collaborates closely with world-class licensed general contractors, European ateliers, and master craftsmen. From bespoke millwork in Star Island estates to oceanfront sky penthouses in Sunny Isles Beach, we oversee every detail with unwavering precision.
                 </p>
               </div>
 

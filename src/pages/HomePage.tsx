@@ -36,7 +36,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenConsultati
         {/* Background Image with Cinematic Overlay */}
         <div className="absolute inset-0 z-0">
           <img
-            src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=2200&q=90"
+            src="/assets/cRTC5lm1QD9HiCvnd7TYPrsOuY.avif"
             alt="Luxury Interior Design in Miami - Paula Ambrosio Interiors"
             className="w-full h-full object-cover object-center scale-105 animate-fade-in"
           />
@@ -343,7 +343,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenConsultati
             <div className="lg:col-span-7">
               <BeforeAfterSlider
                 beforeImage="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=80"
-                afterImage="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=85"
+                afterImage="/assets/cRTC5lm1QD9HiCvnd7TYPrsOuY.avif"
                 beforeLabel="Raw Developer Shell"
                 afterLabel="Finished Turnkey Great Room"
               />
@@ -361,7 +361,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenConsultati
             <div className="lg:col-span-5 order-2 lg:order-1">
               <div className="relative">
                 <img
-                  src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=1000&q=85"
+                  src="/assets/PJnrVScMHWsoOcbfk4NqnXYjMyU.webp"
                   alt="Paula Ambrosio - Founder & Principal Designer of Paula Ambrosio Interiors"
                   className="w-full aspect-[4/5] object-cover object-top border border-[#E2DBD1] shadow-xl"
                 />
@@ -384,7 +384,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenConsultati
                   "With nearly two decades of interior design mastery and over 2,300 completed projects worldwide, we transform properties into move-in-ready sanctuaries of timeless luxury."
                 </p>
                 <p>
-                  Co-founded by sisters Amanda and Paula Ambrósio, our Miami studio brings together a 15-person team of interior architects, designers, and project managers. We specialize in high-end residential, turnkey transformations for international homeowners, and strategic consulting for developers.
+                  Co-founded by sisters Amanda and Paula Ambrósio, our Miami studio brings together a 15-person multidisciplinary team of interior designers, 3D artists, FF&E specialists, and project managers. We specialize in high-end residential, turnkey transformations for international homeowners, and strategic consulting for developers.
                 </p>
                 <p>
                   From Miami, New York, and California to Brazil, Portugal, Mexico, and Panama, we deliver bespoke, turnkey execution with unparalleled aesthetic rigor and personal care.

@@ -158,10 +158,10 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenConsultation }
             </ul>
           </div>
 
-          {/* Col 5: Studio & Journal */}
+          {/* Col 5: Studio & Directory */}
           <div className="space-y-4">
             <h3 className="text-xs uppercase tracking-widest text-[#C9A986] font-semibold">
-              Studio & Journal
+              Studio & Directory
             </h3>
             <ul className="space-y-2.5 text-xs text-[#A8A199]">
               <li>
@@ -170,7 +170,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenConsultation }
                   onClick={(e) => handleLinkClick('/about', e)}
                   className="hover:text-white transition-colors"
                 >
-                  About Paula Ambrosio
+                  About Paula & Amanda
                 </a>
               </li>
               <li>
@@ -184,11 +184,21 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenConsultation }
               </li>
               <li>
                 <a
+                  href="/sitemap"
+                  onClick={(e) => handleLinkClick('/sitemap', e)}
+                  className="hover:text-[#C9A986] transition-colors flex items-center gap-1 font-medium"
+                >
+                  <span>Sitemap & Index</span>
+                  <ArrowUpRight className="w-3 h-3" />
+                </a>
+              </li>
+              <li>
+                <a
                   href="/contact"
                   onClick={(e) => handleLinkClick('/contact', e)}
                   className="hover:text-white transition-colors"
                 >
-                  Contact & Studio Inquiries
+                  Contact & Inquiries
                 </a>
               </li>
             </ul>
@@ -205,12 +215,19 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenConsultation }
 
         </div>
 
-        {/* Bottom Bar: Entity & Copyright */}
+        {/* Bottom Bar: Entity, Sitemap & Copyright */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-[#7A746E] gap-4">
           <p>© {new Date().getFullYear()} Paula Ambrosio Interiors LLC. All Rights Reserved. Miami, FL.</p>
-          <div className="flex items-center space-x-6">
+          <div className="flex flex-wrap items-center gap-6">
             <span>Verified Founder: Paula Ambrosio</span>
             <span>Licensed & Insured Studio</span>
+            <a
+              href="/sitemap"
+              onClick={(e) => handleLinkClick('/sitemap', e)}
+              className="text-[#C9A986] hover:underline font-medium"
+            >
+              HTML Sitemap
+            </a>
             <a
               href="/privacy"
               onClick={(e) => { e.preventDefault(); handleLinkClick('/contact', e); }}
