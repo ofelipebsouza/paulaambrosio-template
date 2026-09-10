@@ -11,8 +11,9 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenConsulta
   return (
     <div className="min-h-screen pt-20">
       <SEOHead
-        title="About Paula & Amanda Ambrosio | Luxury Interior Design Studio Miami"
-        description="Founded by sisters Amanda & Paula Ambrósio, Paula Ambrosio Interior Design brings nearly two decades of international expertise and over 2,300 completed projects worldwide."
+        title="About Amanda & Paula Ambrósio | Paula Ambrosio Interiors"
+        description="Paula Ambrosio Interiors is a Miami-based luxury interior design studio specializing in high-end residential, turnkey transformations, and boutique commercial environments."
+        canonicalUrl="https://paulaambrosiointeriors.com/about"
       />
 
       {/* Hero Section */}
@@ -34,7 +35,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenConsulta
             </div>
 
             <h1 className="font-serif-luxury text-4xl sm:text-6xl font-normal leading-tight text-white">
-              About Paula Ambrosio Interior Design
+              About Paula Ambrosio Interiors
             </h1>
 
             <p className="font-serif-luxury text-xl sm:text-2xl text-[#DCD5CB] italic font-light max-w-2xl">
@@ -49,20 +50,20 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenConsulta
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center divide-y md:divide-y-0 md:divide-x divide-[#2D2A26]">
             <div className="pt-4 md:pt-0">
-              <div className="font-serif-luxury text-3xl sm:text-4xl text-[#C9A986] font-normal">19+</div>
-              <div className="text-xs uppercase tracking-widest text-[#A8A199] mt-1 font-medium">Years of Design Mastery</div>
+              <div className="font-serif-luxury text-3xl sm:text-4xl text-[#C9A986] font-normal">Miami</div>
+              <div className="text-xs uppercase tracking-widest text-[#A8A199] mt-1 font-medium">Headquarters</div>
             </div>
             <div className="pt-4 md:pt-0">
-              <div className="font-serif-luxury text-3xl sm:text-4xl text-[#C9A986] font-normal">2,300+</div>
-              <div className="text-xs uppercase tracking-widest text-[#A8A199] mt-1 font-medium">Completed Projects Globally</div>
+              <div className="font-serif-luxury text-3xl sm:text-4xl text-[#C9A986] font-normal">Full-Service</div>
+              <div className="text-xs uppercase tracking-widest text-[#A8A199] mt-1 font-medium">Design Studio</div>
             </div>
             <div className="pt-4 md:pt-0">
-              <div className="font-serif-luxury text-3xl sm:text-4xl text-[#C9A986] font-normal">15+</div>
-              <div className="text-xs uppercase tracking-widest text-[#A8A199] mt-1 font-medium">Multidisciplinary Specialists</div>
+              <div className="font-serif-luxury text-3xl sm:text-4xl text-[#C9A986] font-normal">Multidisciplinary</div>
+              <div className="text-xs uppercase tracking-widest text-[#A8A199] mt-1 font-medium">In-House Team</div>
             </div>
             <div className="pt-4 md:pt-0">
-              <div className="font-serif-luxury text-3xl sm:text-4xl text-[#C9A986] font-normal">6</div>
-              <div className="text-xs uppercase tracking-widest text-[#A8A199] mt-1 font-medium">Countries Served</div>
+              <div className="font-serif-luxury text-3xl sm:text-4xl text-[#C9A986] font-normal">International</div>
+              <div className="text-xs uppercase tracking-widest text-[#A8A199] mt-1 font-medium">Project Reach</div>
             </div>
           </div>
         </div>
@@ -77,7 +78,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenConsulta
               <div className="relative">
                 <img
                   src="/assets/PJnrVScMHWsoOcbfk4NqnXYjMyU.webp"
-                  alt="Amanda & Paula Ambrosio - Founders of Paula Ambrosio Interior Design"
+                  alt="Amanda & Paula Ambrósio - Founders of Paula Ambrosio Interiors"
                   className="w-full aspect-[4/5] object-cover object-top border border-[#E2DBD1] shadow-xl"
                 />
                 <div className="absolute -bottom-6 -right-6 bg-[#171513] text-white p-6 border border-[#2D2A26] max-w-xs shadow-xl hidden sm:block">
@@ -92,18 +93,15 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onOpenConsulta
                 Studio Leadership & Heritage
               </div>
               <h2 className="font-serif-luxury text-3xl sm:text-5xl text-[#1A1816] font-normal leading-tight">
-                Refined, Timeless & Highly Personalized Design
+                A Studio Built on Design Precision
               </h2>
               
               <div className="space-y-4 text-sm sm:text-base text-[#5C564F] leading-relaxed font-light">
                 <p>
-                  Co-founded by sisters <strong>Amanda and Paula Ambrósio</strong>, Paula Ambrosio Interior Design is a premier Miami-based full-service studio specializing in high-end residential, turnkey transformations, and boutique commercial environments.
+                  Co-founded by sisters <strong>Amanda and Paula Ambrósio</strong>, Paula Ambrosio Interiors is a Miami-based full-service studio specializing in high-end residential design, turnkey transformations, and boutique commercial environments.
                 </p>
                 <p>
-                  With nearly two decades of proven experience and more than <strong>2,300 completed projects worldwide</strong>, the studio is celebrated for its ability to marry architectural discipline with sensual organic textures, transforming spaces into move-in-ready sanctuaries of understated luxury.
-                </p>
-                <p>
-                  Headquartered in Miami, our multidisciplinary team of 15 talented interior designers, 3D visualization artists, FF&E specialists, and project managers collaborates closely with world-class licensed general contractors, European ateliers, and master craftsmen. From bespoke millwork in Star Island estates to oceanfront sky penthouses in Sunny Isles Beach, we oversee every detail with unwavering precision.
+                  Our multidisciplinary team of interior designers, 3D visualization artists, FF&E specialists, and project managers works closely with licensed general contractors, European ateliers, and master craftsmen. From custom millwork in Star Island estates to oceanfront penthouses in Sunny Isles Beach, we manage every detail from concept through final installation.
                 </p>
               </div>
 

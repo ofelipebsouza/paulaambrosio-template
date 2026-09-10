@@ -32,7 +32,7 @@ export const MiamiPage: React.FC<MiamiPageProps> = ({ onNavigate, onOpenConsulta
   // Completed Miami projects to feature as linked cards
   const miamiProjects = projectsData.filter(p => p.city === 'Miami' || p.city === 'Miami Beach' || p.city === 'Coral Gables');
 
-  // 8 Best Curated Miami Project Photos
+  // 8 Best Miami Project Photos
   const miamiGalleryPhotos = [
     {
       url: '/assets/cRTC5lm1QD9HiCvnd7TYPrsOuY.avif',
@@ -85,7 +85,7 @@ export const MiamiPage: React.FC<MiamiPageProps> = ({ onNavigate, onOpenConsulta
     },
     {
       url: 'https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=1400&q=85',
-      title: 'Bespoke Primary Sanctuary & Acoustic Fluting',
+      title: 'Custom Primary Sanctuary & Acoustic Fluting',
       subtitle: 'Tailored Upholstery & Neutral Palette',
       location: 'Coconut Grove Residence',
       tag: 'Primary Suite'
@@ -93,9 +93,9 @@ export const MiamiPage: React.FC<MiamiPageProps> = ({ onNavigate, onOpenConsulta
   ];
 
   const miamiProcess = [
-    { step: '01', title: 'Private Consultation', description: 'Comprehensive discovery of your vision, lifestyle requirements, and spatial objectives.' },
+    { step: '01', title: 'Private Consultation', description: 'Comprehensive discovery of your goals, lifestyle requirements, and spatial objectives.' },
     { step: '02', title: 'Concept Development', description: 'Establishing the design direction, mood, color palettes, and preliminary space allocations.' },
-    { step: '03', title: '3D Visualization', description: 'Photorealistic renderings allowing you to experience materials, lighting, and custom millwork before construction.' },
+    { step: '03', title: '3D Visualization', description: 'Photorealistic renderings allowing you to visualize materials, lighting, and custom millwork before construction.' },
     { step: '04', title: 'Technical Development', description: 'Comprehensive construction documents, electrical plans, tile layouts, and specifications.' },
     { step: '05', title: 'Procurement & Coordination', description: 'Managing global orders, custom fabrications, vendor logistics, and on-site contractor collaboration.' },
     { step: '06', title: 'Installation & Styling', description: 'White-glove placement, fine art hanging, decorative styling, and the final reveal.' }
@@ -104,11 +104,11 @@ export const MiamiPage: React.FC<MiamiPageProps> = ({ onNavigate, onOpenConsulta
   const miamiFaqs = [
     {
       question: 'What distinguishes Paula Ambrosio Interiors from other Miami interior design firms?',
-      answer: 'Our studio combines more than two decades of verified interior design mastery with an architectural discipline. We do not rely on standard showroom packages; every project is 100% custom, utilizing natural stones, custom European millwork, tailored lighting engineering, and seamless white-glove project management.'
+      answer: 'Our studio combines more than two decades of verified interior design mastery with an architectural discipline. We do not rely on standard showroom packages; every project is 100% custom, utilizing natural stones, custom European millwork, tailored lighting engineering, and coordinated white-glove project management.'
     },
     {
       question: 'What is the difference between Full-Service Design and Turnkey Interior Design?',
-      answer: 'Full-Service Design encompasses the complete architectural and aesthetic planning for new construction or renovation projects, working in tandem with your builder. Turnkey Design includes everything in full-service PLUS complete procurement, delivery, assembly, accessorizing, bed linens, tableware, and art installation—so the home is move-in ready the moment you turn the key.'
+      answer: 'Full-Service Design encompasses the complete architectural and aesthetic planning for new construction or renovation projects, working in tandem with your builder. Turnkey Design includes everything in full-service PLUS complete procurement, delivery, assembly, accessorizing, bed linens, tableware, and art installation, so the home is move-in ready the moment you turn the key.'
     },
     {
       question: 'How do you collaborate with architects and general contractors in Miami?',
@@ -125,12 +125,12 @@ export const MiamiPage: React.FC<MiamiPageProps> = ({ onNavigate, onOpenConsulta
   ];
 
   const residencesDesigned = [
-    { title: 'Luxury High-Rise Condominiums', desc: 'Corner residences and penthouses in Brickell, Edgewater, and SoFi.' },
+    { title: 'Premium High-Rise Condominiums', desc: 'Corner residences and penthouses in Brickell, Edgewater, and SoFi.' },
     { title: 'Waterfront Residences & Mansions', desc: 'Expansive bayfront and oceanfront estates in Key Biscayne & Star Island.' },
     { title: 'Penthouses & Sky Mansions', desc: 'Multi-level sky residences with private terraces and custom plunge pools.' },
     { title: 'Custom Single-Family Homes', desc: 'Ground-up contemporary and modern estates in Coral Gables and Coconut Grove.' },
     { title: 'Vacation & Second Residences', desc: 'Fully realized turnkey sanctuaries designed for seasonal ease and remote living.' },
-    { title: 'Complete Gut Renovations', desc: 'Transformative architectural redesigns of prestigious older properties.' }
+    { title: 'Complete Gut Renovations', desc: 'Comprehensive architectural redesigns of prestigious older properties.' }
   ];
 
   const areasServed = [
@@ -150,9 +150,12 @@ export const MiamiPage: React.FC<MiamiPageProps> = ({ onNavigate, onOpenConsulta
   return (
     <div className="min-h-screen pt-20">
       <SEOHead
-        title="Luxury Interior Designer Miami | Paula Ambrosio Interiors"
-        description="Luxury interior design in Miami by Paula Ambrosio Interiors. Full-service residential design, renovations, custom homes, turnkey interiors and project coordination."
+        title="Miami Interior Design Studio | Full-Service Residential & Turnkey | Paula Ambrosio Interiors"
+        description="Premium interior design in Miami by Paula Ambrosio Interiors. Full-service residential design, renovations, custom homes, turnkey interiors and project coordination."
+        canonicalUrl="https://paulaambrosiointeriors.com/interior-design-miami"
         faqs={miamiFaqs}
+        serviceData={{ name: "Full-Service Interior Design Miami", description: "Complete interior design direction from concept through execution for luxury homes, renovations, and new construction in Miami.", url: "https://paulaambrosiointeriors.com/interior-design-miami" }}
+        breadcrumbItems={[{ name: "Services", url: "https://paulaambrosiointeriors.com/interior-design-miami" }]}
       />
 
       {/* Hero Section */}
@@ -181,7 +184,7 @@ export const MiamiPage: React.FC<MiamiPageProps> = ({ onNavigate, onOpenConsulta
             </h1>
 
             <p className="font-serif-luxury text-lg sm:text-xl text-[#4A4540] font-light max-w-2xl mx-auto leading-relaxed">
-              Full-Service Interior Design & Turnkey Solutions for Exceptional Miami Residences
+              Full-Service Interior Design & Turnkey Solutions for Distinguished Miami Residences
             </p>
 
             <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -220,7 +223,7 @@ export const MiamiPage: React.FC<MiamiPageProps> = ({ onNavigate, onOpenConsulta
                     "Every residence is personally directed from initial architectural plan to white-glove reveal."
                   </p>
                   <p className="text-[11px] uppercase tracking-wider text-[#A8A199] mt-2 font-medium">
-                    — Amanda & Paula Ambrósio
+                    Amanda & Paula Ambrósio
                   </p>
                 </div>
               </div>
@@ -263,7 +266,7 @@ export const MiamiPage: React.FC<MiamiPageProps> = ({ onNavigate, onOpenConsulta
         </div>
       </section>
 
-      {/* Curated Miami Photography Gallery: 8 Best Miami Project Photos */}
+      {/* Miami Photography Gallery: 8 Best Miami Project Photos */}
       <section className="py-20 bg-[#FAF9F6] border-b border-[#EAE4DB]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
@@ -277,7 +280,7 @@ export const MiamiPage: React.FC<MiamiPageProps> = ({ onNavigate, onOpenConsulta
                 Signature Miami Project Photography
               </h2>
               <p className="text-xs sm:text-sm text-[#736D65] mt-1 font-light">
-                Explore curated architectural moments, bespoke millwork details, and spatial compositions across South Florida.
+                Explore selected architectural moments, custom millwork details, and spatial compositions across South Florida.
               </p>
             </div>
             <button
@@ -288,7 +291,7 @@ export const MiamiPage: React.FC<MiamiPageProps> = ({ onNavigate, onOpenConsulta
             </button>
           </div>
 
-          {/* 8-Photo Curated Grid */}
+          {/* 8-Photo Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {miamiGalleryPhotos.map((photo, idx) => (
               <div
@@ -344,7 +347,7 @@ export const MiamiPage: React.FC<MiamiPageProps> = ({ onNavigate, onOpenConsulta
                 Featured Miami Completed Projects
               </h2>
               <p className="text-xs sm:text-sm text-[#736D65] mt-1 font-light">
-                Comprehensive case studies showcasing client visions, architectural challenges, custom materials, and final reveals.
+                Comprehensive case studies showcasing client goals, architectural challenges, custom materials, and final reveals.
               </p>
             </div>
             <button
@@ -382,10 +385,10 @@ export const MiamiPage: React.FC<MiamiPageProps> = ({ onNavigate, onOpenConsulta
                 From Developer Shell to Turnkey Masterpiece
               </h2>
               <p className="text-sm sm:text-base text-[#5C564F] leading-relaxed font-light">
-                Experience the spatial shift from raw concrete floors and bare perimeter walls to an acoustically tuned, luxuriously layered Miami sanctuary.
+                Witness the spatial shift from raw concrete floors and bare perimeter walls to an acoustically tuned, refined Miami sanctuary.
               </p>
               <p className="text-sm sm:text-base text-[#5C564F] leading-relaxed font-light">
-                Drag the interactive slider to inspect our precision millwork alignments, integrated ceiling cove lighting, and seamless floor transitions.
+                Drag the interactive slider to inspect our precision millwork alignments, integrated ceiling cove lighting, and smooth floor transitions.
               </p>
               <div className="pt-2">
                 <button
@@ -422,7 +425,7 @@ export const MiamiPage: React.FC<MiamiPageProps> = ({ onNavigate, onOpenConsulta
               Miami Studio Services
             </h2>
             <p className="text-xs sm:text-sm text-[#736D65] font-light">
-              From schematic architecture to white-glove finishing, we deliver cohesive luxury environments.
+              From schematic architecture to white-glove finishing, we deliver cohesive, refined environments.
             </p>
           </div>
 
@@ -432,8 +435,8 @@ export const MiamiPage: React.FC<MiamiPageProps> = ({ onNavigate, onOpenConsulta
               { title: 'New Construction Design', desc: 'Collaborating from the ground up with your architect and builder to optimize interior layouts and finishes.' },
               { title: 'Luxury Renovations', desc: 'Reconfiguring existing floor plans into open, light-filled spaces with state-of-the-art materials.' },
               { title: 'Turnkey Interior Design', desc: 'White-glove furnishing, procurement, accessories, linens, and styling for a completely move-in ready home.' },
-              { title: 'Custom Millwork & Cabinetry', desc: 'Bespoke architectural woodwork, kitchen design, dressing salons, wine rooms, and library walls.' },
-              { title: 'Furniture & Art Curation', desc: 'Sourcing bespoke designer furniture, rare vintage pieces, custom rugs, and fine contemporary art.' }
+              { title: 'Custom Millwork & Cabinetry', desc: 'Custom architectural woodwork, kitchen design, dressing salons, wine rooms, and library walls.' },
+              { title: 'Furniture & Art Curation', desc: 'Sourcing custom designer furniture, rare vintage pieces, custom rugs, and fine contemporary art.' }
             ].map((svc, i) => (
               <div key={i} className="p-7 bg-[#FAF9F6] border border-[#E8E2D8] hover:border-[#C9A986] transition-all">
                 <h3 className="font-serif-luxury text-xl text-[#1A1816] font-medium mb-2">

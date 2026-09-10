@@ -39,7 +39,7 @@ export const AventuraPage: React.FC<AventuraPageProps> = ({ onNavigate, onOpenCo
     badge: string;
   } | null>(null);
 
-  // Curated photographic assets as requested:
+  // Selected photographic assets as requested:
   // • 1 hero photo relevant to Aventura
   // • 3-5 project images; actual Aventura work (HOME IT in Aventura, FL)
   // • 1 material/detail image
@@ -57,11 +57,11 @@ export const AventuraPage: React.FC<AventuraPageProps> = ({ onNavigate, onOpenCo
       title: 'Gourmet Chef Kitchen & Breakfast Bar',
       subtitle: 'HOME IT Residence • Aventura, FL',
       category: 'Kitchen Design',
-      description: 'Bookmatched Calacatta quartz waterfall island, fluted bespoke barstools, and integrated touch-latch cabinetry.',
+      description: 'Bookmatched Calacatta quartz waterfall island, fluted custom barstools, and integrated touch-latch cabinetry.',
       url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=85'
     },
     {
-      badge: 'Bespoke Themed Suite',
+      badge: 'Custom Themed Suite',
       title: 'Architectural Family Bunk Suite',
       subtitle: 'HOME IT Residence • Aventura, FL',
       category: 'Children’s Themed Suites',
@@ -108,20 +108,20 @@ export const AventuraPage: React.FC<AventuraPageProps> = ({ onNavigate, onOpenCo
     },
     {
       title: 'Turnkey Interior Design (Move-in Ready)',
-      description: 'Complete furnishing, motorized drapery, Italian bed linens, designer tableware, curated art, and white-glove staging for seasonal residents and yacht owners.',
+      description: 'Complete furnishing, motorized drapery, Italian bed linens, designer tableware, selected art, and white-glove staging for seasonal residents and yacht owners.',
       linkText: 'Explore Turnkey Living',
       linkTarget: '/turnkey-interior-design-miami'
     },
     {
       title: 'Custom Millwork & Architectural Joinery',
-      description: 'Custom culinary centers, fluted room dividers, concealed wet bars, and bespoke children’s bunk bed installations built to exact architectural dimensions.',
+      description: 'Custom culinary centers, fluted room dividers, concealed wet bars, and custom children\'s bunk bed installations built to exact architectural dimensions.',
       linkText: 'Discover Custom Joinery',
       linkTarget: '/portfolio/home-it'
     },
     {
       title: 'Furniture, Art & Final Styling',
-      description: 'Curating low-maintenance luxury furnishings in high-performance European performance fabrics, paired with contemporary art, sculpture, and tactile accessories.',
-      linkText: 'View Curated Portfolios',
+      description: 'Selecting low-maintenance furnishings in high-performance European fabrics, paired with contemporary art, sculpture, and tactile accessories.',
+      linkText: 'View Selected Portfolios',
       linkTarget: '/portfolio'
     }
   ];
@@ -130,8 +130,10 @@ export const AventuraPage: React.FC<AventuraPageProps> = ({ onNavigate, onOpenCo
     <div className="min-h-screen pt-20">
       <SEOHead
         title="Luxury Interior Designer Aventura | Paula Ambrosio Interiors"
-        description="Paula Ambrosio Interiors provides luxury residential and turnkey interior design for discerning clients in Aventura and South Florida."
+        description="Paula Ambrosio Interiors designs luxury interiors for Aventura's premier waterfront communities, including Williams Island, Turnberry Isle, and Marina Palms."
+        canonicalUrl="https://paulaambrosiointeriors.com/interior-designer-aventura"
         faqs={location.faqs}
+        breadcrumbItems={[{ name: "Locations", url: "https://paulaambrosiointeriors.com/locations" }, { name: "Aventura", url: "https://paulaambrosiointeriors.com/interior-designer-aventura" }]}
       />
 
       {/* Breadcrumb Navigation */}
@@ -222,10 +224,10 @@ export const AventuraPage: React.FC<AventuraPageProps> = ({ onNavigate, onOpenCo
               {/* 150-250 Unique Words about Aventura residential context */}
               <div className="space-y-4 text-sm sm:text-base text-[#5C564F] leading-relaxed font-light">
                 <p>
-                  Aventura presents a distinguished residential enclave in Northeast Miami-Dade, shaped by private island sanctuaries, deepwater yacht marinas, and premier golf communities including Williams Island, Turnberry Isle, Marina Palms, and Porto Vita. Unlike the purely transient high-rise corridors of South Florida, Aventura’s residential landscape comprises both primary residences for established multigenerational families and seasonal waterfront retreats for yachting enthusiasts. Properties here—ranging from spacious 1980s and 1990s Mediterranean-revival condominium footprints to sleek modern waterfront penthouses—frequently call for extensive interior reconfiguration. Compartmentalized layouts, low dropped soffits, and dated finishes are transformed into expansive, light-filled open volumes that celebrate views of Dumfoundling Bay, the Intracoastal Waterway, and lush golf fairways.
+                  Aventura presents a distinguished residential enclave in Northeast Miami-Dade, shaped by private island sanctuaries, deepwater yacht marinas, and premier golf communities including Williams Island, Turnberry Isle, Marina Palms, and Porto Vita. Unlike the purely transient high-rise corridors of South Florida, Aventura’s residential landscape comprises both primary residences for established multigenerational families and seasonal waterfront retreats for yachting enthusiasts. Properties here, ranging from spacious 1980s and 1990s Mediterranean-revival condominium footprints to sleek modern waterfront penthouses, frequently call for extensive interior reconfiguration. Compartmentalized layouts, low dropped soffits, and dated finishes are transformed into expansive, light-filled open volumes that celebrate views of Dumfoundling Bay, the Intracoastal Waterway, and lush golf fairways.
                 </p>
                 <p>
-                  Our studio approaches Aventura projects by harmonizing quiet aesthetic luxury with the tactile demands of everyday family living. We prioritize European performance textiles, stain-treated bouclés, honed quartzites, and continuous European white oak flooring that withstand active family lifestyles without sacrificing visual elegance. Through custom architectural millwork—such as integrated media libraries, bespoke culinary centers, and playful, imaginative themed children’s suites—we create environments tailored for both sophisticated evening entertaining and effortless day-to-day comfort. With our{' '}
+                  Our studio approaches Aventura projects by harmonizing quiet aesthetic luxury with the tactile demands of everyday family living. We prioritize European performance textiles, stain-treated bouclés, honed quartzites, and continuous European white oak flooring that withstand active family lifestyles without sacrificing visual elegance. Through custom architectural millwork, such as integrated media libraries, custom culinary centers, and playful, imaginative themed children's suites, we create environments tailored for both sophisticated evening entertaining and effortless day-to-day comfort. With our{' '}
                   <a
                     href="/turnkey-interior-design-miami"
                     onClick={(e) => { e.preventDefault(); onNavigate('/turnkey-interior-design-miami'); }}
@@ -233,7 +235,7 @@ export const AventuraPage: React.FC<AventuraPageProps> = ({ onNavigate, onOpenCo
                   >
                     turnkey methodology
                   </a>
-                  , our team oversees every stage from condominium HOA board submissions to white-glove staging, delivering homes of timeless warmth and enduring value.
+                  , our team oversees every stage from condominium HOA board submissions to white-glove staging, delivering homes of lasting warmth and enduring value.
                 </p>
               </div>
 
@@ -343,7 +345,7 @@ export const AventuraPage: React.FC<AventuraPageProps> = ({ onNavigate, onOpenCo
         </div>
       </section>
 
-      {/* Curated Photographic Gallery (Assets from Paula) */}
+      {/* Selected Photographic Gallery (Assets from Paula) */}
       <section className="py-24 bg-[#FAF9F6] border-b border-[#EAE4DB]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
@@ -425,7 +427,7 @@ export const AventuraPage: React.FC<AventuraPageProps> = ({ onNavigate, onOpenCo
               Featured Project: {featuredProject.title}
             </h2>
             <p className="text-sm text-[#6E6861] font-light">
-              {featuredProject.subTitle} — {featuredProject.location}
+              {featuredProject.subTitle}, {featuredProject.location}
             </p>
           </div>
 

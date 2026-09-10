@@ -32,13 +32,13 @@ export const TurnkeyPage: React.FC<TurnkeyPageProps> = ({ onNavigate, onOpenCons
     return () => clearInterval(interval);
   }, []);
 
-  // Curated Turnkey Asset Showcases
+  // Selected Turnkey Asset Showcases
   const turnkeyAssetShowcase = [
     {
       category: 'Final Styled Living Room',
       title: 'Monolithic Great Room & Sculptural Helical Staircase',
       subtitle: 'HOME KD • Miami, FL',
-      description: 'Double-height volume styled with bespoke curved upholstery, honed stone, and layered indirect lighting.',
+      description: 'Double-height volume styled with custom curved upholstery, honed stone, and layered indirect lighting.',
       url: '/assets/cRTC5lm1QD9HiCvnd7TYPrsOuY.avif',
       badge: 'Living Salon'
     },
@@ -54,13 +54,13 @@ export const TurnkeyPage: React.FC<TurnkeyPageProps> = ({ onNavigate, onOpenCons
       category: 'Custom Millwork Detail',
       title: 'Integrated Culinary Pavilion with Blackened Bronze & Oak',
       subtitle: 'HOME IT • Coral Gables / Miami',
-      description: 'Bespoke concealed cabinetry, bookmatched marble waterfall island, and flush architectural joinery.',
+      description: 'Custom concealed cabinetry, bookmatched marble waterfall island, and flush architectural joinery.',
       url: '/assets/X8XTDp3V2Z56VsOWfw8jCyBLpuk.webp',
       badge: 'Custom Millwork'
     },
     {
       category: 'Art & Accessory Installation Detail',
-      title: 'Roman Travertine Spa Suite & Curated Sculpture Placement',
+      title: 'Roman Travertine Spa Suite & Selected Sculpture Placement',
       subtitle: 'HOME S • Miami Beach',
       description: 'Hand-selected travertine surfaces, artisan vanity fixtures, custom mirrors, and organic vessels.',
       url: '/assets/uJDafV2OYdKY0ezWt4AhW3Dpj0.avif',
@@ -73,7 +73,10 @@ export const TurnkeyPage: React.FC<TurnkeyPageProps> = ({ onNavigate, onOpenCons
       <SEOHead
         title="Turnkey Interior Design Miami | Paula Ambrosio Interiors"
         description="Complete turnkey interior design in Miami. From concept and construction selections to furniture, procurement, installation and final styling."
+        canonicalUrl="https://paulaambrosiointeriors.com/turnkey-interior-design-miami"
         faqs={data.faqs}
+        serviceData={{ name: "Turnkey Interior Design Miami", description: "Complete move-in-ready interior design service. From concept and construction selections to furniture, procurement, installation and final styling.", url: "https://paulaambrosiointeriors.com/turnkey-interior-design-miami" }}
+        breadcrumbItems={[{ name: "Services", url: "https://paulaambrosiointeriors.com/turnkey-interior-design-miami" }]}
       />
 
       {/* Hero Section */}
@@ -131,13 +134,13 @@ export const TurnkeyPage: React.FC<TurnkeyPageProps> = ({ onNavigate, onOpenCons
             
             <div className="lg:col-span-6 space-y-6">
               <div className="text-xs uppercase tracking-[0.2em] text-[#C9A986] font-semibold">
-                Complete Living Experience
+                Complete Living Standard
               </div>
               <h2 className="font-serif-luxury text-3xl sm:text-4xl text-[#1A1816] font-normal leading-tight">
                 What Turnkey Means
               </h2>
               <p className="text-sm sm:text-base text-[#5C564F] leading-relaxed font-light">
-                Turnkey means complete. The furniture is installed. The artwork is placed. The lighting has been considered. The accessories are styled. The rooms feel finished. Our role is to transform the design vision into a fully realized home.
+                Turnkey means complete. The furniture is installed. The artwork is placed. The lighting has been considered. The accessories are styled. The rooms feel finished. Our role is to bring the design intent into a fully realized home.
               </p>
 
               {/* Miami International Lifestyle Box */}
@@ -165,7 +168,7 @@ export const TurnkeyPage: React.FC<TurnkeyPageProps> = ({ onNavigate, onOpenCons
                   <p className="text-xs text-[#7A746E] mt-1 font-light">Complete logistics, freight & white-glove assembly</p>
                 </div>
                 <div className="p-4 bg-white border border-[#E5DFD7]">
-                  <div className="text-xs font-semibold uppercase tracking-wider text-[#1A1816]">Curated Down to Linens</div>
+                  <div className="text-xs font-semibold uppercase tracking-wider text-[#1A1816]">Selected Down to Linens</div>
                   <p className="text-xs text-[#7A746E] mt-1 font-light">Bedding, scents, tableware, lighting & art</p>
                 </div>
               </div>
@@ -282,14 +285,14 @@ export const TurnkeyPage: React.FC<TurnkeyPageProps> = ({ onNavigate, onOpenCons
             {[
               { title: 'Interior Design & Space Planning', desc: 'Holistic spatial optimization, furniture layouts, and architectural circulation flow.' },
               { title: '3D Photorealistic Visualization', desc: 'High-definition 3D rendering sets to preview textures, lighting, and millwork in advance.' },
-              { title: 'Materials, Kitchens & Bathrooms', desc: 'Curating natural stones, cabinetry, plumbing selections, and surface finishes.' },
+              { title: 'Materials, Kitchens & Bathrooms', desc: 'Sourcing natural stones, cabinetry, plumbing selections, and surface finishes.' },
               { title: 'Architectural & Decorative Lighting', desc: 'Layered lighting plans, statement fixtures, and dim-to-warm scene configurations.' },
-              { title: 'Custom Millwork & Custom Furniture', desc: 'Bespoke built-ins, wall paneling, custom banquettes, and one-of-a-kind furniture.' },
-              { title: 'Furniture Selection & Procurement', desc: 'Curating trade-only designer pieces, purchasing management, and warehouse intake.' },
+              { title: 'Custom Millwork & Custom Furniture', desc: 'Custom built-ins, wall paneling, custom banquettes, and one-of-a-kind furniture.' },
+              { title: 'Furniture Selection & Procurement', desc: 'Sourcing trade-only designer pieces, purchasing management, and warehouse intake.' },
               { title: 'Vendor & Project Coordination', desc: 'Collaborating with licensed contractors and managing specialized trade fabrication timelines.' },
               { title: 'Artwork, Rugs & Window Treatments', desc: 'Fine art curation, custom hand-knotted area rugs, and motorized acoustic drapery.' },
-              { title: 'Accessories & Tabletop Styling', desc: 'Decorative objects, bespoke vessels, tabletop settings, and tailored home fragrances.' },
-              { title: 'Installation Coordination & Final Styling', desc: 'White-glove delivery oversight, artwork hanging, luxury bed dressing, and reveal styling.' }
+              { title: 'Accessories & Tabletop Styling', desc: 'Decorative objects, artisan vessels, tabletop settings, and tailored home fragrances.' },
+              { title: 'Installation Coordination & Final Styling', desc: 'White-glove delivery oversight, artwork hanging, premium bed dressing, and reveal styling.' }
             ].map((item, idx) => (
               <div key={idx} className="p-5 bg-white border border-[#E5DFD7] hover:border-[#C9A986] transition-all flex flex-col justify-between">
                 <div>

@@ -22,7 +22,7 @@ export const SitemapPage: React.FC<SitemapPageProps> = ({ onNavigate, onOpenCons
         {
           title: 'Home / Global Overview',
           url: '/',
-          description: 'Official flagship homepage featuring signature capabilities, featured residences, turnkey transformation slider, and studio philosophy.',
+          description: 'Official flagship homepage featuring signature capabilities, featured residences, turnkey redesign slider, and studio philosophy.',
           badge: 'Core'
         },
         {
@@ -34,13 +34,13 @@ export const SitemapPage: React.FC<SitemapPageProps> = ({ onNavigate, onOpenCons
         {
           title: 'Portfolio & Flagship Case Studies',
           url: '/portfolio',
-          description: 'Curated gallery of bespoke private homes, oceanfront sky penthouses, and hospitality lounges across South Florida.',
+          description: 'Selected gallery of custom private homes, oceanfront sky penthouses, and hospitality lounges across South Florida.',
           badge: 'Work'
         },
         {
           title: 'Design Journal & Insights',
           url: '/journal',
-          description: 'Editorial essays on turnkey convenience for international buyers, organic travertine materials, and luxury high-rise engineering.',
+          description: 'Editorial essays on turnkey convenience for international buyers, organic travertine materials, and high-end high-rise engineering.',
           badge: 'Editorial'
         },
         {
@@ -65,13 +65,13 @@ export const SitemapPage: React.FC<SitemapPageProps> = ({ onNavigate, onOpenCons
     },
     {
       category: 'Design Disciplines & Flagship Services',
-      description: 'Specialized architectural, turnkey, and luxury residential services.',
+      description: 'Specialized architectural, turnkey, and premium residential services.',
       icon: Layers,
       pages: [
         {
           title: 'Miami Interior Design (Flagship Hub)',
           url: '/interior-design-miami',
-          description: 'Full-service luxury interior design hub for Greater Miami, including 6-stage process, typologies, and regional FAQs.',
+          description: 'Full-service high-end interior design hub for Greater Miami, including 6-stage process, typologies, and regional FAQs.',
           badge: 'Flagship'
         },
         {
@@ -81,15 +81,15 @@ export const SitemapPage: React.FC<SitemapPageProps> = ({ onNavigate, onOpenCons
           badge: 'Turnkey'
         },
         {
-          title: 'Luxury Residential Interior Design',
+          title: 'Premium Residential Interior Design',
           url: '/luxury-residential-interior-design-miami',
-          description: 'Bespoke design for waterfront estates, penthouses, architectural renovations, custom millwork, and high-end kitchens.',
+          description: 'Tailored design for waterfront estates, penthouses, architectural renovations, custom millwork, and high-end kitchens.',
           badge: 'Residential'
         },
         {
           title: 'Hospitality Interior Design',
           url: '/hospitality-interior-design-miami',
-          description: 'Boutique hotels, sky suites, cocktail lounges, and private wellness destinations engineered for guest experience and contract durability.',
+          description: 'Boutique hotels, sky suites, cocktail lounges, and private wellness destinations engineered for guest comfort and contract durability.',
           badge: 'Commercial'
         }
       ]
@@ -102,7 +102,7 @@ export const SitemapPage: React.FC<SitemapPageProps> = ({ onNavigate, onOpenCons
         {
           title: 'South Florida Locations Overview (Hub)',
           url: '/locations',
-          description: 'Regional overview of all South Florida coastal enclaves, private islands, and luxury developments served.',
+          description: 'Regional overview of all South Florida coastal enclaves, private islands, and premium developments served.',
           badge: 'Territory'
         },
         ...locationsData.map((loc) => ({
@@ -115,7 +115,7 @@ export const SitemapPage: React.FC<SitemapPageProps> = ({ onNavigate, onOpenCons
     },
     {
       category: 'Flagship Portfolio Case Studies',
-      description: 'In-depth architectural case studies with client vision, challenges, materials, and gallery.',
+      description: 'In-depth architectural case studies with client goals, challenges, materials, and gallery.',
       icon: Compass,
       pages: projectsData.map((p) => ({
         title: `${p.title} (${p.category})`,
@@ -155,7 +155,8 @@ export const SitemapPage: React.FC<SitemapPageProps> = ({ onNavigate, onOpenCons
     <div className="min-h-screen pt-20">
       <SEOHead
         title="Sitemap & Complete Directory | Paula Ambrosio Interiors"
-        description="Explore the complete page directory of Paula Ambrosio Interiors, including luxury residential services, Miami locations, portfolio case studies, and design journal."
+        description="Explore the complete page directory of Paula Ambrosio Interiors, including premium residential services, Miami locations, portfolio case studies, and design journal."
+        canonicalUrl="https://paulaambrosiointeriors.com/sitemap"
       />
 
       {/* Hero Section */}

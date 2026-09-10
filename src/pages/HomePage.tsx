@@ -43,6 +43,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenConsultati
       <SEOHead
         title="Luxury Interior Designer Miami | Paula Ambrosio Interiors"
         description="Paula Ambrosio Interiors is a Miami luxury interior design studio specializing in high-end residential, turnkey interiors, renovations, custom homes and hospitality projects."
+        canonicalUrl="https://paulaambrosiointeriors.com"
       />
 
       {/* Hero Section */}
@@ -139,9 +140,9 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenConsultati
                   className="w-full aspect-[4/3] object-cover border border-[#E2DBD1] shadow-xl"
                 />
                 <div className="absolute -bottom-6 -left-6 bg-[#171513] text-white p-6 max-w-xs border border-[#2D2A26] shadow-xl hidden sm:block">
-                  <p className="font-serif-luxury text-2xl text-[#C9A986] font-normal">19+ Years · 2,300+ Projects</p>
+                  <p className="font-serif-luxury text-2xl text-[#C9A986] font-normal">Miami-Based Studio</p>
                   <p className="text-xs text-[#B8B1A8] mt-1 font-light">
-                    Founded by Amanda & Paula Ambrósio, transforming spaces across Miami, the US, and internationally.
+                    Founded by Amanda & Paula Ambrósio, with projects across Miami, the US, and internationally.
                   </p>
                 </div>
               </div>
@@ -230,7 +231,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenConsultati
                   Luxury Residential
                 </h3>
                 <p className="text-xs sm:text-sm text-[#615B54] leading-relaxed font-light">
-                  Signature residences crafted for distinguished homeowners seeking a truly bespoke living experience. We design waterfront estates, penthouse condominiums, and luxury homes with curated finishes, custom millwork, and timeless interiors that reflect your personal vision.
+                  Signature residences designed for distinguished homeowners. We create waterfront estates, penthouse condominiums, and luxury homes with custom millwork, natural materials, and interiors shaped around how you live.
                 </p>
               </div>
               <div className="pt-6 mt-6 border-t border-[#EAE4DB]">
@@ -302,13 +303,13 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenConsultati
                 From Raw Concrete to Move-In Perfection
               </h2>
               <p className="text-sm sm:text-base text-[#5C564F] leading-relaxed font-light">
-                Our turnkey process is designed to eliminate every friction point between property acquisition and luxurious living. We take raw developer shells or dated historical floor plans and transform them into seamlessly resolved residences.
+                Our turnkey process eliminates the friction between property acquisition and move-in readiness. We take raw developer shells or dated floor plans and deliver fully resolved interiors.
               </p>
               
               <ul className="space-y-2.5 text-xs text-[#524D47]">
                 <li className="flex items-center gap-2">
                   <Check className="w-4 h-4 text-[#C9A986] shrink-0" />
-                  <span>Custom Italian millwork, acoustic wall panels, and bespoke lighting</span>
+                  <span>Custom Italian millwork, acoustic wall panels, and architectural lighting</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <Check className="w-4 h-4 text-[#C9A986] shrink-0" />
@@ -316,7 +317,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenConsultati
                 </li>
                 <li className="flex items-center gap-2">
                   <Check className="w-4 h-4 text-[#C9A986] shrink-0" />
-                  <span>Curated art collections, fine linens, accessories, and automated scenes</span>
+                  <span>Art advisory, fine linens, accessories, and automated scenes</span>
                 </li>
               </ul>
 
@@ -371,13 +372,13 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenConsultati
               
               <div className="space-y-4 text-sm sm:text-base text-[#5C564F] leading-relaxed font-light">
                 <p className="font-serif-luxury text-xl text-[#1A1816] italic font-normal">
-                  "With nearly two decades of interior design mastery and over 2,300 completed projects worldwide, we transform properties into move-in-ready sanctuaries of timeless luxury."
+                  "From concept to final styling, every layer is considered. Your home should feel unmistakably yours."
                 </p>
                 <p>
-                  Co-founded by sisters Amanda and Paula Ambrósio, our Miami studio brings together a 15-person multidisciplinary team of interior designers, 3D artists, FF&E specialists, and project managers. We specialize in high-end residential, turnkey transformations for international homeowners, and strategic consulting for developers.
+                  Co-founded by sisters Amanda and Paula Ambrósio, our Miami studio brings together a multidisciplinary team of interior designers, 3D artists, FF&E specialists, and project managers. We specialize in high-end residential design, turnkey transformations for international homeowners, and strategic consulting for developers.
                 </p>
                 <p>
-                  From Miami, New York, and California to Brazil, Portugal, Mexico, and Panama, we deliver bespoke, turnkey execution with unparalleled aesthetic rigor and personal care.
+                  From Miami, New York, and California to Brazil, Portugal, Mexico, and Panama, we manage every detail from concept through final installation.
                 </p>
               </div>
 
@@ -403,8 +404,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenConsultati
 
       {/* Disciplined Process Section */}
       <ProcessTimeline
-        title="Our Six-Stage Design Journey"
-        subtitle="Discovery → Concept & Design → Design Development → Procurement & Coordination → Installation → Reveal."
+        title="Our Six-Stage Design Process"
+        subtitle="Discovery, Concept & Design, Design Development, Procurement & Coordination, Installation, Reveal."
         steps={homeProcess}
         onStartProject={() => onOpenConsultation()}
       />

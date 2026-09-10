@@ -15,6 +15,7 @@ export const LocationsHubPage: React.FC<LocationsHubPageProps> = ({ onNavigate, 
       <SEOHead
         title="Luxury Interior Design South Florida | Paula Ambrosio Interiors"
         description="Explore Paula Ambrosio Interiors' luxury interior design services across Miami and selected South Florida communities."
+        canonicalUrl="https://paulaambrosiointeriors.com/locations"
       />
 
       {/* Hero Section */}

@@ -37,6 +37,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
       <SEOHead
         title="Contact & Private Consultation | Paula Ambrosio Interiors"
         description="Schedule a private interior design consultation with Paula Ambrosio Interiors. Miami-based luxury design studio serving South Florida and international clients."
+        canonicalUrl="https://paulaambrosiointeriors.com/contact"
       />
 
       {/* Hero Section */}

@@ -40,7 +40,7 @@ export const SunnyIslesPage: React.FC<SunnyIslesPageProps> = ({ onNavigate, onOp
     badge: string;
   } | null>(null);
 
-  // Curated photographic assets as requested:
+  // Selected photographic assets as requested:
   // - 1 Hero photo relevant to Sunny Isles Beach
   // - 3-5 Project images (actual Sunny Isles Beach work at The Regalia Penthouse)
   // - 1 Material / detail image
@@ -50,7 +50,7 @@ export const SunnyIslesPage: React.FC<SunnyIslesPageProps> = ({ onNavigate, onOp
       title: 'The Regalia Grand Living Salon',
       subtitle: 'The Regalia Penthouse • Sunny Isles Beach',
       category: 'Turnkey Living Room',
-      description: 'Curved bespoke seating oriented toward 360-degree Atlantic Ocean horizons with custom acoustic wool rugs.',
+      description: 'Curved custom seating oriented toward 360-degree Atlantic Ocean horizons with custom acoustic wool rugs.',
       url: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1600&q=85'
     },
     {
@@ -109,20 +109,20 @@ export const SunnyIslesPage: React.FC<SunnyIslesPageProps> = ({ onNavigate, onOp
     },
     {
       title: 'Turnkey Interior Design (Move-in Ready)',
-      description: 'Our signature solution for second-home owners and international clients: complete furnishing down to custom linens, tableware, home automation, and curated art.',
+      description: 'Our signature solution for second-home owners and international clients: complete furnishing down to custom linens, tableware, home automation, and selected art.',
       linkText: 'Explore Turnkey Living',
       linkTarget: '/turnkey-interior-design-miami'
     },
     {
       title: 'Custom Millwork & Architectural Ceilings',
       description: 'Tailored Italian joinery, fluted walnut room dividers, concealed bar cabinets, and recessed LED ceiling coves designed to fit high-rise freight elevator specifications.',
-      linkText: 'Discover Bespoke Joinery',
+      linkText: 'Discover Custom Joinery',
       linkTarget: '/portfolio/the-regalia-penthouse'
     },
     {
       title: 'Furniture, Art & Final Styling',
-      description: 'Curating low-profile European furniture silhouettes that preserve 360-degree ocean views, paired with bespoke acoustic textiles, fine rugs, and collectible contemporary art.',
-      linkText: 'View Curated Portfolios',
+      description: 'Selecting low-profile European furniture silhouettes that preserve 360-degree ocean views, paired with custom acoustic textiles, fine rugs, and collectible contemporary art.',
+      linkText: 'View Selected Portfolios',
       linkTarget: '/portfolio'
     }
   ];
@@ -131,8 +131,10 @@ export const SunnyIslesPage: React.FC<SunnyIslesPageProps> = ({ onNavigate, onOp
     <div className="min-h-screen pt-20">
       <SEOHead
         title="Luxury Interior Designer Sunny Isles Beach | Paula Ambrosio Interiors"
-        description="Paula Ambrosio Interiors provides luxury residential and turnkey interior design for discerning clients in Sunny Isles Beach and South Florida."
+        description="Paula Ambrosio Interiors designs luxury residences in Sunny Isles Beach, from oceanfront penthouses at The Regalia and Armani/Casa to turnkey condominiums along Collins Avenue."
+        canonicalUrl="https://paulaambrosiointeriors.com/interior-designer-sunny-isles"
         faqs={location.faqs}
+        breadcrumbItems={[{ name: "Locations", url: "https://paulaambrosiointeriors.com/locations" }, { name: "Sunny Isles Beach", url: "https://paulaambrosiointeriors.com/interior-designer-sunny-isles" }]}
       />
 
       {/* Breadcrumb Navigation */}
@@ -226,7 +228,7 @@ export const SunnyIslesPage: React.FC<SunnyIslesPageProps> = ({ onNavigate, onOp
                   Sunny Isles Beach represents one of South Florida’s most prestigious corridors of vertical luxury architecture, defined by internationally recognized oceanfront towers including The Regalia, Armani/Casa Residences, Porsche Design Tower, and The Estates at Acqualina. Residing at this altitude presents singular spatial and environmental conditions: dramatic 360-degree Atlantic Ocean and Intracoastal panoramas, soaring ceiling volumes, expansive floor-to-ceiling glass curtain walls, and intense high-altitude daylight glare. These open-concept floor plates demand nuanced acoustic buffering and thoughtful spatial delineation to feel intimate and welcoming.
                 </p>
                 <p>
-                  Our studio approaches Sunny Isles residences through a lens of tactile serenity and rigorous functional choreography. Rather than competing with the monumental ocean horizon, our interior designers frame it using warm, organic textures—honed travertine, rift-cut European oak millwork, neutral Belgian linens, and low-profile European furnishings that maintain unobstructed sightlines. Because many of our Sunny Isles clients reside internationally, our{' '}
+                  Our studio approaches Sunny Isles residences through a lens of tactile serenity and rigorous functional choreography. Rather than competing with the monumental ocean horizon, our interior designers frame it using warm, organic textures: honed travertine, rift-cut European oak millwork, neutral Belgian linens, and low-profile European furnishings that maintain unobstructed sightlines. Because many of our Sunny Isles clients reside internationally, our{' '}
                   <a
                     href="/turnkey-interior-design-miami"
                     onClick={(e) => { e.preventDefault(); onNavigate('/turnkey-interior-design-miami'); }}
@@ -234,7 +236,7 @@ export const SunnyIslesPage: React.FC<SunnyIslesPageProps> = ({ onNavigate, onOp
                   >
                     turnkey methodology
                   </a>{' '}
-                  removes the friction of remote ownership. We manage every layer—from condominium HOA architectural compliance, acoustic soundproofing underlayments, and elevator freight logistics to custom millwork fabrication, curated contemporary art, and white-glove staging—so owners step into a fully realized, move-in-ready coastal sanctuary.
+                   removes the friction of remote ownership. We manage every layer, from condominium HOA architectural compliance, acoustic soundproofing underlayments, and elevator freight logistics to custom millwork fabrication, selected contemporary art, and white-glove staging, so owners step into a fully realized, move-in-ready coastal sanctuary.
                 </p>
               </div>
 
@@ -344,7 +346,7 @@ export const SunnyIslesPage: React.FC<SunnyIslesPageProps> = ({ onNavigate, onOp
         </div>
       </section>
 
-      {/* Curated Photographic Gallery (Assets from Paula) */}
+      {/* Selected Photographic Gallery (Assets from Paula) */}
       <section className="py-24 bg-[#FAF9F6] border-b border-[#EAE4DB]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
@@ -426,7 +428,7 @@ export const SunnyIslesPage: React.FC<SunnyIslesPageProps> = ({ onNavigate, onOp
               Featured Project: {featuredProject.title}
             </h2>
             <p className="text-sm text-[#6E6861] font-light">
-              {featuredProject.subTitle} — {featuredProject.location}
+              {featuredProject.subTitle}, {featuredProject.location}
             </p>
           </div>
 

@@ -34,7 +34,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenConsultation }
             </div>
 
             <p className="text-sm text-[#A8A199] leading-relaxed max-w-md font-light">
-              Founded by sisters Amanda and Paula Ambrósio, our Miami-based studio brings nearly two decades of mastery and over 2,300 completed projects worldwide, delivering bespoke residential, turnkey second-home, and luxury commercial interiors.
+              Founded by sisters Amanda and Paula Ambrósio, our Miami-based studio specializes in high-end residential, turnkey second-home, and commercial interior design across South Florida and internationally.
             </p>
 
             <div className="pt-2 space-y-2.5 text-xs text-[#C5BEB5]">

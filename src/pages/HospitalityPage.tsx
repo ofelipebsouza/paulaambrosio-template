@@ -60,7 +60,7 @@ export const HospitalityPage: React.FC<HospitalityPageProps> = ({ onNavigate, on
       title: 'Boutique Penthouse Hospitality Suite',
       subtitle: 'Guest Suites & Private Terraces',
       category: 'Hospitality Suites',
-      description: 'Tailored upholstered headboard wall, dim-to-warm architectural lighting, and bespoke minimalist joinery.',
+      description: 'Tailored upholstered headboard wall, dim-to-warm architectural lighting, and custom minimalist joinery.',
       url: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1600&q=85',
       badge: 'Guest Suites'
     },
@@ -89,7 +89,10 @@ export const HospitalityPage: React.FC<HospitalityPageProps> = ({ onNavigate, on
       <SEOHead
         title="Hospitality Interior Design Miami | Paula Ambrosio Interiors"
         description="Hospitality interior design in Miami for hotels, lounges, wellness, beauty and guest-focused commercial environments."
+        canonicalUrl="https://paulaambrosiointeriors.com/hospitality-interior-design-miami"
         faqs={data.faqs}
+        serviceData={{ name: "Hospitality Interior Design Miami", description: "Interior design for boutique hotels, lounges, wellness spaces, and guest-focused commercial environments in Miami.", url: "https://paulaambrosiointeriors.com/hospitality-interior-design-miami" }}
+        breadcrumbItems={[{ name: "Services", url: "https://paulaambrosiointeriors.com/hospitality-interior-design-miami" }]}
       />
 
       {/* Hero Section */}
@@ -118,7 +121,7 @@ export const HospitalityPage: React.FC<HospitalityPageProps> = ({ onNavigate, on
             </h1>
 
             <p className="font-serif-luxury text-lg sm:text-xl text-[#4A4540] font-light max-w-2xl mx-auto leading-relaxed">
-              Memorable environments designed around experience, flow and identity.
+              Memorable environments designed around atmosphere, flow and identity.
             </p>
 
             <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -166,7 +169,7 @@ export const HospitalityPage: React.FC<HospitalityPageProps> = ({ onNavigate, on
               {/* Core Pillars Grid */}
               <div className="grid grid-cols-2 gap-4 pt-2">
                 <div className="p-4 bg-white border border-[#E5DFD7]">
-                  <div className="text-xs font-semibold uppercase tracking-wider text-[#1A1816]">Guest Journey & Flow</div>
+                  <div className="text-xs font-semibold uppercase tracking-wider text-[#1A1816]">Guest Flow & Sequence</div>
                   <p className="text-xs text-[#7A746E] mt-1 font-light">Arrival sequence, acoustic transitions & intuitive circulation</p>
                 </div>
                 <div className="p-4 bg-white border border-[#E5DFD7]">
@@ -233,7 +236,7 @@ export const HospitalityPage: React.FC<HospitalityPageProps> = ({ onNavigate, on
                 <span>Hospitality Visual Portfolio</span>
               </div>
               <h2 className="font-serif-luxury text-3xl sm:text-4xl text-[#1A1816] font-normal">
-                Curated Hospitality & Commercial Archive
+                Hospitality & Commercial Archive
               </h2>
               <p className="text-xs sm:text-sm text-[#736D65] mt-1 font-light">
                 Inspect our hotel, lounge, guest suite, and commercial material craftsmanship.
@@ -320,7 +323,7 @@ export const HospitalityPage: React.FC<HospitalityPageProps> = ({ onNavigate, on
               },
               {
                 title: 'Lounges & Member Clubs',
-                desc: 'Intimate cocktail pavilions, bespoke bar joinery, acoustic privacy, and layered mood lighting.',
+                desc: 'Intimate cocktail pavilions, custom bar joinery, acoustic privacy, and layered mood lighting.',
                 icon: '🍸'
               },
               {
@@ -349,8 +352,8 @@ export const HospitalityPage: React.FC<HospitalityPageProps> = ({ onNavigate, on
 
       {/* Process: Guest Journey to Launch */}
       <ProcessTimeline
-        title="Hospitality Design Journey"
-        subtitle="Brand Narrative & Guest Journey → Public & Private Space Planning → Material & Lighting Engineering → Contract FF&E Procurement → Installation & Launch Styling."
+        title="Hospitality Design Process"
+        subtitle="Brand Narrative & Guest Flow → Public & Private Space Planning → Material & Lighting Engineering → Contract FF&E Procurement → Installation & Launch Styling."
         steps={data.processSteps}
         onStartProject={() => onOpenConsultation('Discuss a Hospitality Project', 'Miami')}
       />
@@ -367,7 +370,7 @@ export const HospitalityPage: React.FC<HospitalityPageProps> = ({ onNavigate, on
                 Featured Hospitality Project
               </h2>
               <p className="text-xs sm:text-sm text-[#736D65] mt-1 font-light">
-                Documented commercial case study highlighting property typology, guest journey, and scope.
+                Documented commercial case study highlighting property typology, guest flow, and scope.
               </p>
             </div>
             <button
@@ -417,7 +420,7 @@ export const HospitalityPage: React.FC<HospitalityPageProps> = ({ onNavigate, on
                   Hospitality Design Perspectives
                 </h2>
                 <p className="text-xs sm:text-sm text-[#736D65] mt-1 font-light">
-                  Architectural insights on sensory guest experience, durability engineering, and spatial storytelling in Miami.
+                  Architectural insights on sensory guest engagement, durability engineering, and spatial storytelling in Miami.
                 </p>
               </div>
               <button
@@ -480,7 +483,7 @@ export const HospitalityPage: React.FC<HospitalityPageProps> = ({ onNavigate, on
             Hospitality Interior Design in Miami
           </h2>
           <p className="text-sm sm:text-base text-[#B8B1A8] max-w-xl mx-auto font-light">
-            Memorable environments designed around experience, flow and identity for boutique hotels, lounges, and wellness sanctuaries.
+            Memorable environments designed around atmosphere, flow and identity for boutique hotels, lounges, and wellness sanctuaries.
           </p>
           <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
             <button

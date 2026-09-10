@@ -44,7 +44,7 @@ export const ResidentialPage: React.FC<ResidentialPageProps> = ({ onNavigate, on
     description: string;
   } | null>(null);
 
-  // Curated 6 flagship residential images as specified:
+  // Selected 6 flagship residential images as specified:
   // - 1 waterfront residence
   // - 1 condominium/penthouse
   // - 1 custom home
@@ -56,7 +56,7 @@ export const ResidentialPage: React.FC<ResidentialPageProps> = ({ onNavigate, on
       title: 'Waterfront Living Salon & Biscayne Bay Vistas',
       subtitle: 'Star Island • Miami Beach',
       category: 'Waterfront Residence',
-      description: 'Expansive glass walls, custom low-slung Italian seating, and seamless indoor-outdoor connection to the water.',
+      description: 'Expansive glass walls, custom low-slung Italian seating, and fluid indoor-outdoor connection to the water.',
       url: '/assets/2Ssjz627D6EoynArvuU4h86sCc.avif',
       badge: 'Waterfront Residence'
     },
@@ -74,7 +74,7 @@ export const ResidentialPage: React.FC<ResidentialPageProps> = ({ onNavigate, on
       title: 'Monolithic Great Room with Helical Staircase',
       subtitle: 'Coral Gables / Pinecrest • Miami',
       category: 'Custom Ground-Up Home',
-      description: 'Double-height architectural volume, bespoke curved staircase, and floor-to-ceiling textured travertine.',
+      description: 'Double-height architectural volume, custom curved staircase, and floor-to-ceiling textured travertine.',
       url: '/assets/cRTC5lm1QD9HiCvnd7TYPrsOuY.avif',
       badge: 'Custom Home'
     },
@@ -90,7 +90,7 @@ export const ResidentialPage: React.FC<ResidentialPageProps> = ({ onNavigate, on
     {
       type: 'Detail & Material Shot 02',
       title: 'Honed Roman Travertine Primary Spa Suite',
-      subtitle: 'Natural Stone & Bespoke Vanity Craft',
+      subtitle: 'Natural Stone & Custom Vanity Craft',
       category: 'Detail & Material',
       description: 'Sensory bathing sanctuary finished in hand-selected slab travertine, artisan patinated brass, and indirect lighting.',
       url: '/assets/uJDafV2OYdKY0ezWt4AhW3Dpj0.avif',
@@ -112,7 +112,10 @@ export const ResidentialPage: React.FC<ResidentialPageProps> = ({ onNavigate, on
       <SEOHead
         title="Luxury Residential Interior Design Miami | Paula Ambrosio Interiors"
         description="High-end residential interior design in Miami for luxury homes, waterfront residences, condominiums, penthouses, renovations and new construction."
+        canonicalUrl="https://paulaambrosiointeriors.com/luxury-residential-interior-design-miami"
         faqs={data.faqs}
+        serviceData={{ name: "Luxury Residential Interior Design Miami", description: "High-end residential interior design for luxury homes, waterfront residences, condominiums, penthouses, and new construction in Miami.", url: "https://paulaambrosiointeriors.com/luxury-residential-interior-design-miami" }}
+        breadcrumbItems={[{ name: "Services", url: "https://paulaambrosiointeriors.com/luxury-residential-interior-design-miami" }]}
       />
 
       {/* Hero Section */}
@@ -183,13 +186,13 @@ export const ResidentialPage: React.FC<ResidentialPageProps> = ({ onNavigate, on
                 Shaping South Florida's Most Distinctive Living Environments
               </h2>
               <p className="text-sm sm:text-base text-[#5C564F] leading-relaxed font-light">
-                Paula Ambrosio Interiors connects architectural rigor with warm, tactile elegance. Whether designing an iconic Star Island waterfront estate, a skyline penthouse in Brickell, a ground-up residence in Coral Gables, or an extensive whole-home renovation, we curate spaces that embody understated sophistication.
+                Paula Ambrosio Interiors connects architectural rigor with warm, tactile elegance. Whether designing an iconic Star Island waterfront estate, a skyline penthouse in Brickell, a ground-up residence in Coral Gables, or an extensive whole-home renovation, we compose spaces that embody understated sophistication.
               </p>
               
               <div className="p-6 bg-white border border-[#E5DFD7] space-y-2">
                 <div className="text-xs uppercase tracking-widest text-[#1A1816] font-semibold flex items-center gap-2">
                   <Compass className="w-4 h-4 text-[#C9A986]" />
-                  <span>Bespoke Rather Than Formulaic</span>
+                  <span>Custom Rather Than Formulaic</span>
                 </div>
                 <p className="text-xs sm:text-sm text-[#615B54] font-light leading-relaxed">
                   We reject repetitive showroom packages. Every ceiling drop, wall paneling joint, custom upholstery profile, and stone slab is custom-composed for your specific floor plan and light orientation.
@@ -207,7 +210,7 @@ export const ResidentialPage: React.FC<ResidentialPageProps> = ({ onNavigate, on
               <div className="grid grid-cols-2 gap-4 pt-2">
                 <div className="p-4 bg-white border border-[#E5DFD7]">
                   <div className="text-xs font-semibold uppercase tracking-wider text-[#1A1816]">Architecture & Furniture Harmony</div>
-                  <p className="text-xs text-[#7A746E] mt-1 font-light">Seamless transition from structural envelope to curated FF&E</p>
+                  <p className="text-xs text-[#7A746E] mt-1 font-light">Fluid transition from structural envelope to selected FF&E</p>
                 </div>
                 <div className="p-4 bg-white border border-[#E5DFD7]">
                   <div className="text-xs font-semibold uppercase tracking-wider text-[#1A1816]">Authentic Materiality</div>
@@ -260,7 +263,7 @@ export const ResidentialPage: React.FC<ResidentialPageProps> = ({ onNavigate, on
                 Residential Architecture, Light & Materiality
               </h2>
               <p className="text-xs sm:text-sm text-[#736D65] mt-1 font-light">
-                Explore our signature residences across Miami—from waterfront salons and penthouses to custom homes and artisan millwork details.
+                Explore our signature residences across Miami, from waterfront salons and penthouses to custom homes and artisan millwork details.
               </p>
             </div>
             <button
@@ -391,7 +394,7 @@ export const ResidentialPage: React.FC<ResidentialPageProps> = ({ onNavigate, on
               <div className="text-xs uppercase tracking-widest text-[#C9A986] font-semibold">03 • Cohesive Integration</div>
               <h3 className="font-serif-luxury text-xl text-[#1A1816]">Architecture & Furniture Synergy</h3>
               <p className="text-xs sm:text-sm text-[#68625B] leading-relaxed font-light">
-                We conceive custom millwork, statement lighting, and bespoke furniture as natural extensions of the building’s architectural bones rather than disconnected decorative layers.
+                We conceive custom millwork, statement lighting, and made-to-order furniture as natural extensions of the building's architectural bones rather than disconnected decorative layers.
               </p>
             </div>
           </div>
@@ -460,7 +463,7 @@ export const ResidentialPage: React.FC<ResidentialPageProps> = ({ onNavigate, on
               Residential Authority
             </div>
             <h2 className="font-serif-luxury text-3xl sm:text-4xl text-[#1A1816] font-normal">
-              Property Typologies We Transform
+              Property Typologies We Redesign
             </h2>
             <p className="text-xs sm:text-sm text-[#736D65] mt-1 font-light">
               Tailored architectural interior design across South Florida's premier residential sectors.
@@ -489,7 +492,7 @@ export const ResidentialPage: React.FC<ResidentialPageProps> = ({ onNavigate, on
       <section className="py-20 bg-[#171513] text-white text-center">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
           <h2 className="font-serif-luxury text-3xl sm:text-5xl font-normal text-white">
-            Luxury Residential Interior Design in Miami
+            Refined Residential Interior Design in Miami
           </h2>
           <p className="text-sm sm:text-base text-[#B8B1A8] max-w-xl mx-auto font-light">
             From waterfront estates and penthouses to new construction and whole-home renovations.

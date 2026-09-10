@@ -38,7 +38,7 @@ export const BocaRatonPage: React.FC<BocaRatonPageProps> = ({ onNavigate, onOpen
     badge: string;
   } | null>(null);
 
-  // Curated photographic assets as requested:
+  // Selected photographic assets as requested:
   // • 1 hero photo relevant to Boca Raton
   // • 3-5 project images; preferably actual Boca Raton work
   // • 1 material/detail image
@@ -48,7 +48,7 @@ export const BocaRatonPage: React.FC<BocaRatonPageProps> = ({ onNavigate, onOpen
       title: 'Soaring Great Room with Architectural Beams',
       subtitle: 'Royal Palm Estate • Royal Palm Yacht & Country Club',
       category: 'Grand Salon & Entertaining',
-      description: '24-foot double-height salon balanced with structural white oak ceiling beams, perimeter LED reveals, and bespoke oversized Italian modular seating.',
+      description: '24-foot double-height salon balanced with structural white oak ceiling beams, perimeter LED reveals, and custom oversized Italian modular seating.',
       url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=85'
     },
     {
@@ -61,7 +61,7 @@ export const BocaRatonPage: React.FC<BocaRatonPageProps> = ({ onNavigate, onOpen
     },
     {
       badge: 'Chef Kitchen & Wine Salon',
-      title: 'Bespoke Chef Kitchen & Wine Cellar',
+      title: 'Custom Chef Kitchen & Wine Cellar',
       subtitle: 'Royal Palm Estate • Boca Raton, FL',
       category: 'Culinary & Wine Tasting',
       description: 'Double waterfall marble islands paired with custom rift-cut walnut joinery and a climate-controlled glass wine presentation cellar.',
@@ -107,20 +107,20 @@ export const BocaRatonPage: React.FC<BocaRatonPageProps> = ({ onNavigate, onOpen
     },
     {
       title: 'Turnkey Interior Design (Move-in Ready)',
-      description: 'Complete white-glove furnishing, luxury Italian bed linens, designer tableware, curated art, and technology commissioning for seasonal and second-home owners.',
+      description: 'Complete white-glove furnishing, luxury Italian bed linens, designer tableware, selected art, and technology commissioning for seasonal and second-home owners.',
       linkText: 'Explore Turnkey Living',
       linkTarget: '/turnkey-interior-design-miami'
     },
     {
       title: 'Custom Millwork & Architectural Joinery',
-      description: 'Double-height library bookcases, fluted wall cladding, architectural ceiling beams, bespoke master dressing suites, and climate-controlled wine tasting rooms.',
+      description: 'Double-height library bookcases, fluted wall cladding, architectural ceiling beams, custom master dressing suites, and climate-controlled wine tasting rooms.',
       linkText: 'Discover Custom Joinery',
       linkTarget: '/portfolio/royal-palm-estate'
     },
     {
       title: 'Furniture, Art & Final Styling',
-      description: 'Large-scale bespoke furnishings crafted to balance estate proportions, curated contemporary art advisory, luxury outdoor loggia seating, and tactile accessories.',
-      linkText: 'View Curated Portfolios',
+      description: 'Large-scale custom furnishings crafted to balance estate proportions, selected contemporary art advisory, luxury outdoor loggia seating, and tactile accessories.',
+      linkText: 'View Selected Portfolios',
       linkTarget: '/portfolio'
     }
   ];
@@ -129,8 +129,10 @@ export const BocaRatonPage: React.FC<BocaRatonPageProps> = ({ onNavigate, onOpen
     <div className="min-h-screen pt-20">
       <SEOHead
         title="Luxury Interior Designer Boca Raton | Paula Ambrosio Interiors"
-        description="Paula Ambrosio Interiors provides luxury residential and turnkey interior design for discerning clients in Boca Raton and South Florida."
+        description="Paula Ambrosio Interiors provides luxury residential and turnkey interior design for Boca Raton's finest estates, from Royal Palm Yacht & Country Club to Boca Bridges."
+        canonicalUrl="https://paulaambrosiointeriors.com/interior-designer-boca-raton"
         faqs={location.faqs}
+        breadcrumbItems={[{ name: "Locations", url: "https://paulaambrosiointeriors.com/locations" }, { name: "Boca Raton", url: "https://paulaambrosiointeriors.com/interior-designer-boca-raton" }]}
       />
 
       {/* Breadcrumb Navigation */}
@@ -221,10 +223,10 @@ export const BocaRatonPage: React.FC<BocaRatonPageProps> = ({ onNavigate, onOpen
               {/* 150-250 Unique Words about Boca Raton residential context */}
               <div className="space-y-4 text-sm sm:text-base text-[#5C564F] leading-relaxed font-light">
                 <p>
-                  Boca Raton is defined by its expansive private grounds, grand architectural proportions, and world-renowned gated enclaves—from the deepwater estates of Royal Palm Yacht & Country Club and The Sanctuary to prestigious country-club communities like St. Andrews, Woodfield, and the modern architectural enclaves of Boca Bridges and Lotus. Whether reimagining a Mediterranean-revival estate in historic Old Floresta or designing the complete interior architecture for a newly constructed contemporary waterfront compound along the Intracoastal Waterway, our studio brings clarity, human scale, and understated warmth to expansive square footage.
+                  Boca Raton is defined by its expansive private grounds, grand architectural proportions, and world-renowned gated enclaves, from the deepwater estates of Royal Palm Yacht & Country Club and The Sanctuary to prestigious country-club communities like St. Andrews, Woodfield, and the modern architectural enclaves of Boca Bridges and Lotus. Whether reimagining a Mediterranean-revival estate in historic Old Floresta or designing the complete interior architecture for a newly constructed contemporary waterfront compound along the Intracoastal Waterway, our studio brings clarity, human scale, and understated warmth to expansive square footage.
                 </p>
                 <p>
-                  Large-scale Boca Raton residences present unique spatial dynamics: soaring double-height ceilings, cavernous great rooms, and expansive loggias that require meticulous acoustic, lighting, and volumetric proportioning. Rather than allowing vast rooms to feel cold or cavernous, we layer architectural timber beamed ceilings, hand-finished lime plaster walls, honed natural limestones, and bespoke Italian millwork with integrated warm ambient LED reveals. We engineer cohesive transitions between lavish interior entertaining salons and outdoor living loggias, complete with summer kitchens and cabanas, while orchestrating custom wine tasting rooms, spa-grade wellness suites, and white-glove{' '}
+                  Large-scale Boca Raton residences present unique spatial dynamics: soaring double-height ceilings, cavernous great rooms, and expansive loggias that require meticulous acoustic, lighting, and volumetric proportioning. Rather than allowing vast rooms to feel cold or cavernous, we layer architectural timber beamed ceilings, hand-finished lime plaster walls, honed natural limestones, and custom Italian millwork with integrated warm ambient LED reveals. We engineer cohesive transitions between lavish interior entertaining salons and outdoor living loggias, complete with summer kitchens and cabanas, while orchestrating custom wine tasting rooms, spa-grade wellness suites, and white-glove{' '}
                   <a
                     href="/turnkey-interior-design-miami"
                     onClick={(e) => { e.preventDefault(); onNavigate('/turnkey-interior-design-miami'); }}
@@ -342,7 +344,7 @@ export const BocaRatonPage: React.FC<BocaRatonPageProps> = ({ onNavigate, onOpen
         </div>
       </section>
 
-      {/* Curated Photographic Gallery (Assets from Paula) */}
+      {/* Selected Photographic Gallery (Assets from Paula) */}
       <section className="py-24 bg-[#FAF9F6] border-b border-[#EAE4DB]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
@@ -355,7 +357,7 @@ export const BocaRatonPage: React.FC<BocaRatonPageProps> = ({ onNavigate, onOpen
                 Boca Raton Photography & Detail Archive
               </h2>
               <p className="text-xs sm:text-sm text-[#736D65] mt-1 font-light">
-                Explore double-height great rooms, covered waterfront loggias, bespoke chef kitchens, and noble stone details from Royal Palm Estate.
+                Explore double-height great rooms, covered waterfront loggias, custom chef kitchens, and noble stone details from Royal Palm Estate.
               </p>
             </div>
             <button
@@ -424,7 +426,7 @@ export const BocaRatonPage: React.FC<BocaRatonPageProps> = ({ onNavigate, onOpen
               Featured Project: {featuredProject.title}
             </h2>
             <p className="text-sm text-[#6E6861] font-light">
-              {featuredProject.subTitle} — {featuredProject.location}
+              {featuredProject.subTitle}, {featuredProject.location}
             </p>
           </div>
 
@@ -558,7 +560,7 @@ export const BocaRatonPage: React.FC<BocaRatonPageProps> = ({ onNavigate, onOpen
       {/* Frequently Asked Questions */}
       <FAQAccordion
         title="Boca Raton Interior Design FAQ"
-        subtitle="Essential considerations for owners undertaking estate new construction, grand renovations, or country-club residence transformations in Boca Raton."
+        subtitle="Essential considerations for owners undertaking estate new construction, grand renovations, or country-club residence redesigns in Boca Raton."
         faqs={location.faqs}
       />
 

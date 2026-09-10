@@ -38,7 +38,7 @@ export const PalmBeachPage: React.FC<PalmBeachPageProps> = ({ onNavigate, onOpen
     badge: string;
   } | null>(null);
 
-  // Curated photographic assets as requested:
+  // Selected photographic assets as requested:
   // • 1 hero photo relevant to Palm Beach
   // • 3-5 project images; preferably actual Palm Beach work
   // • 1 material/detail image
@@ -48,11 +48,11 @@ export const PalmBeachPage: React.FC<PalmBeachPageProps> = ({ onNavigate, onOpen
       title: 'Grand Drawing Room with Coffered Ceilings',
       subtitle: 'Ocean Palm Villa • North County Road, Palm Beach',
       category: 'Estate Salon & Living',
-      description: 'Classical architectural coffered ceilings paired with restored French limestone flags, bespoke linen upholstery, and tailored contemporary comfort.',
+      description: 'Classical architectural coffered ceilings paired with restored French limestone flags, custom linen upholstery, and tailored contemporary comfort.',
       url: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1600&q=85'
     },
     {
-      badge: 'Bespoke Island Kitchen',
+      badge: 'Custom Island Kitchen',
       title: 'Hand-Crafted Painted Cabinetry & Brass Grilles',
       subtitle: 'Ocean Palm Villa • Palm Beach, FL',
       category: 'Culinary Architecture',
@@ -113,14 +113,14 @@ export const PalmBeachPage: React.FC<PalmBeachPageProps> = ({ onNavigate, onOpen
     },
     {
       title: 'Custom Millwork & Architectural Joinery',
-      description: 'Restored pecky cypress ceilings, lacquered chef cabinetry, brass-grille credenzas, library bookcases, and bespoke dressing rooms fabricated by master artisans.',
+      description: 'Restored pecky cypress ceilings, lacquered chef cabinetry, brass-grille credenzas, library bookcases, and custom dressing rooms fabricated by master artisans.',
       linkText: 'Discover Custom Joinery',
       linkTarget: '/portfolio/ocean-palm-villa'
     },
     {
       title: 'Furniture, Art & Final Styling',
-      description: 'A curated dialogue pairing European antiques with tailored contemporary upholstery, bespoke de Gournay wallcoverings, and museum-grade art illumination.',
-      linkText: 'View Curated Portfolios',
+      description: 'A considered dialogue pairing European antiques with tailored contemporary upholstery, custom de Gournay wallcoverings, and museum-grade art illumination.',
+      linkText: 'View Selected Portfolios',
       linkTarget: '/portfolio'
     }
   ];
@@ -129,8 +129,10 @@ export const PalmBeachPage: React.FC<PalmBeachPageProps> = ({ onNavigate, onOpen
     <div className="min-h-screen pt-20">
       <SEOHead
         title="Luxury Interior Designer Palm Beach | Paula Ambrosio Interiors"
-        description="Paula Ambrosio Interiors provides luxury residential and turnkey interior design for discerning clients in Palm Beach and South Florida."
+        description="Paula Ambrosio Interiors designs refined interiors for Palm Beach's historic estates and waterfront properties, blending classical architecture with contemporary comfort."
+        canonicalUrl="https://paulaambrosiointeriors.com/interior-designer-palm-beach"
         faqs={location.faqs}
+        breadcrumbItems={[{ name: "Locations", url: "https://paulaambrosiointeriors.com/locations" }, { name: "Palm Beach", url: "https://paulaambrosiointeriors.com/interior-designer-palm-beach" }]}
       />
 
       {/* Breadcrumb Navigation */}
@@ -224,7 +226,7 @@ export const PalmBeachPage: React.FC<PalmBeachPageProps> = ({ onNavigate, onOpen
                   Palm Beach stands as an iconic bastion of American sophistication, architectural heritage, and refined island living. From historic Mizner-era Mediterranean revival courtyard villas and classical Georgian-inspired manors along North County Road to mid-century lakefront estates bordering the Lake Trail and oceanfront sanctuaries on South Ocean Boulevard, interior design in Palm Beach demands profound historical reverence paired with modern livability. The residential landscape here is uniquely discerning, catering to multi-generational American dynasties, prominent collectors, and international seasonal residents who value enduring elegance, pedigree, and craftsmanship over transient trends.
                 </p>
                 <p>
-                  Our studio approaches Palm Beach properties by honoring their authentic classical proportions—meticulously restoring reclaimed French limestone flags, handcrafted plaster cornices, and pecky cypress ceilings—while introducing airy contemporary volumes and whisper-quiet infrastructure. We eliminate dark, segmented corridors in favor of sun-drenched flow-through galleries that connect grand formal reception rooms with intimate private courtyards, loggias, and shaded poolside loggias. Through full-service interior architecture and{' '}
+                  Our studio approaches Palm Beach properties by honoring their authentic classical proportions, meticulously restoring reclaimed French limestone flags, handcrafted plaster cornices, and pecky cypress ceilings, while introducing airy contemporary volumes and whisper-quiet infrastructure. We eliminate dark, segmented corridors in favor of sun-drenched flow-through galleries that connect grand formal reception rooms with intimate private courtyards, loggias, and shaded poolside loggias. Through full-service interior architecture and{' '}
                   <a
                     href="/turnkey-interior-design-miami"
                     onClick={(e) => { e.preventDefault(); onNavigate('/turnkey-interior-design-miami'); }}
@@ -232,7 +234,7 @@ export const PalmBeachPage: React.FC<PalmBeachPageProps> = ({ onNavigate, onOpen
                   >
                     turnkey execution
                   </a>
-                  , we integrate bespoke European millwork, museum-grade art illumination, tailored Pierre Frey and de Gournay textiles, and discreet smart-home technology, crafting timeless island residences that welcome winter seasons with effortless poise.
+                  , we integrate custom European millwork, museum-grade art illumination, tailored Pierre Frey and de Gournay textiles, and discreet smart-home technology, crafting enduring island residences that welcome winter seasons with effortless poise.
                 </p>
               </div>
 
@@ -264,7 +266,7 @@ export const PalmBeachPage: React.FC<PalmBeachPageProps> = ({ onNavigate, onOpen
               <div className="relative">
                 <img
                   src="https://images.unsplash.com/photo-1600607687644-c7171b42498b?auto=format&fit=crop&w=1200&q=85"
-                  alt="Palm Beach estate bespoke painted chef kitchen with French limestone floors"
+                  alt="Palm Beach estate custom painted chef kitchen with French limestone floors"
                   className="w-full aspect-[4/3] object-cover border border-[#E2DBD1] shadow-lg"
                 />
                 <div className="absolute -bottom-4 -right-4 bg-white p-4 border border-[#E2DBD1] shadow-md hidden sm:block max-w-xs">
@@ -310,7 +312,7 @@ export const PalmBeachPage: React.FC<PalmBeachPageProps> = ({ onNavigate, onOpen
               Services for Palm Beach Estates & Island Residences
             </h2>
             <p className="text-xs sm:text-sm text-[#736D65] font-light max-w-2xl mx-auto">
-              Our multidisciplinary studio provides comprehensive interior architecture, historic estate restoration, custom millwork, curated decor, and turnkey seasonal handover.
+              Our multidisciplinary studio provides comprehensive interior architecture, historic estate restoration, custom millwork, selected decor, and turnkey seasonal handover.
             </p>
           </div>
 
@@ -342,7 +344,7 @@ export const PalmBeachPage: React.FC<PalmBeachPageProps> = ({ onNavigate, onOpen
         </div>
       </section>
 
-      {/* Curated Photographic Gallery (Assets from Paula) */}
+      {/* Selected Photographic Gallery (Assets from Paula) */}
       <section className="py-24 bg-[#FAF9F6] border-b border-[#EAE4DB]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
@@ -355,7 +357,7 @@ export const PalmBeachPage: React.FC<PalmBeachPageProps> = ({ onNavigate, onOpen
                 Palm Beach Photography & Detail Archive
               </h2>
               <p className="text-xs sm:text-sm text-[#736D65] mt-1 font-light">
-                Explore formal drawing rooms, bespoke painted kitchens, Mediterranean morning loggias, and noble limestone details from Ocean Palm Villa.
+                Explore formal drawing rooms, custom painted kitchens, Mediterranean morning loggias, and noble limestone details from Ocean Palm Villa.
               </p>
             </div>
             <button
@@ -424,7 +426,7 @@ export const PalmBeachPage: React.FC<PalmBeachPageProps> = ({ onNavigate, onOpen
               Featured Project: {featuredProject.title}
             </h2>
             <p className="text-sm text-[#6E6861] font-light">
-              {featuredProject.subTitle} — {featuredProject.location}
+              {featuredProject.subTitle}, {featuredProject.location}
             </p>
           </div>
 

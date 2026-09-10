@@ -14,6 +14,7 @@ export const JournalPage: React.FC<JournalPageProps> = ({ onNavigate, onOpenCons
       <SEOHead
         title="Journal & Design Insights | Paula Ambrosio Interiors"
         description="Explore luxury interior design insights, turnkey living guides, architectural commentary, and material explorations by Paula Ambrosio Interiors."
+        canonicalUrl="https://paulaambrosiointeriors.com/journal"
       />
 
       {/* Hero Section */}

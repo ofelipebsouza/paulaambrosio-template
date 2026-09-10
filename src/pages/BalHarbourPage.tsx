@@ -38,7 +38,7 @@ export const BalHarbourPage: React.FC<BalHarbourPageProps> = ({ onNavigate, onOp
     badge: string;
   } | null>(null);
 
-  // Curated photographic assets as requested:
+  // Selected photographic assets as requested:
   // • 1 hero photo relevant to Bal Harbour
   // • 3-5 project images; preferably actual Bal Harbour work
   // • 1 material/detail image
@@ -53,7 +53,7 @@ export const BalHarbourPage: React.FC<BalHarbourPageProps> = ({ onNavigate, onOp
     },
     {
       badge: 'Art-Centric Dining',
-      title: 'Curated Gallery Dining Salon',
+      title: 'Selected Gallery Dining Salon',
       subtitle: 'Bal Harbour Sanctuary • Bal Harbour, FL',
       category: 'Dining & Art Display',
       description: 'Custom fluted white oak millwork with museum-grade 2700K CRI 95+ directional lighting illuminating a private contemporary canvas.',
@@ -89,7 +89,7 @@ export const BalHarbourPage: React.FC<BalHarbourPageProps> = ({ onNavigate, onOp
   const applicableServices = [
     {
       title: 'Full-Service Interior Design',
-      description: 'Comprehensive interior architecture, spatial reconfiguration, museum-calibrated lighting design, and bespoke furniture curation for luxury Bal Harbour residences.',
+      description: 'Comprehensive interior architecture, spatial reconfiguration, museum-calibrated lighting design, and custom furniture selection for luxury Bal Harbour residences.',
       linkText: 'Explore Residential Scope',
       linkTarget: '/luxury-residential-interior-design-miami'
     },
@@ -107,20 +107,20 @@ export const BalHarbourPage: React.FC<BalHarbourPageProps> = ({ onNavigate, onOp
     },
     {
       title: 'Turnkey Interior Design (Move-in Ready)',
-      description: 'Complete white-glove furnishing, motorized solar shading, Italian bed linens, designer tableware, curated art, and styling for international and second-home owners.',
+      description: 'Complete white-glove furnishing, motorized solar shading, Italian bed linens, designer tableware, selected art, and styling for international and second-home owners.',
       linkText: 'Explore Turnkey Living',
       linkTarget: '/turnkey-interior-design-miami'
     },
     {
       title: 'Custom Millwork & Architectural Joinery',
-      description: 'Bespoke Italian joinery, fluted room dividers, concealed bar credenzas, library paneling, and acoustic wall cladding fabricated with shadowline bronze accents.',
+      description: 'Custom Italian joinery, fluted room dividers, concealed bar credenzas, library paneling, and acoustic wall cladding fabricated with shadowline bronze accents.',
       linkText: 'Discover Custom Joinery',
       linkTarget: '/portfolio/bal-harbour-sanctuary'
     },
     {
       title: 'Furniture, Art & Final Styling',
-      description: 'Curating rare atelier pieces from Milan and Paris, custom artisan upholstery, blue-chip contemporary art placement, and tactile accessories.',
-      linkText: 'View Curated Portfolios',
+      description: 'Selecting rare atelier pieces from Milan and Paris, custom artisan upholstery, blue-chip contemporary art placement, and tactile accessories.',
+      linkText: 'View Selected Portfolios',
       linkTarget: '/portfolio'
     }
   ];
@@ -129,8 +129,10 @@ export const BalHarbourPage: React.FC<BalHarbourPageProps> = ({ onNavigate, onOp
     <div className="min-h-screen pt-20">
       <SEOHead
         title="Luxury Interior Designer Bal Harbour | Paula Ambrosio Interiors"
-        description="Paula Ambrosio Interiors provides luxury residential and turnkey interior design for discerning clients in Bal Harbour and South Florida."
+        description="Paula Ambrosio Interiors creates refined interiors for Bal Harbour's most exclusive residences, including Oceana Bal Harbour, The St. Regis, and private estates in Bal Harbour Village."
+        canonicalUrl="https://paulaambrosiointeriors.com/interior-designer-bal-harbour"
         faqs={location.faqs}
+        breadcrumbItems={[{ name: "Locations", url: "https://paulaambrosiointeriors.com/locations" }, { name: "Bal Harbour", url: "https://paulaambrosiointeriors.com/interior-designer-bal-harbour" }]}
       />
 
       {/* Breadcrumb Navigation */}
@@ -183,7 +185,7 @@ export const BalHarbourPage: React.FC<BalHarbourPageProps> = ({ onNavigate, onOp
             </p>
 
             <p className="text-sm sm:text-base text-[#B8B1A8] font-light leading-relaxed max-w-xl">
-              From landmark towers like Oceana Bal Harbour and The St. Regis to gated private estates in Bal Harbour Village, Paula Ambrosio Interiors composes whisper-quiet sanctuaries defined by museum-grade illumination, noble organic materiality, and bespoke European craft.
+              From landmark towers like Oceana Bal Harbour and The St. Regis to gated private estates in Bal Harbour Village, Paula Ambrosio Interiors composes whisper-quiet sanctuaries defined by museum-grade illumination, noble organic materiality, and custom European craft.
             </p>
 
             <div className="pt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
@@ -221,7 +223,7 @@ export const BalHarbourPage: React.FC<BalHarbourPageProps> = ({ onNavigate, onOp
               {/* 150-250 Unique Words about Bal Harbour residential context */}
               <div className="space-y-4 text-sm sm:text-base text-[#5C564F] leading-relaxed font-light">
                 <p>
-                  Bal Harbour stands at the global pinnacle of understated residential prestige, distinguished by ultra-exclusive oceanfront towers—such as Oceana Bal Harbour, The St. Regis Bal Harbour Resort & Residences, and Bellini—alongside the secluded, guard-gated estate enclaves of Bal Harbour Village. The architectural context here is defined by extraordinary discretion, expansive ocean-to-bay flow-through residences, and a discerning international clientele whose lifestyle demands museum-level precision and refined living. Unlike louder coastal enclaves, Bal Harbour celebrates "quiet luxury"—a philosophy where elegance is expressed through authentic materiality, bespoke proportions, and serene spatial balance rather than ostentation.
+                  Bal Harbour stands at the global pinnacle of understated residential prestige, distinguished by ultra-exclusive oceanfront towers, such as Oceana Bal Harbour, The St. Regis Bal Harbour Resort & Residences, and Bellini, alongside the secluded, guard-gated estate enclaves of Bal Harbour Village. The architectural context here is defined by extraordinary discretion, expansive ocean-to-bay flow-through residences, and a discerning international clientele whose lifestyle demands museum-level precision and refined living. Unlike louder coastal enclaves, Bal Harbour celebrates "quiet luxury," a philosophy where elegance is expressed through authentic materiality, custom proportions, and serene spatial balance rather than ostentation.
                 </p>
                 <p>
                   Many residents in Bal Harbour are avid collectors of blue-chip contemporary art, haute couture patrons of the Bal Harbour Shops, and seasonal bi-coastal or international homeowners. Our studio approaches Bal Harbour residences with architectural reverence: integrating flush perimeter baseboards, hand-applied Venetian marmorino plasters, honed Navona travertine, and custom 2700K museum-grade CRI 95+ lighting calibrated to protect and celebrate private art collections. Through full-service interior architecture and{' '}
@@ -232,7 +234,7 @@ export const BalHarbourPage: React.FC<BalHarbourPageProps> = ({ onNavigate, onOp
                   >
                     turnkey execution
                   </a>
-                  , we coordinate every detail—from condominium board technical approvals and acoustic decoupling to white-glove custom Italian millwork and art placement—delivering serene, move-in-ready sanctuaries of timeless distinction.
+                  , we coordinate every detail, from condominium board technical approvals and acoustic decoupling to white-glove custom Italian millwork and art placement, delivering serene, move-in-ready sanctuaries of enduring distinction.
                 </p>
               </div>
 
@@ -264,7 +266,7 @@ export const BalHarbourPage: React.FC<BalHarbourPageProps> = ({ onNavigate, onOp
               <div className="relative">
                 <img
                   src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=85"
-                  alt="Bal Harbour private art dining salon with bespoke fluted millwork"
+                  alt="Bal Harbour private art dining salon with custom fluted millwork"
                   className="w-full aspect-[4/3] object-cover border border-[#E2DBD1] shadow-lg"
                 />
                 <div className="absolute -bottom-4 -right-4 bg-white p-4 border border-[#E2DBD1] shadow-md hidden sm:block max-w-xs">
@@ -342,7 +344,7 @@ export const BalHarbourPage: React.FC<BalHarbourPageProps> = ({ onNavigate, onOp
         </div>
       </section>
 
-      {/* Curated Photographic Gallery (Assets from Paula) */}
+      {/* Selected Photographic Gallery (Assets from Paula) */}
       <section className="py-24 bg-[#FAF9F6] border-b border-[#EAE4DB]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
@@ -355,7 +357,7 @@ export const BalHarbourPage: React.FC<BalHarbourPageProps> = ({ onNavigate, onOp
                 Bal Harbour Photography & Detail Archive
               </h2>
               <p className="text-xs sm:text-sm text-[#736D65] mt-1 font-light">
-                Explore flow-through ocean salons, bespoke Italian dining joinery, acoustic primary suites, and noble stone details from Bal Harbour Sanctuary.
+                Explore flow-through ocean salons, custom Italian dining joinery, acoustic primary suites, and noble stone details from Bal Harbour Sanctuary.
               </p>
             </div>
             <button
@@ -424,7 +426,7 @@ export const BalHarbourPage: React.FC<BalHarbourPageProps> = ({ onNavigate, onOp
               Featured Project: {featuredProject.title}
             </h2>
             <p className="text-sm text-[#6E6861] font-light">
-              {featuredProject.subTitle} — {featuredProject.location}
+              {featuredProject.subTitle}, {featuredProject.location}
             </p>
           </div>
 

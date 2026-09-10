@@ -19,6 +19,18 @@ export const JournalDetailPage: React.FC<JournalDetailPageProps> = ({ slug, onNa
         title={`${article.title} | Paula Ambrosio Interiors Journal`}
         description={article.excerpt}
         ogImage={article.coverImage}
+        canonicalUrl={`https://paulaambrosiointeriors.com/journal/${article.slug}`}
+        articleData={{
+          title: article.title,
+          datePublished: article.date,
+          author: article.author || 'Paula Ambrosio',
+          image: article.coverImage,
+          description: article.excerpt
+        }}
+        breadcrumbItems={[
+          { name: "Journal", url: "https://paulaambrosiointeriors.com/journal" },
+          { name: article.title, url: `https://paulaambrosiointeriors.com/journal/${article.slug}` }
+        ]}
       />
 
       {/* Breadcrumbs */}
@@ -151,7 +163,7 @@ export const JournalDetailPage: React.FC<JournalDetailPageProps> = ({ slug, onNa
             <div className="text-center sm:text-left space-y-1">
               <h4 className="font-serif-luxury text-lg text-[#1A1816]">About Paula Ambrosio</h4>
               <p className="text-xs text-[#68625B] font-light leading-relaxed">
-                Co-Founder and Principal Interior Designer of Paula Ambrosio Interior Design. With nearly two decades of interior design mastery crafting bespoke residences and turnkey interiors across Miami, South Florida, and internationally.
+                Co-Founder and Principal Interior Designer of Paula Ambrosio Interiors. With nearly two decades of interior design mastery crafting custom residences and turnkey interiors across Miami, South Florida, and internationally.
               </p>
             </div>
           </div>
@@ -200,7 +212,7 @@ export const JournalDetailPage: React.FC<JournalDetailPageProps> = ({ slug, onNa
       <section className="py-20 bg-[#171513] text-white text-center">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
           <h2 className="font-serif-luxury text-3xl sm:text-5xl font-normal text-white">
-            Transform Your Residence
+            Refresh Your Residence
           </h2>
           <p className="text-sm sm:text-base text-[#B8B1A8] max-w-xl mx-auto font-light">
             Contact Paula Ambrosio Interiors to schedule your private consultation.

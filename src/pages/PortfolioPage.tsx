@@ -25,8 +25,9 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({ onNavigate, onOpen
   return (
     <div className="min-h-screen pt-20">
       <SEOHead
-        title="Portfolio & Case Studies | Luxury Interior Design | Paula Ambrosio Interiors"
-        description="Explore luxury residential, turnkey and hospitality case studies by Paula Ambrosio Interiors across Miami, Miami Beach, Sunny Isles, Palm Beach and South Florida."
+        title="Portfolio & Case Studies | Premium Interior Design | Paula Ambrosio Interiors"
+        description="Explore premium residential, turnkey and hospitality case studies by Paula Ambrosio Interiors across Miami, Miami Beach, Sunny Isles, Palm Beach and South Florida."
+        canonicalUrl="https://paulaambrosiointeriors.com/portfolio"
       />
 
       {/* Hero Section */}
@@ -34,7 +35,7 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({ onNavigate, onOpen
         <div className="absolute inset-0 z-0">
           <img
             src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=2200&q=85"
-            alt="Portfolio of Luxury Residences - Paula Ambrosio Interiors"
+            alt="Portfolio of Premium Residences - Paula Ambrosio Interiors"
             className="w-full h-full object-cover object-center"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-[#171513]/90 via-[#171513]/70 to-[#171513]/50" />
@@ -52,7 +53,7 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({ onNavigate, onOpen
             </h1>
 
             <p className="font-serif-luxury text-xl sm:text-2xl text-[#DCD5CB] italic font-light max-w-2xl">
-              A curated collection of bespoke residences, turnkey sky mansions, and boutique hospitality spaces.
+              A handpicked collection of custom residences, turnkey sky mansions, and boutique hospitality spaces.
             </p>
           </div>
         </div>
@@ -141,7 +142,7 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({ onNavigate, onOpen
             Have a Specific Property in Mind?
           </h2>
           <p className="text-sm sm:text-base text-[#B8B1A8] max-w-xl mx-auto font-light">
-            We invite you to share your floor plans and vision for a confidential assessment with our design studio.
+            We invite you to share your floor plans and goals for a confidential assessment with our design studio.
           </p>
           <div className="pt-4">
             <button

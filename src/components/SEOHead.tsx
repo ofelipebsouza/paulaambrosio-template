@@ -5,9 +5,20 @@ interface SEOHeadProps {
   description: string;
   canonicalUrl?: string;
   ogImage?: string;
-  schemaType?: 'Organization' | 'ProfessionalService' | 'Service' | 'Article' | 'FAQPage';
-  additionalSchemas?: Record<string, any>[];
   faqs?: { question: string; answer: string }[];
+  breadcrumbItems?: { name: string; url: string }[];
+  articleData?: {
+    title: string;
+    datePublished: string;
+    author: string;
+    image?: string;
+    description?: string;
+  };
+  serviceData?: {
+    name: string;
+    description: string;
+    url: string;
+  };
 }
 
 export const SEOHead: React.FC<SEOHeadProps> = ({
@@ -15,12 +26,14 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
   description,
   canonicalUrl = window.location.href,
   ogImage = 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1600&q=85',
-  faqs = []
+  faqs = [],
+  breadcrumbItems,
+  articleData,
+  serviceData
 }) => {
   useEffect(() => {
-    // Update Title & Meta
     document.title = title;
-    
+
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
       metaDescription.setAttribute('content', description);
@@ -36,7 +49,6 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
       ogDesc.setAttribute('content', description);
     }
 
-    // Structured Data JSON-LD
     const baseSchemas: Record<string, unknown>[] = [
       {
         '@context': 'https://schema.org',
@@ -77,7 +89,12 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
           '@type': 'Person',
           'name': 'Paula Ambrosio',
           'jobTitle': 'Founder & Principal Designer',
-          'description': 'With more than two decades of interior design experience creating sophisticated luxury residential, turnkey and hospitality interiors in Miami and South Florida.'
+          'description': 'With more than two decades of interior design experience creating sophisticated luxury residential, turnkey and hospitality interiors in Miami and South Florida.',
+          'url': 'https://www.paulaambrosio.com',
+          'sameAs': [
+            'https://www.instagram.com/paulaambrosio_',
+            'https://www.linkedin.com/in/paulaambrosio'
+          ]
         },
         'areaServed': [
           'Miami',
@@ -100,7 +117,7 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
       }
     ];
 
-    if (faqs && faqs.length > 0) {
+    if (faqs.length > 0) {
       baseSchemas.push({
         '@context': 'https://schema.org',
         '@type': 'FAQPage',
@@ -115,7 +132,67 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
       });
     }
 
-    // Inject Script
+    if (breadcrumbItems && breadcrumbItems.length > 0) {
+      baseSchemas.push({
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        'itemListElement': [
+          {
+            '@type': 'ListItem',
+            'position': 1,
+            'name': 'Home',
+            'item': 'https://paulaambrosiointeriors.com'
+          },
+          ...breadcrumbItems.map((item, index) => ({
+            '@type': 'ListItem',
+            'position': index + 2,
+            'name': item.name,
+            'item': item.url
+          }))
+        ]
+      });
+    }
+
+    if (articleData) {
+      baseSchemas.push({
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        'headline': articleData.title,
+        'datePublished': articleData.datePublished,
+        'author': {
+          '@type': 'Person',
+          'name': articleData.author
+        },
+        'publisher': {
+          '@type': 'Organization',
+          'name': 'Paula Ambrosio Interiors',
+          'logo': 'https://paulaambrosiointeriors.com/logo.png'
+        },
+        'image': articleData.image || ogImage,
+        'description': articleData.description || description,
+        'mainEntityOfPage': {
+          '@type': 'WebPage',
+          '@id': canonicalUrl
+        }
+      });
+    }
+
+    if (serviceData) {
+      baseSchemas.push({
+        '@context': 'https://schema.org',
+        '@type': 'Service',
+        'name': serviceData.name,
+        'description': serviceData.description,
+        'url': serviceData.url,
+        'provider': {
+          '@type': 'ProfessionalService',
+          'name': 'Paula Ambrosio Interiors'
+        },
+        'areaServed': 'South Florida',
+        'serviceType': 'Interior Design'
+      });
+    }
+
     const scriptId = 'seo-structured-data';
     let scriptTag = document.getElementById(scriptId) as HTMLScriptElement | null;
     if (!scriptTag) {
@@ -126,7 +203,6 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
     }
     scriptTag.text = JSON.stringify(baseSchemas);
 
-    // Canonical Link
     const canonicalId = 'seo-canonical';
     let canonicalTag = document.getElementById(canonicalId) as HTMLLinkElement | null;
     if (!canonicalTag) {
@@ -137,13 +213,11 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
     }
     canonicalTag.href = canonicalUrl;
 
-    // OG Image
     const ogImageTag = document.querySelector('meta[property="og:image"]');
     if (ogImageTag) {
       ogImageTag.setAttribute('content', ogImage);
     }
 
-    // Twitter Tags
     const twitterTitle = document.querySelector('meta[name="twitter:title"]');
     if (twitterTitle) {
       twitterTitle.setAttribute('content', title);
@@ -157,10 +231,8 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
       twitterImage.setAttribute('content', ogImage);
     }
 
-    return () => {
-      // Clean up if needed
-    };
-  }, [title, description, canonicalUrl, ogImage, faqs]);
+    return () => {};
+  }, [title, description, canonicalUrl, ogImage, faqs, breadcrumbItems, articleData, serviceData]);
 
   return null;
 };
