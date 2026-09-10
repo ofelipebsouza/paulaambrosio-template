@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowRight, Check, Compass, Layers, Sparkles, Building2, Coffee, Shield, Camera, ZoomIn, X, BookOpen, CheckCircle2 } from 'lucide-react';
 import { SEOHead } from '../components/SEOHead';
 import { ProcessTimeline } from '../components/ProcessTimeline';
@@ -17,6 +17,20 @@ export const HospitalityPage: React.FC<HospitalityPageProps> = ({ onNavigate, on
   const data = servicesData.hospitality;
   const hospitalityProjects = projectsData.filter(p => p.category === 'Hospitality');
   const relatedJournalArticles = journalData.filter(a => a.relatedServices.includes('hospitality'));
+
+  const heroImages = [
+    '/assets/hero-img-1.avif',
+    '/assets/hero-img-2.avif',
+    '/assets/hero-img-3.avif',
+  ];
+  const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentHeroIndex((prev) => (prev + 1) % heroImages.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   const [selectedPhoto, setSelectedPhoto] = useState<{
     url: string;
@@ -79,41 +93,40 @@ export const HospitalityPage: React.FC<HospitalityPageProps> = ({ onNavigate, on
       />
 
       {/* Hero Section */}
-      <section className="relative min-h-[75vh] flex items-center bg-[#171513] text-white overflow-hidden">
+      <section className="relative min-h-[90vh] flex items-end justify-center overflow-hidden">
+        {/* Background Carousel */}
         <div className="absolute inset-0 z-0">
-          <img
-            src="https://images.unsplash.com/photo-1590381105924-c72589b9ef3f?auto=format&fit=crop&w=1600&q=85"
-            alt="Hospitality Interior Design Miami - Paula Ambrosio Interiors"
-            className="w-full h-full object-cover object-center"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#171513]/90 via-[#171513]/70 to-[#171513]/40" />
+          {heroImages.map((src, index) => (
+            <img
+              key={src}
+              src={src}
+              alt={`Hospitality Interior Design Miami - Paula Ambrosio Interiors ${index + 1}`}
+              className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-[1500ms] ease-in-out ${
+                index === currentHeroIndex ? 'opacity-100' : 'opacity-0'
+              }`}
+            />
+          ))}
+          <div className="absolute inset-0 bg-gradient-to-t from-white via-white/60 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-white/80 via-transparent to-transparent h-full" style={{ top: '40%' }} />
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 w-full">
-          <div className="max-w-3xl space-y-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#C9A986]/20 border border-[#C9A986]/40 text-[#E8D8C8] text-xs uppercase tracking-widest backdrop-blur-xs">
-              <Sparkles className="w-3.5 h-3.5 text-[#C9A986]" />
-              <span>Commercial & Hospitality Sector</span>
-            </div>
-
-            <h1 className="font-serif-luxury text-4xl sm:text-6xl font-normal leading-tight text-white">
+        {/* Text Content Centered at Bottom */}
+        <div className="relative z-10 w-full pb-20 pt-80">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-5">
+            <h1 className="font-serif-luxury text-4xl sm:text-5xl lg:text-6xl font-normal leading-[1.1] tracking-tight text-[#1A1816]">
               Hospitality Interior Design in Miami
             </h1>
 
-            <p className="font-serif-luxury text-xl sm:text-2xl text-[#DCD5CB] italic font-light max-w-2xl">
+            <p className="font-serif-luxury text-lg sm:text-xl text-[#4A4540] font-light max-w-2xl mx-auto leading-relaxed">
               Memorable environments designed around experience, flow and identity.
             </p>
 
-            <p className="text-sm sm:text-base text-[#B8B1A8] font-light leading-relaxed max-w-xl">
-              {data.intro}
-            </p>
-
-            <div className="pt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+            <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
               <button
                 onClick={() => onOpenConsultation('Discuss a Hospitality Project', 'Miami')}
-                className="px-8 py-4 bg-[#C9A986] text-[#171513] text-xs uppercase tracking-widest font-semibold hover:bg-white transition-all text-center shadow-lg"
+                className="px-8 py-4 bg-[#C9A986] text-[#171513] text-xs uppercase tracking-widest font-semibold hover:bg-[#171513] hover:text-white transition-all text-center"
               >
-                DISCUSS A HOSPITALITY PROJECT
+                Discuss a Hospitality Project
               </button>
               
               <button
@@ -125,9 +138,9 @@ export const HospitalityPage: React.FC<HospitalityPageProps> = ({ onNavigate, on
                     onNavigate('/portfolio');
                   }
                 }}
-                className="px-8 py-4 bg-transparent border border-white/40 text-white text-xs uppercase tracking-widest font-medium hover:bg-white/10 transition-all text-center"
+                className="px-8 py-4 bg-transparent border border-[#1A1816]/30 text-[#1A1816] text-xs uppercase tracking-widest font-medium hover:bg-[#1A1816] hover:text-white hover:border-[#1A1816] transition-all text-center"
               >
-                VIEW HOSPITALITY WORK
+                View Hospitality Work
               </button>
             </div>
           </div>

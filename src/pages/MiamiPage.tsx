@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowRight, Check, Compass, Layers, MapPin, Sparkles, Building, Home, Shield, Award, Camera, Eye, X, ZoomIn } from 'lucide-react';
 import { SEOHead } from '../components/SEOHead';
 import { ProcessTimeline } from '../components/ProcessTimeline';
@@ -14,6 +14,20 @@ interface MiamiPageProps {
 
 export const MiamiPage: React.FC<MiamiPageProps> = ({ onNavigate, onOpenConsultation }) => {
   const [selectedPhoto, setSelectedPhoto] = useState<{ url: string; title: string; subtitle: string; location: string } | null>(null);
+
+  const heroImages = [
+    '/assets/hero-img-1.avif',
+    '/assets/hero-img-2.avif',
+    '/assets/hero-img-3.avif',
+  ];
+  const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentHeroIndex((prev) => (prev + 1) % heroImages.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Completed Miami projects to feature as linked cards
   const miamiProjects = projectsData.filter(p => p.city === 'Miami' || p.city === 'Miami Beach' || p.city === 'Coral Gables');
@@ -142,46 +156,45 @@ export const MiamiPage: React.FC<MiamiPageProps> = ({ onNavigate, onOpenConsulta
       />
 
       {/* Hero Section */}
-      <section className="relative min-h-[75vh] flex items-center bg-[#171513] text-white overflow-hidden">
+      <section className="relative min-h-[90vh] flex items-end justify-center overflow-hidden">
+        {/* Background Carousel */}
         <div className="absolute inset-0 z-0">
-          <img
-            src="/assets/cRTC5lm1QD9HiCvnd7TYPrsOuY.avif"
-            alt="Luxury Interior Designer Miami - Paula Ambrosio Interiors"
-            className="w-full h-full object-cover object-center"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#171513]/90 via-[#171513]/70 to-[#171513]/50" />
+          {heroImages.map((src, index) => (
+            <img
+              key={src}
+              src={src}
+              alt={`Luxury Interior Designer Miami - Paula Ambrosio Interiors ${index + 1}`}
+              className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-[1500ms] ease-in-out ${
+                index === currentHeroIndex ? 'opacity-100' : 'opacity-0'
+              }`}
+            />
+          ))}
+          <div className="absolute inset-0 bg-gradient-to-t from-white via-white/60 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-white/80 via-transparent to-transparent h-full" style={{ top: '40%' }} />
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 w-full">
-          <div className="max-w-3xl space-y-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 text-[#E8D8C8] text-xs uppercase tracking-widest backdrop-blur-xs">
-              <Sparkles className="w-3.5 h-3.5 text-[#C9A986]" />
-              <span>Flagship Miami Studio</span>
-            </div>
-
-            <h1 className="font-serif-luxury text-4xl sm:text-6xl font-normal leading-tight text-white">
+        {/* Text Content Centered at Bottom */}
+        <div className="relative z-10 w-full pb-20 pt-80">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-5">
+            <h1 className="font-serif-luxury text-4xl sm:text-5xl lg:text-6xl font-normal leading-[1.1] tracking-tight text-[#1A1816]">
               Luxury Interior Designer in Miami
             </h1>
 
-            <p className="font-serif-luxury text-xl sm:text-2xl text-[#DCD5CB] italic font-light max-w-2xl">
+            <p className="font-serif-luxury text-lg sm:text-xl text-[#4A4540] font-light max-w-2xl mx-auto leading-relaxed">
               Full-Service Interior Design & Turnkey Solutions for Exceptional Miami Residences
             </p>
 
-            <p className="text-sm sm:text-base text-[#B8B1A8] font-light leading-relaxed max-w-xl">
-              Paula Ambrosio Interiors is a Miami-based luxury interior design studio specializing in high-end residential interiors, renovations, new construction and complete turnkey transformations.
-            </p>
-
-            <div className="pt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+            <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
               <button
                 onClick={() => onOpenConsultation('Miami Full-Service Design', 'Miami')}
-                className="px-8 py-4 bg-[#C9A986] text-[#171513] text-xs uppercase tracking-widest font-semibold hover:bg-white transition-all text-center shadow-lg"
+                className="px-8 py-4 bg-[#C9A986] text-[#171513] text-xs uppercase tracking-widest font-semibold hover:bg-[#171513] hover:text-white transition-all text-center"
               >
                 Start Your Miami Project
               </button>
               
               <button
                 onClick={() => onOpenConsultation('Private Consultation', 'Miami')}
-                className="px-8 py-4 bg-transparent border border-white/40 text-white text-xs uppercase tracking-widest font-medium hover:bg-white/10 hover:border-white transition-all text-center"
+                className="px-8 py-4 bg-transparent border border-[#1A1816]/30 text-[#1A1816] text-xs uppercase tracking-widest font-medium hover:bg-[#1A1816] hover:text-white hover:border-[#1A1816] transition-all text-center"
               >
                 Request a Private Consultation
               </button>

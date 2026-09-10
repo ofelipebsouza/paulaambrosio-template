@@ -126,6 +126,37 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
     }
     scriptTag.text = JSON.stringify(baseSchemas);
 
+    // Canonical Link
+    const canonicalId = 'seo-canonical';
+    let canonicalTag = document.getElementById(canonicalId) as HTMLLinkElement | null;
+    if (!canonicalTag) {
+      canonicalTag = document.createElement('link');
+      canonicalTag.id = canonicalId;
+      canonicalTag.rel = 'canonical';
+      document.head.appendChild(canonicalTag);
+    }
+    canonicalTag.href = canonicalUrl;
+
+    // OG Image
+    const ogImageTag = document.querySelector('meta[property="og:image"]');
+    if (ogImageTag) {
+      ogImageTag.setAttribute('content', ogImage);
+    }
+
+    // Twitter Tags
+    const twitterTitle = document.querySelector('meta[name="twitter:title"]');
+    if (twitterTitle) {
+      twitterTitle.setAttribute('content', title);
+    }
+    const twitterDesc = document.querySelector('meta[name="twitter:description"]');
+    if (twitterDesc) {
+      twitterDesc.setAttribute('content', description);
+    }
+    const twitterImage = document.querySelector('meta[name="twitter:image"]');
+    if (twitterImage) {
+      twitterImage.setAttribute('content', ogImage);
+    }
+
     return () => {
       // Clean up if needed
     };

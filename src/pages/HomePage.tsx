@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowRight, ArrowUpRight, Check, Compass, Eye, Layers, ShieldCheck, Sparkles, MapPin } from 'lucide-react';
 import { SEOHead } from '../components/SEOHead';
 import { BeforeAfterSlider } from '../components/BeforeAfterSlider';
@@ -14,6 +14,20 @@ interface HomePageProps {
 
 export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenConsultation }) => {
   const flagshipProjects = projectsData.filter(p => p.featured).slice(0, 4);
+
+  const heroImages = [
+    '/assets/hero-img-1.avif',
+    '/assets/hero-img-2.avif',
+    '/assets/hero-img-3.avif',
+  ];
+  const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentHeroIndex((prev) => (prev + 1) % heroImages.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   const homeProcess = [
     { step: '01', title: 'Discovery & Programming', description: 'Understanding your lifestyle, architectural aspirations, functional flow, and timeline parameters.' },
@@ -32,74 +46,50 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenConsultati
       />
 
       {/* Hero Section */}
-      <section className="relative min-h-[88vh] flex items-center justify-center bg-[#171513] text-white overflow-hidden">
-        {/* Background Image with Cinematic Overlay */}
+      <section className="relative min-h-[90vh] flex items-end justify-center overflow-hidden">
+        {/* Background Carousel */}
         <div className="absolute inset-0 z-0">
-          <img
-            src="/assets/cRTC5lm1QD9HiCvnd7TYPrsOuY.avif"
-            alt="Luxury Interior Design in Miami - Paula Ambrosio Interiors"
-            className="w-full h-full object-cover object-center scale-105 animate-fade-in"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#171513]/90 via-[#171513]/60 to-[#171513]/40" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#171513] via-transparent to-black/30" />
+          {heroImages.map((src, index) => (
+            <img
+              key={src}
+              src={src}
+              alt={`Luxury Interior Design in Miami - Paula Ambrosio Interiors ${index + 1}`}
+              className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-[1500ms] ease-in-out ${
+                index === currentHeroIndex ? 'opacity-100' : 'opacity-0'
+              }`}
+            />
+          ))}
+          {/* Light gradient overlay for text readability at bottom */}
+          <div className="absolute inset-0 bg-gradient-to-t from-white via-white/60 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-white/80 via-transparent to-transparent h-full" style={{ top: '40%' }} />
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 w-full">
-          <div className="max-w-3xl space-y-6">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-[#FAF9F6]/10 border border-white/20 backdrop-blur-md text-[#E8D8C8] text-xs uppercase tracking-[0.25em]">
-              <Sparkles className="w-3.5 h-3.5 text-[#C9A986]" />
-              <span>Miami Luxury Interior Design Studio</span>
-            </div>
-
-            <h1 className="font-serif-luxury text-4xl sm:text-6xl lg:text-7xl font-normal leading-[1.08] tracking-tight text-white">
+        {/* Text Content Centered at Bottom */}
+        <div className="relative z-10 w-full pb-20 pt-80">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-5">
+            <h1 className="font-serif-luxury text-4xl sm:text-5xl lg:text-6xl font-normal leading-[1.1] tracking-tight text-[#1A1816]">
               Luxury Interior Design in Miami
             </h1>
 
-            <p className="font-serif-luxury text-xl sm:text-2xl text-[#DCD5CB] italic font-light max-w-2xl leading-relaxed">
+            <p className="font-serif-luxury text-lg sm:text-xl text-[#4A4540] font-light max-w-2xl mx-auto leading-relaxed">
               Sophisticated interiors. Seamless execution. Designed around the way you live.
             </p>
 
-            <p className="text-sm sm:text-base text-[#B8B1A8] max-w-xl font-light leading-relaxed">
-              Paula Ambrosio Interiors is a Miami-based luxury interior design studio creating sophisticated residential and hospitality interiors in South Florida and internationally.
-            </p>
-
-            <div className="pt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+            <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
               <button
                 onClick={() => onOpenConsultation()}
-                className="px-8 py-4 bg-[#C9A986] text-[#171513] text-xs uppercase tracking-widest font-semibold hover:bg-white transition-all text-center shadow-lg hover:shadow-xl"
+                className="px-8 py-4 bg-[#C9A986] text-[#171513] text-xs uppercase tracking-widest font-semibold hover:bg-[#171513] hover:text-white transition-all text-center"
               >
                 Start Your Project
               </button>
               
               <button
-                onClick={() => onNavigate('/turnkey-interior-design-miami')}
-                className="px-8 py-4 bg-transparent border border-white/40 text-white text-xs uppercase tracking-widest font-medium hover:bg-white/10 hover:border-white transition-all text-center"
+                onClick={() => onNavigate('/interior-design-miami')}
+                className="px-8 py-4 bg-transparent border border-[#1A1816]/30 text-[#1A1816] text-xs uppercase tracking-widest font-medium hover:bg-[#1A1816] hover:text-white hover:border-[#1A1816] transition-all text-center"
               >
-                Discover Turnkey Design
+                Explore Our Services
               </button>
             </div>
-          </div>
-        </div>
-
-        {/* Quick Highlights Bar */}
-        <div className="absolute bottom-0 left-0 right-0 z-10 border-t border-white/10 bg-[#171513]/80 backdrop-blur-md hidden md:block">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between text-xs text-[#C5BEB5]">
-            <span className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#C9A986]" />
-              Full-Service Residential Architecture
-            </span>
-            <span className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#C9A986]" />
-              Turnkey Second-Home Execution
-            </span>
-            <span className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#C9A986]" />
-              Boutique Hospitality & Wellness
-            </span>
-            <span className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#C9A986]" />
-              Miami · Palm Beach · International
-            </span>
           </div>
         </div>
       </section>
@@ -189,7 +179,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenConsultati
                   Full-Service Interior Design
                 </h3>
                 <p className="text-xs sm:text-sm text-[#615B54] leading-relaxed font-light">
-                  From vision to a fully realized interior. Services include interior architecture and space planning, renovation design, new-construction interior design, custom millwork, kitchens and bathrooms, lighting, material selection, custom furniture, procurement, art, installation, and styling.
+                  From vision to a fully realized interior. Services may include interior architecture and space planning, full-service interior design, renovation design, new-construction interior design, custom millwork, kitchens and bathrooms, lighting, material and finish selection, custom furniture, procurement, art and accessories, project coordination, installation and styling.
                 </p>
               </div>
               <div className="pt-6 mt-6 border-t border-[#EAE4DB]">
@@ -230,25 +220,25 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenConsultati
               </div>
             </div>
 
-            {/* Card 3: Hospitality */}
+            {/* Card 3: Luxury Residential */}
             <div className="bg-[#FAF9F6] border border-[#E5DFD7] p-8 flex flex-col justify-between hover:border-[#C9A986] transition-all group">
               <div className="space-y-4">
                 <div className="w-12 h-12 bg-[#F0EAE1] text-[#1A1816] flex items-center justify-center border border-[#DED5C9]">
                   <Eye className="w-5 h-5 text-[#C9A986]" />
                 </div>
                 <h3 className="font-serif-luxury text-2xl text-[#1A1816] font-normal">
-                  Hospitality & Commercial
+                  Luxury Residential
                 </h3>
                 <p className="text-xs sm:text-sm text-[#615B54] leading-relaxed font-light">
-                  Memorable environments designed around experience, flow and identity. We curate boutique hotels, private lounges, wellness retreats, and upscale commercial spaces that balance captivating atmosphere with contract durability and operational flow.
+                  Signature residences crafted for distinguished homeowners seeking a truly bespoke living experience. We design waterfront estates, penthouse condominiums, and luxury homes with curated finishes, custom millwork, and timeless interiors that reflect your personal vision.
                 </p>
               </div>
               <div className="pt-6 mt-6 border-t border-[#EAE4DB]">
                 <button
-                  onClick={() => onNavigate('/hospitality-interior-design-miami')}
+                  onClick={() => onNavigate('/luxury-residential-interior-design-miami')}
                   className="inline-flex items-center space-x-2 text-xs uppercase tracking-widest font-semibold text-[#1A1816] group-hover:text-[#C9A986] transition-colors"
                 >
-                  <span>View Hospitality Work</span>
+                  <span>Explore Our Luxury Homes</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </div>
