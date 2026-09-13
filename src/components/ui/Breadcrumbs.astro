@@ -1,0 +1,27 @@
+---
+import type { BreadcrumbEntry } from '../../lib/seo';
+
+interface Props {
+	items: BreadcrumbEntry[];
+	/** 'dark' (default) for light backgrounds, 'light' for dark hero imagery. */
+	tone?: 'dark' | 'light';
+}
+const { items, tone = 'dark' } = Astro.props;
+const linkClass = tone === 'light' ? 'text-bone/70 hover:text-bone' : 'text-mist hover:text-ink';
+const currentClass = tone === 'light' ? 'text-bone' : 'text-ink';
+const separatorClass = tone === 'light' ? 'text-bone/40' : 'text-sand';
+---
+
+<nav aria-label="Breadcrumb">
+	<ol class:list={['flex flex-wrap items-center gap-2 text-xs uppercase tracking-widest', tone === 'light' && 'drop-shadow-sm']}>
+		<li><a href="/" class={linkClass}>Home</a></li>
+		{items.map((item, i) => (
+			<li class="flex items-center gap-2">
+				<span aria-hidden="true" class={separatorClass}>/</span>
+				{i === items.length - 1
+					? <span aria-current="page" class={currentClass}>{item.name}</span>
+					: <a href={item.url} class={linkClass}>{item.name}</a>}
+			</li>
+		))}
+	</ol>
+</nav>

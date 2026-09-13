@@ -1,0 +1,100 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
+import { webPageSchema, schemaScript } from '../lib/seo';
+import type { BreadcrumbEntry } from '../lib/seo';
+
+const breadcrumbs: BreadcrumbEntry[] = [{ name: 'Contact', url: '/contact' }];
+
+// Set CONTACT_FORM_ENDPOINT in the Vercel environment to route submissions to a
+// real endpoint (CRM, email service, webhook). Left unset, the form falls back
+// to a native mailto: submission so no leads are silently lost.
+const formEndpoint = import.meta.env.CONTACT_FORM_ENDPOINT;
+---
+
+<Layout
+	title="Contact — Start Your Interior Design Project"
+	description="Start your project with Paula Ambrosio Interiors. Tell us about your Miami or South Florida property and schedule a private design consultation."
+	canonical="/contact"
+>
+	<Fragment slot="head" set:html={schemaScript(webPageSchema({
+		path: '/contact',
+		title: 'Contact — Paula Ambrosio Interiors',
+		description: 'Start your project with a private consultation.',
+		breadcrumbs,
+	}))} />
+
+	<section class="container-editorial grid gap-16 pt-16 pb-24 lg:grid-cols-12 lg:pt-24">
+		<div class="lg:col-span-5">
+			<Breadcrumbs items={breadcrumbs} />
+			<p class="eyebrow mt-10 text-stone">Contact</p>
+			<h1 class="font-display mt-4 text-4xl lg:text-5xl">Start your project</h1>
+			<p class="mt-6 max-w-md text-lg leading-relaxed text-slate">
+				Tell us about your property and vision. We will schedule a confidential discovery session
+				with our design team.
+			</p>
+			<address class="mt-10 space-y-3 text-sm not-italic text-graphite">
+				<p class="eyebrow text-stone">Studio</p>
+				<p>Miami, Florida</p>
+				<p><a href="mailto:concierge@paulaambrosiointeriors.com" class="hover:text-stone">concierge@paulaambrosiointeriors.com</a></p>
+			</address>
+		</div>
+
+		<div class="lg:col-span-7">
+			<form class="space-y-6" method="POST" action={formEndpoint ?? 'mailto:concierge@paulaambrosiointeriors.com'}>
+				<div class="grid gap-6 sm:grid-cols-2">
+					<div>
+						<label for="name" class="eyebrow text-slate">Full Name *</label>
+						<input id="name" name="name" type="text" required autocomplete="name"
+							class="mt-2 w-full border border-sand bg-white px-4 py-3 text-sm focus:border-brass focus:outline-none" />
+					</div>
+					<div>
+						<label for="email" class="eyebrow text-slate">Email *</label>
+						<input id="email" name="email" type="email" required autocomplete="email"
+							class="mt-2 w-full border border-sand bg-white px-4 py-3 text-sm focus:border-brass focus:outline-none" />
+					</div>
+				</div>
+				<div class="grid gap-6 sm:grid-cols-2">
+					<div>
+						<label for="phone" class="eyebrow text-slate">Phone</label>
+						<input id="phone" name="phone" type="tel" autocomplete="tel"
+							class="mt-2 w-full border border-sand bg-white px-4 py-3 text-sm focus:border-brass focus:outline-none" />
+					</div>
+					<div>
+						<label for="location" class="eyebrow text-slate">Project Location *</label>
+						<select id="location" name="location" required
+							class="mt-2 w-full border border-sand bg-white px-4 py-3 text-sm focus:border-brass focus:outline-none">
+							<option value="Miami">Miami</option>
+							<option value="Miami Beach">Miami Beach</option>
+							<option value="Sunny Isles Beach">Sunny Isles Beach</option>
+							<option value="Aventura">Aventura</option>
+							<option value="Bal Harbour">Bal Harbour</option>
+							<option value="Boca Raton">Boca Raton</option>
+							<option value="Palm Beach">Palm Beach</option>
+							<option value="Other">Other / International</option>
+						</select>
+					</div>
+				</div>
+				<div>
+					<label for="service" class="eyebrow text-slate">Service *</label>
+					<select id="service" name="service" required
+						class="mt-2 w-full border border-sand bg-white px-4 py-3 text-sm focus:border-brass focus:outline-none">
+						<option>Turnkey Interior Design</option>
+						<option>Luxury Residential Interior Design</option>
+						<option>Hospitality Interior Design</option>
+						<option>Renovation</option>
+						<option>New Construction</option>
+						<option>Furniture, Art &amp; Styling</option>
+					</select>
+				</div>
+				<div>
+					<label for="message" class="eyebrow text-slate">Project details</label>
+					<textarea id="message" name="message" rows="4"
+						placeholder="Property type, neighborhood, approximate scope, timeline…"
+						class="mt-2 w-full border border-sand bg-white px-4 py-3 text-sm focus:border-brass focus:outline-none"></textarea>
+				</div>
+				<button type="submit" class="btn-primary w-full sm:w-auto">Submit Inquiry</button>
+			</form>
+		</div>
+	</section>
+</Layout>

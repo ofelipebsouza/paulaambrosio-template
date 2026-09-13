@@ -1,0 +1,77 @@
+---
+import Layout from '../layouts/Layout.astro';
+import CtaBanner from '../components/ui/CtaBanner.astro';
+import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
+import { webPageSchema, personSchema, schemaScript } from '../lib/seo';
+import type { BreadcrumbEntry } from '../lib/seo';
+
+const breadcrumbs: BreadcrumbEntry[] = [{ name: 'About', url: '/about' }];
+---
+
+<Layout
+	title="About Paula Ambrosio — Founder & Principal Designer"
+	description="Paula Ambrosio is the founder and principal designer of Paula Ambrosio Interiors, a Miami luxury interior design studio serving residences and hospitality spaces across South Florida."
+	canonical="/about"
+>
+	<Fragment slot="head" set:html={schemaScript(personSchema())} />
+	<Fragment slot="head" set:html={schemaScript(webPageSchema({
+		path: '/about',
+		title: 'About — Paula Ambrosio Interiors',
+		description: 'The studio and principal designer behind Paula Ambrosio Interiors.',
+		breadcrumbs,
+	}))} />
+
+	<section class="container-editorial pt-16 pb-14 lg:pt-24">
+		<Breadcrumbs items={breadcrumbs} />
+		<p class="eyebrow mt-10 text-stone">The Studio</p>
+		<h1 class="font-display mt-4 max-w-3xl text-display">
+			Considered interiors, led by a single design vision.
+		</h1>
+	</section>
+
+	<section class="container-editorial grid gap-14 pb-24 lg:grid-cols-12">
+		<div class="lg:col-span-4">
+			<p class="eyebrow text-stone">Paula Ambrosio</p>
+			<p class="mt-4 text-lg text-graphite">Founder &amp; Principal Designer</p>
+		</div>
+		<div class="prose-editorial lg:col-span-7 lg:col-start-6">
+			<p>
+				Paula Ambrosio leads Paula Ambrosio Interiors, a Miami-based studio working across luxury
+				residential, turnkey and hospitality projects. Her work is defined by architectural
+				clarity, material honesty and interiors that hold their character well beyond the day
+				they are photographed.
+			</p>
+			<p>
+				The studio operates as a single design vision supported by a coordinated team of
+				drafters, procurement specialists and installers. Clients work directly with Paula from
+				the first consultation through final styling — one point of creative and logistical
+				responsibility from beginning to end.
+			</p>
+
+			<h2>Design philosophy</h2>
+			<p>
+				Each project begins with the architecture: proportion, light and the way spaces connect.
+				Materials are chosen to age gracefully in the South Florida climate — natural stone,
+				warm woods, layered textiles and pieces with genuine provenance. Decoration comes last;
+				the composition comes first.
+			</p>
+
+			<h2>How we work</h2>
+			<ul>
+				<li>Consultation and brief — understanding the property, the context and the way you live.</li>
+				<li>Concept — spatial planning, material direction and a resolved design language.</li>
+				<li>Documentation and procurement — drawings, specifications and coordinated purchasing.</li>
+				<li>Installation and styling — delivery, assembly and final art and accessory placement.</li>
+			</ul>
+
+			<h2>Markets served</h2>
+			<p>
+				The studio works throughout Miami and South Florida — including Miami Beach, Sunny Isles
+				Beach, Aventura, Bal Harbour, Boca Raton and Palm Beach — and accepts selected
+				international projects.
+			</p>
+		</div>
+	</section>
+
+	<CtaBanner />
+</Layout>

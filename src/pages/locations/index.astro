@@ -1,0 +1,53 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import CtaBanner from '../../components/ui/CtaBanner.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import { webPageSchema, breadcrumbSchema, schemaScript } from '../../lib/seo';
+import type { BreadcrumbEntry } from '../../lib/seo';
+
+const locations = await getCollection('locations');
+
+const breadcrumbs: BreadcrumbEntry[] = [{ name: 'Locations', url: '/locations' }];
+---
+
+<Layout
+	title="Interior Design Locations — Miami & South Florida"
+	description="Paula Ambrosio Interiors serves Miami, Miami Beach, Sunny Isles Beach, Aventura, Bal Harbour, Boca Raton and Palm Beach with full-service luxury interior design."
+	canonical="/locations"
+>
+	<Fragment slot="head" set:html={schemaScript(webPageSchema({
+		path: '/locations',
+		title: 'Locations — Paula Ambrosio Interiors',
+		description: 'Luxury interior design across Miami and South Florida.',
+		breadcrumbs,
+	}))} />
+
+	<section class="container-editorial pt-16 pb-14 lg:pt-24">
+		<Breadcrumbs items={breadcrumbs} />
+		<p class="eyebrow mt-10 text-stone">Locations</p>
+		<h1 class="font-display mt-4 max-w-2xl text-display">
+			Design studios' reach across South Florida.
+		</h1>
+		<p class="mt-6 max-w-xl text-lede text-slate">
+			From oceanfront towers in Sunny Isles to historic estates in Palm Beach, each market has
+			its own architecture, climate considerations and clientele.
+		</p>
+	</section>
+
+	<section class="container-editorial pb-24">
+		<ul class="grid gap-px overflow-hidden border border-sand bg-sand md:grid-cols-2">
+			{locations.map((location) => (
+				<li class="bg-bone">
+					<a href={`/locations/${location.id}`} class="group flex h-full flex-col p-8 transition-colors hover:bg-linen lg:p-10">
+						<span class="font-display text-2xl lg:text-3xl">{location.data.title}</span>
+						<p class="mt-3 max-w-md text-sm leading-relaxed text-slate">{location.data.introduction}</p>
+						<span aria-hidden="true" class="eyebrow mt-8 text-brass">Explore {location.data.title} →</span>
+					</a>
+				</li>
+			))}
+		</ul>
+	</section>
+
+	<CtaBanner />
+</Layout>

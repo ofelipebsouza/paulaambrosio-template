@@ -1,0 +1,35 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+
+interface Props {
+	projects: CollectionEntry<'projects'>[];
+	columns?: 2 | 3;
+}
+const { projects, columns = 3 } = Astro.props;
+---
+
+<div class:list={['grid gap-x-8 gap-y-14', columns === 3 ? 'md:grid-cols-2 lg:grid-cols-3' : 'md:grid-cols-2']}>
+	{projects.map((project) => (
+		<article class="group">
+			<a href={`/projects/${project.id}`} class="block overflow-hidden bg-linen">
+				<Image
+					src={project.data.featuredImage}
+					alt={project.data.imageAlt ?? `${project.data.title} — ${project.data.location ?? 'luxury interior'} designed by Paula Ambrosio Interiors`}
+					widths={[400, 600, 800]}
+					sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+					loading="lazy"
+					quality={55}
+					decoding="async"
+					class="aspect-[4/5] w-full object-cover transition-transform duration-700 ease-editorial group-hover:scale-[1.03]"
+				/>
+			</a>
+			<div class="mt-5">
+				<p class="eyebrow text-stone">{project.data.location ?? project.data.projectType}</p>
+				<h3 class="font-display mt-2 text-2xl">
+					<a href={`/projects/${project.id}`} class="hover:text-stone">{project.data.title}</a>
+				</h3>
+			</div>
+		</article>
+	))}
+</div>

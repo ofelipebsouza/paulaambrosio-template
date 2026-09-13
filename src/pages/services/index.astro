@@ -1,0 +1,51 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import CtaBanner from '../../components/ui/CtaBanner.astro';
+import { webPageSchema, breadcrumbSchema, schemaScript } from '../../lib/seo';
+import type { BreadcrumbEntry } from '../../lib/seo';
+
+const services = await getCollection('services');
+
+const breadcrumbs: BreadcrumbEntry[] = [{ name: 'Services', url: '/services' }];
+---
+
+<Layout
+	title="Interior Design Services — Miami & South Florida"
+	description="Full-service luxury interior design services: turnkey interiors, residential design, hospitality, renovations, new construction and furniture, art and styling."
+	canonical="/services"
+>
+	<Fragment slot="head" set:html={schemaScript(webPageSchema({
+		path: '/services',
+		title: 'Services — Paula Ambrosio Interiors',
+		description: 'Luxury interior design services in Miami and South Florida.',
+		breadcrumbs,
+	}))} />
+
+	<section class="container-editorial pt-16 pb-14 lg:pt-24">
+		<Breadcrumbs items={breadcrumbs} />
+		<p class="eyebrow mt-10 text-stone">Services</p>
+		<h1 class="font-display mt-4 max-w-2xl text-display">
+			One studio, responsible for the entire composition.
+		</h1>
+		<p class="mt-6 max-w-xl text-lede text-slate">
+			From complete turnkey residences to hospitality environments, each service is delivered
+			with the same design direction, procurement discipline and installation care.
+		</p>
+	</section>
+
+	<section class="container-editorial pb-24">
+		<div class="divide-y divide-sand border-y border-sand">
+			{services.map((service) => (
+				<a href={`/services/${service.id}`} class="group grid gap-4 py-10 transition-colors hover:bg-linen/60 lg:grid-cols-12 lg:items-baseline">
+					<h2 class="font-display text-3xl lg:col-span-5 lg:text-4xl">{service.data.title}</h2>
+					<p class="text-sm leading-relaxed text-slate lg:col-span-5">{service.data.introduction}</p>
+					<span aria-hidden="true" class="eyebrow text-brass lg:col-span-2 lg:text-right">View service →</span>
+				</a>
+			))}
+		</div>
+	</section>
+
+	<CtaBanner />
+</Layout>

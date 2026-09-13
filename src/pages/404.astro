@@ -1,0 +1,32 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { webPageSchema, schemaScript } from '../lib/seo';
+---
+
+<Layout
+	title="Page Not Found"
+	description="The page you are looking for does not exist. Explore the projects, services, locations and journal of Paula Ambrosio Interiors."
+	noindex={true}
+>
+	<Fragment slot="head" set:html={schemaScript(webPageSchema({
+		path: '/404',
+		title: 'Page Not Found — Paula Ambrosio Interiors',
+		description: 'The requested page could not be found.',
+	}))} />
+
+	<section class="container-editorial flex min-h-[70vh] flex-col items-center justify-center py-24 text-center">
+		<p class="eyebrow text-stone">404</p>
+		<h1 class="font-display mt-6 max-w-xl text-5xl lg:text-6xl">This page has been rearranged.</h1>
+		<p class="mt-6 max-w-md text-lg text-slate">
+			The page you are looking for does not exist or has moved. Continue exploring the studio's
+			work and writing.
+		</p>
+		<nav aria-label="Error page navigation" class="mt-10 flex flex-wrap items-center justify-center gap-4">
+			<a href="/" class="btn-primary">Home</a>
+			<a href="/projects" class="btn-secondary">Projects</a>
+			<a href="/services" class="btn-secondary">Services</a>
+			<a href="/journal" class="btn-secondary">Journal</a>
+			<a href="/contact" class="btn-secondary">Contact</a>
+		</nav>
+	</section>
+</Layout>

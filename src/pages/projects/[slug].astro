@@ -1,0 +1,112 @@
+---
+import { getCollection, render } from 'astro:content';
+import { Image } from 'astro:assets';
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import CtaBanner from '../../components/ui/CtaBanner.astro';
+import { webPageSchema, schemaScript } from '../../lib/seo';
+import type { BreadcrumbEntry } from '../../lib/seo';
+
+export async function getStaticPaths() {
+	const projects = (await getCollection('projects')).filter((p) => !p.data.draft);
+	return projects.map((project) => ({
+		params: { slug: project.id },
+		props: { project },
+	}));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+
+const meta = [
+	project.data.location,
+	project.data.propertyType,
+	project.data.projectType,
+	project.data.year ? String(project.data.year) : null,
+].filter(Boolean) as string[];
+
+const breadcrumbs: BreadcrumbEntry[] = [
+	{ name: 'Projects', url: '/projects' },
+	{ name: project.data.title, url: `/projects/${project.id}` },
+];
+---
+
+<Layout
+	title={`${project.data.title} — ${project.data.location ?? 'Interior Design Project'}`}
+	description={project.data.seoDescription ?? project.data.description}
+	canonical={`/projects/${project.id}`}
+	ogImage={project.data.featuredImage.src}
+>
+	<Fragment slot="head" set:html={schemaScript(webPageSchema({
+		path: `/projects/${project.id}`,
+		title: project.data.title,
+		description: project.data.seoDescription ?? project.data.description,
+		breadcrumbs,
+	}))} />
+
+	<article>
+		<!-- Project hero -->
+		<section class="relative flex min-h-[70vh] items-end bg-ink">
+			<Image
+				src={project.data.featuredImage}
+				alt={project.data.imageAlt ?? project.data.title}
+				widths={[768, 1200, 1920]}
+				sizes="100vw"
+				loading="eager"
+				priority={true}
+				quality={60}
+				decoding="async"
+				class="absolute inset-0 h-full w-full object-cover opacity-90"
+			/>
+			<div class="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/50 to-ink/10" aria-hidden="true"></div>
+			<div class="relative container-editorial pb-14 pt-40 text-bone">
+				<Breadcrumbs items={breadcrumbs} tone="light" />
+				<h1 class="font-display mt-8 max-w-3xl text-4xl lg:text-6xl">{project.data.title}</h1>
+				{meta.length > 0 && (
+					<p class="mt-4 text-sm uppercase tracking-widest text-bone/70">{meta.join(' · ')}</p>
+				)}
+			</div>
+		</section>
+
+		<!-- Overview + body -->
+		<section class="container-editorial grid gap-14 py-20 lg:grid-cols-12 lg:py-28">
+			<div class="lg:col-span-4">
+				<p class="eyebrow text-stone">Overview</p>
+				<p class="mt-4 text-lg leading-relaxed text-graphite">{project.data.description}</p>
+				{project.data.services.length > 0 && (
+					<div class="mt-10">
+						<p class="eyebrow text-stone">Scope</p>
+						<ul class="mt-4 space-y-2 text-sm text-graphite">
+							{project.data.services.map((s) => <li class="border-b border-sand pb-2">{s}</li>)}
+						</ul>
+					</div>
+				)}
+			</div>
+			<div class="prose-editorial lg:col-span-7 lg:col-start-6">
+				<Content />
+			</div>
+		</section>
+
+		<!-- Gallery -->
+		{project.data.gallery.length > 0 && (
+			<section class="container-editorial pb-20">
+				<div class="grid gap-6 md:grid-cols-2">
+					{project.data.gallery.map((img, i) => (
+						<Image
+							src={img}
+							alt={`${project.data.title} — interior detail ${i + 1}`}
+							widths={[600, 1000]}
+							sizes="(min-width: 768px) 50vw, 100vw"
+							loading="lazy"
+							quality={55}
+							decoding="async"
+							class="aspect-[4/3] w-full object-cover"
+						/>
+					))}
+				</div>
+			</section>
+		)}
+	</article>
+
+	<CtaBanner />
+</Layout>

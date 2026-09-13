@@ -1,6 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /node_modules/
-Disallow: /src/
 
-Sitemap: https://paulaambrosiointeriors.com/sitemap.xml
+Sitemap: https://paulaambrosiointeriors.com/sitemap-index.xml

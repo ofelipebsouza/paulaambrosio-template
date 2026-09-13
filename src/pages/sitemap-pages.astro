@@ -1,0 +1,80 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import { webPageSchema, schemaScript } from '../lib/seo';
+
+const projects = (await getCollection('projects')).filter((p) => !p.data.draft);
+const services = await getCollection('services');
+const locations = await getCollection('locations');
+const journal = await getCollection('journal');
+
+const section = 'eyebrow text-stone';
+const link = 'block py-1.5 text-graphite hover:text-ink';
+---
+
+<Layout
+	title="Sitemap — All Pages"
+	description="Complete index of pages on the Paula Ambrosio Interiors website."
+	canonical="/sitemap-pages"
+	noindex={true}
+>
+	<Fragment slot="head" set:html={schemaScript(webPageSchema({
+		path: '/sitemap-pages',
+		title: 'HTML Sitemap — Paula Ambrosio Interiors',
+		description: 'Human-readable index of all pages.',
+	}))} />
+
+	<article class="container-editorial max-w-3xl pt-16 pb-24 lg:pt-24">
+		<h1 class="font-display text-4xl">Sitemap</h1>
+
+		<section class="mt-12">
+			<h2 class={section}>Main</h2>
+			<ul class="mt-3 border-t border-sand text-sm">
+				<li><a href="/" class={link}>Home</a></li>
+				<li><a href="/about" class={link}>About</a></li>
+				<li><a href="/contact" class={link}>Contact</a></li>
+				<li><a href="/privacy" class={link}>Privacy</a></li>
+			</ul>
+		</section>
+
+		<section class="mt-10">
+			<h2 class={section}>Services</h2>
+			<ul class="mt-3 border-t border-sand text-sm">
+				<li><a href="/services" class={link}>All Services</a></li>
+				{services.map((s) => (
+					<li><a href={`/services/${s.id}`} class={link}>{s.data.title}</a></li>
+				))}
+			</ul>
+		</section>
+
+		<section class="mt-10">
+			<h2 class={section}>Locations</h2>
+			<ul class="mt-3 border-t border-sand text-sm">
+				<li><a href="/locations" class={link}>All Locations</a></li>
+				{locations.map((l) => (
+					<li><a href={`/locations/${l.id}`} class={link}>Interior Design in {l.data.title}</a></li>
+				))}
+			</ul>
+		</section>
+
+		<section class="mt-10">
+			<h2 class={section}>Projects</h2>
+			<ul class="mt-3 border-t border-sand text-sm">
+				<li><a href="/projects" class={link}>All Projects</a></li>
+				{projects.map((p) => (
+					<li><a href={`/projects/${p.id}`} class={link}>{p.data.title}</a></li>
+				))}
+			</ul>
+		</section>
+
+		<section class="mt-10">
+			<h2 class={section}>Journal</h2>
+			<ul class="mt-3 border-t border-sand text-sm">
+				<li><a href="/journal" class={link}>All Articles</a></li>
+				{journal.map((j) => (
+					<li><a href={`/journal/${j.id}`} class={link}>{j.data.title}</a></li>
+				))}
+			</ul>
+		</section>
+	</article>
+</Layout>

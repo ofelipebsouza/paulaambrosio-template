@@ -1,0 +1,166 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Design tokens — the single source for color, type and motion.
+   Components reference tokens; no scattered arbitrary values.
+   ============================================================ */
+@theme {
+	/* Palette: warm neutrals, graphite, stone. Photography adds the color. */
+	--color-ink: #1a1816;
+	--color-graphite: #2a2623;
+	--color-bone: #faf9f6;
+	--color-linen: #f2ede5;
+	--color-sand: #e8e2d8;
+	--color-stone: #8a7a67;
+	--color-brass: #c9a986;
+	--color-slate: #55504a;
+	--color-mist: #6d6660;
+
+	/* Editorial type scale */
+	--text-eyebrow: 0.75rem;
+	--text-eyebrow--line-height: 1.4;
+	--text-eyebrow--letter-spacing: 0.22em;
+	--text-display: clamp(2.5rem, 5vw, 4.5rem);
+	--text-display--line-height: 1.05;
+	--text-display--letter-spacing: -0.015em;
+	--text-lede: 1.25rem;
+	--text-lede--line-height: 1.6;
+
+	/* Motion: slow, subtle, architectural */
+	--ease-editorial: cubic-bezier(0.22, 1, 0.36, 1);
+	--duration-editorial: 500ms;
+
+	--font-display: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+	--font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+}
+
+@layer base {
+	html {
+		scroll-behavior: smooth;
+		font-family: var(--font-body);
+	}
+
+	:focus-visible {
+		outline: 2px solid var(--color-brass);
+		outline-offset: 3px;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		html {
+			scroll-behavior: auto;
+		}
+		*,
+		*::before,
+		*::after {
+			animation-duration: 0.01ms !important;
+			animation-iteration-count: 1 !important;
+			transition-duration: 0.01ms !important;
+		}
+	}
+
+	h1, h2, h3, h4 {
+		font-family: var(--font-display);
+		font-weight: 500;
+		letter-spacing: -0.01em;
+	}
+
+	::selection {
+		background-color: color-mix(in srgb, var(--color-brass) 30%, transparent);
+	}
+
+	/* Custom subtle scrollbar */
+	::-webkit-scrollbar { width: 6px; height: 6px; }
+	::-webkit-scrollbar-track { background: var(--color-linen); }
+	::-webkit-scrollbar-thumb { background: var(--color-sand); border-radius: 3px; }
+	::-webkit-scrollbar-thumb:hover { background: var(--color-stone); }
+}
+
+@layer components {
+	/* Shared editorial primitives */
+	.eyebrow {
+		font-size: var(--text-eyebrow);
+		line-height: var(--text-eyebrow--line-height);
+		letter-spacing: var(--text-eyebrow--letter-spacing);
+		text-transform: uppercase;
+		font-weight: 600;
+	}
+
+	.container-editorial {
+		width: 100%;
+		margin-inline: auto;
+		max-width: 80rem;
+		padding-inline: 1.5rem;
+		@media (min-width: 1024px) { padding-inline: 2.5rem; }
+	}
+
+	.btn-primary {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		padding: 0.875rem 2rem;
+		background: var(--color-ink);
+		color: var(--color-bone);
+		font-size: 0.6875rem;
+		letter-spacing: 0.2em;
+		text-transform: uppercase;
+		font-weight: 600;
+		transition: background var(--duration-editorial) var(--ease-editorial);
+	}
+	.btn-primary:hover { background: var(--color-brass); color: var(--color-ink); }
+	.btn-primary:focus-visible { outline: 2px solid var(--color-brass); outline-offset: 3px; }
+
+	.btn-secondary {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		padding: 0.875rem 2rem;
+		border: 1px solid color-mix(in srgb, var(--color-ink) 30%, transparent);
+		color: var(--color-ink);
+		font-size: 0.6875rem;
+		letter-spacing: 0.2em;
+		text-transform: uppercase;
+		font-weight: 600;
+		transition: border-color var(--duration-editorial) var(--ease-editorial), color var(--duration-editorial) var(--ease-editorial);
+	}
+	.btn-secondary:hover { border-color: var(--color-brass); color: var(--color-stone); }
+	.btn-secondary:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 3px; }
+
+	/* Editorial content typography for MDX bodies */
+	.prose-editorial {
+		font-size: 1.0625rem;
+		line-height: 1.85;
+		color: var(--color-graphite);
+	}
+	.prose-editorial > * + * { margin-top: 1.4em; }
+	.prose-editorial h2 {
+		font-family: var(--font-display);
+		font-size: 1.75rem;
+		margin-top: 2.2em;
+		margin-bottom: 0.5em;
+	}
+	.prose-editorial h3 {
+		font-family: var(--font-display);
+		font-size: 1.35rem;
+		margin-top: 1.8em;
+		margin-bottom: 0.4em;
+	}
+	.prose-editorial a {
+		color: var(--color-ink);
+		text-decoration: underline;
+		text-decoration-color: color-mix(in srgb, var(--color-brass) 60%, transparent);
+		text-underline-offset: 3px;
+	}
+	.prose-editorial a:hover { text-decoration-color: var(--color-brass); }
+	.prose-editorial ul { list-style: disc; padding-left: 1.4em; }
+	.prose-editorial ul li + li { margin-top: 0.4em; }
+	.prose-editorial blockquote {
+		border-left: 2px solid var(--color-brass);
+		padding-left: 1.4em;
+		font-family: var(--font-display);
+		font-size: 1.3rem;
+		font-style: italic;
+		color: var(--color-slate);
+	}
+}

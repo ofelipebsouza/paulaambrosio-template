@@ -1,0 +1,27 @@
+{
+	"$schema": "https://openapi.vercel.sh/vercel.json",
+	"trailingSlash": true,
+	"cleanUrls": false,
+	"redirects": [
+		{ "source": "/interior-design-miami", "destination": "/locations/miami", "permanent": true },
+		{ "source": "/turnkey-interior-design-miami", "destination": "/services/turnkey-interior-design-miami", "permanent": true },
+		{ "source": "/luxury-residential-interior-design-miami", "destination": "/services/luxury-residential-interior-design-miami", "permanent": true },
+		{ "source": "/hospitality-interior-design-miami", "destination": "/services/hospitality-interior-design-miami", "permanent": true },
+		{ "source": "/interior-designer-miami-beach", "destination": "/locations/miami-beach", "permanent": true },
+		{ "source": "/interior-designer-sunny-isles", "destination": "/locations/sunny-isles-beach", "permanent": true },
+		{ "source": "/interior-designer-aventura", "destination": "/locations/aventura", "permanent": true },
+		{ "source": "/interior-designer-bal-harbour", "destination": "/locations/bal-harbour", "permanent": true },
+		{ "source": "/interior-designer-boca-raton", "destination": "/locations/boca-raton", "permanent": true },
+		{ "source": "/interior-designer-palm-beach", "destination": "/locations/palm-beach", "permanent": true },
+		{ "source": "/locations/sunny-isles", "destination": "/locations/sunny-isles-beach", "permanent": true },
+		{ "source": "/locations/interior-designer-sunny-isles", "destination": "/locations/sunny-isles-beach", "permanent": true },
+		{ "source": "/locations/interior-designer-aventura", "destination": "/locations/aventura", "permanent": true },
+		{ "source": "/locations/interior-designer-bal-harbour", "destination": "/locations/bal-harbour", "permanent": true },
+		{ "source": "/locations/interior-designer-boca-raton", "destination": "/locations/boca-raton", "permanent": true },
+		{ "source": "/locations/interior-designer-palm-beach", "destination": "/locations/palm-beach", "permanent": true },
+		{ "source": "/portfolio", "destination": "/projects", "permanent": true },
+		{ "source": "/portfolio/:slug", "destination": "/projects/:slug", "permanent": true },
+		{ "source": "/start-your-project", "destination": "/contact", "permanent": true },
+		{ "source": "/sitemap", "destination": "/sitemap-pages", "permanent": true }
+	]
+}

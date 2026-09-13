@@ -1,0 +1,46 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import ProjectGrid from '../../components/projects/ProjectGrid.astro';
+import CtaBanner from '../../components/ui/CtaBanner.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import { webPageSchema, breadcrumbSchema, schemaScript } from '../../lib/seo';
+import type { BreadcrumbEntry } from '../../lib/seo';
+
+const projects = (await getCollection('projects'))
+	.filter((p) => !p.data.draft)
+	.sort(
+	(a, b) => (b.data.year ?? 0) - (a.data.year ?? 0),
+);
+
+const breadcrumbs: BreadcrumbEntry[] = [{ name: 'Projects', url: '/projects' }];
+---
+
+<Layout
+	title="Interior Design Portfolio — Projects in Miami & South Florida"
+	description="Selected residential, penthouse and hospitality projects by Paula Ambrosio Interiors — full-service luxury interior design across Miami and South Florida."
+	canonical="/projects"
+>
+	<Fragment slot="head" set:html={schemaScript(webPageSchema({
+		path: '/projects',
+		title: 'Projects — Paula Ambrosio Interiors',
+		description: 'Selected luxury interior design projects across Miami and South Florida.',
+		breadcrumbs,
+	}))} />
+
+	<section class="container-editorial pt-16 pb-14 lg:pt-24">
+		<Breadcrumbs items={breadcrumbs} />
+		<p class="eyebrow mt-10 text-stone">Selected Work</p>
+		<h1 class="font-display mt-4 max-w-2xl text-display">Projects shaped by architecture, light and material.</h1>
+		<p class="mt-6 max-w-xl text-lede text-slate">
+			Residences, penthouses and hospitality spaces across Miami and South Florida — each delivered
+			from first sketch to final styling.
+		</p>
+	</section>
+
+	<section class="container-editorial pb-24">
+		<ProjectGrid projects={projects} columns={3} />
+	</section>
+
+	<CtaBanner />
+</Layout>
