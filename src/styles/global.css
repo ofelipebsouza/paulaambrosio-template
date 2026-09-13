@@ -139,6 +139,50 @@
 	.btn-secondary:hover { border-color: var(--color-coffee); color: var(--color-coffee); }
 	.btn-secondary:focus-visible { outline: 2px solid var(--color-coffee); outline-offset: 3px; }
 
+	/* Nav dropdown — opens on hover AND keyboard focus; the top-level link
+	   itself still navigates on click (no click-jacking). */
+	.dropdown-panel {
+		position: absolute;
+		top: 100%;
+		right: 0;
+		z-index: 60;
+		min-width: 15rem;
+		padding: 0.75rem;
+		background: var(--color-bone);
+		border: 1px solid color-mix(in srgb, var(--color-sand) 80%, transparent);
+		box-shadow: 0 18px 40px -18px rgb(26 24 22 / 0.25);
+		opacity: 0;
+		visibility: hidden;
+		transform: translateY(6px);
+		transition: opacity var(--duration-editorial) var(--ease-editorial),
+			transform var(--duration-editorial) var(--ease-editorial), visibility 0s linear var(--duration-editorial);
+	}
+	.dropdown:hover .dropdown-panel,
+	.dropdown:focus-within .dropdown-panel {
+		opacity: 1;
+		visibility: visible;
+		transform: translateY(0);
+		transition-delay: 0s;
+	}
+	.dropdown-link {
+		display: block;
+		padding: 0.55rem 0.9rem;
+		font-size: 0.75rem;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		font-weight: 600;
+		color: var(--color-slate);
+		transition: background var(--duration-editorial) var(--ease-editorial), color var(--duration-editorial) var(--ease-editorial);
+	}
+	.dropdown-link:hover,
+	.dropdown-link[aria-current='page'] {
+		color: var(--color-ink);
+		background: var(--color-linen);
+	}
+
+	/* Mobile menu expandable group */
+	.mobile-group[open] > summary .text-brass { transform: rotate(45deg); }
+
 	/* Editorial content typography for MDX bodies */
 	.prose-editorial {
 		font-size: 1.0625rem;
