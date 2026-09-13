@@ -36,7 +36,7 @@ const latestJournal = (await getCollection('journal'))
 	}))} />
 
 	<!-- 1. Hero — image melts into the cream ground, title sits below -->
-	<section class="bg-bone pb-16 text-center lg:pb-24">
+	<section class="bg-bone pb-20 text-center lg:pb-28">
 		<div class="relative w-full">
 			<Image
 				src={heroImage}
@@ -47,18 +47,18 @@ const latestJournal = (await getCollection('journal'))
 				priority={true}
 				quality={60}
 				decoding="async"
-				class="aspect-[4/3] w-full object-cover sm:aspect-[16/10] lg:aspect-[16/8]"
+				class="w-full object-cover sm:aspect-[16/10] lg:aspect-[21/8]"
 			/>
-			<div class="pointer-events-none absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-bone via-bone/80 to-transparent lg:h-48" aria-hidden="true"></div>
+			<div class="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-bone via-bone/70 to-transparent lg:h-64" aria-hidden="true"></div>
 		</div>
 		<div class="container-editorial relative">
 			<h1 class="font-display mx-auto max-w-4xl text-4xl leading-[1.08] tracking-[0.04em] text-ink uppercase sm:text-5xl lg:text-6xl">
 				Luxury Interior Design in Miami
 			</h1>
-			<p class="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-slate">
+			<p class="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-slate">
 				Sophisticated interiors. Seamless execution. Designed around the way you live.
 			</p>
-			<div class="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row">
+			<div class="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
 				<button type="button" class="inquiry-open btn-primary">Start Your Project</button>
 				<a href="/services" class="btn-secondary">Explore Our Services</a>
 			</div>
@@ -66,10 +66,10 @@ const latestJournal = (await getCollection('journal'))
 	</section>
 
 	<!-- 2. Intro (§01 INTRO) -->
-	<section class="container-editorial py-20 lg:py-28">
+	<section class="container-editorial py-24 lg:py-32">
 		<div class="mx-auto max-w-3xl text-center">
 			<p class="eyebrow text-stone">Miami · South Florida · International</p>
-			<p class="font-display mt-6 text-2xl leading-relaxed text-graphite lg:text-3xl">
+			<p class="font-display mt-8 text-2xl leading-relaxed text-graphite lg:text-3xl">
 				Paula Ambrosio Interiors is a Miami-based luxury interior design studio creating
 				sophisticated residential and hospitality interiors in South Florida and
 				internationally. From concept to completion, our studio brings together interior
@@ -80,41 +80,41 @@ const latestJournal = (await getCollection('journal'))
 	</section>
 
 	<!-- 3. Full-service interior design (§01) -->
-	<section class="bg-linen py-24 lg:py-32">
-		<div class="container-editorial grid gap-12 lg:grid-cols-12">
+	<section class="bg-linen py-28 lg:py-36">
+		<div class="container-editorial grid gap-16 lg:grid-cols-12">
 			<div class="lg:col-span-5">
 				<p class="eyebrow text-stone">Full-Service Interior Design</p>
-				<h2 class="font-display mt-4 text-4xl leading-tight">From vision to a fully realized interior.</h2>
-				<p class="mt-6 leading-relaxed text-slate">
+				<h2 class="font-display mt-5 text-4xl leading-tight">From vision to a fully realized interior.</h2>
+				<p class="mt-8 leading-relaxed text-slate">
 					Services may include interior architecture and space planning, full-service
 					interior design, renovation design, new-construction interior design, custom
 					millwork, kitchens and bathrooms, lighting, material and finish selection,
 					custom furniture, procurement, art and accessories, project coordination,
 					installation and styling.
 				</p>
-				<a href={serviceUrl('luxury-residential-interior-design-miami')} class="btn-secondary mt-8">Explore residential projects</a>
+				<a href={serviceUrl('luxury-residential-interior-design-miami')} class="btn-secondary mt-10">Explore residential projects</a>
 			</div>
 			<div class="lg:col-span-6 lg:col-start-7">
 				<p class="eyebrow text-stone">Turnkey</p>
-				<h2 class="font-display mt-4 text-4xl leading-tight">Arrive. Everything is ready.</h2>
-				<p class="mt-6 leading-relaxed text-slate">
+				<h2 class="font-display mt-5 text-4xl leading-tight">Arrive. Everything is ready.</h2>
+				<p class="mt-8 leading-relaxed text-slate">
 					Our turnkey service is for clients who want an extraordinary home without managing
 					hundreds of individual decisions. We oversee the design journey from concept
 					through furnishings, lighting, custom pieces, procurement, installation,
 					accessories and final styling.
 				</p>
-				<a href={serviceUrl('turnkey-interior-design-miami')} class="btn-secondary mt-8">Discover turnkey design</a>
+				<a href={serviceUrl('turnkey-interior-design-miami')} class="btn-secondary mt-10">Discover turnkey design</a>
 			</div>
 		</div>
 	</section>
 
 	<!-- 4. Selected projects -->
-	<section class="bg-linen py-24 lg:py-32">
+	<section class="bg-linen py-28 lg:py-36">
 		<div class="container-editorial">
-			<div class="mb-14 flex flex-wrap items-end justify-between gap-6">
+			<div class="mb-16 flex flex-wrap items-end justify-between gap-6">
 				<div>
 					<p class="eyebrow text-stone">Selected Projects</p>
-					<h2 class="font-display mt-4 text-4xl">Recent work</h2>
+					<h2 class="font-display mt-5 text-4xl">Recent work</h2>
 				</div>
 				<a href="/projects" class="eyebrow text-stone underline decoration-brass/60 underline-offset-8 hover:text-ink">View all projects</a>
 			</div>
@@ -122,14 +122,15 @@ const latestJournal = (await getCollection('journal'))
 		</div>
 	</section>
 
-	<!-- 4. Services -->
-	<section class="container-editorial py-24 lg:py-32">
+	<!-- 5. Services -->
+	<section class="container-editorial py-28 lg:py-36">
 		<p class="eyebrow text-stone">Services</p>
-		<h2 class="font-display mt-4 max-w-xl text-4xl">A complete design service, from concept to keys in hand.</h2>
-		<div class="mt-14 divide-y divide-sand border-t border-sand">
-			{services.map((service) => (																		<a
-																		href={serviceUrl(service.id)}
-					class="group flex flex-wrap items-baseline justify-between gap-4 py-7 transition-colors hover:bg-linen/60"
+		<h2 class="font-display mt-5 max-w-xl text-4xl">A complete design service, from concept to keys in hand.</h2>
+		<div class="mt-16 divide-y divide-sand border-t border-sand">
+			{services.map((service) => (
+				<a
+					href={serviceUrl(service.id)}
+					class="group flex flex-wrap items-baseline justify-between gap-4 py-8 transition-colors hover:bg-linen/60"
 				>
 					<h3 class="font-display text-2xl lg:text-3xl">{service.data.title}</h3>
 					<p class="max-w-md text-sm text-slate">{service.data.introduction}</p>
@@ -139,13 +140,13 @@ const latestJournal = (await getCollection('journal'))
 		</div>
 	</section>
 
-	<!-- 5. Turnkey positioning -->
-	<section class="bg-graphite py-24 text-bone lg:py-32">
+	<!-- 6. Turnkey positioning -->
+	<section class="bg-graphite py-28 text-bone lg:py-36">
 		<div class="container-editorial grid gap-12 lg:grid-cols-12">
 			<div class="lg:col-span-5">
 				<p class="eyebrow text-brass">Turnkey Interior Design</p>
-				<h2 class="font-display mt-4 text-4xl">Move-in ready, down to the last detail.</h2>
-				<a href={serviceUrl('turnkey-interior-design-miami')} class="btn-primary mt-8">Discover turnkey design</a>
+				<h2 class="font-display mt-5 text-4xl">Move-in ready, down to the last detail.</h2>
+				<a href={serviceUrl('turnkey-interior-design-miami')} class="btn-primary mt-10">Discover turnkey design</a>
 			</div>
 			<div class="lg:col-span-6 lg:col-start-7">
 				<p class="text-lg leading-relaxed text-bone/80">
@@ -157,21 +158,21 @@ const latestJournal = (await getCollection('journal'))
 		</div>
 	</section>
 
-	<!-- 6. Locations -->
-	<section class="container-editorial py-24 lg:py-32">
-		<div class="mb-14 flex flex-wrap items-end justify-between gap-6">
+	<!-- 7. Locations -->
+	<section class="container-editorial py-28 lg:py-36">
+		<div class="mb-16 flex flex-wrap items-end justify-between gap-6">
 			<div>
 				<p class="eyebrow text-stone">Locations</p>
-				<h2 class="font-display mt-4 text-4xl">Serving Miami and South Florida</h2>
+				<h2 class="font-display mt-5 text-4xl">Serving Miami and South Florida</h2>
 			</div>
 			<a href="/locations" class="eyebrow text-stone underline decoration-brass/60 underline-offset-8 hover:text-ink">All locations</a>
 		</div>
 		<ul class="grid grid-cols-2 gap-px bg-sand sm:grid-cols-3 lg:grid-cols-4">
 			{['Miami', 'Miami Beach', 'Sunny Isles Beach', 'Aventura', 'Bal Harbour', 'Boca Raton', 'Palm Beach'].map((loc) => (
 				<li class="bg-bone">
-					<a href={locationUrl(loc.toLowerCase().replace(/\s+/g, '-'))} class="flex h-full flex-col justify-between p-6 transition-colors hover:bg-linen">
+					<a href={locationUrl(loc.toLowerCase().replace(/\s+/g, '-'))} class="flex h-full min-h-[7rem] flex-col justify-between p-6 transition-colors hover:bg-linen">
 						<span class="font-display text-xl">{loc}</span>
-						<span aria-hidden="true" class="mt-6 eyebrow text-brass">→</span>
+						<span aria-hidden="true" class="mt-6 eyebrow text-brass transition-transform duration-300 group-hover:translate-x-1">→</span>
 					</a>
 				</li>
 			))}
@@ -179,8 +180,8 @@ const latestJournal = (await getCollection('journal'))
 	</section>
 
 	<!-- 8. About Paula (§01 ABOUT PAULA) -->
-	<section class="container-editorial py-24 lg:py-32">
-		<div class="grid items-center gap-12 lg:grid-cols-12">
+	<section class="container-editorial py-28 lg:py-36">
+		<div class="grid items-center gap-16 lg:grid-cols-12">
 			<div class="lg:col-span-5">
 				<div class="flex aspect-[4/5] items-center justify-center border border-sand bg-linen p-10 text-center">
 					<div>
@@ -192,27 +193,27 @@ const latestJournal = (await getCollection('journal'))
 			</div>
 			<div class="lg:col-span-6 lg:col-start-7">
 				<p class="eyebrow text-stone">About Paula</p>
-				<h2 class="font-display mt-4 text-4xl leading-tight">Design guided by experience, delivered with precision.</h2>
-				<p class="mt-6 leading-relaxed text-slate">
+				<h2 class="font-display mt-5 text-4xl leading-tight">Design guided by experience, delivered with precision.</h2>
+				<p class="mt-8 leading-relaxed text-slate">
 					Paula Ambrosio is the Founder and Principal Designer of Paula Ambrosio
 					Interiors, leading every project with a philosophy rooted in architecture,
 					materiality and the way clients truly live.
 				</p>
-				<a href="/about" class="btn-secondary mt-8">Meet Paula</a>
+				<a href="/about" class="btn-secondary mt-10">Meet Paula</a>
 			</div>
 		</div>
 	</section>
 
 	<!-- 9. Process (§01 PROCESS) -->
-	<section class="bg-graphite py-24 text-bone lg:py-32">
+	<section class="bg-graphite py-28 text-bone lg:py-36">
 		<div class="container-editorial">
 			<p class="eyebrow text-brass">The Process</p>
-			<h2 class="font-display mt-4 max-w-xl text-4xl">From first conversation to final reveal.</h2>
-			<ol class="mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-6">
+			<h2 class="font-display mt-5 max-w-xl text-4xl">From first conversation to final reveal.</h2>
+			<ol class="mt-16 grid gap-10 sm:grid-cols-2 lg:grid-cols-6">
 				{['Discovery', 'Concept & Design', 'Design Development', 'Procurement & Coordination', 'Installation', 'Reveal'].map((step, i) => (
-					<li class="border-t border-bone/20 pt-5">
+					<li class="border-t border-bone/20 pt-6">
 						<span class="font-display text-3xl text-brass">{String(i + 1).padStart(2, '0')}</span>
-						<p class="eyebrow mt-3 text-bone/80">{step}</p>
+						<p class="eyebrow mt-4 text-bone/80">{step}</p>
 					</li>
 				))}
 			</ol>
@@ -220,12 +221,12 @@ const latestJournal = (await getCollection('journal'))
 	</section>
 
 	<!-- 10. Journal -->
-	<section class="bg-linen py-24 lg:py-32">
+	<section class="bg-linen py-28 lg:py-36">
 		<div class="container-editorial">
-			<div class="mb-14 flex flex-wrap items-end justify-between gap-6">
+			<div class="mb-16 flex flex-wrap items-end justify-between gap-6">
 				<div>
 					<p class="eyebrow text-stone">Journal</p>
-					<h2 class="font-display mt-4 text-4xl">Notes on design</h2>
+					<h2 class="font-display mt-5 text-4xl">Notes on design</h2>
 				</div>
 				<a href="/journal" class="eyebrow text-stone underline decoration-brass/60 underline-offset-8 hover:text-ink">Read the journal</a>
 			</div>
@@ -244,8 +245,8 @@ const latestJournal = (await getCollection('journal'))
 								class="aspect-[3/2] w-full object-cover transition-transform duration-700 ease-editorial group-hover:scale-[1.03]"
 							/>
 						</a>
-						<p class="eyebrow mt-5 text-stone">{post.data.category}</p>
-						<h3 class="font-display mt-2 text-2xl leading-snug">
+						<p class="eyebrow mt-6 text-stone">{post.data.category}</p>
+						<h3 class="font-display mt-3 text-2xl leading-snug">
 							<a href={`/journal/${post.id}`} class="hover:text-stone">{post.data.title}</a>
 						</h3>
 					</article>
