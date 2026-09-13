@@ -8,30 +8,19 @@ import { webPageSchema, schemaScript } from '../lib/seo';
 import { serviceUrl, locationUrl } from '../config';
 import { getImage } from 'astro:assets';
 
-import heroImage        from '../assets/hero-miami-interior.jpg';
-import heroImage2       from '../assets/turnkey-miami-penthouse-interior.jpg';
-import heroImage3       from '../assets/miami-open-plan-living-room.jpg';
-import heroImage4       from '../assets/coastal-travertine-oak-interior.jpg';
-import heroImage5       from '../assets/hospitality-lounge-miami.jpg';
-import heroImage6       from '../assets/high-rise-condo-renovation-bal-harbour.jpg';
+const allProjects = (await getCollection('projects')).filter((p) => !p.data.draft);
 
-const heroSlides = [
-	{ src: heroImage,  alt: 'Double-height Miami living room with marble floors, sheer drapery and sculptural lighting' },
-	{ src: heroImage2, alt: 'Turnkey Miami penthouse interior with bespoke furnishings and floor-to-ceiling views' },
-	{ src: heroImage3, alt: 'Miami open-plan living room with custom millwork and curated art' },
-	{ src: heroImage4, alt: 'Coastal interior with travertine finishes and warm oak detailing' },
-	{ src: heroImage5, alt: 'Hospitality lounge in Miami with ambient lighting and layered textiles' },
-	{ src: heroImage6, alt: 'High-rise condo renovation in Bal Harbour with panoramic ocean views' },
-];
+const heroOg = await getImage({ src: allProjects[0]?.data.featuredImage, width: 1200, format: 'jpeg', quality: 70 });
 
-const heroOg = await getImage({ src: heroImage, width: 1200, format: 'jpeg', quality: 70 });
+const heroSlides = allProjects.slice(0, 9).map((p) => ({
+	src: p.data.featuredImage,
+	alt: p.data.imageAlt ?? p.data.title,
+}));
 
-const featuredProjects = (await getCollection('projects'))
-	.filter((p) => !p.data.draft)
+const featuredProjects = allProjects
 	.sort((a, b) => (b.data.year ?? 0) - (a.data.year ?? 0))
-	.slice(0, 3);
+	.slice(0, 6);
 
-const services = (await getCollection('services')).filter((s) => !s.data.draft);
 const latestJournal = (await getCollection('journal'))
 	.filter((p) => !p.data.draft)
 	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
@@ -130,35 +119,62 @@ const processSteps = [
 		</div>
 	</section>
 
-	<!-- 3. Full-service + Turnkey services -->
-	<section class="bg-linen py-28 lg:py-36">
+	<!-- 3. Services -->
+	<section class="bg-bone py-28 lg:py-36 border-t border-sand">
 		<div class="container-editorial">
-			<p class="eyebrow text-stone text-center mb-14 fade-up">Our Services</p>
-			<div class="grid gap-px bg-sand lg:grid-cols-2 fade-up stagger-children">
-				<!-- Full-Service card -->
-				<div class="group bg-linen p-10 lg:p-14 transition-colors duration-500 hover:bg-bone">
-					<span class="font-display block text-[5rem] leading-none text-brass/25 select-none lg:text-[6rem]">01</span>
-					<p class="eyebrow text-stone mt-2">Full-Service Interior Design</p>
-					<h2 class="font-display mt-5 text-4xl leading-tight">From vision to a fully realised interior.</h2>
-					<p class="mt-6 leading-relaxed text-slate">
-						Interior architecture, space planning, custom millwork, kitchens, bathrooms, lighting, material selection, custom furniture, procurement, art and accessories, project coordination, installation and styling.
-					</p>
-					<a href={serviceUrl('luxury-residential-interior-design-miami')} class="btn-secondary mt-10 group-hover:border-coffee group-hover:text-coffee">
-						Explore residential projects
-					</a>
+			<div class="text-center mb-20 fade-up">
+				<div class="ornament-divider mb-8">
+					<span class="ornament-divider-diamond"></span>
 				</div>
-				<!-- Turnkey card -->
-				<div class="group bg-linen p-10 lg:p-14 transition-colors duration-500 hover:bg-bone">
-					<span class="font-display block text-[5rem] leading-none text-brass/25 select-none lg:text-[6rem]">02</span>
-					<p class="eyebrow text-stone mt-2">Turnkey</p>
-					<h2 class="font-display mt-5 text-4xl leading-tight">Arrive. Everything is ready.</h2>
-					<p class="mt-6 leading-relaxed text-slate">
-						Our turnkey service is for clients who want an extraordinary home without managing hundreds of individual decisions. Design, furnishings, lighting, custom pieces, procurement, installation and final styling — delivered as one.
+				<p class="eyebrow text-stone tracking-widest">What We Do</p>
+				<h2 class="font-display mt-5 text-4xl lg:text-5xl leading-tight">A complete design service, from concept to keys in hand.</h2>
+				<p class="mx-auto mt-6 max-w-2xl leading-relaxed text-slate">
+					From luxury residences to turnkey estates and hospitality spaces — every project is a singular, fully realized vision delivered with precision.
+				</p>
+			</div>
+
+			<div class="grid gap-6 lg:grid-cols-3 fade-up stagger-children">
+				<!-- Residential -->
+				<a href={serviceUrl('luxury-residential-interior-design-miami')} class="group relative flex flex-col bg-linen p-10 lg:p-12 transition-all duration-500 hover:bg-graphite hover:text-bone">
+					<span class="font-display block text-6xl leading-none text-brass/30 transition-colors duration-500 group-hover:text-brass/60 select-none">01</span>
+					<p class="eyebrow text-stone mt-4 transition-colors duration-500 group-hover:text-bone/60">Residential</p>
+					<h3 class="font-display mt-3 text-3xl leading-snug">Luxury Residential Interior Design</h3>
+					<p class="mt-5 flex-1 leading-relaxed text-slate transition-colors duration-500 group-hover:text-bone/70">
+						From waterfront residences and penthouses to custom homes and extensive renovations — spaces defined by natural light, exceptional craftsmanship and understated luxury.
 					</p>
-					<a href={serviceUrl('turnkey-interior-design-miami')} class="btn-secondary mt-10 group-hover:border-coffee group-hover:text-coffee">
-						Discover turnkey design
-					</a>
-				</div>
+					<span class="mt-8 inline-flex items-center gap-2 text-sm font-semibold tracking-widest uppercase text-coffee transition-colors duration-500 group-hover:text-brass group-hover:translate-x-1">
+						Explore residential
+						<svg class="h-4 w-4 transition-transform duration-500 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+					</span>
+				</a>
+
+				<!-- Turnkey -->
+				<a href={serviceUrl('turnkey-interior-design-miami')} class="group relative flex flex-col bg-linen p-10 lg:p-12 transition-all duration-500 hover:bg-graphite hover:text-bone">
+					<span class="font-display block text-6xl leading-none text-brass/30 transition-colors duration-500 group-hover:text-brass/60 select-none">02</span>
+					<p class="eyebrow text-stone mt-4 transition-colors duration-500 group-hover:text-bone/60">Turnkey</p>
+					<h3 class="font-display mt-3 text-3xl leading-snug">Arrive. Everything Is Ready.</h3>
+					<p class="mt-5 flex-1 leading-relaxed text-slate transition-colors duration-500 group-hover:text-bone/70">
+						Design, furnishings, lighting, custom pieces, procurement, installation and final styling — delivered as one fully resolved residence, ready for arrival.
+					</p>
+					<span class="mt-8 inline-flex items-center gap-2 text-sm font-semibold tracking-widest uppercase text-coffee transition-colors duration-500 group-hover:text-brass group-hover:translate-x-1">
+						Discover turnkey
+						<svg class="h-4 w-4 transition-transform duration-500 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+					</span>
+				</a>
+
+				<!-- Hospitality -->
+				<a href={serviceUrl('hospitality-interior-design-miami')} class="group relative flex flex-col bg-linen p-10 lg:p-12 transition-all duration-500 hover:bg-graphite hover:text-bone">
+					<span class="font-display block text-6xl leading-none text-brass/30 transition-colors duration-500 group-hover:text-brass/60 select-none">03</span>
+					<p class="eyebrow text-stone mt-4 transition-colors duration-500 group-hover:text-bone/60">Hospitality</p>
+					<h3 class="font-display mt-3 text-3xl leading-snug">Hospitality Interior Design</h3>
+					<p class="mt-5 flex-1 leading-relaxed text-slate transition-colors duration-500 group-hover:text-bone/70">
+						Boutique hotels, private lounges, wellness retreats and upscale beauty destinations — environments designed around experience, flow and identity.
+					</p>
+					<span class="mt-8 inline-flex items-center gap-2 text-sm font-semibold tracking-widest uppercase text-coffee transition-colors duration-500 group-hover:text-brass group-hover:translate-x-1">
+						Explore hospitality
+						<svg class="h-4 w-4 transition-transform duration-500 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+					</span>
+				</a>
 			</div>
 		</div>
 	</section>
@@ -179,27 +195,7 @@ const processSteps = [
 		</div>
 	</section>
 
-	<!-- 5. Services list -->
-	<section class="container-editorial py-28 lg:py-36">
-		<div class="fade-up">
-			<p class="eyebrow text-stone">Services</p>
-			<h2 class="font-display mt-5 max-w-xl text-4xl">A complete design service, from concept to keys in hand.</h2>
-		</div>
-		<div class="mt-16 divide-y divide-sand border-t border-sand fade-up">
-			{services.map((service) => (
-				<a
-					href={serviceUrl(service.id)}
-					class="group flex flex-wrap items-baseline justify-between gap-4 py-8 transition-colors duration-300 hover:bg-linen/60 -mx-4 px-4 rounded-sm"
-				>
-					<h3 class="font-display text-2xl lg:text-3xl transition-colors duration-300 group-hover:text-coffee">{service.data.title}</h3>
-					<p class="max-w-md text-sm text-slate">{service.data.introduction}</p>
-					<span aria-hidden="true" class="eyebrow text-brass transition-transform duration-500 group-hover:translate-x-2">→</span>
-				</a>
-			))}
-		</div>
-	</section>
-
-	<!-- 6. Turnkey dark positioning -->
+	<!-- 5. Turnkey dark positioning -->
 	<section class="bg-graphite py-28 text-bone lg:py-36">
 		<div class="container-editorial grid gap-12 lg:grid-cols-12 fade-up">
 			<div class="lg:col-span-5">

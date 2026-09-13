@@ -131,3 +131,138 @@
 [2m13:36:36[22m [34m[200][39m /contact [2m92ms[22m
 [2m13:41:18[22m [34m[watch][39m /src/styles/global.css
 [2m13:41:18[22m [34m[watch][39m /src/styles/global.css
+[2m13:50:21[22m [34m[watch][39m /src/styles/global.css
+[2m13:51:44[22m [34m[watch][39m /src/styles/global.css
+[2m13:51:44[22m [34m[watch][39m /src/styles/global.css
+[2m13:51:55[22m [34m[watch][39m /src/styles/global.css
+[2m13:51:55[22m [34m[watch][39m /src/styles/global.css
+[2m13:53:46[22m [34m[200][39m / [2m462ms[22m
+[2m13:53:50[22m [34m[200][39m / [2m138ms[22m
+[2m13:53:55[22m [34m[200][39m /_image [2m5951ms[22m
+[2m13:53:56[22m [34m[200][39m /_image [2m5309ms[22m
+[2m13:54:01[22m [34m[200][39m /_image [2m286ms[22m
+[2m13:54:01[22m [34m[200][39m /_image [2m283ms[22m
+[2m13:54:01[22m [34m[200][39m /_image [2m862ms[22m
+[2m13:54:14[22m [34m[200][39m /_image [2m696ms[22m
+[2m13:54:14[22m [34m[200][39m /_image [2m697ms[22m
+[2m13:54:14[22m [34m[200][39m /_image [2m1247ms[22m
+[2m13:54:39[22m [34m[200][39m / [2m562ms[22m
+[2m13:58:30[22m [34m[watch][39m src/pages/index.astro
+[2m13:58:30[22m [34m[watch][39m src/pages/index.astro
+[2m13:58:33[22m [34m[200][39m / [2m309ms[22m
+[2m13:59:49[22m [34m[watch][39m src/pages/index.astro
+[2m13:59:49[22m [34m[watch][39m src/pages/index.astro
+[2m13:59:52[22m [34m[200][39m / [2m759ms[22m
+[2m13:59:52[22m [34m[200][39m /projects/home-dr [2m1152ms[22m
+[2m13:59:58[22m [34m[200][39m /_image [2m4593ms[22m
+[2m13:59:58[22m [34m[200][39m /_image [2m4648ms[22m
+[2m13:59:58[22m [34m[200][39m /_image [2m4655ms[22m
+[2m13:59:59[22m [34m[200][39m /_image [2m4762ms[22m
+[2m14:00:02[22m [34m[200][39m /_image [2m7824ms[22m
+[2m14:00:02[22m [34m[200][39m /_image [2m8013ms[22m
+[2m14:00:02[22m [34m[200][39m /_image [2m3555ms[22m
+[2m14:00:02[22m [34m[200][39m /_image [2m3629ms[22m
+[2m14:00:03[22m [34m[200][39m /_image [2m4277ms[22m
+[2m14:00:03[22m [34m[200][39m /_image [2m4453ms[22m
+[2m14:00:03[22m [34m[200][39m /_image [2m1554ms[22m
+[2m14:00:04[22m [34m[200][39m /_image [2m1777ms[22m
+[2m14:00:04[22m [34m[200][39m /_image [2m1552ms[22m
+[2m14:00:04[22m [34m[200][39m /_image [2m1567ms[22m
+[2m14:00:04[22m [34m[200][39m /_image [2m1215ms[22m
+[2m14:00:06[22m [34m[200][39m /_image [2m904ms[22m
+[2m14:00:06[22m [34m[200][39m /_image [2m1036ms[22m
+[2m14:00:07[22m [34m[200][39m /_image [2m1899ms[22m
+[2m14:00:11[22m [34m[200][39m /_image [2m2298ms[22m
+[2m14:00:11[22m [34m[200][39m /_image [2m2317ms[22m
+[2m14:00:11[22m [34m[200][39m /_image [2m2322ms[22m
+[2m14:00:18[22m [34m[watch][39m src/pages/index.astro
+[2m14:00:19[22m [34m[200][39m /projects/home-dr [2m63ms[22m
+[2m14:00:40[22m [34m[watch][39m src/pages/index.astro
+[2m14:00:41[22m [34m[200][39m /projects/home-dr [2m135ms[22m
+[2m14:01:38[22m [34m[watch][39m src/pages/index.astro
+[2m14:01:40[22m [34m[200][39m /projects/home-dr [2m146ms[22m
+[2m14:02:25[22m [34m[200][39m / [2m229ms[22m
+[2m14:02:28[22m [34m[200][39m /_image [2m1626ms[22m
+[2m14:02:29[22m [34m[200][39m /_image [2m2584ms[22m
+[2m14:02:29[22m [34m[200][39m /_image [2m3217ms[22m
+[2m14:02:29[22m [34m[200][39m /_image [2m3225ms[22m
+[2m14:02:29[22m [34m[200][39m /_image [2m3280ms[22m
+[2m14:08:48[22m [34m[watch][39m src/pages/index.astro
+[2m14:08:48[22m [34m[watch][39m src/pages/index.astro
+[2m14:08:53[22m [34m[200][39m / [2m823ms[22m
+[2m14:09:17[22m [34m[watch][39m src/pages/index.astro
+[2m14:09:18[22m [34m[200][39m / [2m233ms[22m
+[2m14:10:06[22m [34m[watch][39m src/pages/index.astro
+[2m14:10:06[22m [34m[watch][39m src/pages/index.astro
+[2m14:10:07[22m [34m[200][39m / [2m220ms[22m
+[2m14:13:36[22m [34m[watch][39m src/pages/index.astro
+[2m14:13:36[22m [34m[watch][39m src/pages/index.astro
+[33m[1m14:13:44[22m [WARN] [router][39m A `getStaticPaths()` route pattern was matched, but no matching static path was found for requested path `/favicon.ico`.
+
+Possible dynamic routes being matched: src/pages/[location].astro, src/pages/[service].astro.
+[2m14:13:45[22m [34m[vite][39m program reload
+[2m14:13:54[22m [34m[vite][39m program reload
+[2m14:13:57[22m [34m[vite][39m program reload
+[2m14:13:59[22m [34m[vite][39m program reload
+[2m14:14:06[22m [34m[watch][39m src/pages/index.astro
+[2m14:14:08[22m [34m[vite][39m program reload
+[2m14:14:10[22m [34m[200][39m / [2m1309ms[22m
+[2m14:14:12[22m [34m[200][39m /_image [2m952ms[22m
+[2m14:14:12[22m [34m[200][39m /_image [2m1057ms[22m
+[2m14:14:14[22m [34m[200][39m /_image [2m2521ms[22m
+[2m14:14:14[22m [34m[200][39m /_image [2m2936ms[22m
+[2m14:14:15[22m [34m[200][39m /_image [2m3547ms[22m
+[2m14:14:15[22m [34m[200][39m /_image [2m3478ms[22m
+[2m14:14:15[22m [34m[200][39m /_image [2m1161ms[22m
+[2m14:14:19[22m [34m[200][39m /_image [2m7438ms[22m
+[2m14:14:20[22m [34m[200][39m /_image [2m7532ms[22m
+[2m14:14:23[22m [34m[200][39m /_image [2m463ms[22m
+[2m14:14:23[22m [34m[200][39m /_image [2m622ms[22m
+[2m14:14:24[22m [34m[200][39m /_image [2m1233ms[22m
+[2m14:14:51[22m [34m[200][39m /interior-design-miami [2m861ms[22m
+[2m14:14:54[22m [34m[200][39m /_image [2m472ms[22m
+[2m14:14:54[22m [34m[200][39m /_image [2m486ms[22m
+[2m14:14:54[22m [34m[200][39m /_image [2m1047ms[22m
+[2m14:14:55[22m [34m[200][39m /_image [2m2643ms[22m
+[2m14:15:13[22m [34m[200][39m /projects/home-dr [2m102ms[22m
+[2m14:15:22[22m [34m[200][39m /_image [2m1595ms[22m
+[2m14:15:24[22m [34m[200][39m /_image [2m1547ms[22m
+[2m14:15:27[22m [34m[200][39m /journal [2m219ms[22m
+[2m14:15:28[22m [34m[200][39m /_image [2m883ms[22m
+[2m14:15:29[22m [34m[200][39m /_image [2m826ms[22m
+[2m14:15:29[22m [34m[200][39m /_image [2m648ms[22m
+[2m14:15:29[22m [34m[200][39m /_image [2m939ms[22m
+[2m14:15:29[22m [34m[200][39m /_image [2m385ms[22m
+[2m14:15:29[22m [34m[200][39m /_image [2m853ms[22m
+[2m14:15:29[22m [34m[200][39m /_image [2m452ms[22m
+[2m14:15:30[22m [34m[200][39m /_image [2m1465ms[22m
+[2m14:15:31[22m [34m[200][39m /_image [2m683ms[22m
+[2m14:15:31[22m [34m[200][39m /_image [2m697ms[22m
+[2m14:15:31[22m [34m[200][39m /_image [2m527ms[22m
+[2m14:15:31[22m [34m[200][39m /_image [2m1174ms[22m
+[2m14:15:31[22m [34m[200][39m /_image [2m729ms[22m
+[2m14:15:31[22m [34m[200][39m /_image [2m719ms[22m
+[2m14:15:32[22m [34m[200][39m /_image [2m369ms[22m
+[2m14:15:32[22m [34m[200][39m /_image [2m705ms[22m
+[2m14:15:32[22m [34m[200][39m /_image [2m697ms[22m
+[2m14:15:32[22m [34m[200][39m /_image [2m257ms[22m
+[2m14:15:32[22m [34m[200][39m /_image [2m681ms[22m
+[2m14:15:33[22m [34m[200][39m /_image [2m1022ms[22m
+[2m14:15:33[22m [34m[200][39m /_image [2m320ms[22m
+[2m14:15:33[22m [34m[200][39m /_image [2m449ms[22m
+[2m14:15:33[22m [34m[200][39m /_image [2m509ms[22m
+[2m14:15:34[22m [34m[200][39m /_image [2m236ms[22m
+[2m14:15:34[22m [34m[200][39m /_image [2m333ms[22m
+[2m14:15:34[22m [34m[200][39m /_image [2m346ms[22m
+[2m14:15:34[22m [34m[200][39m /_image [2m200ms[22m
+[2m14:15:34[22m [34m[200][39m /_image [2m206ms[22m
+[2m14:15:34[22m [34m[200][39m /_image [2m221ms[22m
+[2m14:15:35[22m [34m[200][39m /_image [2m161ms[22m
+[2m14:15:35[22m [34m[200][39m /_image [2m215ms[22m
+[2m14:15:35[22m [34m[200][39m /_image [2m226ms[22m
+[2m14:15:37[22m [34m[200][39m /journal/miami-interior-design-culture-lifestyle-interior-design-miami-cultural-influence [2m503ms[22m
+[2m14:15:38[22m [34m[200][39m /_image [2m470ms[22m
+[2m14:15:42[22m [34m[200][39m /_image [2m560ms[22m
+[2m14:15:42[22m [34m[200][39m /_image [2m526ms[22m
+[2m14:15:42[22m [34m[200][39m /_image [2m525ms[22m
+[2m14:15:43[22m [34m[200][39m /_image [2m286ms[22m
