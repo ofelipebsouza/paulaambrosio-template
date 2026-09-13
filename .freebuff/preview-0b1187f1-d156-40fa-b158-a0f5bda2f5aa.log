@@ -311,3 +311,116 @@ Possible dynamic routes being matched: src/pages/[location].astro, src/pages/[se
 [2m14:30:34[22m [34m[watch][39m /src/styles/global.css
 [2m14:30:36[22m [34m[200][39m / [2m76ms[22m
 [2m14:30:36[22m [34m[200][39m / [2m107ms[22m
+[2m14:42:16[22m [34m[watch][39m /src/styles/global.css
+[2m14:42:16[22m [34m[watch][39m /src/styles/global.css
+[2m14:42:48[22m [34m[watch][39m src/components/Header.astro
+[2m14:42:51[22m [34m[200][39m / [2m413ms[22m
+[2m14:42:51[22m [34m[200][39m / [2m92ms[22m
+[2m14:45:50[22m [34m[200][39m / [2m1008ms[22m
+[2m14:46:16[22m [34m[200][39m /faq [2m238ms[22m
+[2m14:46:34[22m [34m[200][39m / [2m57ms[22m
+[2m14:46:41[22m [34m[200][39m /projects/commercial-hs [2m226ms[22m
+[2m14:46:43[22m [34m[200][39m /_image [2m1752ms[22m
+[2m14:46:43[22m [34m[200][39m /_image [2m2014ms[22m
+[2m14:46:44[22m [34m[200][39m /_image [2m2133ms[22m
+[2m14:46:44[22m [34m[200][39m /_image [2m2424ms[22m
+[2m14:46:44[22m [34m[200][39m /_image [2m2854ms[22m
+[2m14:46:45[22m [34m[200][39m /_image [2m3511ms[22m
+[2m14:46:45[22m [34m[200][39m /_image [2m998ms[22m
+[2m14:46:45[22m [34m[200][39m /_image [2m1148ms[22m
+[2m14:46:46[22m [34m[200][39m /_image [2m1579ms[22m
+[2m14:46:46[22m [34m[200][39m /_image [2m960ms[22m
+[2m14:46:46[22m [34m[200][39m /_image [2m1739ms[22m
+[2m14:46:46[22m [34m[200][39m /_image [2m754ms[22m
+[2m14:46:47[22m [34m[200][39m /_image [2m1776ms[22m
+[2m14:46:47[22m [34m[200][39m /_image [2m1795ms[22m
+[2m14:46:47[22m [34m[200][39m /_image [2m1384ms[22m
+[2m14:46:47[22m [34m[200][39m /_image [2m1453ms[22m
+[2m14:46:48[22m [34m[200][39m /_image [2m1521ms[22m
+[2m14:46:48[22m [34m[200][39m /_image [2m1682ms[22m
+[2m14:46:49[22m [34m[200][39m /_image [2m1726ms[22m
+[2m14:46:49[22m [34m[200][39m /_image [2m1519ms[22m
+[2m14:46:49[22m [34m[200][39m /_image [2m1814ms[22m
+[2m14:46:49[22m [34m[200][39m /_image [2m1816ms[22m
+[2m14:46:50[22m [34m[200][39m /_image [2m1851ms[22m
+[2m14:46:50[22m [34m[200][39m /_image [2m969ms[22m
+[2m14:46:50[22m [34m[200][39m /_image [2m1122ms[22m
+[2m14:46:50[22m [34m[200][39m /_image [2m2382ms[22m
+[2m14:46:51[22m [34m[200][39m /_image [2m2022ms[22m
+[2m14:46:51[22m [34m[200][39m /_image [2m1053ms[22m
+[2m14:46:52[22m [34m[200][39m /_image [2m1804ms[22m
+[2m14:46:52[22m [34m[200][39m /_image [2m2838ms[22m
+[2m14:46:53[22m [34m[200][39m /_image [2m2930ms[22m
+[2m14:46:53[22m [34m[200][39m /_image [2m2492ms[22m
+[2m14:46:54[22m [34m[200][39m /_image [2m1347ms[22m
+[2m14:46:54[22m [34m[200][39m /_image [2m2097ms[22m
+[2m14:46:55[22m [34m[200][39m /_image [2m1105ms[22m
+[2m14:46:55[22m [34m[200][39m /_image [2m2280ms[22m
+[2m14:46:55[22m [34m[200][39m /_image [2m2251ms[22m
+[2m14:46:55[22m [34m[200][39m /_image [2m1576ms[22m
+[2m14:46:56[22m [34m[200][39m /_image [2m1265ms[22m
+[2m14:46:56[22m [34m[200][39m /_image [2m2114ms[22m
+[2m14:46:56[22m [34m[200][39m /_image [2m1290ms[22m
+[2m14:46:56[22m [34m[200][39m /_image [2m1585ms[22m
+[2m14:49:17[22m [34m[watch][39m /src/styles/global.css
+[2m14:49:17[22m [34m[watch][39m /src/styles/global.css
+[2m14:51:11[22m [34m[vite][39m program reload
+[2m14:51:51[22m [34m[200][39m / [2m2917ms[22m
+[2m14:51:51[22m [34m[200][39m / [2m2919ms[22m
+[2m14:51:51[22m [34m[200][39m / [2m2930ms[22m
+[2m14:51:52[22m [34m[200][39m /projects/commercial-hs [2m2629ms[22m
+[2m14:51:52[22m [34m[200][39m /projects/commercial-hs [2m2642ms[22m
+[2m14:51:52[22m [34m[200][39m /projects/commercial-hs [2m2657ms[22m
+[2m14:52:15[22m [34m[watch][39m /src/styles/global.css
+[2m14:52:15[22m [34m[watch][39m /src/styles/global.css
+[2m14:52:15[22m [34m[watch][39m /src/styles/global.css
+[2m14:52:15[22m [34m[watch][39m /src/styles/global.css
+[2m14:52:15[22m [34m[watch][39m /src/styles/global.css
+[2m14:52:49[22m [34m[watch][39m /src/styles/global.css
+[2m14:52:49[22m [34m[watch][39m /src/styles/global.css
+[2m14:52:49[22m [34m[watch][39m /src/styles/global.css
+[2m14:52:49[22m [34m[watch][39m /src/styles/global.css
+[2m14:52:50[22m [34m[200][39m /projects/commercial-hs [2m7551ms[22m
+[2m14:53:00[22m [34m[200][39m / [2m1431ms[22m
+[2m14:53:12[22m [34m[watch][39m src/pages/projects/[slug].astro
+[2m14:53:12[22m [34m[watch][39m src/pages/projects/[slug].astro
+[2m14:53:20[22m [34m[200][39m / [2m2645ms[22m
+[2m14:53:21[22m [34m[200][39m /projects/commercial-hs [2m719ms[22m
+[2m14:54:00[22m [34m[watch][39m src/pages/projects/[slug].astro
+[2m14:54:03[22m [34m[watch][39m src/pages/projects/[slug].astro
+[2m14:54:03[22m [34m[watch][39m src/pages/projects/[slug].astro
+[2m14:54:05[22m [34m[200][39m / [2m1662ms[22m
+[2m14:54:08[22m [34m[200][39m /projects/commercial-hs [2m3272ms[22m
+[2m14:54:08[22m [34m[200][39m /projects/commercial-hs [2m2280ms[22m
+[2m14:54:20[22m [34m[watch][39m /src/styles/global.css
+[2m14:54:22[22m [34m[watch][39m /src/styles/global.css
+[2m14:54:27[22m [34m[200][39m / [2m350ms[22m
+[2m14:54:27[22m [34m[200][39m /projects/commercial-hs [2m517ms[22m
+[2m14:54:27[22m [34m[200][39m /projects/commercial-hs [2m525ms[22m
+[2m14:54:39[22m [34m[watch][39m /src/styles/global.css
+[2m14:54:39[22m [34m[watch][39m /src/styles/global.css
+[2m14:54:40[22m [34m[watch][39m /src/styles/global.css
+[2m14:54:45[22m [34m[200][39m / [2m1068ms[22m
+[2m14:54:45[22m [34m[200][39m /projects/commercial-hs [2m1199ms[22m
+[2m14:54:45[22m [34m[200][39m /projects/commercial-hs [2m538ms[22m
+[2m14:54:45[22m [34m[200][39m / [2m122ms[22m
+[2m14:55:04[22m [34m[watch][39m /src/styles/global.css
+[2m14:55:05[22m [34m[watch][39m /src/styles/global.css
+[2m14:55:09[22m [34m[200][39m /_image [2m3638ms[22m
+[2m14:55:09[22m [34m[200][39m /_image [2m3667ms[22m
+[2m14:55:09[22m [34m[200][39m /_image [2m3920ms[22m
+[2m14:55:09[22m [34m[200][39m /_image [2m4164ms[22m
+[2m14:55:10[22m [34m[200][39m /_image [2m4240ms[22m
+[2m14:55:10[22m [34m[200][39m /_image [2m4450ms[22m
+[2m14:55:12[22m [34m[200][39m /_image [2m2717ms[22m
+[2m14:55:13[22m [34m[200][39m /_image [2m796ms[22m
+[2m14:55:13[22m [34m[200][39m /_image [2m806ms[22m
+[2m14:55:13[22m [34m[200][39m /_image [2m1114ms[22m
+[2m14:55:13[22m [34m[200][39m /_image [2m1344ms[22m
+[2m14:55:13[22m [34m[200][39m /_image [2m1326ms[22m
+[2m14:55:23[22m [34m[watch][39m /src/styles/global.css
+[2m14:55:23[22m [34m[watch][39m /src/styles/global.css
+[2m14:55:35[22m [34m[watch][39m /src/styles/global.css
+[2m14:55:36[22m [34m[watch][39m src/pages/index.astro
+[2m14:55:38[22m [34m[200][39m /projects/commercial-hs [2m171ms[22m
+[2m14:55:41[22m [34m[200][39m / [2m260ms[22m

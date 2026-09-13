@@ -215,3 +215,5 @@ Error: Failed to load url ../../lib/seo (resolved id: ../../lib/seo) in C:/Users
   [1mStack trace:[22m
 [2m    at C:\Users\Usuário\OneDrive\Documentos\Default Project\paulaambrosio-template\C:\Users\Usuário\OneDrive\Documentos\Default Project\paulaambrosio-template\src\pages\index.astro:7:45
     [...] See full stack trace in the browser, or rerun with --verbose.[22m
+[31m[1m14:50:38[22m [ERROR] [router][39m Failed to update routes via HMR:
+ Error: transport invoke timed out after 60000ms (data: {"type":"custom","event":"vite:invoke","data":{"name":"fetchModule","id":"send:Cu0gMdOIrRYFoMIRBVaeO","data":["/@id/__x00__virtual:astro:routes","C:/Users/Usuário/OneDrive/Documentos/Default Project/paulaambrosio-template/node_modules/astro/dist/vite-plugin-app/createAstroServerApp.js",{"cached":true,"startOffset":3}]}})

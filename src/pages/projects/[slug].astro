@@ -38,7 +38,7 @@ const facts = [
 ].filter((f) => f.value);
 
 // §13 SEO subtitle: descriptive context under the visible title.
-const subtitle = [project.data.propertyType, project.data.location].filter(Boolean).join(' — ');
+const subtitle = [project.data.propertyType, project.data.location].filter(Boolean).join(', ');
 
 // Related projects in the same city (excluding this one).
 const related = (await getCollection('projects'))
@@ -53,7 +53,7 @@ const breadcrumbs: BreadcrumbEntry[] = [
 ---
 
 <Layout
-	title={`${project.data.title} — ${subtitle || 'Interior Design Project'} | Paula Ambrosio Interiors`}
+	title={`${project.data.title} | ${subtitle || 'Interior Design Project'} | Paula Ambrosio Interiors`}
 	description={project.data.seoDescription ?? project.data.description}
 	canonical={projectUrl(project.id)}
 	ogImage={ogImage}
@@ -71,7 +71,7 @@ const breadcrumbs: BreadcrumbEntry[] = [
 			{[project.data.featuredImage, ...gallery].map((img, i) => (
 				<Image
 					src={img}
-					alt={i === 0 ? (project.data.imageAlt ?? project.data.title) : `${project.data.title} — ${project.data.location ?? 'interior'} ${i + 1}`}
+					alt={i === 0 ? (project.data.imageAlt ?? project.data.title) : `${project.data.title}, ${project.data.location ?? 'interior'} ${i + 1}`}
 					widths={[768, 1200, 1920]}
 					sizes="100vw"
 					loading={i === 0 ? 'eager' : 'lazy'}
@@ -154,7 +154,7 @@ const breadcrumbs: BreadcrumbEntry[] = [
 						>
 							<Image
 								src={img}
-								alt={`${project.data.title} — ${project.data.location ?? 'interior'} detail ${i + 1}`}
+								alt={`${project.data.title}, ${project.data.location ?? 'interior'} detail ${i + 1}`}
 								widths={[600, 1000]}
 								sizes="(min-width: 768px) 50vw, 100vw"
 								loading="lazy"
