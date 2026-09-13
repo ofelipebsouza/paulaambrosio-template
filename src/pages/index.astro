@@ -37,12 +37,12 @@ const latestJournal = (await getCollection('journal'))
 
 	<!-- 1. Hero — image melts into the cream ground, title sits below -->
 	<section class="bg-bone pb-16 text-center lg:pb-24">
-		<div class="relative mx-auto max-w-6xl">
+		<div class="relative w-full">
 			<Image
 				src={heroImage}
 				alt="Double-height Miami living room designed by Paula Ambrosio Interiors with marble floors, sheer drapery and sculptural lighting"
 				widths={[768, 1200, 1600]}
-				sizes="(min-width: 1152px) 72rem, 100vw"
+				sizes="100vw"
 				loading="eager"
 				priority={true}
 				quality={60}
