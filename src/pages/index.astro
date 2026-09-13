@@ -7,6 +7,7 @@ import CtaBanner from '../components/ui/CtaBanner.astro';
 import { webPageSchema, schemaScript } from '../lib/seo';
 import { serviceUrl, locationUrl } from '../config';
 import { getImage } from 'astro:assets';
+import paulaProfile from '../assets/paula-profile.webp';
 
 const allProjects = (await getCollection('projects')).filter((p) => !p.data.draft);
 
@@ -241,34 +242,18 @@ const processSteps = [
 	<!-- 8. About Paula -->
 	<section class="container-editorial py-28 lg:py-36 border-t border-sand">
 		<div class="grid items-center gap-16 lg:grid-cols-12">
-			<!-- Editorial placeholder frame -->
 			<div class="lg:col-span-5 fade-up">
-				<div class="relative flex aspect-[4/5] items-center justify-center overflow-hidden border border-sand bg-linen">
-					<!-- Decorative SVG pattern -->
-					<svg class="absolute inset-0 h-full w-full opacity-[0.04]" xmlns="http://www.w3.org/2000/svg">
-						<defs>
-							<pattern id="diagonal" width="20" height="20" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-								<line x1="0" y1="0" x2="0" y2="20" stroke="#6f6053" stroke-width="0.8"/>
-							</pattern>
-						</defs>
-						<rect width="100%" height="100%" fill="url(#diagonal)"/>
-					</svg>
-					<!-- Brass corner accents -->
-					<span class="pointer-events-none absolute top-4 left-4 block h-8 w-8 border-t border-l border-brass/40" aria-hidden="true"></span>
-					<span class="pointer-events-none absolute top-4 right-4 block h-8 w-8 border-t border-r border-brass/40" aria-hidden="true"></span>
-					<span class="pointer-events-none absolute bottom-4 left-4 block h-8 w-8 border-b border-l border-brass/40" aria-hidden="true"></span>
-					<span class="pointer-events-none absolute bottom-4 right-4 block h-8 w-8 border-b border-r border-brass/40" aria-hidden="true"></span>
-					<!-- Text content -->
-					<div class="relative text-center px-8">
-						<p class="font-display text-3xl text-stone">Paula Ambrosio</p>
-						<div class="ornament-divider my-4">
-							<span class="ornament-divider-diamond"></span>
-						</div>
-						<p class="eyebrow text-stone/70">Founder &amp; Principal Designer</p>
-						<p class="mt-5 max-w-[14rem] mx-auto text-xs italic leading-relaxed text-slate/70">
-							Official portrait, photography in progress
-						</p>
-					</div>
+				<div class="relative overflow-hidden border border-sand">
+					<Image
+						src={paulaProfile}
+						alt="Paula Ambrosio, Founder and Principal Designer of Paula Ambrosio Interiors"
+						widths={[400, 600, 800]}
+						sizes="(min-width: 1024px) 33vw, 50vw"
+						loading="lazy"
+						quality={75}
+						decoding="async"
+						class="aspect-[4/5] w-full object-cover"
+					/>
 				</div>
 			</div>
 
@@ -277,10 +262,10 @@ const processSteps = [
 				<h2 class="font-display mt-5 text-4xl leading-tight lg:text-5xl">Design guided by experience, delivered with precision.</h2>
 				<div class="mt-6 h-px w-12 bg-brass/50"></div>
 				<p class="mt-8 leading-relaxed text-slate">
-					Paula Ambrosio is the Founder and Principal Designer of Paula Ambrosio Interiors, leading every project with a philosophy rooted in architecture, materiality and the way clients truly live.
+					Paula Ambrósio Interior Design is a luxury interior design studio in Miami specializing in high-end residential interior design, home renovations, custom interiors and full-service turnkey projects throughout Miami and South Florida.
 				</p>
 				<p class="mt-5 leading-relaxed text-slate">
-					With an eye for detail and a commitment to quality at every scale, Paula brings together a trusted network of craftspeople, suppliers and tradespeople to deliver interiors that are considered, personal and complete.
+					Our story began 21 years ago in Rio de Janeiro, Brazil, when sisters Paula and Amanda Ambrósio founded Studio Decore. Ten years ago, Paula founded Paula Ambrósio Interior Design in Miami, bringing her international design experience and sophisticated aesthetic to the South Florida market.
 				</p>
 				<a href="/about" class="btn-secondary mt-10">Meet Paula</a>
 			</div>
