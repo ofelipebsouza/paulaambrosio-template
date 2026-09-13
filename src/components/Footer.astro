@@ -15,9 +15,10 @@ const year = new Date().getFullYear();
 					hospitality spaces across Miami and South Florida.
 				</p>
 				<address class="mt-6 space-y-2 text-sm not-italic text-bone/70">
-					<p>Miami, Florida</p>
+					<p>{SITE.address}</p>
 					<p><a href={`mailto:${SITE.email}`} class="hover:text-brass">{SITE.email}</a></p>
-					<p><a href={`tel:${SITE.phone}`} class="hover:text-brass">{SITE.phone}</a></p>
+					<p><a href={`tel:${SITE.phoneE164}`} class="hover:text-brass">{SITE.phone}</a></p>
+					<p><a href="tel:+17862085412" class="hover:text-brass">{SITE.phone2}</a></p>
 				</address>
 			</div>
 

@@ -11,9 +11,11 @@ export const SITE = {
 	legalName: 'Paula Ambrosio Interiors LLC',
 	description:
 		'Miami luxury interior design studio specializing in full-service and turnkey interiors for high-end residences, penthouses, renovations and hospitality spaces across South Florida.',
-	email: 'concierge@paulaambrosiointeriors.com',
-	phone: '+1 (305) 555-0198',
-	phoneE164: '+13055550198',
+	email: 'info@paulaambrosio.com',
+	phone: '+1 (786) 658-9478',
+	phone2: '+1 (786) 208-5412',
+	phoneE164: '+17866589478',
+	address: '1938 NE 149th St, North Miami, FL',
 	locale: 'en_US',
 } as const;
 

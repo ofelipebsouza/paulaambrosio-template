@@ -35,13 +35,15 @@ const formEndpoint = import.meta.env.CONTACT_FORM_ENDPOINT;
 			</p>
 			<address class="mt-10 space-y-3 text-sm not-italic text-graphite">
 				<p class="eyebrow text-stone">Studio</p>
-				<p>Miami, Florida</p>
-				<p><a href="mailto:concierge@paulaambrosiointeriors.com" class="hover:text-stone">concierge@paulaambrosiointeriors.com</a></p>
+				<p>1938 NE 149th St, North Miami, FL</p>
+				<p><a href="mailto:info@paulaambrosio.com" class="hover:text-stone">info@paulaambrosio.com</a></p>
+				<p><a href="tel:+17866589478" class="hover:text-stone">+1 (786) 658-9478</a></p>
+				<p><a href="tel:+17862085412" class="hover:text-stone">+1 (786) 208-5412</a></p>
 			</address>
 		</div>
 
 		<div class="lg:col-span-7">
-			<form class="space-y-6" method="POST" action={formEndpoint ?? 'mailto:concierge@paulaambrosiointeriors.com'}>
+			<form class="space-y-6" method="POST" action={formEndpoint ?? 'mailto:info@paulaambrosio.com'}>
 				<div class="grid gap-6 sm:grid-cols-2">
 					<div>
 						<label for="name" class="eyebrow text-slate">Full Name *</label>
