@@ -1,0 +1,149 @@
+[31m[1m12:51:35[22m [ERROR][39m [31m[CompilerError][39m Expected `,` or `)` but found `}`
+  [1mStack trace:[22m
+[2m    at C:/Users/Usuário/OneDrive/Documentos/Default Project/paulaambrosio-template/src/pages/projects/[slug].astro:273:2
+    [...] See full stack trace in the browser, or rerun with --verbose.[22m
+[31m[1m12:51:45[22m [ERROR][39m [31m[CompilerError][39m Expected `,` or `)` but found `}`
+  [1mStack trace:[22m
+[2m    at C:/Users/Usuário/OneDrive/Documentos/Default Project/paulaambrosio-template/src/pages/projects/[slug].astro:273:2
+    [...] See full stack trace in the browser, or rerun with --verbose.[22m
+[31m[1m12:52:35[22m [ERROR][39m [31m[CompilerError][39m Expected `,` or `)` but found `}`
+  [1mStack trace:[22m
+[2m    at handleCompileResultErrors (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/dist/core/compile/compile.js:67:11)
+    [...] See full stack trace in the browser, or rerun with --verbose.[22m
+[31m[1m12:52:44[22m [ERROR][39m [31m[CompilerError][39m Expected `,` or `)` but found `}`
+  [1mStack trace:[22m
+[2m    at C:/Users/Usuário/OneDrive/Documentos/Default Project/paulaambrosio-template/src/pages/projects/[slug].astro:270:2
+    [...] See full stack trace in the browser, or rerun with --verbose.[22m
+[31m[1m12:53:10[22m [ERROR][39m [31m[CompilerError][39m Expected `,` or `)` but found `}`
+  [1mStack trace:[22m
+[2m    at handleCompileResultErrors (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/dist/core/compile/compile.js:67:11)
+    [...] See full stack trace in the browser, or rerun with --verbose.[22m
+[31m[1m12:53:36[22m [ERROR][39m [31m[CompilerError][39m Expected `,` or `)` but found `}`
+  [1mStack trace:[22m
+[2m    at C:/Users/Usuário/OneDrive/Documentos/Default Project/paulaambrosio-template/src/pages/projects/[slug].astro:270:2
+    [...] See full stack trace in the browser, or rerun with --verbose.[22m
+[31m[1m12:55:46[22m [ERROR][39m [31m[CompilerError][39m Expected `,` or `)` but found `}`
+  [1mStack trace:[22m
+[2m    at handleCompileResultErrors (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/dist/core/compile/compile.js:67:11)
+    [...] See full stack trace in the browser, or rerun with --verbose.[22m
+[31m[1m12:56:04[22m [ERROR][39m [31m[CompilerError][39m Expected `,` or `)` but found `}`
+  [1mStack trace:[22m
+[2m    at C:/Users/Usuário/OneDrive/Documentos/Default Project/paulaambrosio-template/src/pages/projects/[slug].astro:213:2
+    [...] See full stack trace in the browser, or rerun with --verbose.[22m
+[31m[1m12:58:16[22m [ERROR][39m [31m[CompilerError][39m Expected `,` or `)` but found `}`
+  [1mStack trace:[22m
+[2m    at handleCompileResultErrors (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/dist/core/compile/compile.js:67:11)
+    [...] See full stack trace in the browser, or rerun with --verbose.[22m
+[31m[1m12:58:34[22m [ERROR][39m [31m[CompilerError][39m Expected `,` or `)` but found `}`
+  [1mStack trace:[22m
+[2m    at C:/Users/Usuário/OneDrive/Documentos/Default Project/paulaambrosio-template/src/pages/projects/[slug].astro:214:2
+    [...] See full stack trace in the browser, or rerun with --verbose.[22m
+[31m[1m12:59:40[22m [ERROR][39m [31m[CompilerError][39m Expected `,` or `)` but found `}`
+  [1mStack trace:[22m
+[2m    at handleCompileResultErrors (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/dist/core/compile/compile.js:67:11)
+    [...] See full stack trace in the browser, or rerun with --verbose.[22m
+[31m[1m12:59:56[22m [ERROR][39m [31m[CompilerError][39m Expected `,` or `)` but found `}`
+  [1mStack trace:[22m
+[2m    at C:/Users/Usuário/OneDrive/Documentos/Default Project/paulaambrosio-template/src/pages/projects/[slug].astro:216:2
+    [...] See full stack trace in the browser, or rerun with --verbose.[22m
+[31m[1m13:01:37[22m [ERROR][39m ReferenceError: gallery is not defined
+    at Object.default (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:100:2516)
+    at new AstroComponentInstance (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:30:30)
+    at createAstroComponentInstance (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:85:20)
+    at renderAstroComponent (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:381:74)
+    at renderComponent (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:402:12)
+    at eval (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:78:81)
+    at async callComponentAsTemplateResultOrResponse (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:213:25)
+    at async renderToAsyncIterable (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:245:26)
+    at async renderPage (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:55:24)
+    at async handlePages (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:40:20)
+[31m[1m13:01:37[22m [ERROR][39m gallery is not defined
+  [1mStack trace:[22m
+[2m    at C:\Users\Usuário\OneDrive\Documentos\Default Project\paulaambrosio-template\eval at runInlinedModule (file:\C:\Users\Usu%C3%A1rio\OneDrive\Documentos\Default%20Project\paulaambrosio-template\node_modules\astro\node_modules\vite\dist\node\module-runner.js:809:9
+    [...] See full stack trace in the browser, or rerun with --verbose.[22m
+[31m[1m13:01:51[22m [ERROR][39m ReferenceError: gallery is not defined
+    at Object.default (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:100:2516)
+    at new AstroComponentInstance (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:30:30)
+    at createAstroComponentInstance (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:85:20)
+    at renderAstroComponent (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:381:74)
+    at renderComponent (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:402:12)
+    at eval (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:78:81)
+    at async callComponentAsTemplateResultOrResponse (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:213:25)
+    at async renderToAsyncIterable (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:245:26)
+    at async renderPage (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:55:24)
+    at async handlePages (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:40:20)
+[31m[1m13:01:51[22m [ERROR][39m gallery is not defined
+  [1mStack trace:[22m
+[2m    at Object.default (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:100:2516)
+    [...] See full stack trace in the browser, or rerun with --verbose.[22m
+[31m[1m13:02:12[22m [ERROR][39m ReferenceError: gallery is not defined
+    at Object.default (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:100:2516)
+    at new AstroComponentInstance (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:30:30)
+    at createAstroComponentInstance (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:85:20)
+    at renderAstroComponent (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:381:74)
+    at renderComponent (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:402:12)
+    at eval (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:78:81)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async callComponentAsTemplateResultOrResponse (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:213:25)
+    at async renderToAsyncIterable (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:245:26)
+    at async renderPage (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:55:24)
+[31m[1m13:02:12[22m [ERROR][39m gallery is not defined
+  [1mStack trace:[22m
+[2m    at Object.default (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:100:2516)
+    [...] See full stack trace in the browser, or rerun with --verbose.[22m
+[31m[1m13:03:11[22m [ERROR][39m [31m[ExpectedImage][39m Expected `src` property for `getImage` or `<Image />` to be either an ESM imported image or a string with the path of a remote image. Received `undefined` (type: `undefined`).
+
+Full serialized options received: `{"alt":"COMMERCIAL HS — Miami, Florida detail 1","widths":[600,1000],"sizes":"(min-width: 768px) 50vw, 100vw","loading":"lazy","quality":55,"decoding":"async","class":"aspect-[4/3] w-full object-cover motion-safe:transition-transform motion-safe:duration-700 group-hover:scale-[1.03]"}`.
+  [1mHint:[22m
+[33m    This error can often happen because of a wrong path. Make sure the path to your image is correct. If you're passing an async function, make sure to call and await it.[39m
+  [1mError reference:[22m
+    [36m[4mhttps://docs.astro.build/en/reference/errors/expected-image/[24m[39m
+  [1mStack trace:[22m
+[2m    at getImage (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:57:11)
+    [...] See full stack trace in the browser, or rerun with --verbose.[22m
+[31m[1m13:04:15[22m [ERROR][39m [31m[ExpectedImage][39m Expected `src` property for `getImage` or `<Image />` to be either an ESM imported image or a string with the path of a remote image. Received `undefined` (type: `undefined`).
+
+Full serialized options received: `{"alt":"COMMERCIAL HS — Miami, Florida detail 1","widths":[600,1000],"sizes":"(min-width: 768px) 50vw, 100vw","loading":"lazy","quality":55,"decoding":"async","class":"aspect-[4/3] w-full object-cover motion-safe:transition-transform motion-safe:duration-700 group-hover:scale-[1.03]"}`.
+  [1mHint:[22m
+[33m    This error can often happen because of a wrong path. Make sure the path to your image is correct. If you're passing an async function, make sure to call and await it.[39m
+  [1mError reference:[22m
+    [36m[4mhttps://docs.astro.build/en/reference/errors/expected-image/[24m[39m
+  [1mStack trace:[22m
+[2m    at getImage (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:57:11)
+    at eval (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:37:56)
+    at AstroComponentInstance.init (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:47:29)
+    at Object.render (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:384:23)
+    at RenderTemplateResult.render (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:46:59)[22m
+[31m[1m13:04:24[22m [ERROR][39m [31m[ExpectedImage][39m Expected `src` property for `getImage` or `<Image />` to be either an ESM imported image or a string with the path of a remote image. Received `undefined` (type: `undefined`).
+
+Full serialized options received: `{"alt":"COMMERCIAL HS — Miami, Florida detail 1","widths":[600,1000],"sizes":"(min-width: 768px) 50vw, 100vw","loading":"lazy","quality":55,"decoding":"async","class":"aspect-[4/3] w-full object-cover motion-safe:transition-transform motion-safe:duration-700 group-hover:scale-[1.03]"}`.
+  [1mHint:[22m
+[33m    This error can often happen because of a wrong path. Make sure the path to your image is correct. If you're passing an async function, make sure to call and await it.[39m
+  [1mError reference:[22m
+    [36m[4mhttps://docs.astro.build/en/reference/errors/expected-image/[24m[39m
+  [1mStack trace:[22m
+[2m    at getImage (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:57:11)
+    [...] See full stack trace in the browser, or rerun with --verbose.[22m
+[31m[1m13:04:49[22m [ERROR][39m [31m[ExpectedImage][39m Expected `src` property for `getImage` or `<Image />` to be either an ESM imported image or a string with the path of a remote image. Received `undefined` (type: `undefined`).
+
+Full serialized options received: `{"alt":"COMMERCIAL HS — Miami, Florida detail 1","widths":[600,1000],"sizes":"(min-width: 768px) 50vw, 100vw","loading":"lazy","quality":55,"decoding":"async","class":"aspect-[4/3] w-full object-cover motion-safe:transition-transform motion-safe:duration-700 group-hover:scale-[1.03]"}`.
+  [1mHint:[22m
+[33m    This error can often happen because of a wrong path. Make sure the path to your image is correct. If you're passing an async function, make sure to call and await it.[39m
+  [1mError reference:[22m
+    [36m[4mhttps://docs.astro.build/en/reference/errors/expected-image/[24m[39m
+  [1mStack trace:[22m
+[2m    at getImage (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:57:11)
+    at eval (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:37:56)
+    at AstroComponentInstance.init (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:47:29)
+    at Object.render (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:384:23)
+    at RenderTemplateResult.render (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:46:59)[22m
+[31m[1m13:05:51[22m [ERROR][39m [31m[ExpectedImage][39m Expected `src` property for `getImage` or `<Image />` to be either an ESM imported image or a string with the path of a remote image. Received `undefined` (type: `undefined`).
+
+Full serialized options received: `{"alt":"COMMERCIAL HS — Miami, Florida detail 1","widths":[600,1000],"sizes":"(min-width: 768px) 50vw, 100vw","loading":"lazy","quality":55,"decoding":"async","class":"aspect-[4/3] w-full object-cover motion-safe:transition-transform motion-safe:duration-700 group-hover:scale-[1.03]"}`.
+  [1mHint:[22m
+[33m    This error can often happen because of a wrong path. Make sure the path to your image is correct. If you're passing an async function, make sure to call and await it.[39m
+  [1mError reference:[22m
+    [36m[4mhttps://docs.astro.build/en/reference/errors/expected-image/[24m[39m
+  [1mStack trace:[22m
+[2m    at getImage (eval at runInlinedModule (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/node_modules/vite/dist/node/module-runner.js:809:9), <anonymous>:57:11)
+    [...] See full stack trace in the browser, or rerun with --verbose.[22m

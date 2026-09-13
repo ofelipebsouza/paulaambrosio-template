@@ -1,0 +1,59 @@
+
+> paula-ambrosio-interiors@1.0.0 dev
+> astro dev
+
+[2m12:50:22[22m [34m[vite][39m connected.
+[2m12:50:32[22m [34m[types][39m Generated [2m4ms[22m
+[2m12:50:32[22m [34m[vite][39m connected.
+[2m12:50:33[22m [34m[content][39m Syncing content
+[2m12:50:34[22m [34m[content][39m Synced content
+[2m12:50:34[22m [34m[vite][39m Re-optimizing dependencies because vite config has changed
+[42m[1m astro [22m[49m [32mv7.3.2[39m [2mready in[22m 14931 [2mms[22m
+[2m┃[22m Local    [36mhttp://localhost:4321/[39m
+[2m┃[22m Network  [2muse --host to expose[22m
+[2m12:50:34[22m [32mwatching for file changes...[39m
+[2m12:51:35[22m [34m[200][39m / [2m2974ms[22m
+[2m12:51:45[22m [34m[vite][39m program reload
+[2m12:51:47[22m [34m[vite][39m program reload
+[2m12:52:43[22m [34m[vite][39m program reload
+[2m12:52:45[22m [34m[vite][39m program reload
+[2m12:53:36[22m [34m[vite][39m program reload
+[2m12:55:52[22m [34m[vite][39m program reload
+[2m12:56:11[22m [34m[vite][39m program reload
+[2m12:56:35[22m [34m[vite][39m program reload
+[2m12:57:03[22m [34m[vite][39m program reload
+[2m12:58:33[22m [34m[vite][39m program reload
+[2m12:58:34[22m [34m[vite][39m program reload
+[2m12:59:56[22m [34m[vite][39m program reload
+[2m12:59:57[22m [34m[vite][39m program reload
+[2m13:01:50[22m [34m[vite][39m program reload
+[2m13:02:07[22m [34m[vite][39m program reload
+[2m13:02:19[22m [34m[vite][39m program reload
+[2m13:03:11[22m [34m[200][39m /projects/commercial-hs/ [2m315ms[22m
+[2m13:04:15[22m [34m[200][39m /projects/commercial-hs/ [2m71ms[22m
+[2m13:04:22[22m [34m[vite][39m program reload
+[2m13:04:24[22m [34m[200][39m /projects/commercial-hs/ [2m105ms[22m
+[2m13:04:49[22m [34m[200][39m /projects/commercial-hs/ [2m61ms[22m
+[2m13:05:51[22m [34m[200][39m /projects/commercial-hs/ [2m65ms[22m
+[2m13:06:48[22m [34m[vite][39m program reload
+[2m13:06:49[22m [34m[200][39m /projects/commercial-hs/ [2m502ms[22m
+[2m13:07:15[22m [34m[200][39m /projects/commercial-hs/ [2m91ms[22m
+[2m13:08:06[22m [34m[200][39m / [2m84ms[22m
+[2m13:08:08[22m [34m[200][39m / [2m60ms[22m
+[2m13:08:12[22m [34m[200][39m / [2m39ms[22m
+[2m13:08:15[22m [34m[200][39m /projects/commercial-hs/ [2m100ms[22m
+[2m13:08:48[22m [34m[200][39m /_image [2m1397ms[22m
+[2m13:08:48[22m [34m[200][39m /_image [2m1644ms[22m
+[2m13:08:49[22m [34m[200][39m /_image [2m1994ms[22m
+[2m13:09:05[22m [34m[200][39m /_image [2m451ms[22m
+[2m13:09:06[22m [34m[200][39m /_image [2m455ms[22m
+[2m13:09:07[22m [34m[200][39m /_image [2m671ms[22m
+[2m13:09:07[22m [34m[200][39m /_image [2m406ms[22m
+[2m13:09:08[22m [34m[200][39m /_image [2m634ms[22m
+[2m13:09:08[22m [34m[200][39m /_image [2m673ms[22m
+[2m13:09:09[22m [34m[200][39m /_image [2m822ms[22m
+[2m13:09:09[22m [34m[200][39m /_image [2m1177ms[22m
+[2m13:09:50[22m [34m[200][39m /projects/home-tr/ [2m129ms[22m
+[2m13:09:50[22m [34m[200][39m /projects/home-m/ [2m80ms[22m
+[2m13:09:51[22m [34m[200][39m /projects/home-aa/ [2m88ms[22m
+[2m13:09:51[22m [34m[200][39m /projects/home-fl/ [2m101ms[22m

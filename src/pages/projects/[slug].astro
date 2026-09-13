@@ -6,8 +6,10 @@ import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
 import CtaBanner from '../../components/ui/CtaBanner.astro';
 import ProjectGrid from '../../components/projects/FeaturedProjectGrid.astro';
 import { webPageSchema, schemaScript, ogFromImage } from '../../lib/seo';
+import { getImage } from 'astro:assets';
 import type { BreadcrumbEntry } from '../../lib/seo';
 import { serviceUrl, locationUrl, projectUrl } from '../../config';
+import ProjectLightbox from '../../components/projects/ProjectLightbox.astro';
 
 export async function getStaticPaths() {
 	const projects = (await getCollection('projects')).filter((p) => !p.data.draft);
@@ -20,6 +22,12 @@ export async function getStaticPaths() {
 const { project } = Astro.props;
 const { Content } = await render(project);
 const ogImage = await ogFromImage(project.data.featuredImage);
+
+// Lightbox full-size variants (real image size, higher quality than grid thumbs).
+const gallery = project.data.gallery;
+const full = await Promise.all(
+	gallery.map(async (img) => (await getImage({ src: img, width: 1800, quality: 80 })).src),
+);
 
 // §13 project facts row.
 const facts = [
@@ -130,21 +138,39 @@ const breadcrumbs: BreadcrumbEntry[] = [
 		{project.data.gallery.length > 0 && (
 			<section class="container-editorial pb-20">
 				<div class="grid gap-6 md:grid-cols-2">
-					{project.data.gallery.map((img, i) => (
-						<Image
-							src={img}
-							alt={`${project.data.title} — ${project.data.location ?? 'interior'} detail ${i + 1}`}
-							widths={[600, 1000]}
-							sizes="(min-width: 768px) 50vw, 100vw"
-							loading="lazy"
-							quality={55}
-							decoding="async"
-							class="aspect-[4/3] w-full object-cover"
-						/>
+					{gallery.map((img, i) => (
+						<button
+							type="button"
+							class="group relative block w-full cursor-zoom-in overflow-hidden"
+							data-lightbox-trigger
+							data-full={full[i]}
+							aria-label={`Open image ${i + 1} of ${gallery.length} fullscreen`}
+						>
+							<Image
+								src={img}
+								alt={`${project.data.title} — ${project.data.location ?? 'interior'} detail ${i + 1}`}
+								widths={[600, 1000]}
+								sizes="(min-width: 768px) 50vw, 100vw"
+								loading="lazy"
+								quality={55}
+								decoding="async"
+								class="aspect-[4/3] w-full object-cover motion-safe:transition-transform motion-safe:duration-700 group-hover:scale-[1.03]"
+							/>
+							<span
+								class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100"
+								aria-hidden="true"
+							>
+								<svg class="absolute right-4 top-4 h-9 w-9 text-bone drop-shadow-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 3H3v6M15 3h6v6M9 21H3v-6M15 21h6v-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+							</span>
+						</button>
 					))}
 				</div>
 			</section>
 		)}
+
+
+		<!-- Fullscreen lightbox (real-size, uncropped viewing) -->
+		{project.data.gallery.length > 0 && <ProjectLightbox title={project.data.title} full={full} />}
 
 		<!-- Related projects -->
 		{related.length > 0 && (
@@ -170,4 +196,62 @@ const breadcrumbs: BreadcrumbEntry[] = [
 		secondaryLabel="View More Projects"
 		secondaryHref="/projects"
 	/>
+
+			<script>
+			const dialog = document.getElementById('lightbox') as HTMLDialogElement | null;
+			const triggers = [...document.querySelectorAll<HTMLButtonElement>('[data-lightbox-trigger]')];
+			if (dialog && triggers.length > 0) {
+				const img = dialog.querySelector<HTMLImageElement>('[data-lightbox-img]')!;
+				const counter = dialog.querySelector<HTMLElement>('[data-lightbox-counter]')!;
+				// The grid fallback src is the full-size optimized original — reuse it so the
+				// lightbox shows the uncropped image at (at least) its real size.
+				const sources = triggers.map((btn) => {
+				const gridImg = btn.querySelector('img');
+				return { src: btn.dataset.full ?? gridImg?.getAttribute('src') ?? '', alt: gridImg?.getAttribute('alt') ?? '' };
+				});
+				const total = sources.length;
+				let current = 0;
+
+				const show = (index: number) => {
+				current = ((index % total) + total) % total;
+				img.src = sources[current].src;
+				img.alt = sources[current].alt;
+				counter.textContent = `${current + 1} / ${total}`;
+				// Preload neighbors for instant navigation
+				for (const delta of [-1, 1]) {
+					const next = sources[((current + delta) % total + total) % total];
+					if (next.src) new Image().src = next.src;
+				}
+				};
+
+				for (const [i, btn] of triggers.entries()) {
+				btn.addEventListener('click', () => {
+					show(i);
+					dialog.showModal();
+				});
+				}
+
+				dialog.querySelector('[data-lightbox-close]')?.addEventListener('click', () => dialog.close());
+				dialog.querySelector('[data-lightbox-prev]')?.addEventListener('click', () => show(current - 1));
+				dialog.querySelector('[data-lightbox-next]')?.addEventListener('click', () => show(current + 1));
+
+				// Click on empty backdrop closes
+				dialog.addEventListener('click', (e) => {
+				if (e.target === dialog) dialog.close();
+				});
+
+				dialog.addEventListener('keydown', (e) => {
+				if (e.key === 'ArrowLeft') { e.preventDefault(); show(current - 1); }
+				if (e.key === 'ArrowRight') { e.preventDefault(); show(current + 1); }
+				});
+
+				// Touch swipe navigation
+				let startX = 0;
+				dialog.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; }, { passive: true });
+				dialog.addEventListener('touchend', (e) => {
+				const dx = e.changedTouches[0].clientX - startX;
+				if (Math.abs(dx) > 48) show(dx < 0 ? current + 1 : current - 1);
+				}, { passive: true });
+			}
+		</script>
 </Layout>

@@ -1,0 +1,41 @@
+┌─────────┬──────────────────────────────────────────────┬──────────┐
+│ (index) │ slug                                         │ status   │
+├─────────┼──────────────────────────────────────────────┼──────────┤
+│ 0       │ 'blog-index'                                 │ 'NO MDX' │
+│ 1       │ 'blog-turnkey-interior-design-miami-40-day-' │ 'ok'     │
+│ 2       │ 'boho-is-back-in-style-and-in-spaces'        │ 'ok'     │
+│ 3       │ 'choosing-location-miami-interior-design-pr' │ 'ok'     │
+│ 4       │ 'choosing-right-tiles-miami-interior-design' │ 'ok'     │
+│ 5       │ 'choosing-the-right-furniture-for-your-home' │ 'ok'     │
+│ 6       │ 'coastal-luxury-living-miami-oceanfront-des' │ 'ok'     │
+│ 7       │ 'custom-millwork-miami-high-end-interior-de' │ 'ok'     │
+│ 8       │ 'design-decisions-increase-property-value-m' │ 'ok'     │
+│ 9       │ 'furnish-miami-home-from-abroad-internation' │ 'ok'     │
+│ 10      │ 'high-end-interior-design-investment-miami'  │ 'ok'     │
+│ 11      │ 'hotel-interior-design-miami-materials-desi' │ 'ok'     │
+│ 12      │ 'how-to-choose-an-interior-designer-what-to' │ 'ok'     │
+│ 13      │ 'interior-design-for-developers-south-flori' │ 'ok'     │
+│ 14      │ 'interior-design-miami-materials-layers-lux' │ 'ok'     │
+│ 15      │ 'interior-design-trends-for-2026-paula-ambr' │ 'ok'     │
+│ 16      │ 'lighting-design-miami-interior-design'      │ 'ok'     │
+│ 17      │ 'luxury-closet-design-miami'                 │ 'ok'     │
+│ 18      │ 'luxury-interior-design-for-investors-miami' │ 'ok'     │
+│ 19      │ 'luxury-interior-design-miami-south-florida' │ 'ok'     │
+│ 20      │ 'miami-hospitality-2025-where-design-meets-' │ 'ok'     │
+│ 21      │ 'miami-interior-design-culture-lifestyle-in' │ 'ok'     │
+│ 22      │ 'milan-design-inspiration-miami-interior-de' │ 'ok'     │
+│ 23      │ 'padel-in-miami-the-sport-redefining-leisur' │ 'ok'     │
+│ 24      │ 'quality-of-life-how-interior-design-transf' │ 'ok'     │
+│ 25      │ 'real-estate-investment-interior-design-mia' │ 'ok'     │
+│ 26      │ 'smart-home-automation-miami-interior-desig' │ 'ok'     │
+│ 27      │ 'spa-bathroom-design-miami-natural-material' │ 'ok'     │
+│ 28      │ 'stone-selection-miami-interior-design'      │ 'ok'     │
+│ 29      │ 'the-benefits-of-a-turnkey-interior-design-' │ 'ok'     │
+│ 30      │ 'the-ultimate-dream-garage-gym-where-passio' │ 'ok'     │
+│ 31      │ 'wall-design-layers-lighting-miami-luxury-w' │ 'ok'     │
+│ 32      │ 'wall-layers-interior-design-miami'          │ 'ok'     │
+│ 33      │ 'welcome-to-the-magic-of-miami-s-interior-d' │ 'ok'     │
+│ 34      │ 'wellness-as-luxury-the-new-hospitality-tre' │ 'ok'     │
+│ 35      │ 'why-well-designed-homes-sell-30-percent-fa' │ 'ok'     │
+│ 36      │ 'window-treatments-miami-interior-design'    │ 'ok'     │
+└─────────┴──────────────────────────────────────────────┴──────────┘

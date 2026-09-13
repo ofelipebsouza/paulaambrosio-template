@@ -1,0 +1,10 @@
+[2m12:56:46[22m [34m[vite][39m Re-optimizing dependencies because vite config has changed
+[2m12:56:51[22m [34m[content][39m Syncing content
+[2m12:56:52[22m [34m[content][39m Synced content
+[2m12:56:52[22m [34m[types][39m Generated [2m6.81s[22m
+[2m12:56:52[22m [34m[build][39m output: [34m"static"[39m
+[2m12:56:52[22m [34m[build][39m mode: [34m"static"[39m
+[2m12:56:52[22m [34m[build][39m directory: [34mC:\Users\Usuário\OneDrive\Documentos\Default Project\paulaambrosio-template\dist\[39m
+[2m12:56:52[22m [34m[build][39m Collecting build info...
+[2m12:56:52[22m [34m[build][39m [32m✓ Completed in 7.40s.[39m
+[2m12:56:54[22m [34m[build][39m Building static entrypoints...

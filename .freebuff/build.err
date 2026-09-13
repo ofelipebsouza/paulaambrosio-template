@@ -1,0 +1,8 @@
+[31m[1m12:57:03[22m [ERROR] [vite][39m [31m✗[39m Build failed in 8.40s
+[31m[CompilerError][39m Expected `,` or `)` but found `}`
+  [1mLocation:[22m
+    [4mC:/Users/Usuário/OneDrive/Documentos/Default Project/paulaambrosio-template/src/pages/projects/[slug].astro:213:2[24m
+  [1mStack trace:[22m
+[2m    at handleCompileResultErrors (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/dist/core/compile/compile.js:67:11)
+    at async compileAstro (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/astro/dist/vite-plugin-astro/compile.js:7:27)
+    at async plugin (file:///C:/Users/Usu%C3%A1rio/OneDrive/Documentos/Default%20Project/paulaambrosio-template/node_modules/rolldown/dist/shared/bindingify-input-options-XQ0947n1.mjs:1539:16)[22m
