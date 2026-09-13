@@ -287,9 +287,11 @@ const socialIcons = [InstagramIcon, HouzzIcon, LinkedinIcon];
 	document.querySelectorAll('.menu-close').forEach((el) =>
 		el.addEventListener('click', () => sheet?.close()),
 	);
-	document.querySelectorAll('#mobile-menu .menu-link').forEach((el) =>
-		el.addEventListener('click', () => sheet?.close()),
-	);
+	document.querySelectorAll('#mobile-menu .menu-link').forEach((el) => {
+		// Skip summary elements (dropdown toggles) — they should toggle, not close
+		if (el.closest('summary')) return;
+		el.addEventListener('click', () => sheet?.close());
+	});
 
 	// Project inquiry sheet — fullscreen <dialog>, focus management included.
 	document.querySelectorAll('.inquiry-open').forEach((btn) =>
