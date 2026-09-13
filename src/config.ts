@@ -28,23 +28,52 @@ export const PERSON = {
 	],
 } as const;
 
-export const NAV_LINKS = [
+/**
+ * Desktop navigation mirrors the reference layout: three links either side
+ * of the centered wordmark.
+ */
+export const NAV_LEFT = [
+	{ label: 'Home', href: '/' },
+	{ label: 'About', href: '/about' },
 	{ label: 'Services', href: '/services' },
 	{ label: 'Projects', href: '/projects' },
+] as const;
+
+export const NAV_RIGHT = [
 	{ label: 'Locations', href: '/locations' },
 	{ label: 'Journal', href: '/journal' },
-	{ label: 'About', href: '/about' },
+	{ label: 'Privacy', href: '/privacy' },
 	{ label: 'Contact', href: '/contact' },
 ] as const;
 
+/** Every navigation destination, in menu order — used by the mobile menu. */
+export const NAV_LINKS = [...NAV_LEFT.slice(1), ...NAV_RIGHT] as const;
+
+/** Studio social profiles — real destinations only (§42). */
+export const SOCIAL_LINKS = [
+	{ label: 'Instagram', href: 'https://www.instagram.com/paulaambrosiointeriors' },
+	{ label: 'Houzz', href: 'https://www.houzz.com/pro/paulaambrosio' },
+	{ label: 'LinkedIn', href: 'https://www.linkedin.com/in/paulaambrosio' },
+] as const;
+
+/** Canonical flat URLs per the SEO plan (§14): legacy Framer paths stay canonical. */
+export const serviceUrl = (id: string): string => `/${id}`;
+export const locationUrl = (id: string): string =>
+	id === 'miami'
+		? '/interior-design-miami'
+		: id === 'sunny-isles-beach'
+			? '/interior-designer-sunny-isles'
+			: `/interior-designer-${id}`;
+export const projectUrl = (id: string): string => `/projects/${id}`;
+
 export const FOOTER_LOCATIONS = [
-	{ label: 'Miami', href: '/locations/miami' },
-	{ label: 'Miami Beach', href: '/locations/miami-beach' },
-	{ label: 'Sunny Isles Beach', href: '/locations/sunny-isles-beach' },
-	{ label: 'Aventura', href: '/locations/aventura' },
-	{ label: 'Bal Harbour', href: '/locations/bal-harbour' },
-	{ label: 'Boca Raton', href: '/locations/boca-raton' },
-	{ label: 'Palm Beach', href: '/locations/palm-beach' },
+	{ label: 'Miami', href: locationUrl('miami') },
+	{ label: 'Miami Beach', href: locationUrl('miami-beach') },
+	{ label: 'Sunny Isles Beach', href: locationUrl('sunny-isles-beach') },
+	{ label: 'Aventura', href: locationUrl('aventura') },
+	{ label: 'Bal Harbour', href: locationUrl('bal-harbour') },
+	{ label: 'Boca Raton', href: locationUrl('boca-raton') },
+	{ label: 'Palm Beach', href: locationUrl('palm-beach') },
 ] as const;
 
 /** Absolute URL helper — keeps canonicals/OG images correct on any host. */

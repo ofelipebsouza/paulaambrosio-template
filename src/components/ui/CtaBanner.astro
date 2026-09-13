@@ -2,10 +2,17 @@
 interface Props {
 	title?: string;
 	body?: string;
+	primaryLabel?: string;
+	primaryHref?: string;
+	secondaryLabel?: string;
+	secondaryHref?: string;
 }
 const {
 	title = 'Begin Your Project',
 	body = 'Tell us about your residence or property. We will schedule a confidential discovery session with our design team.',
+	primaryLabel = 'Start Your Project',
+	secondaryLabel = 'Explore Our Work',
+	secondaryHref = '/projects',
 } = Astro.props;
 ---
 
@@ -14,8 +21,8 @@ const {
 		<h2 class="font-display mx-auto max-w-2xl text-4xl lg:text-5xl">{title}</h2>
 		<p class="mx-auto mt-5 max-w-xl text-lede text-slate">{body}</p>
 		<div class="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row">
-			<a href="/contact" class="btn-primary">Start Your Project</a>
-			<a href="/projects" class="btn-secondary">Explore Our Work</a>
+			<button type="button" class="inquiry-open btn-primary cursor-pointer">{primaryLabel}</button>
+			<a href={secondaryHref} class="btn-secondary">{secondaryLabel}</a>
 		</div>
 	</div>
 </section>

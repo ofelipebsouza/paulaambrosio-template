@@ -11,8 +11,10 @@
 	--color-bone: #faf9f6;
 	--color-linen: #f2ede5;
 	--color-sand: #e8e2d8;
-	--color-stone: #8a7a67;
+	--color-stone: #6f6053;
 	--color-brass: #c9a986;
+	--color-coffee: #6b4e3d;
+	--color-coffee-deep: #57402f;
 	--color-slate: #55504a;
 	--color-mist: #6d6660;
 
@@ -68,6 +70,14 @@
 		background-color: color-mix(in srgb, var(--color-brass) 30%, transparent);
 	}
 
+	/* Fullscreen dialog sheets (nav menu + inquiry form) share one behavior */
+	dialog[open] {
+		display: block;
+	}
+	dialog::backdrop {
+		background: transparent;
+	}
+
 	/* Custom subtle scrollbar */
 	::-webkit-scrollbar { width: 6px; height: 6px; }
 	::-webkit-scrollbar-track { background: var(--color-linen); }
@@ -98,8 +108,9 @@
 		align-items: center;
 		justify-content: center;
 		gap: 0.5rem;
-		padding: 0.875rem 2rem;
-		background: var(--color-ink);
+		padding: 0.875rem 2.25rem;
+		border-radius: 9999px;
+		background: var(--color-coffee);
 		color: var(--color-bone);
 		font-size: 0.6875rem;
 		letter-spacing: 0.2em;
@@ -107,15 +118,16 @@
 		font-weight: 600;
 		transition: background var(--duration-editorial) var(--ease-editorial);
 	}
-	.btn-primary:hover { background: var(--color-brass); color: var(--color-ink); }
-	.btn-primary:focus-visible { outline: 2px solid var(--color-brass); outline-offset: 3px; }
+	.btn-primary:hover { background: var(--color-coffee-deep); color: var(--color-bone); }
+	.btn-primary:focus-visible { outline: 2px solid var(--color-coffee); outline-offset: 3px; }
 
 	.btn-secondary {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
 		gap: 0.5rem;
-		padding: 0.875rem 2rem;
+		padding: 0.875rem 2.25rem;
+		border-radius: 9999px;
 		border: 1px solid color-mix(in srgb, var(--color-ink) 30%, transparent);
 		color: var(--color-ink);
 		font-size: 0.6875rem;
@@ -124,8 +136,8 @@
 		font-weight: 600;
 		transition: border-color var(--duration-editorial) var(--ease-editorial), color var(--duration-editorial) var(--ease-editorial);
 	}
-	.btn-secondary:hover { border-color: var(--color-brass); color: var(--color-stone); }
-	.btn-secondary:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 3px; }
+	.btn-secondary:hover { border-color: var(--color-coffee); color: var(--color-coffee); }
+	.btn-secondary:focus-visible { outline: 2px solid var(--color-coffee); outline-offset: 3px; }
 
 	/* Editorial content typography for MDX bodies */
 	.prose-editorial {

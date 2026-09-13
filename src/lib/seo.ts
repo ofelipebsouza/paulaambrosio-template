@@ -6,6 +6,18 @@
  * information only — do not inject a schema type a page cannot justify.
  */
 import { SITE, PERSON, absoluteUrl } from '../config';
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+/**
+ * OG images must be ≤ ~1200px and universally supported (JPEG). Generates a
+ * derived asset from any astro:assets image instead of shipping the original
+ * multi-MB file to social crawlers and the deploy bundle.
+ */
+export async function ogFromImage(img: ImageMetadata): Promise<string> {
+	const derived = await getImage({ src: img, width: 1200, format: 'jpeg', quality: 70 });
+	return derived.src;
+}
 
 export interface SeoProps {
 	title: string;

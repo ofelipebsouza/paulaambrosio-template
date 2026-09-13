@@ -4,8 +4,10 @@ import { Image } from 'astro:assets';
 import Layout from '../../layouts/Layout.astro';
 import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
 import CtaBanner from '../../components/ui/CtaBanner.astro';
-import { webPageSchema, schemaScript } from '../../lib/seo';
+import ProjectGrid from '../../components/projects/FeaturedProjectGrid.astro';
+import { webPageSchema, schemaScript, ogFromImage } from '../../lib/seo';
 import type { BreadcrumbEntry } from '../../lib/seo';
+import { serviceUrl, locationUrl, projectUrl } from '../../config';
 
 export async function getStaticPaths() {
 	const projects = (await getCollection('projects')).filter((p) => !p.data.draft);
@@ -17,43 +19,53 @@ export async function getStaticPaths() {
 
 const { project } = Astro.props;
 const { Content } = await render(project);
+const ogImage = await ogFromImage(project.data.featuredImage);
 
-const meta = [
-	project.data.location,
-	project.data.propertyType,
-	project.data.projectType,
-	project.data.year ? String(project.data.year) : null,
-].filter(Boolean) as string[];
+// §13 project facts row.
+const facts = [
+	{ label: 'Location', value: project.data.location },
+	{ label: 'Property Type', value: project.data.propertyType },
+	{ label: 'Category', value: project.data.projectType },
+	{ label: 'Year', value: project.data.year ? String(project.data.year) : null },
+].filter((f) => f.value);
+
+// §13 SEO subtitle: descriptive context under the visible title.
+const subtitle = [project.data.propertyType, project.data.location].filter(Boolean).join(' — ');
+
+// Related projects in the same city (excluding this one).
+const related = (await getCollection('projects'))
+	.filter((p) => !p.data.draft && p.id !== project.id)
+	.filter((p) => project.data.location && p.data.location === project.data.location || p.data.relatedServices?.some((s) => project.data.relatedServices.includes(s)))
+	.slice(0, 3);
 
 const breadcrumbs: BreadcrumbEntry[] = [
 	{ name: 'Projects', url: '/projects' },
-	{ name: project.data.title, url: `/projects/${project.id}` },
+	{ name: project.data.title, url: projectUrl(project.id) },
 ];
 ---
 
 <Layout
-	title={`${project.data.title} — ${project.data.location ?? 'Interior Design Project'}`}
+	title={`${project.data.title} — ${subtitle || 'Interior Design Project'} | Paula Ambrosio Interiors`}
 	description={project.data.seoDescription ?? project.data.description}
-	canonical={`/projects/${project.id}`}
-	ogImage={project.data.featuredImage.src}
+	canonical={projectUrl(project.id)}
+	ogImage={ogImage}
 >
 	<Fragment slot="head" set:html={schemaScript(webPageSchema({
-		path: `/projects/${project.id}`,
+		path: projectUrl(project.id),
 		title: project.data.title,
 		description: project.data.seoDescription ?? project.data.description,
 		breadcrumbs,
 	}))} />
 
 	<article>
-		<!-- Project hero -->
+		<!-- Project hero (§13) -->
 		<section class="relative flex min-h-[70vh] items-end bg-ink">
 			<Image
 				src={project.data.featuredImage}
 				alt={project.data.imageAlt ?? project.data.title}
 				widths={[768, 1200, 1920]}
 				sizes="100vw"
-				loading="eager"
-				priority={true}
+	loading="eager"
 				quality={60}
 				decoding="async"
 				class="absolute inset-0 h-full w-full object-cover opacity-90"
@@ -62,22 +74,49 @@ const breadcrumbs: BreadcrumbEntry[] = [
 			<div class="relative container-editorial pb-14 pt-40 text-bone">
 				<Breadcrumbs items={breadcrumbs} tone="light" />
 				<h1 class="font-display mt-8 max-w-3xl text-4xl lg:text-6xl">{project.data.title}</h1>
-				{meta.length > 0 && (
-					<p class="mt-4 text-sm uppercase tracking-widest text-bone/70">{meta.join(' · ')}</p>
+				{subtitle && (
+					<p class="mt-4 max-w-2xl text-lg text-bone/80">{subtitle} | Paula Ambrosio Interiors</p>
 				)}
 			</div>
 		</section>
 
-		<!-- Overview + body -->
+		<!-- Project facts (§13) -->
+		{facts.length > 0 && (
+			<section class="border-b border-sand bg-bone">
+				<dl class="container-editorial grid grid-cols-2 gap-x-8 gap-y-6 py-10 sm:grid-cols-4">
+					{facts.map((fact) => (
+						<div>
+							<dt class="eyebrow text-stone">{fact.label}</dt>
+							<dd class="mt-2 text-sm leading-relaxed text-graphite">{fact.value}</dd>
+						</div>
+					))}
+				</dl>
+			</section>
+		)}
+
+		<!-- Overview + case study body (§13) -->
 		<section class="container-editorial grid gap-14 py-20 lg:grid-cols-12 lg:py-28">
 			<div class="lg:col-span-4">
 				<p class="eyebrow text-stone">Overview</p>
 				<p class="mt-4 text-lg leading-relaxed text-graphite">{project.data.description}</p>
 				{project.data.services.length > 0 && (
 					<div class="mt-10">
-						<p class="eyebrow text-stone">Scope</p>
+						<p class="eyebrow text-stone">Services</p>
 						<ul class="mt-4 space-y-2 text-sm text-graphite">
 							{project.data.services.map((s) => <li class="border-b border-sand pb-2">{s}</li>)}
+						</ul>
+					</div>
+				)}
+				{(project.data.relatedServices.length > 0 || project.data.relatedLocations.length > 0) && (
+					<div class="mt-10">
+						<p class="eyebrow text-stone">Explore</p>
+						<ul class="mt-4 space-y-2 text-sm text-graphite">
+							{project.data.relatedServices.map((s) => (
+								<li class="border-b border-sand pb-2"><a href={serviceUrl(s)} class="hover:text-stone">{s.replaceAll('-', ' ').replace(' miami', ' Miami').replace(/\b\w/g, (c) => c.toUpperCase())}</a></li>
+							))}
+							{project.data.relatedLocations.map((l) => (
+								<li class="border-b border-sand pb-2"><a href={locationUrl(l)} class="hover:text-stone">Interior Design in {l.replaceAll('-', ' ').replace(/\b\w/g, (c) => c.toUpperCase())}</a></li>
+							))}
 						</ul>
 					</div>
 				)}
@@ -87,14 +126,14 @@ const breadcrumbs: BreadcrumbEntry[] = [
 			</div>
 		</section>
 
-		<!-- Gallery -->
+		<!-- Gallery (§13: 12–25 images when official photography arrives) -->
 		{project.data.gallery.length > 0 && (
 			<section class="container-editorial pb-20">
 				<div class="grid gap-6 md:grid-cols-2">
 					{project.data.gallery.map((img, i) => (
 						<Image
 							src={img}
-							alt={`${project.data.title} — interior detail ${i + 1}`}
+							alt={`${project.data.title} — ${project.data.location ?? 'interior'} detail ${i + 1}`}
 							widths={[600, 1000]}
 							sizes="(min-width: 768px) 50vw, 100vw"
 							loading="lazy"
@@ -106,7 +145,29 @@ const breadcrumbs: BreadcrumbEntry[] = [
 				</div>
 			</section>
 		)}
+
+		<!-- Related projects -->
+		{related.length > 0 && (
+			<section class="bg-linen py-20 lg:py-24">
+				<div class="container-editorial">
+					<div class="mb-12 flex flex-wrap items-end justify-between gap-6">
+						<div>
+							<p class="eyebrow text-stone">Continue exploring</p>
+							<h2 class="font-display mt-4 text-4xl">More projects</h2>
+						</div>
+						<a href="/projects" class="eyebrow text-stone underline decoration-brass/60 underline-offset-8 hover:text-ink">View more projects</a>
+					</div>
+					<ProjectGrid projects={related} columns={3} />
+				</div>
+			</section>
+		)}
 	</article>
 
-	<CtaBanner />
+	<CtaBanner
+		title="Discuss a Similar Project"
+		body="Tell us about your residence or property. We will schedule a confidential discovery session with our design team."
+		primaryLabel="Start Your Project"
+		secondaryLabel="View More Projects"
+		secondaryHref="/projects"
+	/>
 </Layout>

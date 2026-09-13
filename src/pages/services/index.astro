@@ -5,8 +5,9 @@ import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
 import CtaBanner from '../../components/ui/CtaBanner.astro';
 import { webPageSchema, breadcrumbSchema, schemaScript } from '../../lib/seo';
 import type { BreadcrumbEntry } from '../../lib/seo';
+import { serviceUrl } from '../../config';
 
-const services = await getCollection('services');
+const services = (await getCollection('services')).filter((s) => !s.data.draft);
 
 const breadcrumbs: BreadcrumbEntry[] = [{ name: 'Services', url: '/services' }];
 ---
@@ -38,7 +39,7 @@ const breadcrumbs: BreadcrumbEntry[] = [{ name: 'Services', url: '/services' }];
 	<section class="container-editorial pb-24">
 		<div class="divide-y divide-sand border-y border-sand">
 			{services.map((service) => (
-				<a href={`/services/${service.id}`} class="group grid gap-4 py-10 transition-colors hover:bg-linen/60 lg:grid-cols-12 lg:items-baseline">
+				<a href={serviceUrl(service.id)} class="group grid gap-4 py-10 transition-colors hover:bg-linen/60 lg:grid-cols-12 lg:items-baseline">
 					<h2 class="font-display text-3xl lg:col-span-5 lg:text-4xl">{service.data.title}</h2>
 					<p class="text-sm leading-relaxed text-slate lg:col-span-5">{service.data.introduction}</p>
 					<span aria-hidden="true" class="eyebrow text-brass lg:col-span-2 lg:text-right">View service →</span>

@@ -1,0 +1,128 @@
+---
+import { getCollection, render } from 'astro:content';
+import { Image } from 'astro:assets';
+import Layout from '../layouts/Layout.astro';
+import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
+import CtaBanner from '../components/ui/CtaBanner.astro';
+import FAQ from '../components/ui/FAQ.astro';
+import ProjectGrid from '../components/projects/FeaturedProjectGrid.astro';
+import { webPageSchema, serviceSchema, faqSchema, schemaScript, ogFromImage } from '../lib/seo';
+import type { BreadcrumbEntry } from '../lib/seo';
+import { locationUrl, serviceUrl } from '../config';
+
+export async function getStaticPaths() {
+	const services = (await getCollection('services')).filter((s) => !s.data.draft);
+	return services.map((service) => ({
+		// Canonical flat slug per §14 — the collection id is already the legacy path.
+		params: { service: serviceUrl(service.id).replace(/^\//, '') },
+		props: { service },
+	}));
+}
+
+const { service } = Astro.props;
+const { Content } = await render(service);
+const ogImage = await ogFromImage(service.data.featuredImage);
+
+// Featured projects genuinely relevant to this service.
+const allProjects = (await getCollection('projects')).filter((p) => !p.data.draft);
+const featured = allProjects
+	.filter((p) => p.data.relatedServices?.includes(service.id))
+	.slice(0, 3);
+
+const faqs = service.data.faqs ?? [];
+const path = `/${service.id}`;
+const sub = service.data.heroSubheadline;
+const breadcrumbs: BreadcrumbEntry[] = [
+	{ name: 'Services', url: '/services' },
+	{ name: service.data.title, url: path },
+];
+const ctas = service.data.ctas;
+---
+
+<Layout
+	title={service.data.seoTitle ?? `${service.data.title} | Paula Ambrosio Interiors`}
+	description={service.data.seoDescription ?? service.data.introduction}
+	canonical={path}
+	ogImage={ogImage}
+>
+	<Fragment slot="head" set:html={schemaScript(serviceSchema({
+		path,
+		name: service.data.title,
+		description: service.data.seoDescription ?? service.data.introduction,
+	}))} />
+	<Fragment slot="head" set:html={schemaScript(webPageSchema({
+		path,
+		title: service.data.title,
+		description: service.data.seoDescription ?? service.data.introduction,
+		breadcrumbs,
+	}))} />
+	{faqs.length > 0 && <Fragment slot="head" set:html={schemaScript(faqSchema(faqs))} />}
+
+	<article>
+		<section class="relative flex min-h-[60vh] items-end bg-ink">
+			<Image
+				src={service.data.featuredImage}
+				alt={service.data.imageAlt ?? service.data.title}
+				widths={[768, 1200, 1920]}
+				sizes="100vw"
+	loading="eager"
+				quality={60}
+				decoding="async"
+				class="absolute inset-0 h-full w-full object-cover opacity-90"
+			/>
+			<div class="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/50 to-ink/10" aria-hidden="true"></div>
+			<div class="relative container-editorial pb-14 pt-40 text-bone">
+				<Breadcrumbs items={breadcrumbs} tone="light" />
+				<h1 class="font-display mt-8 max-w-3xl text-4xl lg:text-6xl">{service.data.title}</h1>
+				{sub && <p class="mt-4 max-w-2xl text-lg leading-relaxed text-bone/80">{sub}</p>}
+			</div>
+		</section>
+
+		<section class="container-editorial grid gap-14 py-16 lg:grid-cols-12 lg:py-24">
+			<div class="lg:col-span-4">
+				<p class="eyebrow text-stone">Overview</p>
+				<p class="mt-4 text-lg leading-relaxed text-graphite">{service.data.introduction}</p>
+				<div class="mt-10">
+					<p class="eyebrow text-stone">Also explore</p>
+					<ul class="mt-4 space-y-2 text-sm text-graphite">
+						<li class="border-b border-sand pb-2"><a href={locationUrl('miami')} class="hover:text-stone">Interior Design in Miami</a></li>
+						<li class="border-b border-sand pb-2"><a href={locationUrl('miami-beach')} class="hover:text-stone">Interior Design in Miami Beach</a></li>
+						<li class="border-b border-sand pb-2"><a href="/projects" class="hover:text-stone">Selected Projects</a></li>
+					</ul>
+				</div>
+			</div>
+			<div class="prose-editorial lg:col-span-7 lg:col-start-6">
+				<Content />
+			</div>
+		</section>
+
+		{featured.length > 0 && (
+			<section class="bg-linen py-20 lg:py-24">
+				<div class="container-editorial">
+					<div class="mb-12">
+						<p class="eyebrow text-stone">Selected work</p>
+						<h2 class="font-display mt-4 text-4xl">Projects with this service</h2>
+					</div>
+					<ProjectGrid projects={featured} columns={3} />
+				</div>
+			</section>
+		)}
+
+		{faqs.length > 0 && (
+			<section class="container-editorial max-w-3xl pb-20">
+				<h2 class="font-display text-3xl">Frequently asked questions</h2>
+				<div class="mt-8">
+					<FAQ faqs={faqs} />
+				</div>
+			</section>
+		)}
+
+		<CtaBanner
+			title={ctas?.bannerTitle ?? 'Begin Your Project'}
+			body={ctas?.bannerBody ?? 'Tell us about your residence or property. We will schedule a confidential discovery session with our design team.'}
+			primaryLabel={ctas?.primary ?? 'Start Your Project'}
+			secondaryLabel={ctas?.secondary ?? 'Explore Our Work'}
+			secondaryHref="/projects"
+		/>
+	</article>
+</Layout>

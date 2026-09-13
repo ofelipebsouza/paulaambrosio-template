@@ -1,0 +1,128 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
+import CtaBanner from '../components/ui/CtaBanner.astro';
+import FAQ from '../components/ui/FAQ.astro';
+import { webPageSchema, faqSchema, schemaScript } from '../lib/seo';
+import type { BreadcrumbEntry } from '../lib/seo';
+import { SITE, PERSON, serviceUrl, locationUrl } from '../config';
+
+/**
+ * Entity summary for AI answer engines (AEO): direct, verified answers to the
+ * questions systems ask about this business. Facts mirror src/config.ts —
+ * do not add claims that are not verifiable (§42).
+ */
+
+const coreFaqs = [
+	{
+		question: 'Who is Paula Ambrosio?',
+		answer: `Paula Ambrosio is the Founder and Principal Designer of ${SITE.name}, a Miami-based luxury interior design studio. She leads every project with a philosophy rooted in architecture, materiality and the way clients live.`,
+	},
+	{
+		question: `What is ${SITE.name}?`,
+		answer: `${SITE.name} is a luxury interior design studio based in Miami, Florida. The studio creates sophisticated residential and hospitality interiors across South Florida and for international clients, managing each project from concept through procurement, installation and final styling.`,
+	},
+	{
+		question: 'Where does the studio work?',
+		answer: 'The studio is based in Miami and serves Miami Beach, Sunny Isles Beach, Aventura, Bal Harbour, Boca Raton, Palm Beach and surrounding South Florida communities, as well as international clients acquiring property in the region.',
+	},
+	{
+		question: 'What services does the studio offer?',
+		answer: 'Full-service interior design, turnkey interior design, luxury residential interior design and hospitality interior design — including interior architecture and space planning, custom millwork, kitchens and bathrooms, lighting, material selection, custom furniture, procurement, art and accessories, project coordination, installation and final styling.',
+	},
+	{
+		question: 'What is turnkey interior design?',
+		answer: 'Turnkey means complete: the furniture is installed, the artwork is placed, the lighting is considered and the rooms are styled. The studio manages the entire journey — design, procurement, vendor coordination, installation and final styling — so the residence is move-in ready. It is designed for international buyers and owners of second homes who participate in decisions remotely.',
+	},
+	{
+		question: 'What types of projects does the studio take on?',
+		answer: 'Luxury condominiums, waterfront residences, penthouses, custom homes, estate homes, complete renovations, new construction interiors, second and vacation homes, and hospitality environments such as boutique hotels, lounges and wellness and beauty spaces.',
+	},
+	{
+		question: 'Can the studio work with my architect or general contractor?',
+		answer: 'Yes. Collaboration is a core strength: the studio supplies complete interior architectural drawing packages, attends on-site coordination meetings, verifies field dimensions and reviews contractor shop drawings to safeguard design intent. Construction and structural trade services are executed by properly licensed general contractors.',
+	},
+	{
+		question: 'Can I hire the studio if I live outside the United States?',
+		answer: 'Yes. A majority of the studio\'s clients reside outside Florida during project execution. The process runs remotely through cloud-based project management, high-definition digital presentations, video walkthroughs and milestone reporting, ending with a coordinated white-glove installation.',
+	},
+	{
+		question: 'How do I start a project?',
+		answer: 'Use the Start Your Project button on any page or visit the contact page to send an inquiry. The studio will schedule a confidential discovery session to understand your residence, property or hospitality project.',
+	},
+];
+
+// Consolidate the most useful FAQs from the Miami landing page for depth.
+const miami = (await getCollection('locations')).find((l) => l.id === 'miami');
+const miamiFaqs = (miami?.data.faqs ?? []).slice(0, 2);
+const allFaqs = [...coreFaqs, ...miamiFaqs];
+
+const breadcrumbs: BreadcrumbEntry[] = [{ name: 'FAQ', url: '/faq' }];
+---
+
+<Layout
+	title="Frequently Asked Questions — Paula Ambrosio Interiors"
+	description={`Direct answers about ${SITE.name}: who Paula Ambrosio is, the studio's services, service area, process, turnkey design and how to start a project in Miami and South Florida.`}
+	canonical="/faq"
+>
+	<Fragment slot="head" set:html={schemaScript(webPageSchema({
+		path: '/faq',
+		title: 'Frequently Asked Questions',
+		description: `Who is Paula Ambrosio, what the studio does, where it works and how to start a project.`,
+		breadcrumbs,
+	}))} />
+	<Fragment slot="head" set:html={schemaScript(faqSchema(allFaqs))} />
+
+	<article>
+		<section class="container-editorial pt-16 pb-6 lg:pt-24">
+			<Breadcrumbs items={breadcrumbs} />
+			<p class="eyebrow mt-10 text-stone">Questions &amp; Answers</p>
+			<h1 class="font-display mt-4 max-w-2xl text-display">Frequently asked questions</h1>
+			<p class="mt-6 max-w-xl text-lede text-slate">
+				Direct answers about {SITE.name} — who we are, what we do, where we work and how
+				a project begins.
+			</p>
+		</section>
+
+		<section class="container-editorial grid gap-14 py-12 lg:grid-cols-12 lg:py-16">
+			<div class="lg:col-span-4">
+				<p class="eyebrow text-stone">Entity summary</p>
+				<dl class="mt-5 space-y-5 text-sm leading-relaxed text-graphite">
+					<div>
+						<dt class="eyebrow text-stone">Studio</dt>
+						<dd class="mt-1">{SITE.name} — Miami, Florida</dd>
+					</div>
+					<div>
+						<dt class="eyebrow text-stone">Founder</dt>
+						<dd class="mt-1">{PERSON.name}, {PERSON.jobTitle}</dd>
+					</div>
+					<div>
+						<dt class="eyebrow text-stone">Services</dt>
+						<dd class="mt-1">
+							<a href={serviceUrl('turnkey-interior-design-miami')} class="underline decoration-brass/60 underline-offset-4 hover:text-ink">Turnkey</a>, <a href={serviceUrl('luxury-residential-interior-design-miami')} class="underline decoration-brass/60 underline-offset-4 hover:text-ink">Luxury Residential</a>, <a href={serviceUrl('hospitality-interior-design-miami')} class="underline decoration-brass/60 underline-offset-4 hover:text-ink">Hospitality</a> — full-service interior design.
+						</dd>
+					</div>
+					<div>
+						<dt class="eyebrow text-stone">Service area</dt>
+						<dd class="mt-1">
+							<a href={locationUrl('miami')} class="underline decoration-brass/60 underline-offset-4 hover:text-ink">Miami</a>, <a href={locationUrl('miami-beach')} class="underline decoration-brass/60 underline-offset-4 hover:text-ink">Miami Beach</a>, <a href={locationUrl('sunny-isles-beach')} class="underline decoration-brass/60 underline-offset-4 hover:text-ink">Sunny Isles Beach</a>, <a href={locationUrl('aventura')} class="underline decoration-brass/60 underline-offset-4 hover:text-ink">Aventura</a>, <a href={locationUrl('bal-harbour')} class="underline decoration-brass/60 underline-offset-4 hover:text-ink">Bal Harbour</a>, <a href={locationUrl('boca-raton')} class="underline decoration-brass/60 underline-offset-4 hover:text-ink">Boca Raton</a>, <a href={locationUrl('palm-beach')} class="underline decoration-brass/60 underline-offset-4 hover:text-ink">Palm Beach</a>.
+						</dd>
+					</div>
+					<div>
+						<dt class="eyebrow text-stone">Contact</dt>
+						<dd class="mt-1"><a href={`mailto:${SITE.email}`} class="underline decoration-brass/60 underline-offset-4 hover:text-ink">{SITE.email}</a></dd>
+					</div>
+				</dl>
+			</div>
+			<div class="lg:col-span-7 lg:col-start-6">
+				<h2 class="font-display text-3xl">The studio, answered</h2>
+				<div class="mt-8">
+					<FAQ faqs={allFaqs} />
+				</div>
+			</div>
+		</section>
+	</article>
+
+	<CtaBanner />
+</Layout>

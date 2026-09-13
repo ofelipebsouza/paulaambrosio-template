@@ -13,6 +13,17 @@ const faqSchema = z.array(
 	}),
 );
 
+/** Per-entry CTA labels (the plan's red instruction markers, now real config). */
+const ctaSchema = z
+	.object({
+		primary: z.string().min(1),
+		secondary: z.string().min(1).optional(),
+		secondaryHref: z.string().min(1).optional(),
+		bannerTitle: z.string().min(1).optional(),
+		bannerBody: z.string().min(1).optional(),
+	})
+	.optional();
+
 const projectsCollection = defineCollection({
 	loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/projects' }),
 	schema: ({ image }) =>
@@ -63,9 +74,11 @@ const servicesCollection = defineCollection({
 			title: z.string(),
 			draft: z.boolean().default(false),
 			introduction: z.string().min(1),
+			heroSubheadline: z.string().optional(),
 			featuredImage: image(),
 			imageAlt: z.string().optional(),
 			faqs: faqSchema.default([]),
+			ctas: ctaSchema,
 			...seoFields,
 		}),
 });
@@ -77,9 +90,11 @@ const locationsCollection = defineCollection({
 			title: z.string(),
 			draft: z.boolean().default(false),
 			introduction: z.string().min(1),
+			heroSubheadline: z.string().optional(),
 			featuredImage: image(),
 			imageAlt: z.string().optional(),
 			faqs: faqSchema.default([]),
+			ctas: ctaSchema,
 			...seoFields,
 		}),
 });

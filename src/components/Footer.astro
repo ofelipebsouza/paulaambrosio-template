@@ -1,5 +1,5 @@
 ---
-import { SITE, FOOTER_LOCATIONS, NAV_LINKS } from '../config';
+import { SITE, FOOTER_LOCATIONS, NAV_LINKS, serviceUrl, locationUrl } from '../config';
 
 const year = new Date().getFullYear();
 ---
@@ -24,9 +24,9 @@ const year = new Date().getFullYear();
 			<nav aria-label="Footer services" class="lg:col-span-2">
 				<h3 class="eyebrow text-brass">Services</h3>
 				<ul class="mt-4 space-y-2.5 text-sm text-bone/60">
-					<li><a href="/services/turnkey-interior-design-miami" class="hover:text-bone">Turnkey Interior Design</a></li>
-					<li><a href="/services/luxury-residential-interior-design-miami" class="hover:text-bone">Luxury Residential</a></li>
-					<li><a href="/services/hospitality-interior-design-miami" class="hover:text-bone">Hospitality Design</a></li>
+					<li><a href={serviceUrl('turnkey-interior-design-miami')} class="hover:text-bone">Turnkey Interior Design</a></li>
+					<li><a href={serviceUrl('luxury-residential-interior-design-miami')} class="hover:text-bone">Luxury Residential</a></li>
+					<li><a href={serviceUrl('hospitality-interior-design-miami')} class="hover:text-bone">Hospitality Design</a></li>
 					<li><a href="/services" class="hover:text-bone">All Services</a></li>
 				</ul>
 			</nav>
@@ -43,13 +43,13 @@ const year = new Date().getFullYear();
 			<nav aria-label="Footer studio" class="lg:col-span-3">
 				<h3 class="eyebrow text-brass">Studio</h3>
 				<ul class="mt-4 space-y-2.5 text-sm text-bone/60">
-					{NAV_LINKS.filter((l) => !['Services', 'Locations'].includes(l.label)).map((link) => (
+					{NAV_LINKS.map((link) => (
 						<li><a href={link.href} class="hover:text-bone">{link.label}</a></li>
 					))}
+					<li><a href="/faq" class="hover:text-bone">FAQ</a></li>
 					<li><a href="/sitemap-pages" class="hover:text-bone">Sitemap &amp; Index</a></li>
-					<li><a href="/privacy" class="hover:text-bone">Privacy</a></li>
 				</ul>
-				<a href="/contact" class="btn-primary mt-6">Start Your Project</a>
+				<button type="button" class="inquiry-open btn-primary mt-6 cursor-pointer">Start Your Project</button>
 			</nav>
 		</div>
 

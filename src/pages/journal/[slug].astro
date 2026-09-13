@@ -4,8 +4,9 @@ import { Image } from 'astro:assets';
 import Layout from '../../layouts/Layout.astro';
 import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
 import CtaBanner from '../../components/ui/CtaBanner.astro';
-import { articleSchema, webPageSchema, schemaScript } from '../../lib/seo';
+import { articleSchema, webPageSchema, schemaScript, ogFromImage } from '../../lib/seo';
 import type { BreadcrumbEntry } from '../../lib/seo';
+import { serviceUrl, locationUrl } from '../../config';
 
 export async function getStaticPaths() {
 	const posts = (await getCollection('journal')).filter((p) => !p.data.draft);
@@ -17,6 +18,7 @@ export async function getStaticPaths() {
 
 const { post } = Astro.props;
 const { Content } = await render(post);
+const ogImage = await ogFromImage(post.data.featuredImage);
 
 const breadcrumbs: BreadcrumbEntry[] = [
 	{ name: 'Journal', url: '/journal' },
@@ -29,16 +31,16 @@ const breadcrumbs: BreadcrumbEntry[] = [
 	description={post.data.seoDescription ?? post.data.excerpt}
 	canonical={`/journal/${post.id}`}
 	ogType="article"
-	ogImage={post.data.featuredImage.src}
+	ogImage={ogImage}
 >
 	<Fragment slot="head" set:html={schemaScript(articleSchema({
+		image: ogImage,
 		path: `/journal/${post.id}`,
 		title: post.data.title,
 		description: post.data.seoDescription ?? post.data.excerpt,
 		datePublished: post.data.date,
 		dateModified: post.data.updatedDate,
 		author: post.data.author,
-		image: post.data.featuredImage.src,
 	}))} />
 	<Fragment slot="head" set:html={schemaScript(webPageSchema({
 		path: `/journal/${post.id}`,
@@ -66,8 +68,7 @@ const breadcrumbs: BreadcrumbEntry[] = [
 				alt={post.data.imageAlt ?? post.data.title}
 				widths={[768, 1200, 1600]}
 				sizes="(min-width: 80rem) 80rem, 100vw"
-				loading="eager"
-				priority={true}
+	loading="eager"
 				quality={60}
 				decoding="async"
 				class="aspect-[16/9] w-full object-cover"
@@ -84,7 +85,7 @@ const breadcrumbs: BreadcrumbEntry[] = [
 					<p class="eyebrow text-stone">Continue exploring</p>
 					<ul class="mt-4 space-y-2 text-graphite">
 						{post.data.relatedServices?.map((s) => (
-							<li><a class="underline decoration-brass/60 underline-offset-4" href={`/services/${s}`}>{s.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}</a></li>
+							<li><a class="underline decoration-brass/60 underline-offset-4" href={serviceUrl(s)}>{s.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}</a></li>
 						))}
 						{post.data.relatedProjects?.map((p) => (
 							<li><a class="underline decoration-brass/60 underline-offset-4" href={`/projects/${p}`}>{p.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}</a></li>

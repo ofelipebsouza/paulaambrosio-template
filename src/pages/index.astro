@@ -5,6 +5,7 @@ import Layout from '../layouts/Layout.astro';
 import ProjectGrid from '../components/projects/ProjectGrid.astro';
 import CtaBanner from '../components/ui/CtaBanner.astro';
 import { webPageSchema, schemaScript } from '../lib/seo';
+import { serviceUrl, locationUrl } from '../config';
 import heroImage from '../assets/hero-miami-interior.jpg';
 import { getImage } from 'astro:assets';
 
@@ -34,55 +35,80 @@ const latestJournal = (await getCollection('journal'))
 		description: 'Full-service and turnkey luxury interior design for Miami and South Florida.',
 	}))} />
 
-	<!-- 1. Hero -->
-	<section class="relative flex min-h-[88vh] items-end bg-ink text-bone">
-		<Image
-			src={heroImage}
-			alt="Double-height Miami living room designed by Paula Ambrosio Interiors with marble floors, sheer drapery and sculptural lighting"
-			widths={[768, 1200, 1600, 1920]}
-			sizes="100vw"
-			loading="eager"
-			priority={true}
+	<!-- 1. Hero — image melts into the cream ground, title sits below -->
+	<section class="bg-bone pb-16 text-center lg:pb-24">
+		<div class="relative mx-auto max-w-6xl">
+			<Image
+				src={heroImage}
+				alt="Double-height Miami living room designed by Paula Ambrosio Interiors with marble floors, sheer drapery and sculptural lighting"
+				widths={[768, 1200, 1600]}
+				sizes="(min-width: 1152px) 72rem, 100vw"
+				loading="eager"
+				priority={true}
 				quality={60}
-			decoding="async"
-			class="absolute inset-0 h-full w-full object-cover opacity-90"
-		/>
-		<div class="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/50 to-ink/10" aria-hidden="true"></div>
-		<div class="relative container-editorial pb-20 pt-44">
-			<p class="eyebrow text-brass">Miami · South Florida</p>
-			<h1 class="font-display mt-6 max-w-3xl text-display">
-				Luxury interior design, composed with architectural calm.
+				decoding="async"
+				class="aspect-[4/3] w-full object-cover sm:aspect-[16/10] lg:aspect-[16/8]"
+			/>
+			<div class="pointer-events-none absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-bone via-bone/80 to-transparent lg:h-48" aria-hidden="true"></div>
+		</div>
+		<div class="container-editorial relative">
+			<h1 class="font-display mx-auto max-w-4xl text-4xl leading-[1.08] tracking-[0.04em] text-ink uppercase sm:text-5xl lg:text-6xl">
+				Luxury Interior Design in Miami
 			</h1>
-			<p class="mt-6 max-w-xl text-lg leading-relaxed text-bone/80">
-				Paula Ambrosio Interiors is a full-service studio creating refined residences, penthouses
-				and hospitality spaces across Miami and South Florida — from first concept to final styling.
+			<p class="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-slate">
+				Sophisticated interiors. Seamless execution. Designed around the way you live.
 			</p>
-			<div class="mt-10 flex flex-col gap-4 sm:flex-row">
-				<a href="/contact" class="btn-primary">Start Your Project</a>
-				<a href="/projects" class="btn-secondary border-bone/40 text-bone hover:border-brass hover:text-brass">Explore Our Work</a>
+			<div class="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row">
+				<button type="button" class="inquiry-open btn-primary">Start Your Project</button>
+				<a href="/services" class="btn-secondary">Explore Our Services</a>
 			</div>
 		</div>
 	</section>
 
-	<!-- 2. Brand positioning -->
-	<section class="container-editorial py-24 lg:py-32">
-		<div class="grid gap-12 lg:grid-cols-12">
-			<div class="lg:col-span-4">
-				<p class="eyebrow text-stone">The Studio</p>
+	<!-- 2. Intro (§01 INTRO) -->
+	<section class="container-editorial py-20 lg:py-28">
+		<div class="mx-auto max-w-3xl text-center">
+			<p class="eyebrow text-stone">Miami · South Florida · International</p>
+			<p class="font-display mt-6 text-2xl leading-relaxed text-graphite lg:text-3xl">
+				Paula Ambrosio Interiors is a Miami-based luxury interior design studio creating
+				sophisticated residential and hospitality interiors in South Florida and
+				internationally. From concept to completion, our studio brings together interior
+				design, custom detailing, material selection, procurement, project coordination
+				and final styling to create spaces that feel considered, personal and complete.
+			</p>
+		</div>
+	</section>
+
+	<!-- 3. Full-service interior design (§01) -->
+	<section class="bg-linen py-24 lg:py-32">
+		<div class="container-editorial grid gap-12 lg:grid-cols-12">
+			<div class="lg:col-span-5">
+				<p class="eyebrow text-stone">Full-Service Interior Design</p>
+				<h2 class="font-display mt-4 text-4xl leading-tight">From vision to a fully realized interior.</h2>
+				<p class="mt-6 leading-relaxed text-slate">
+					Services may include interior architecture and space planning, full-service
+					interior design, renovation design, new-construction interior design, custom
+					millwork, kitchens and bathrooms, lighting, material and finish selection,
+					custom furniture, procurement, art and accessories, project coordination,
+					installation and styling.
+				</p>
+				<a href={serviceUrl('luxury-residential-interior-design-miami')} class="btn-secondary mt-8">Explore residential projects</a>
 			</div>
-			<div class="lg:col-span-8">
-				<h2 class="font-display text-3xl leading-snug lg:text-4xl">
-					Every project is delivered as a complete composition — architecture, interiors,
-					furniture and art resolved into one coherent whole.
-				</h2>
-				<a href="/about" class="eyebrow mt-8 inline-block text-stone underline decoration-brass/60 underline-offset-8 hover:text-ink">
-					About the studio
-				</a>
+			<div class="lg:col-span-6 lg:col-start-7">
+				<p class="eyebrow text-stone">Turnkey</p>
+				<h2 class="font-display mt-4 text-4xl leading-tight">Arrive. Everything is ready.</h2>
+				<p class="mt-6 leading-relaxed text-slate">
+					Our turnkey service is for clients who want an extraordinary home without managing
+					hundreds of individual decisions. We oversee the design journey from concept
+					through furnishings, lighting, custom pieces, procurement, installation,
+					accessories and final styling.
+				</p>
+				<a href={serviceUrl('turnkey-interior-design-miami')} class="btn-secondary mt-8">Discover turnkey design</a>
 			</div>
 		</div>
 	</section>
 
-	<!-- 3. Selected projects -->
+	<!-- 4. Selected projects -->
 	<section class="bg-linen py-24 lg:py-32">
 		<div class="container-editorial">
 			<div class="mb-14 flex flex-wrap items-end justify-between gap-6">
@@ -101,9 +127,8 @@ const latestJournal = (await getCollection('journal'))
 		<p class="eyebrow text-stone">Services</p>
 		<h2 class="font-display mt-4 max-w-xl text-4xl">A complete design service, from concept to keys in hand.</h2>
 		<div class="mt-14 divide-y divide-sand border-t border-sand">
-			{services.map((service) => (
-				<a
-					href={`/services/${service.id}`}
+			{services.map((service) => (																		<a
+																		href={serviceUrl(service.id)}
 					class="group flex flex-wrap items-baseline justify-between gap-4 py-7 transition-colors hover:bg-linen/60"
 				>
 					<h3 class="font-display text-2xl lg:text-3xl">{service.data.title}</h3>
@@ -120,7 +145,7 @@ const latestJournal = (await getCollection('journal'))
 			<div class="lg:col-span-5">
 				<p class="eyebrow text-brass">Turnkey Interior Design</p>
 				<h2 class="font-display mt-4 text-4xl">Move-in ready, down to the last detail.</h2>
-				<a href="/services/turnkey-interior-design-miami" class="btn-primary mt-8">Explore turnkey design</a>
+				<a href={serviceUrl('turnkey-interior-design-miami')} class="btn-primary mt-8">Discover turnkey design</a>
 			</div>
 			<div class="lg:col-span-6 lg:col-start-7">
 				<p class="text-lg leading-relaxed text-bone/80">
@@ -144,7 +169,7 @@ const latestJournal = (await getCollection('journal'))
 		<ul class="grid grid-cols-2 gap-px bg-sand sm:grid-cols-3 lg:grid-cols-4">
 			{['Miami', 'Miami Beach', 'Sunny Isles Beach', 'Aventura', 'Bal Harbour', 'Boca Raton', 'Palm Beach'].map((loc) => (
 				<li class="bg-bone">
-					<a href={`/locations/${loc.toLowerCase().replace(/\s+/g, '-')}`} class="flex h-full flex-col justify-between p-6 transition-colors hover:bg-linen">
+					<a href={locationUrl(loc.toLowerCase().replace(/\s+/g, '-'))} class="flex h-full flex-col justify-between p-6 transition-colors hover:bg-linen">
 						<span class="font-display text-xl">{loc}</span>
 						<span aria-hidden="true" class="mt-6 eyebrow text-brass">→</span>
 					</a>
@@ -153,7 +178,48 @@ const latestJournal = (await getCollection('journal'))
 		</ul>
 	</section>
 
-	<!-- 7. Journal -->
+	<!-- 8. About Paula (§01 ABOUT PAULA) -->
+	<section class="container-editorial py-24 lg:py-32">
+		<div class="grid items-center gap-12 lg:grid-cols-12">
+			<div class="lg:col-span-5">
+				<div class="flex aspect-[4/5] items-center justify-center border border-sand bg-linen p-10 text-center">
+					<div>
+						<p class="font-display text-2xl text-stone">Paula Ambrosio</p>
+						<p class="eyebrow mt-3 text-stone">Founder &amp; Principal Designer</p>
+						<p class="mt-6 max-w-xs mx-auto text-sm italic leading-relaxed text-slate">Professional portrait — awaiting official photography</p>
+					</div>
+				</div>
+			</div>
+			<div class="lg:col-span-6 lg:col-start-7">
+				<p class="eyebrow text-stone">About Paula</p>
+				<h2 class="font-display mt-4 text-4xl leading-tight">Design guided by experience, delivered with precision.</h2>
+				<p class="mt-6 leading-relaxed text-slate">
+					Paula Ambrosio is the Founder and Principal Designer of Paula Ambrosio
+					Interiors, leading every project with a philosophy rooted in architecture,
+					materiality and the way clients truly live.
+				</p>
+				<a href="/about" class="btn-secondary mt-8">Meet Paula</a>
+			</div>
+		</div>
+	</section>
+
+	<!-- 9. Process (§01 PROCESS) -->
+	<section class="bg-graphite py-24 text-bone lg:py-32">
+		<div class="container-editorial">
+			<p class="eyebrow text-brass">The Process</p>
+			<h2 class="font-display mt-4 max-w-xl text-4xl">From first conversation to final reveal.</h2>
+			<ol class="mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-6">
+				{['Discovery', 'Concept & Design', 'Design Development', 'Procurement & Coordination', 'Installation', 'Reveal'].map((step, i) => (
+					<li class="border-t border-bone/20 pt-5">
+						<span class="font-display text-3xl text-brass">{String(i + 1).padStart(2, '0')}</span>
+						<p class="eyebrow mt-3 text-bone/80">{step}</p>
+					</li>
+				))}
+			</ol>
+		</div>
+	</section>
+
+	<!-- 10. Journal -->
 	<section class="bg-linen py-24 lg:py-32">
 		<div class="container-editorial">
 			<div class="mb-14 flex flex-wrap items-end justify-between gap-6">
