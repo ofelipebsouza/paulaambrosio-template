@@ -79,7 +79,7 @@ export const NAV_RIGHT = [
 		children: FOOTER_LOCATIONS.map((loc) => ({ label: loc.label, href: loc.href })),
 	},
 	{ label: 'Journal', href: '/journal' },
-	{ label: 'Privacy', href: '/privacy' },
+	{ label: 'Press', href: '/press' },
 	{ label: 'Contact', href: '/contact' },
 ] as const;
 
