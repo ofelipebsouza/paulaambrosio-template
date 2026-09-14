@@ -8,15 +8,19 @@ import { webPageSchema, schemaScript } from '../lib/seo';
 import { serviceUrl, locationUrl } from '../config';
 import { getImage } from 'astro:assets';
 import paulaProfile from '../assets/paula-profile.webp';
+import heroKitchen from '../assets/hero-kitchen.jpg';
 
 const allProjects = (await getCollection('projects')).filter((p) => !p.data.draft);
 
-const heroOg = await getImage({ src: allProjects[0]?.data.featuredImage, width: 1200, format: 'jpeg', quality: 70 });
+const heroOg = await getImage({ src: heroKitchen, width: 1200, format: 'jpeg', quality: 70 });
 
-const heroSlides = allProjects.slice(0, 9).map((p) => ({
-	src: p.data.featuredImage,
-	alt: p.data.imageAlt ?? p.data.title,
-}));
+const heroSlides = [
+	{ src: heroKitchen, alt: 'Luxury modern kitchen with marble countertops and warm wood cabinetry by Paula Ambrosio Interiors' },
+	...allProjects.slice(0, 9).map((p) => ({
+		src: p.data.featuredImage,
+		alt: p.data.imageAlt ?? p.data.title,
+	})),
+];
 
 const featuredProjects = allProjects
 	.sort((a, b) => (b.data.year ?? 0) - (a.data.year ?? 0))
