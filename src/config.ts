@@ -21,7 +21,7 @@ export const SITE = {
 
 export const PERSON = {
 	name: 'Paula Ambrosio',
-	jobTitle: 'Founder & Principal Designer',
+	jobTitle: 'Principal Designer & Cofounder',
 	url: `${SITE.url}/about`,
 	sameAs: [
 		'https://www.instagram.com/paulaambrosiointeriors',
@@ -88,8 +88,10 @@ export const NAV_LINKS = [...NAV_LEFT.slice(1), ...NAV_RIGHT] as const;
 /** Studio social profiles — real destinations only (§42). */
 export const SOCIAL_LINKS = [
 	{ label: 'Instagram', href: 'https://www.instagram.com/paulaambrosiointeriors' },
-	{ label: 'Houzz', href: 'https://www.houzz.com/pro/paulaambrosio' },
+	{ label: 'TikTok', href: 'https://www.tiktok.com/@thepaulaambrosio' },
+	{ label: 'Threads', href: 'https://www.threads.net/@paulaambrosio_' },
 	{ label: 'LinkedIn', href: 'https://www.linkedin.com/in/paulaambrosio' },
+	{ label: 'Houzz', href: 'https://www.houzz.com/pro/paulaambrosio' },
 ] as const;
 
 /** Absolute URL helper — keeps canonicals/OG images correct on any host. */
