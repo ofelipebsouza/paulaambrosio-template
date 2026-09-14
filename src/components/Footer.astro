@@ -1,5 +1,5 @@
 ---
-import { SITE, FOOTER_LOCATIONS, NAV_LINKS, serviceUrl, locationUrl } from '../config';
+import { SITE, FOOTER_LOCATIONS, NAV_LINKS, SOCIAL_LINKS, serviceUrl, locationUrl } from '../config';
 
 const year = new Date().getFullYear();
 ---
@@ -18,8 +18,21 @@ const year = new Date().getFullYear();
 					<p>{SITE.address}</p>
 					<p><a href={`mailto:${SITE.email}`} class="hover:text-brass">{SITE.email}</a></p>
 					<p><a href={`tel:${SITE.phoneE164}`} class="hover:text-brass">{SITE.phone}</a></p>
-					<p><a href="tel:+17862085412" class="hover:text-brass">{SITE.phone2}</a></p>
+					<p><a href="tel:+178****5412" class="hover:text-brass">{SITE.phone2}</a></p>
 				</address>
+				<div class="mt-6 flex items-center gap-3">
+					{SOCIAL_LINKS.map(({ label, href }) => (
+						<a
+							href={href}
+							class="flex h-9 w-9 items-center justify-center rounded-full border border-bone/20 text-bone/60 transition-colors hover:border-brass hover:text-brass"
+							aria-label={`${SITE.name} on ${label}`}
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							<span class="text-xs font-semibold tracking-wider">{label.charAt(0)}</span>
+						</a>
+					))}
+				</div>
 			</div>
 
 			<nav aria-label="Footer services" class="lg:col-span-2">
