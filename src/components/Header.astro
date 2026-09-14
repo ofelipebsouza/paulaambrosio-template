@@ -271,6 +271,11 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path === href 
 						class="mt-2 w-full border border-sand bg-white px-4 py-3 text-sm placeholder:text-mist focus:border-brass focus:outline-none" />
 				</div>
 				<div>
+					<label for="inq-phone" class="eyebrow text-slate">Phone</label>
+					<input id="inq-phone" name="phone" type="tel" autocomplete="tel" placeholder="+1 (000) 000-0000"
+						class="mt-2 w-full border border-sand bg-white px-4 py-3 text-sm placeholder:text-mist focus:border-brass focus:outline-none" />
+				</div>
+				<div>
 					<label for="inq-message" class="eyebrow text-slate">Tell us briefly about your project</label>
 					<textarea id="inq-message" name="message" rows="4" placeholder="Share a few details about your vision…"
 						class="mt-2 w-full border border-sand bg-white px-4 py-3 text-sm placeholder:text-mist focus:border-brass focus:outline-none"></textarea>
