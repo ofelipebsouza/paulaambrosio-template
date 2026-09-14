@@ -15,7 +15,7 @@ export const SITE = {
 	phone: '+1 (786) 658-9478',
 	phone2: '+1 (786) 208-5412',
 	phoneE164: '+17866589478',
-	address: '1938 NE 149th St, North Miami, FL',
+	address: '1938 NE 149th St, North Miami, FL 33181',
 	locale: 'en_US',
 } as const;
 
