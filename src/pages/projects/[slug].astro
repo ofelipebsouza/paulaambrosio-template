@@ -143,11 +143,11 @@ const breadcrumbs: BreadcrumbEntry[] = [
 		<!-- Gallery (§13: 12-25 images when official photography arrives) -->
 		{project.data.gallery.length > 0 && (
 			<section class="container-editorial pb-20">
-				<div class="grid gap-6 md:grid-cols-2">
+				<div class="columns-1 gap-6 sm:columns-2" style="column-fill: balance;">
 					{gallery.map((img, i) => (
 						<button
 							type="button"
-							class="group relative block w-full cursor-zoom-in overflow-hidden"
+							class="group relative mb-6 block w-full cursor-zoom-in overflow-hidden break-inside-avoid"
 							data-lightbox-trigger
 							data-full={full[i]}
 							aria-label={`Open image ${i + 1} of ${gallery.length} fullscreen`}
@@ -160,7 +160,7 @@ const breadcrumbs: BreadcrumbEntry[] = [
 								loading="lazy"
 								quality={55}
 								decoding="async"
-								class="aspect-[4/3] w-full object-cover motion-safe:transition-transform motion-safe:duration-700 group-hover:scale-[1.03]"
+								class="w-full object-cover motion-safe:transition-transform motion-safe:duration-700 group-hover:scale-[1.03]"
 							/>
 							<span
 								class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100"
