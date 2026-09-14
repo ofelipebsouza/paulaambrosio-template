@@ -61,6 +61,7 @@ const formattedDate = post.data.date.toLocaleDateString('en-US', {
 	}))} />
 
 	<article>
+		<!-- Article Header -->
 		<header class="container-editorial pt-16 lg:pt-24">
 			<Breadcrumbs items={breadcrumbs} />
 
@@ -73,6 +74,13 @@ const formattedDate = post.data.date.toLocaleDateString('en-US', {
 			<h1 class="font-display mt-5 max-w-4xl text-3xl leading-tight lg:text-5xl lg:leading-tight">
 				{post.data.title}
 			</h1>
+
+			<!-- Excerpt -->
+			{post.data.excerpt && (
+				<p class="mt-6 max-w-2xl text-lg leading-relaxed text-slate">
+					{post.data.excerpt}
+				</p>
+			)}
 
 			<!-- Article meta: author · date · reading time -->
 			<div class="mt-8 flex flex-wrap items-center gap-x-4 gap-y-3 border-t border-b border-sand/60 py-5 text-sm">
@@ -115,23 +123,31 @@ const formattedDate = post.data.date.toLocaleDateString('en-US', {
 			</div>
 		</header>
 
-		<div class="container-editorial mt-12">
-			<Image
-				src={post.data.featuredImage}
-				alt={post.data.imageAlt ?? post.data.title}
-				widths={[768, 1200, 1600]}
-				sizes="(min-width: 80rem) 80rem, 100vw"
-				loading="eager"
-				quality={60}
-				decoding="async"
-				class="aspect-[16/9] w-full object-cover"
-			/>
+		<!-- Hero Image -->
+		<div class="container-editorial mt-10">
+			<div class="overflow-hidden rounded-sm">
+				<Image
+					src={post.data.featuredImage}
+					alt={post.data.imageAlt ?? post.data.title}
+					widths={[768, 1200, 1600]}
+					sizes="(min-width: 80rem) 80rem, 100vw"
+					loading="eager"
+					quality={70}
+					decoding="async"
+					class="aspect-[16/9] w-full object-cover transition-transform duration-700 hover:scale-[1.02]"
+				/>
+			</div>
+			{post.data.imageAlt && (
+				<p class="mt-3 text-center text-xs text-stone italic">{post.data.imageAlt}</p>
+			)}
 		</div>
 
-		<div class="prose-editorial container-editorial max-w-3xl py-16 lg:py-20">
+		<!-- Article Body -->
+		<div class="prose-editorial container-editorial max-w-3xl py-12 lg:py-16">
 			<Content />
 		</div>
 
+		<!-- Continue Exploring -->
 		{(post.data.relatedProjects?.length || post.data.relatedServices?.length) && (
 			<aside class="container-editorial max-w-3xl pb-16">
 				<div class="border-t border-sand pt-8 text-sm">
