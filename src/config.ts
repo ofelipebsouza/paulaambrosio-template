@@ -24,8 +24,8 @@ export const PERSON = {
 	jobTitle: 'Principal Designer & Cofounder',
 	url: `${SITE.url}/about`,
 	sameAs: [
-		'https://www.instagram.com/paulaambrosiointeriors',
-		'https://www.linkedin.com/in/paulaambrosio',
+		'https://www.instagram.com/paulaambrosio_',
+		'https://www.linkedin.com/in/paula-ambrosio-99b908246',
 		'https://www.houzz.com/pro/paulaambrosio',
 	],
 } as const;
@@ -88,10 +88,10 @@ export const NAV_LINKS = [...NAV_LEFT.slice(1), ...NAV_RIGHT] as const;
 
 /** Studio social profiles — real destinations only (§42). */
 export const SOCIAL_LINKS = [
-	{ label: 'Instagram', href: 'https://www.instagram.com/paulaambrosiointeriors' },
+	{ label: 'Instagram', href: 'https://www.instagram.com/paulaambrosio_' },
 	{ label: 'TikTok', href: 'https://www.tiktok.com/@thepaulaambrosio' },
 	{ label: 'Threads', href: 'https://www.threads.net/@paulaambrosio_' },
-	{ label: 'LinkedIn', href: 'https://www.linkedin.com/in/paulaambrosio' },
+	{ label: 'LinkedIn', href: 'https://www.linkedin.com/in/paula-ambrosio-99b908246' },
 	{ label: 'Houzz', href: 'https://www.houzz.com/pro/paulaambrosio' },
 ] as const;
 
