@@ -29,19 +29,19 @@ const full = await Promise.all(
 	gallery.map(async (img) => (await getImage({ src: img, width: 1800, quality: 80 })).src),
 );
 
-// §13 project facts row.
-const facts = [
+// §13 project facts row
+	const facts = [
 	{ label: 'Location', value: project.data.location },
 	{ label: 'Property Type', value: project.data.propertyType },
 	{ label: 'Category', value: project.data.projectType },
 	{ label: 'Year', value: project.data.year ? String(project.data.year) : null },
 ].filter((f) => f.value);
 
-// §13 SEO subtitle: descriptive context under the visible title.
-const subtitle = [project.data.propertyType, project.data.location].filter(Boolean).join(', ');
+// §13 SEO subtitle: descriptive context under the visible title
+	const subtitle = [project.data.propertyType, project.data.location].filter(Boolean).join(', ');
 
-// Related projects in the same city (excluding this one).
-const related = (await getCollection('projects'))
+// Related projects in the same city (excluding this one)
+	const related = (await getCollection('projects'))
 	.filter((p) => !p.data.draft && p.id !== project.id)
 	.filter((p) => project.data.location && p.data.location === project.data.location || p.data.relatedServices?.some((s) => project.data.relatedServices.includes(s)))
 	.slice(0, 3);
@@ -140,7 +140,7 @@ const breadcrumbs: BreadcrumbEntry[] = [
 			</div>
 		</section>
 
-		<!-- Gallery (§13: 12–25 images when official photography arrives) -->
+		<!-- Gallery (§13: 12-25 images when official photography arrives) -->
 		{project.data.gallery.length > 0 && (
 			<section class="container-editorial pb-20">
 				<div class="grid gap-6 md:grid-cols-2">
@@ -223,7 +223,7 @@ const breadcrumbs: BreadcrumbEntry[] = [
 			if (dialog && triggers.length > 0) {
 				const img = dialog.querySelector<HTMLImageElement>('[data-lightbox-img]')!;
 				const counter = dialog.querySelector<HTMLElement>('[data-lightbox-counter]')!;
-				// The grid fallback src is the full-size optimized original — reuse it so the
+				// The grid fallback src is the full-size optimized original. Reuse it so the
 				// lightbox shows the uncropped image at (at least) its real size.
 				const sources = triggers.map((btn) => {
 				const gridImg = btn.querySelector('img');

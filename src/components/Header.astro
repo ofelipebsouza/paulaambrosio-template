@@ -76,7 +76,7 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path === href 
 			</div>
 
 			<!-- Centered wordmark -->
-			<a href="/" class="justify-self-center text-center leading-none" aria-label={`${SITE.name} — Home`}>
+			<a href="/" class="justify-self-center text-center leading-none" aria-label={`${SITE.name}: Home`}>
 				<span class="font-display block text-xl tracking-[0.12em] whitespace-nowrap text-ink lg:text-2xl">
 					PAULA&nbsp;AMBROSIO
 				</span>
@@ -149,7 +149,7 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path === href 
 			</button>
 		</div>
 	</div>
-</header><!-- Fullscreen navigation menu — native <dialog>: focus is trapped, Esc closes, a11y for free -->
+</header><!-- Fullscreen navigation menu: native <dialog>, focus is trapped, Esc closes, a11y for free -->
 <dialog id="mobile-menu" class="menu-sheet m-0 h-dvh max-h-none w-screen max-w-none border-none bg-bone p-0 backdrop:bg-transparent lg:hidden">
 	<div class="flex h-full flex-col overflow-y-auto">
 		<div class="container-editorial">
@@ -159,7 +159,7 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path === href 
 					<path d="M4 4l12 12M16 4L4 16" stroke-linecap="round"></path>
 				</svg>
 			</button>
-			<a href="/" class="justify-self-center text-center leading-none" aria-label={`${SITE.name} — Home`}>
+			<a href="/" class="justify-self-center text-center leading-none" aria-label={`${SITE.name}: Home`}>
 				<span class="font-display block text-lg tracking-[0.12em] whitespace-nowrap text-ink">PAULA&nbsp;AMBROSIO</span>
 				<span class="mt-1 block text-[0.5rem] font-medium tracking-[0.42em] text-stone uppercase">Interior&nbsp;Design</span>
 			</a>
@@ -220,13 +220,13 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path === href 
 	</div>
 </dialog>
 
-<!-- Project inquiry sheet — fullscreen, integrated with the menu language -->
+<!-- Project inquiry sheet: fullscreen, integrated with the menu language -->
 <dialog id="inquiry-modal" class="inquiry-sheet m-0 h-dvh max-h-none w-screen max-w-none border-none bg-bone p-0 backdrop:bg-transparent">
 	<div class="h-full overflow-y-auto">
 		<div class="sticky top-0 z-10 border-b border-sand/60 bg-bone">
 			<div class="container-editorial">					<div class="grid h-16 grid-cols-[1fr_auto_1fr] items-center lg:h-20">
 						<span aria-hidden="true"></span>
-						<a href="/" class="justify-self-center text-center leading-none" aria-label={`${SITE.name} — Home`}>
+			<a href="/" class="justify-self-center text-center leading-none" aria-label={`${SITE.name}: Home`}>
 							<span class="font-display block text-lg tracking-[0.12em] whitespace-nowrap text-ink lg:text-xl">PAULA&nbsp;AMBROSIO</span>
 							<span class="mt-1 block text-[0.5rem] font-medium tracking-[0.42em] text-stone uppercase">Interior&nbsp;Design</span>
 						</a>
@@ -276,7 +276,7 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path === href 
 	const sheet = document.getElementById('mobile-menu');
 	const modal = document.getElementById('inquiry-modal') as HTMLDialogElement | null;
 
-	// Fullscreen mobile menu — native <dialog>: focus trapped, Esc closes.
+	// Fullscreen mobile menu: native <dialog>, focus trapped, Esc closes.
 	document.querySelectorAll('.menu-open').forEach((btn) =>
 		btn.addEventListener('click', () => {
 			sheet?.showModal();
@@ -292,12 +292,12 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path === href 
 		el.addEventListener('click', () => sheet?.close()),
 	);
 	document.querySelectorAll('#mobile-menu .menu-link').forEach((el) => {
-		// Skip summary elements (dropdown toggles) — they should toggle, not close
+		// Skip summary elements (dropdown toggles), they should toggle, not close
 		if (el.closest('summary')) return;
 		el.addEventListener('click', () => sheet?.close());
 	});
 
-	// Project inquiry sheet — fullscreen <dialog>, focus management included.
+	// Project inquiry sheet: fullscreen <dialog>, focus management included.
 	document.querySelectorAll('.inquiry-open').forEach((btn) =>
 		btn.addEventListener('click', () => {
 			modal?.showModal();
