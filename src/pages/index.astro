@@ -64,6 +64,7 @@ const processSteps = [
 						widths={[768, 1200, 1600]}
 						sizes="100vw"
 						loading={i === 0 ? 'eager' : 'lazy'}
+						fetchpriority={i === 0 ? 'high' : 'auto'}
 						quality={60}
 						decoding="async"
 						class="h-full w-full object-cover"

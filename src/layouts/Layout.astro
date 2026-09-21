@@ -67,8 +67,8 @@ const titleTemplate = title.includes(SITE.name) ? title : `${title} | ${SITE.nam
 		<link rel="preload" href="/fonts/plus-jakarta-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
 		<link rel="stylesheet" href="/fonts/fonts.css" />
 
-		<!-- Phosphor Icons -->
-		<script is:inline src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+		<!-- Phosphor Icons are bundled locally through global.css; no render-blocking third-party request. -->
+		<script is:inline>document.documentElement.classList.add('js');</script>
 
 		<!-- Site-wide entity graph -->
 		<Fragment set:html={schemaScript({

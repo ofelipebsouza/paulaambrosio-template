@@ -6,6 +6,13 @@ import type { BreadcrumbEntry } from '../lib/seo';
 import { SITE, SOCIAL_LINKS } from '../config';
 
 const breadcrumbs: BreadcrumbEntry[] = [{ name: 'Contact', url: '/contact' }];
+const socialIconMap: Record<string, string> = {
+	Instagram: 'ph ph-instagram-logo',
+	TikTok: 'ph ph-tiktok-logo',
+	Threads: 'ph ph-threads-logo',
+	LinkedIn: 'ph ph-linkedin-logo',
+	Houzz: 'ph ph-buildings',
+};
 
 // Set CONTACT_FORM_ENDPOINT in the Vercel environment to route submissions to a
 // real endpoint (CRM, email service, webhook). Left unset, the form falls back
@@ -47,11 +54,13 @@ const formEndpoint = import.meta.env.CONTACT_FORM_ENDPOINT;
 						{SOCIAL_LINKS.map(({ label, href }) => (
 							<a
 								href={href}
-								class="inline-flex items-center gap-2 border border-sand bg-white px-4 py-2 text-xs font-medium uppercase tracking-widest text-graphite transition-colors hover:border-brass hover:text-coffee"
+								class="inline-flex h-11 w-11 items-center justify-center border border-sand bg-white text-graphite transition-colors hover:border-brass hover:text-coffee"
 								target="_blank"
 								rel="noopener noreferrer"
+								aria-label={`${SITE.name} on ${label}`}
+								title={label}
 							>
-								{label}
+								<i class={`${socialIconMap[label] ?? 'ph ph-link'} text-xl`} aria-hidden="true"></i>
 							</a>
 						))}
 					</div>
