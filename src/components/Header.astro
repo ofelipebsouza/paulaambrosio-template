@@ -9,7 +9,11 @@ import LinkedinIcon from '../assets/icons/linkedin.svg?raw';
 const path = Astro.url.pathname.replace(/\/$/, '') || '/';
 const isActive = (href: string) => (href === '/' ? path === '/' : path === href || path.startsWith(`${href}/`));
 
-const socialIcons = [InstagramIcon, HouzzIcon, LinkedinIcon];
+const socialIconMap: Record<string, string> = {
+	Instagram: InstagramIcon,
+	Houzz: HouzzIcon,
+	LinkedIn: LinkedinIcon,
+};
 ---
 
 <header class="fixed inset-x-0 top-0 z-50 border-b border-sand/60 bg-bone/95 backdrop-blur-sm">
@@ -197,16 +201,19 @@ const socialIcons = [InstagramIcon, HouzzIcon, LinkedinIcon];
 		<div class="container-editorial mt-auto pb-10 pt-8">
 			<p class="font-display text-center text-2xl text-ink">Let&rsquo;s get social</p>
 			<div class="mt-5 flex items-center justify-center gap-4">
-				{SOCIAL_LINKS.map(({ label, href }, i) => (
-					<a
-						href={href}
-						class="menu-link flex h-11 w-11 items-center justify-center rounded-full bg-coffee text-bone transition-colors hover:bg-coffee-deep"
-						aria-label={`${SITE.name} on ${label}`}
-						rel="noopener noreferrer"
-					>
-						<Fragment set:html={socialIcons[i].replace('<svg ', '<svg class="h-4.5 w-4.5 fill-current" ')} />
-					</a>
-				))}
+				{SOCIAL_LINKS.map(({ label, href }) => {
+					const icon = socialIconMap[label];
+					return (
+						<a
+							href={href}
+							class="menu-link flex h-11 w-11 items-center justify-center rounded-full bg-coffee text-bone transition-colors hover:bg-coffee-deep"
+							aria-label={`${SITE.name} on ${label}`}
+							rel="noopener noreferrer"
+						>
+							{icon ? <Fragment set:html={icon.replace('<svg ', '<svg class="h-4.5 w-4.5 fill-current" ')} /> : <span class="text-[0.5rem] font-bold uppercase tracking-wider">{label.slice(0, 2)}</span>}
+						</a>
+					);
+				})}
 			</div>
 		</div>
 	</div>
