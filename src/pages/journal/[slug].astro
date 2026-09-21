@@ -29,6 +29,8 @@ const breadcrumbs: BreadcrumbEntry[] = [
 const rawContent = post.body ?? '';
 const wordCount = rawContent.split(/\s+/).filter(Boolean).length;
 const readingTime = Math.max(1, Math.ceil(wordCount / 200));
+const formatRelatedLabel = (value: string | undefined) =>
+	value?.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()) ?? '';
 
 const formattedDate = post.data.date.toLocaleDateString('en-US', {
 	month: 'short',
@@ -153,11 +155,11 @@ const formattedDate = post.data.date.toLocaleDateString('en-US', {
 				<div class="border-t border-sand pt-8 text-sm">
 					<p class="eyebrow text-stone">Continue exploring</p>
 					<ul class="mt-4 space-y-2 text-graphite">
-						{post.data.relatedServices?.map((s) => (
-							<li><a class="underline decoration-brass/60 underline-offset-4" href={serviceUrl(s)}>{s.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}</a></li>
+						{post.data.relatedServices?.filter(Boolean).map((s) => (
+							<li><a class="underline decoration-brass/60 underline-offset-4" href={serviceUrl(s)}>{formatRelatedLabel(s)}</a></li>
 						))}
-						{post.data.relatedProjects?.map((p) => (
-							<li><a class="underline decoration-brass/60 underline-offset-4" href={`/projects/${p}`}>{p.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}</a></li>
+						{post.data.relatedProjects?.filter(Boolean).map((p) => (
+							<li><a class="underline decoration-brass/60 underline-offset-4" href={`/projects/${p}`}>{formatRelatedLabel(p)}</a></li>
 						))}
 					</ul>
 				</div>

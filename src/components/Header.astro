@@ -1,18 +1,16 @@
 ---
-import { Image } from 'astro:assets';
 import { SITE, NAV_LEFT, NAV_RIGHT, NAV_LINKS, SOCIAL_LINKS } from '../config';
 import Logo from './ui/Logo.astro';
-import InstagramIcon from '../assets/icons/instagram.svg?raw';
-import HouzzIcon from '../assets/icons/houzz.svg?raw';
-import LinkedinIcon from '../assets/icons/linkedin.svg?raw';
 
 const path = Astro.url.pathname.replace(/\/$/, '') || '/';
 const isActive = (href: string) => (href === '/' ? path === '/' : path === href || path.startsWith(`${href}/`));
 
 const socialIconMap: Record<string, string> = {
-	Instagram: InstagramIcon,
-	Houzz: HouzzIcon,
-	LinkedIn: LinkedinIcon,
+	Instagram: 'ph ph-instagram-logo',
+	TikTok: 'ph ph-tiktok-logo',
+	Threads: 'ph ph-threads-logo',
+	LinkedIn: 'ph ph-linkedin-logo',
+	Houzz: 'ph ph-buildings',
 };
 ---
 
@@ -210,7 +208,7 @@ const socialIconMap: Record<string, string> = {
 							aria-label={`${SITE.name} on ${label}`}
 							rel="noopener noreferrer"
 						>
-							{icon ? <Fragment set:html={icon.replace('<svg ', '<svg class="h-4.5 w-4.5 fill-current" ')} /> : <span class="text-[0.5rem] font-bold uppercase tracking-wider">{label.slice(0, 2)}</span>}
+							<i class={`${icon ?? 'ph ph-link'} text-xl`} aria-hidden="true"></i>
 						</a>
 					);
 				})}
