@@ -49,7 +49,7 @@ const processSteps = [
 		description: 'Full-service and turnkey luxury interior design for Miami and South Florida.',
 	}))} />
 
-	<!-- 1. Hero — crossfade carousel, title sits below -->
+	<!-- 1. Hero: crossfade carousel, title sits below -->
 	<section class="bg-bone pb-20 text-center lg:pb-28">
 		<div id="hero-carousel" class="relative w-full overflow-hidden min-h-[80vw] sm:min-h-0 sm:aspect-[16/10] lg:aspect-[21/8]">
 			{heroSlides.map((slide, i) => (
@@ -75,13 +75,13 @@ const processSteps = [
 			<div class="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-bone via-bone/70 to-transparent lg:h-64" aria-hidden="true"></div>
 
 			<!-- Dot indicators -->
-			<div class="absolute bottom-5 left-1/2 -translate-x-1/2 flex items-center gap-2.5 z-10" role="tablist" aria-label="Selecionar imagem">
+			<div class="absolute bottom-5 left-1/2 -translate-x-1/2 flex items-center gap-2.5 z-10" role="tablist" aria-label="Select image">
 				{heroSlides.map((_, i) => (
 					<button
 						type="button"
 						role="tab"
 						aria-selected={i === 0 ? 'true' : 'false'}
-						aria-label={`Imagem ${i + 1}`}
+						aria-label={`Image ${i + 1}`}
 						data-index={i}
 						class="hero-dot block h-1 rounded-full bg-bone/50 transition-all duration-500 ease-in-out"
 						style={`width: ${i === 0 ? '1.75rem' : '0.5rem'}; opacity: ${i === 0 ? '1' : '0.5'};`}
@@ -95,7 +95,7 @@ const processSteps = [
 				Luxury Interior Design in Miami
 			</h1>
 			<p class="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-slate">
-				Sophisticated interiors. Seamless execution. Designed around the way you live.
+				Turnkey luxury interiors for residences across South Florida, delivered in as little as 40 days.
 			</p>
 			<div class="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
 				<button type="button" class="inquiry-open btn-primary">Start Your Project</button>
@@ -112,7 +112,7 @@ const processSteps = [
 			</div>
 			<p class="eyebrow text-stone mb-6 tracking-widest">Full-Service &amp; Turnkey Interior Design</p>
 			<p class="font-display text-2xl leading-relaxed text-graphite lg:text-[1.85rem]">
-				Paula Ambrosio Interiors is a Miami-based luxury studio creating sophisticated residential and hospitality interiors across South Florida and internationally. From concept to completion, every detail is considered, curated and delivered with precision.
+				For 21 years and more than 2,000 completed projects, Paula Ambrosio Interior Design has delivered luxury interiors that are as functional as they are beautiful. From our Miami studio, sisters Paula and Amanda Ambrosio serve clients across South Florida and around the world through a turnkey process that transforms an empty residence into a move-in-ready home in as little as 40 days.
 			</p>
 			<div class="ornament-divider mt-8">
 				<span class="ornament-divider-diamond"></span>
@@ -130,7 +130,7 @@ const processSteps = [
 				<p class="eyebrow text-stone tracking-widest">What We Do</p>
 				<h2 class="font-display mt-5 text-4xl lg:text-5xl leading-tight">A complete design service, from concept to keys in hand.</h2>
 				<p class="mx-auto mt-6 max-w-2xl leading-relaxed text-slate">
-					From luxury residences to turnkey estates and hospitality spaces, every project is a singular, fully realized vision delivered with precision.
+					From luxury residences to turnkey estates and hospitality spaces, we deliver every project as a singular, fully realized vision with precision.
 				</p>
 			</div>
 
@@ -201,7 +201,7 @@ const processSteps = [
 		<div class="container-editorial grid gap-12 lg:grid-cols-12 fade-up">
 			<div class="lg:col-span-5">
 				<p class="eyebrow text-brass">Turnkey Interior Design</p>
-				<h2 class="font-display mt-5 text-4xl lg:text-5xl leading-tight">Move-in ready, down to the last detail.</h2>
+				<h2 class="font-display mt-5 text-4xl lg:text-5xl leading-tight">Turnkey is not decorating. It's logistics.</h2>
 				<a href={serviceUrl('turnkey-interior-design-miami')} class="btn-primary mt-10">Discover turnkey design</a>
 			</div>
 			<div class="lg:col-span-6 lg:col-start-7 flex flex-col justify-center">
@@ -209,7 +209,7 @@ const processSteps = [
 					<span class="ornament-divider-diamond" style="background:var(--color-brass);"></span>
 				</div>
 				<p class="text-lg leading-relaxed text-bone/80">
-					For international buyers and owners of second homes in Miami, our turnkey service delivers a fully resolved residence: design, procurement, installation and styling managed as a single project, ready for arrival.
+					What seems like magic is logistics. Opening the door to a finished home requires schedule, specification and coordination we execute with precision. For international buyers and second-home owners in Miami, our turnkey process delivers a fully resolved residence, furnished, styled and ready to live in, in as little as 40 days.
 				</p>
 			</div>
 		</div>
@@ -262,10 +262,10 @@ const processSteps = [
 				<h2 class="font-display mt-5 text-4xl leading-tight lg:text-5xl">Design guided by experience, delivered with precision.</h2>
 				<div class="mt-6 h-px w-12 bg-brass/50"></div>
 				<p class="mt-8 leading-relaxed text-slate">
-					Paula Ambrósio Interior Design is a luxury interior design studio in Miami specializing in high-end residential interior design, home renovations, custom interiors and full-service turnkey projects throughout Miami and South Florida.
+					Paula Ambrosio Interior Design is a luxury interior design studio in Miami specializing in high-end residential interior design, home renovations, custom interiors and full-service turnkey projects throughout Miami and South Florida.
 				</p>
 				<p class="mt-5 leading-relaxed text-slate">
-					Our story began 21 years ago in Rio de Janeiro, Brazil, when sisters Paula and Amanda Ambrósio founded Studio Decore. Ten years ago, Paula founded Paula Ambrósio Interior Design in Miami, bringing her international design experience and sophisticated aesthetic to the South Florida market.
+					Our story began 21 years ago in Rio de Janeiro, Brazil, when sisters Paula and Amanda Ambrosio founded Studio Decore. Ten years ago, Paula founded Paula Ambrosio Interior Design in Miami, bringing her international design experience and sophisticated aesthetic to the South Florida market.
 				</p>
 				<a href="/about" class="btn-secondary mt-10">Meet Paula</a>
 			</div>
@@ -340,7 +340,7 @@ const processSteps = [
 </Layout>
 
 <script>
-	// ── Hero crossfade carousel ──────────────────────────────────────────
+	// Hero crossfade carousel
 	const slides = document.querySelectorAll<HTMLElement>('.hero-slide');
 	const dots   = document.querySelectorAll<HTMLButtonElement>('.hero-dot');
 	let current  = 0;
@@ -372,7 +372,7 @@ const processSteps = [
 
 	function startTimer() {
 		clearInterval(timer);
-		if (!reduced) timer = setInterval(advance, 5000);
+		if (!reduced) timer = setInterval(advance, 8000);
 	}
 
 	// Dot click → jump to slide and reset timer
@@ -386,7 +386,7 @@ const processSteps = [
 
 	startTimer();
 
-	// ── Scroll-reveal: add .is-visible when element enters viewport ──────
+	// Scroll-reveal: add .is-visible when element enters viewport
 	const observer = new IntersectionObserver(
 		(entries) => {
 			entries.forEach((entry) => {

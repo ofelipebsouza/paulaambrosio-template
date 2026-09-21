@@ -13,7 +13,7 @@ import { locationUrl, serviceUrl } from '../config';
 export async function getStaticPaths() {
 	const services = (await getCollection('services')).filter((s) => !s.data.draft);
 	return services.map((service) => ({
-		// Canonical flat slug per §14 — the collection id is already the legacy path.
+		// Canonical flat slug per §14: the collection id is already the legacy path.
 		params: { service: serviceUrl(service.id).replace(/^\//, '') },
 		props: { service },
 	}));

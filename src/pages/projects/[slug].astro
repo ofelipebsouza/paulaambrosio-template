@@ -29,19 +29,19 @@ const full = await Promise.all(
 	gallery.map(async (img) => (await getImage({ src: img, width: 1800, quality: 80 })).src),
 );
 
-// §13 project facts row.
-const facts = [
+// §13 project facts row
+	const facts = [
 	{ label: 'Location', value: project.data.location },
 	{ label: 'Property Type', value: project.data.propertyType },
 	{ label: 'Category', value: project.data.projectType },
 	{ label: 'Year', value: project.data.year ? String(project.data.year) : null },
 ].filter((f) => f.value);
 
-// §13 SEO subtitle: descriptive context under the visible title.
-const subtitle = [project.data.propertyType, project.data.location].filter(Boolean).join(', ');
+// §13 SEO subtitle: descriptive context under the visible title
+	const subtitle = [project.data.propertyType, project.data.location].filter(Boolean).join(', ');
 
-// Related projects in the same city (excluding this one).
-const related = (await getCollection('projects'))
+// Related projects in the same city (excluding this one)
+	const related = (await getCollection('projects'))
 	.filter((p) => !p.data.draft && p.id !== project.id)
 	.filter((p) => project.data.location && p.data.location === project.data.location || p.data.relatedServices?.some((s) => project.data.relatedServices.includes(s)))
 	.slice(0, 3);
@@ -84,7 +84,7 @@ const breadcrumbs: BreadcrumbEntry[] = [
 					data-hero-slide
 				/>
 			))}
-			<div class="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/50 to-ink/10" aria-hidden="true"></div>
+			<div class="absolute inset-0 bg-gradient-to-t from-ink/40 via-transparent to-transparent" aria-hidden="true"></div>
 			<div class="relative container-editorial pb-14 pt-40 text-bone z-10">
 				<Breadcrumbs items={breadcrumbs} tone="light" />
 				<h1 class="font-display mt-8 max-w-3xl text-4xl lg:text-6xl">{project.data.title}</h1>
@@ -140,14 +140,14 @@ const breadcrumbs: BreadcrumbEntry[] = [
 			</div>
 		</section>
 
-		<!-- Gallery (§13: 12–25 images when official photography arrives) -->
+		<!-- Gallery (§13: 12-25 images when official photography arrives) -->
 		{project.data.gallery.length > 0 && (
 			<section class="container-editorial pb-20">
-				<div class="grid gap-6 md:grid-cols-2">
+				<div class="columns-1 gap-6 sm:columns-2" style="column-fill: balance;">
 					{gallery.map((img, i) => (
 						<button
 							type="button"
-							class="group relative block w-full cursor-zoom-in overflow-hidden"
+							class="group relative mb-6 block w-full cursor-zoom-in overflow-hidden break-inside-avoid"
 							data-lightbox-trigger
 							data-full={full[i]}
 							aria-label={`Open image ${i + 1} of ${gallery.length} fullscreen`}
@@ -160,7 +160,7 @@ const breadcrumbs: BreadcrumbEntry[] = [
 								loading="lazy"
 								quality={55}
 								decoding="async"
-								class="aspect-[4/3] w-full object-cover motion-safe:transition-transform motion-safe:duration-700 group-hover:scale-[1.03]"
+								class="w-full object-cover motion-safe:transition-transform motion-safe:duration-700 group-hover:scale-[1.03]"
 							/>
 							<span
 								class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100"
@@ -223,7 +223,7 @@ const breadcrumbs: BreadcrumbEntry[] = [
 			if (dialog && triggers.length > 0) {
 				const img = dialog.querySelector<HTMLImageElement>('[data-lightbox-img]')!;
 				const counter = dialog.querySelector<HTMLElement>('[data-lightbox-counter]')!;
-				// The grid fallback src is the full-size optimized original — reuse it so the
+				// The grid fallback src is the full-size optimized original. Reuse it so the
 				// lightbox shows the uncropped image at (at least) its real size.
 				const sources = triggers.map((btn) => {
 				const gridImg = btn.querySelector('img');

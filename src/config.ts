@@ -15,17 +15,17 @@ export const SITE = {
 	phone: '+1 (786) 658-9478',
 	phone2: '+1 (786) 208-5412',
 	phoneE164: '+17866589478',
-	address: '1938 NE 149th St, North Miami, FL',
+	address: '1938 NE 149th St, North Miami, FL 33181',
 	locale: 'en_US',
 } as const;
 
 export const PERSON = {
 	name: 'Paula Ambrosio',
-	jobTitle: 'Founder & Principal Designer',
+	jobTitle: 'Principal Designer & Cofounder',
 	url: `${SITE.url}/about`,
 	sameAs: [
-		'https://www.instagram.com/paulaambrosiointeriors',
-		'https://www.linkedin.com/in/paulaambrosio',
+		'https://www.instagram.com/paulaambrosio_',
+		'https://www.linkedin.com/in/paula-ambrosio-99b908246',
 		'https://www.houzz.com/pro/paulaambrosio',
 	],
 } as const;
@@ -63,6 +63,7 @@ export const NAV_LEFT = [
 		href: '/services',
 		children: [
 			{ label: 'All Services', href: '/services' },
+			{ label: 'Design Consultation', href: serviceUrl('design-consultation-miami') },
 			{ label: 'Turnkey Interior Design', href: serviceUrl('turnkey-interior-design-miami') },
 			{ label: 'Luxury Residential Design', href: serviceUrl('luxury-residential-interior-design-miami') },
 			{ label: 'Hospitality Interior Design', href: serviceUrl('hospitality-interior-design-miami') },
@@ -78,7 +79,7 @@ export const NAV_RIGHT = [
 		children: FOOTER_LOCATIONS.map((loc) => ({ label: loc.label, href: loc.href })),
 	},
 	{ label: 'Journal', href: '/journal' },
-	{ label: 'Privacy', href: '/privacy' },
+	{ label: 'Press', href: '/press' },
 	{ label: 'Contact', href: '/contact' },
 ] as const;
 
@@ -87,9 +88,11 @@ export const NAV_LINKS = [...NAV_LEFT.slice(1), ...NAV_RIGHT] as const;
 
 /** Studio social profiles — real destinations only (§42). */
 export const SOCIAL_LINKS = [
-	{ label: 'Instagram', href: 'https://www.instagram.com/paulaambrosiointeriors' },
+	{ label: 'Instagram', href: 'https://www.instagram.com/paulaambrosio_' },
+	{ label: 'TikTok', href: 'https://www.tiktok.com/@thepaulaambrosio' },
+	{ label: 'Threads', href: 'https://www.threads.net/@paulaambrosio_' },
+	{ label: 'LinkedIn', href: 'https://www.linkedin.com/in/paula-ambrosio-99b908246' },
 	{ label: 'Houzz', href: 'https://www.houzz.com/pro/paulaambrosio' },
-	{ label: 'LinkedIn', href: 'https://www.linkedin.com/in/paulaambrosio' },
 ] as const;
 
 /** Absolute URL helper — keeps canonicals/OG images correct on any host. */

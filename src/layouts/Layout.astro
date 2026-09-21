@@ -58,13 +58,16 @@ const titleTemplate = title.includes(SITE.name) ? title : `${title} | ${SITE.nam
 		<meta name="twitter:description" content={description} />
 		<meta name="twitter:image" content={ogImageUrl} />
 
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" type="image/webp" href="/favicon.webp" />
 		<link rel="sitemap" href="/sitemap-index.xml" />
 
 		<!-- Self-hosted fonts (no render-blocking Google Fonts requests) -->
 		<link rel="preload" href="/fonts/cormorant-garamond-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin />
 		<link rel="preload" href="/fonts/plus-jakarta-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
 		<link rel="stylesheet" href="/fonts/fonts.css" />
+
+		<!-- Phosphor Icons -->
+		<script is:inline src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
 
 		<!-- Site-wide entity graph -->
 		<Fragment set:html={schemaScript({

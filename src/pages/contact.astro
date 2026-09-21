@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
 import { webPageSchema, schemaScript } from '../lib/seo';
 import type { BreadcrumbEntry } from '../lib/seo';
+import { SITE, SOCIAL_LINKS } from '../config';
 
 const breadcrumbs: BreadcrumbEntry[] = [{ name: 'Contact', url: '/contact' }];
 
@@ -37,9 +38,24 @@ const formEndpoint = import.meta.env.CONTACT_FORM_ENDPOINT;
 				<p class="eyebrow text-stone">Studio</p>
 				<p>1938 NE 149th St, North Miami, FL</p>
 				<p><a href="mailto:info@paulaambrosio.com" class="hover:text-stone">info@paulaambrosio.com</a></p>
-				<p><a href="tel:+17866589478" class="hover:text-stone">+1 (786) 658-9478</a></p>
-				<p><a href="tel:+17862085412" class="hover:text-stone">+1 (786) 208-5412</a></p>
-			</address>
+				<p><a href="tel:+178****9478" class="hover:text-stone">+1 (786) 658-9478</a></p>
+					<p><a href="tel:+178****5412" class="hover:text-stone">+1 (786) 208-5412</a></p>
+				</address>
+				<div class="mt-8">
+					<p class="eyebrow text-stone">Follow Us</p>
+					<div class="mt-4 flex flex-wrap gap-3">
+						{SOCIAL_LINKS.map(({ label, href }) => (
+							<a
+								href={href}
+								class="inline-flex items-center gap-2 border border-sand bg-white px-4 py-2 text-xs font-medium uppercase tracking-widest text-graphite transition-colors hover:border-brass hover:text-coffee"
+								target="_blank"
+								rel="noopener noreferrer"
+							>
+								{label}
+							</a>
+						))}
+					</div>
+				</div>
 		</div>
 
 		<div class="lg:col-span-7">

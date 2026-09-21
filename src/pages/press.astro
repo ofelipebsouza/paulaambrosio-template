@@ -1,0 +1,100 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
+import CtaBanner from '../components/ui/CtaBanner.astro';
+import { webPageSchema, schemaScript } from '../lib/seo';
+import type { BreadcrumbEntry } from '../lib/seo';
+
+const breadcrumbs: BreadcrumbEntry[] = [{ name: 'Press', url: '/press' }];
+
+const articles = [
+	{
+		title: 'Florida Design Miami',
+		publication: 'Florida Design',
+		description: 'Featured in the Miami edition of Florida Design magazine, showcasing luxury residential work across South Florida.',
+		image: 'https://framerusercontent.com/images/ORm0Rfr2yRKJcQWbUpd1e9YFp8.png?width=853&height=1389',
+		url: 'https://issuu.com/pbmg/docs/florida_design_miami_22.3',
+	},
+	{
+		title: 'A Trajetória de Uma Brasileira nos EUA',
+		publication: 'Ruxone',
+		description: 'The journey of a Brazilian designer who turned challenges into achievements in the United States.',
+		image: 'https://framerusercontent.com/images/cGOQZQKGMW5AU6XUjE3GzZi6IE.png?width=279&height=450',
+		url: 'https://ruxone.com.br/paula-ambrosio-a-trajetoria-de-uma-brasileira-que-transformou-desafios-em-conquistas-nos-estados-unidos/',
+	},
+	{
+		title: 'Host Up: Receba em Grande Estilo',
+		publication: 'Hotmart',
+		description: 'Paula Ambrosio featured as a reference in luxury hospitality design and hosting.',
+		image: 'https://framerusercontent.com/images/OgYsofq5sjqJlqlwOqIJVp5uQ.png?width=279&height=450',
+		url: 'https://hotmart.com/pt-br/marketplace/produtos/host-up-receba-em-grande-estilo/N95610430C',
+	},
+	{
+		title: 'Turnkey Contemporary Marvel in Boca Raton',
+		publication: 'Dwell',
+		description: 'A turnkey contemporary residence in Boca Raton with sleek features and loft, designed by Paula Ambrosio Interiors.',
+		image: 'https://framerusercontent.com/images/lnIhFjlj0IlQ30z3Lh2tr9uj4A.png?width=279&height=450',
+		url: 'https://www.dwell.com/home/turnkey-contemporary-marvel-in-boca-raton-with-sleek-features-and-loft-9ab9ca10',
+	},
+	{
+		title: 'Desafios em Conquistas nos EUA',
+		publication: 'Business Feed',
+		description: 'How a Brazilian designer transformed challenges into achievements building a luxury design business in the United States.',
+		image: 'https://framerusercontent.com/images/v34jMaftkc3aQhKWqw3H5OnSGU.png?width=279&height=450',
+		url: 'https://businessfeed.com.br/paula-ambrosio-a-trajetoria-de-uma-brasileira-que-transformou-desafios-em-conquistas-nos-estados-unidos/',
+	},
+];
+---
+
+<Layout
+	title="Press & Publications | Paula Ambrosio Interiors"
+	description="Paula Ambrosio Interiors featured in Florida Design, Dwell, and international publications. Luxury interior design press coverage from Miami."
+	canonical="/press"
+>
+	<Fragment slot="head" set:html={schemaScript(webPageSchema({
+		path: '/press',
+		title: 'Press | Paula Ambrosio Interiors',
+		description: 'Press coverage and publications featuring Paula Ambrosio Interiors.',
+		breadcrumbs,
+	}))} />
+
+	<section class="container-editorial pt-16 pb-14 lg:pt-24">
+		<Breadcrumbs items={breadcrumbs} />
+		<p class="eyebrow mt-10 text-stone">Press</p>
+		<h1 class="font-display mt-4 max-w-2xl text-display">
+			Featured in
+		</h1>
+		<p class="mt-6 max-w-xl text-lede text-slate">
+			Our work and story have been recognized by leading design publications and media outlets across the United States and Brazil.
+		</p>
+	</section>
+
+	<section class="container-editorial pb-24">
+		<div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+			{articles.map((article) => (
+				<a
+					href={article.url}
+					target="_blank"
+					rel="noopener noreferrer"
+					class="group block overflow-hidden bg-linen transition-colors hover:bg-sand"
+				>
+					<div class="aspect-[3/4] overflow-hidden">
+						<img
+							src={article.image}
+							alt={article.title}
+							class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+							loading="lazy"
+						/>
+					</div>
+					<div class="p-5">
+						<p class="eyebrow text-stone">{article.publication}</p>
+						<h3 class="font-display mt-2 text-lg leading-snug">{article.title}</h3>
+						<p class="mt-2 text-sm leading-relaxed text-slate">{article.description}</p>
+					</div>
+				</a>
+			))}
+		</div>
+	</section>
+
+	<CtaBanner />
+</Layout>
