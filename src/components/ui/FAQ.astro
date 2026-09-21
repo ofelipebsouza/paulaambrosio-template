@@ -1,14 +1,15 @@
 ---
 interface Props {
 	faqs: { question: string; answer: string }[];
+	context?: string;
 }
-const { faqs } = Astro.props;
+const { faqs, context = 'faq' } = Astro.props;
 ---
 
 <div class="divide-y divide-sand border-y border-sand">
 	{faqs.map((faq) => (
-		<details class="group py-5">
-			<summary class="flex cursor-pointer list-none items-center justify-between gap-6 font-display text-lg marker:hidden [&::-webkit-details-marker]:hidden">
+		<details class="group py-5" data-analytics-faq={context}>
+			<summary class="flex cursor-pointer list-none items-center justify-between gap-6 font-display text-lg marker:hidden [&::-webkit-details-marker]:hidden" data-analytics-faq={context}>
 				{faq.question}
 				<span aria-hidden="true" class="text-brass transition-transform duration-300 group-open:rotate-45">+</span>
 			</summary>

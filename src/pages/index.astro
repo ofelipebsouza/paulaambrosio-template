@@ -98,8 +98,8 @@ const processSteps = [
 				Turnkey luxury interiors for residences across South Florida, delivered in as little as 40 days.
 			</p>
 			<div class="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-				<button type="button" class="inquiry-open btn-primary">Start Your Project</button>
-				<a href="/services" class="btn-secondary">Explore Our Services</a>
+				<button type="button" class="inquiry-open btn-primary" data-analytics-event="cta_start_project" data-analytics-location="hero">Start Your Project</button>
+				<a href="/services" class="btn-secondary" data-analytics-event="cta_explore_services" data-analytics-location="hero">Explore Our Services</a>
 			</div>
 		</div>
 	</section>
@@ -136,7 +136,7 @@ const processSteps = [
 
 			<div class="grid gap-6 lg:grid-cols-3 fade-up stagger-children">
 				<!-- Residential -->
-				<a href={serviceUrl('luxury-residential-interior-design-miami')} class="group relative flex flex-col bg-linen p-10 lg:p-12 transition-all duration-500 hover:bg-graphite hover:text-bone">
+				<a href={serviceUrl('luxury-residential-interior-design-miami')} class="group relative flex flex-col bg-linen p-10 lg:p-12 transition-all duration-500 hover:bg-graphite hover:text-bone" data-analytics-event="service_open" data-analytics-service="luxury-residential-interior-design-miami" data-analytics-location="services">
 					<span class="font-display block text-6xl leading-none text-brass/30 transition-colors duration-500 group-hover:text-brass/60 select-none">01</span>
 					<p class="eyebrow text-stone mt-4 transition-colors duration-500 group-hover:text-bone/60">Residential</p>
 					<h3 class="font-display mt-3 text-3xl leading-snug">Luxury Residential Interior Design</h3>
@@ -150,7 +150,7 @@ const processSteps = [
 				</a>
 
 				<!-- Turnkey -->
-				<a href={serviceUrl('turnkey-interior-design-miami')} class="group relative flex flex-col bg-linen p-10 lg:p-12 transition-all duration-500 hover:bg-graphite hover:text-bone">
+				<a href={serviceUrl('turnkey-interior-design-miami')} class="group relative flex flex-col bg-linen p-10 lg:p-12 transition-all duration-500 hover:bg-graphite hover:text-bone" data-analytics-event="cta_turnkey" data-analytics-location="services" data-analytics-service="turnkey-interior-design-miami">
 					<span class="font-display block text-6xl leading-none text-brass/30 transition-colors duration-500 group-hover:text-brass/60 select-none">02</span>
 					<p class="eyebrow text-stone mt-4 transition-colors duration-500 group-hover:text-bone/60">Turnkey</p>
 					<h3 class="font-display mt-3 text-3xl leading-snug">Arrive. Everything Is Ready.</h3>
@@ -164,7 +164,7 @@ const processSteps = [
 				</a>
 
 				<!-- Hospitality -->
-				<a href={serviceUrl('hospitality-interior-design-miami')} class="group relative flex flex-col bg-linen p-10 lg:p-12 transition-all duration-500 hover:bg-graphite hover:text-bone">
+				<a href={serviceUrl('hospitality-interior-design-miami')} class="group relative flex flex-col bg-linen p-10 lg:p-12 transition-all duration-500 hover:bg-graphite hover:text-bone" data-analytics-event="service_open" data-analytics-service="hospitality-interior-design-miami" data-analytics-location="services">
 					<span class="font-display block text-6xl leading-none text-brass/30 transition-colors duration-500 group-hover:text-brass/60 select-none">03</span>
 					<p class="eyebrow text-stone mt-4 transition-colors duration-500 group-hover:text-bone/60">Hospitality</p>
 					<h3 class="font-display mt-3 text-3xl leading-snug">Hospitality Interior Design</h3>
@@ -202,7 +202,7 @@ const processSteps = [
 			<div class="lg:col-span-5">
 				<p class="eyebrow text-brass">Turnkey Interior Design</p>
 				<h2 class="font-display mt-5 text-4xl lg:text-5xl leading-tight">Turnkey is not decorating. It's logistics.</h2>
-				<a href={serviceUrl('turnkey-interior-design-miami')} class="btn-primary mt-10">Discover turnkey design</a>
+				<a href={serviceUrl('turnkey-interior-design-miami')} class="btn-primary mt-10" data-analytics-event="cta_turnkey" data-analytics-location="turnkey" data-analytics-service="turnkey-interior-design-miami">Discover turnkey design</a>
 			</div>
 			<div class="lg:col-span-6 lg:col-start-7 flex flex-col justify-center">
 				<div class="ornament-divider mb-8 justify-start">

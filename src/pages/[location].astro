@@ -109,7 +109,7 @@ const ctas = location.data.ctas;
 			<section class="container-editorial max-w-3xl pb-20">
 				<h2 class="font-display text-3xl">Frequently asked questions</h2>
 				<div class="mt-8">
-					<FAQ faqs={faqs} />
+					<FAQ faqs={faqs} context={`location-${location.id}`} />
 				</div>
 			</section>
 		)}
@@ -119,6 +119,8 @@ const ctas = location.data.ctas;
 		title={ctas?.bannerTitle ?? `Start Your ${location.data.title} Project`}
 		body={ctas?.bannerBody ?? 'Tell us about your residence or property. We will schedule a confidential discovery session with our design team.'}
 		primaryLabel={ctas?.primary ?? 'Request a Private Consultation'}
+		primaryAnalyticsEvent="cta_start_project"
+		analyticsLocation="final_cta"
 		secondaryLabel={ctas?.secondary ?? 'Explore Our Work'}
 		secondaryHref="/projects"
 	/>

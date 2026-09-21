@@ -24,7 +24,12 @@ const cols =
 <ul class={`grid gap-10 ${cols}`}>
 	{projects.map((project) => (
 		<li class="group">
-			<a href={projectUrl(project.id)} class="block overflow-hidden bg-sand">
+			<a
+				href={projectUrl(project.id)}
+				class="block overflow-hidden bg-sand"
+				data-analytics-event="portfolio_open"
+				data-analytics-project={project.id}
+			>
 				<Image
 					src={project.data.featuredImage}
 					alt={project.data.imageAlt ?? project.data.title}
@@ -38,7 +43,13 @@ const cols =
 			</a>
 			<p class="eyebrow mt-5 text-stone">{project.data.location}</p>
 			<h3 class="font-display mt-2 text-2xl leading-snug">
-				<a href={projectUrl(project.id)} class="hover:text-stone">{project.data.title}</a>
+				<a
+					href={projectUrl(project.id)}
+					class="hover:text-stone"
+					data-analytics-event="cta_view_project"
+					data-analytics-location="portfolio"
+					data-analytics-project={project.id}
+				>{project.data.title}</a>
 			</h3>
 			{project.data.propertyType && (
 				<p class="mt-1 text-sm text-slate">{project.data.propertyType}</p>

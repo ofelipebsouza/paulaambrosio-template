@@ -143,6 +143,8 @@ const socialIconMap: Record<string, string> = {
 			<button
 				type="button"
 				class="inquiry-open flex h-10 w-10 cursor-pointer items-center justify-center justify-self-end rounded-full border border-ink/15 transition-colors hover:border-ink/30 lg:hidden"
+				data-analytics-event="cta_start_project"
+				data-analytics-location="header"
 				aria-label="Open project inquiry form"
 				aria-haspopup="dialog"
 			>
@@ -243,7 +245,7 @@ const socialIconMap: Record<string, string> = {
 				This form helps us understand your project and confirm if we&rsquo;re the right fit for your needs.
 			</p>
 
-			<form class="mt-7 space-y-5" method="POST" action={import.meta.env.CONTACT_FORM_ENDPOINT ?? 'mailto:info@paulaambrosio.com'}>
+			<form class="mt-7 space-y-5" method="POST" action={import.meta.env.CONTACT_FORM_ENDPOINT ?? 'mailto:info@paulaambrosio.com'} data-analytics-form="project_inquiry">
 				<div>
 					<label for="inq-name" class="eyebrow text-slate">Full Name</label>
 					<input id="inq-name" name="name" type="text" required autocomplete="name" placeholder="Your full name"
@@ -263,6 +265,7 @@ const socialIconMap: Record<string, string> = {
 					We work with a limited number of full-service projects at a time to ensure quality and attention to detail.
 				</p>
 				<button type="submit" class="btn-primary w-full">Submit Project Inquiry</button>
+				<p class="analytics-form-status mt-3 text-center text-sm" aria-live="polite"></p>
 			</form>
 		</div>
 	</div>

@@ -1,0 +1,131 @@
+---
+import Analytics from '@vercel/analytics/astro';
+import SpeedInsights from '@vercel/speed-insights/astro';
+---
+
+<Analytics mode={import.meta.env.PROD ? 'production' : 'development'} />
+<SpeedInsights />
+
+<script>
+	import { trackEvent } from '../lib/analytics/track';
+	import { ANALYTICS_EVENTS } from '../lib/analytics/events';
+
+	const globalWindow = window as Window & { __paulaAnalyticsInitialized?: boolean };
+
+	if (!globalWindow.__paulaAnalyticsInitialized) {
+		globalWindow.__paulaAnalyticsInitialized = true;
+
+		const page = () => window.location.pathname || '/';
+		const value = (element: Element, name: string) => element.getAttribute(name) || undefined;
+		const metadata = (element: Element, extra: Record<string, string | undefined> = {}) => ({
+			page: page(),
+			location: value(element, 'data-analytics-location'),
+			...extra,
+		});
+
+		const trackClick = (element: Element) => {
+			const event = value(element, 'data-analytics-event');
+			const knownEvent = event && Object.values(ANALYTICS_EVENTS).includes(event as (typeof ANALYTICS_EVENTS)[keyof typeof ANALYTICS_EVENTS])
+				? event as (typeof ANALYTICS_EVENTS)[keyof typeof ANALYTICS_EVENTS]
+				: undefined;
+			if (!knownEvent) return;
+
+			trackEvent(knownEvent, metadata(element, {
+				service: value(element, 'data-analytics-service'),
+				project: value(element, 'data-analytics-project'),
+				faq: value(element, 'data-analytics-faq'),
+			}));
+		};
+
+		document.addEventListener('click', (event) => {
+			if (!(event.target instanceof Element)) return;
+			const target = event.target.closest('[data-analytics-event]');
+			if (target) trackClick(target);
+
+			const link = event.target.closest('a[href]');
+			if (!(link instanceof HTMLAnchorElement)) return;
+			const href = link.getAttribute('href') ?? '';
+			const linkMetadata = metadata(link);
+
+			if (href.startsWith('tel:')) trackEvent(ANALYTICS_EVENTS.PHONE_CLICK, linkMetadata);
+			if (href.startsWith('mailto:')) trackEvent(ANALYTICS_EVENTS.EMAIL_CLICK, linkMetadata);
+			if (/whatsapp|wa\.me/i.test(href)) trackEvent(ANALYTICS_EVENTS.WHATSAPP_CLICK, linkMetadata);
+			if (/instagram\.com/i.test(href)) trackEvent(ANALYTICS_EVENTS.INSTAGRAM_CLICK, linkMetadata);
+		});
+
+		document.addEventListener('toggle', (event) => {
+			const details = event.target;
+			if (!(details instanceof HTMLDetailsElement) || !details.open) return;
+			const summary = details.querySelector('summary');
+			const faq = details.getAttribute('data-analytics-faq') ?? summary?.getAttribute('data-analytics-faq');
+			if (faq) trackEvent(ANALYTICS_EVENTS.FAQ_OPEN, { page: page(), faq });
+		}, true);
+
+		const startedForms = new WeakSet<HTMLFormElement>();
+		document.addEventListener('focusin', (event) => {
+			const field = event.target;
+			if (!(field instanceof HTMLInputElement || field instanceof HTMLSelectElement || field instanceof HTMLTextAreaElement)) return;
+			const form = field.form;
+			if (!form || startedForms.has(form)) return;
+			startedForms.add(form);
+			trackEvent(ANALYTICS_EVENTS.FORM_START, {
+				page: page(),
+				form: form.getAttribute('data-analytics-form') ?? 'project_inquiry',
+			});
+		});
+
+		const submitForms = (root: ParentNode = document) => {
+			root.querySelectorAll<HTMLFormElement>('form[data-analytics-form]').forEach((form) => {
+				if (form.dataset.analyticsBound === 'true') return;
+				form.dataset.analyticsBound = 'true';
+
+				const status = form.querySelector<HTMLElement>('.analytics-form-status');
+				form.addEventListener('analytics-form-success', () => {
+					if (!status) return;
+					status.textContent = 'Thank you. We received your inquiry and will be in touch shortly.';
+					status.className = 'analytics-form-status mt-3 text-sm text-coffee';
+				});
+				form.addEventListener('analytics-form-error', () => {
+					if (!status) return;
+					status.textContent = 'We could not send the inquiry. Please try again or contact the studio directly.';
+					status.className = 'analytics-form-status mt-3 text-sm text-red-800';
+				});
+
+			const action = form.getAttribute('action') ?? '';
+			if (!action || action.startsWith('mailto:')) return;
+
+			form.addEventListener('submit', async (event) => {
+				event.preventDefault();
+				const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+				if (submit?.disabled) return;
+				if (submit) submit.disabled = true;
+				try {
+					const response = await fetch(action, {
+						method: form.method || 'POST',
+						body: new FormData(form),
+						headers: { Accept: 'application/json' },
+					});
+					if (!response.ok) throw new Error(`Form request failed with ${response.status}`);
+					trackEvent(ANALYTICS_EVENTS.FORM_SUBMIT, {
+						page: page(),
+						form: form.dataset.analyticsForm,
+					});
+					form.reset();
+					form.dispatchEvent(new CustomEvent('analytics-form-success'));
+				} catch {
+					trackEvent(ANALYTICS_EVENTS.FORM_ERROR, {
+						page: page(),
+						form: form.dataset.analyticsForm,
+					});
+					form.dispatchEvent(new CustomEvent('analytics-form-error'));
+				} finally {
+					if (submit) submit.disabled = false;
+				}
+			});
+			});
+		};
+
+		submitForms();
+		document.addEventListener('astro:page-load', () => submitForms());
+	}
+</script>
