@@ -5,41 +5,58 @@
    Components reference tokens; no scattered arbitrary values.
    ============================================================ */
 @theme {
-	/* Palette: warm neutrals, graphite, stone. Photography adds the color. */
-	--color-ink: #1a1816;
-	--color-graphite: #2a2623;
-	--color-bone: #faf9f6;
-	--color-linen: #f2ede5;
-	--color-sand: #e8e2d8;
-	--color-stone: #6f6053;
-	--color-brass: #c9a986;
-	--color-coffee: #6b4e3d;
-	--color-coffee-deep: #57402f;
-	--color-slate: #55504a;
-	--color-mist: #6d6660;
+	/* Official Paula Ambrosio palette — semantic aliases keep existing UI classes stable. */
+	--color-ink: #000000;
+	--color-graphite: #1f1b18;
+	--color-bone: #f9f5f0;
+	--color-linen: #f9f5f0;
+	--color-sand: #ceb297;
+	--color-stone: #8c6a54;
+	--color-brass: #ceb297;
+	--color-coffee: #8c6a54;
+	--color-coffee-deep: #6f503f;
+	--color-slate: #4f4540;
+	--color-mist: #766960;
+	--color-taupe: #8c6a54;
+	--color-ivory: #f9f5f0;
+	--color-white: #ffffff;
+
+	/* Functional tokens */
+	--color-background: #f9f5f0;
+	--color-background-alt: #ffffff;
+	--color-surface: #ffffff;
+	--color-text: #000000;
+	--color-text-muted: #4f4540;
+	--color-accent: #8c6a54;
+	--color-border: rgb(0 0 0 / 0.12);
+	--color-button: #000000;
+	--color-button-hover: #8c6a54;
 
 	/* Editorial type scale */
 	--text-eyebrow: 0.75rem;
 	--text-eyebrow--line-height: 1.4;
 	--text-eyebrow--letter-spacing: 0.22em;
-	--text-display: clamp(2.5rem, 5vw, 4.5rem);
-	--text-display--line-height: 1.05;
+	--text-display: clamp(2.65rem, 5vw, 5rem);
+	--text-display--line-height: 0.98;
 	--text-display--letter-spacing: -0.015em;
-	--text-lede: 1.25rem;
-	--text-lede--line-height: 1.6;
+	--text-lede: 1.15rem;
+	--text-lede--line-height: 1.7;
 
 	/* Motion: slow, subtle, architectural */
 	--ease-editorial: cubic-bezier(0.22, 1, 0.36, 1);
 	--duration-editorial: 500ms;
 
-	--font-display: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
-	--font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+	--font-display: 'Didot', 'Bodoni Moda', 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+	--font-label: 'Loew', 'Helvetica Neue', Arial, sans-serif;
+	--font-body: 'Open Sans', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
 }
 
 @layer base {
 	html {
 		scroll-behavior: smooth;
 		font-family: var(--font-body);
+		background: var(--color-background);
+		color: var(--color-text);
 	}
 
 	:focus-visible {
@@ -92,7 +109,8 @@
 		line-height: var(--text-eyebrow--line-height);
 		letter-spacing: var(--text-eyebrow--letter-spacing);
 		text-transform: uppercase;
-		font-weight: 600;
+		font-family: var(--font-label);
+		font-weight: 700;
 	}
 
 	.container-editorial {
@@ -108,9 +126,8 @@
 		align-items: center;
 		justify-content: center;
 		gap: 0.5rem;
-		padding: 0.875rem 2.25rem;
-		border-radius: 9999px;
-		background: var(--color-coffee);
+		padding: 0.875rem 2.25rem;		border-radius: 2px;
+			background: var(--color-button);
 		color: var(--color-bone);
 		font-size: 0.6875rem;
 		letter-spacing: 0.2em;
@@ -118,7 +135,7 @@
 		font-weight: 600;
 		transition: background var(--duration-editorial) var(--ease-editorial);
 	}
-	.btn-primary:hover { background: var(--color-coffee-deep); color: var(--color-bone); }
+	.btn-primary:hover { background: var(--color-button-hover); color: var(--color-white); }
 	.btn-primary:focus-visible { outline: 2px solid var(--color-coffee); outline-offset: 3px; }
 
 	.btn-secondary {
@@ -127,7 +144,7 @@
 		justify-content: center;
 		gap: 0.5rem;
 		padding: 0.875rem 2.25rem;
-		border-radius: 9999px;
+		border-radius: 2px;
 		border: 1px solid color-mix(in srgb, var(--color-ink) 30%, transparent);
 		color: var(--color-ink);
 		font-size: 0.6875rem;

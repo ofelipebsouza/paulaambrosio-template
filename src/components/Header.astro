@@ -1,5 +1,7 @@
 ---
+import { Image } from 'astro:assets';
 import { SITE, NAV_LEFT, NAV_RIGHT, NAV_LINKS, SOCIAL_LINKS } from '../config';
+import Logo from './ui/Logo.astro';
 import InstagramIcon from '../assets/icons/instagram.svg?raw';
 import HouzzIcon from '../assets/icons/houzz.svg?raw';
 import LinkedinIcon from '../assets/icons/linkedin.svg?raw';
@@ -12,7 +14,7 @@ const socialIcons = [InstagramIcon, HouzzIcon, LinkedinIcon];
 
 <header class="fixed inset-x-0 top-0 z-50 border-b border-sand/60 bg-bone/95 backdrop-blur-sm">
 	<div class="container-editorial">
-		<div class="grid h-16 grid-cols-[1fr_auto_1fr] items-center gap-4 lg:h-20">
+		<div class="grid h-16 grid-cols-[1fr_minmax(220px,auto)_1fr] items-center gap-4 lg:h-20">
 
 			<!-- Desktop: left nav / Mobile: hamburger -->
 			<nav aria-label="Primary" class="hidden lg:block">
@@ -80,14 +82,9 @@ const socialIcons = [InstagramIcon, HouzzIcon, LinkedinIcon];
 				</button>
 			</div>
 
-			<!-- Centered wordmark -->
-			<a href="/" class="justify-self-center text-center leading-none" aria-label={`${SITE.name} — Home`}>
-				<span class="font-display block text-xl tracking-[0.12em] whitespace-nowrap text-ink lg:text-2xl">
-					PAULA&nbsp;AMBROSIO
-				</span>
-				<span class="mt-1 block text-[0.5rem] font-medium tracking-[0.42em] text-stone uppercase">
-					Interior&nbsp;Design
-				</span>
+			<!-- Centered logo -->
+			<a href="/" class="justify-self-center" aria-label={`${SITE.name} Home`}>
+				<Logo variant="dark" class="h-6 w-auto lg:h-8" />
 			</a>
 
 			<!-- Desktop: right nav / Mobile: inquiry shortcut -->
@@ -158,15 +155,14 @@ const socialIcons = [InstagramIcon, HouzzIcon, LinkedinIcon];
 <dialog id="mobile-menu" class="menu-sheet m-0 h-dvh max-h-none w-screen max-w-none border-none bg-bone p-0 backdrop:bg-transparent lg:hidden">
 	<div class="flex h-full flex-col overflow-y-auto">
 		<div class="container-editorial">
-			<div class="grid h-16 grid-cols-[1fr_auto_1fr] items-center">
+			<div class="grid h-16 grid-cols-[1fr_minmax(200px,auto)_1fr] items-center">
 			<button type="button" class="menu-close flex h-10 w-10 cursor-pointer items-center justify-center" aria-label="Close navigation menu">
 				<svg viewBox="0 0 20 20" class="h-5 w-5 text-ink" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
 					<path d="M4 4l12 12M16 4L4 16" stroke-linecap="round"></path>
 				</svg>
 			</button>
-			<a href="/" class="justify-self-center text-center leading-none" aria-label={`${SITE.name} — Home`}>
-				<span class="font-display block text-lg tracking-[0.12em] whitespace-nowrap text-ink">PAULA&nbsp;AMBROSIO</span>
-				<span class="mt-1 block text-[0.5rem] font-medium tracking-[0.42em] text-stone uppercase">Interior&nbsp;Design</span>
+			<a href="/" class="justify-self-center" aria-label={`${SITE.name} Home`}>
+				<Logo variant="dark" class="max-h-7 w-auto" />
 			</a>
 		</div>
 	</div>
@@ -220,11 +216,10 @@ const socialIcons = [InstagramIcon, HouzzIcon, LinkedinIcon];
 <dialog id="inquiry-modal" class="inquiry-sheet m-0 h-dvh max-h-none w-screen max-w-none border-none bg-bone p-0 backdrop:bg-transparent">
 	<div class="h-full overflow-y-auto">
 		<div class="sticky top-0 z-10 border-b border-sand/60 bg-bone">
-			<div class="container-editorial">					<div class="grid h-16 grid-cols-[1fr_auto_1fr] items-center lg:h-20">
+			<div class="container-editorial">					<div class="grid h-16 grid-cols-[1fr_minmax(200px,auto)_1fr] items-center lg:h-20">
 						<span aria-hidden="true"></span>
-						<a href="/" class="justify-self-center text-center leading-none" aria-label={`${SITE.name} — Home`}>
-							<span class="font-display block text-lg tracking-[0.12em] whitespace-nowrap text-ink lg:text-xl">PAULA&nbsp;AMBROSIO</span>
-							<span class="mt-1 block text-[0.5rem] font-medium tracking-[0.42em] text-stone uppercase">Interior&nbsp;Design</span>
+						<a href="/" class="justify-self-center" aria-label={`${SITE.name} Home`}>
+							<Logo variant="dark" class="max-h-7 w-auto lg:max-h-8" />
 						</a>
 						<button type="button" class="inquiry-close flex h-10 w-10 cursor-pointer items-center justify-center justify-self-end rounded-full border border-ink/15 transition-colors hover:border-ink/30" aria-label="Close inquiry form">
 							<svg viewBox="0 0 20 20" class="h-5 w-5 text-ink" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">

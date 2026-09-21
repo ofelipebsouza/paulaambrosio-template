@@ -1,6 +1,14 @@
 /* Self-hosted fonts — preloaded in Layout.astro, no third-party requests. */
 
 @font-face {
+	font-family: 'Loew';
+	font-style: normal;
+	font-weight: 700;
+	font-display: swap;
+	src: url('/fonts/Loew-Bold.otf') format('opentype');
+}
+
+@font-face {
 	font-family: 'Cormorant Garamond';
 	font-style: normal;
 	font-weight: 500;

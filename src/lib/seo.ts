@@ -54,7 +54,7 @@ export function organizationSchema() {
 		telephone: SITE.phoneE164,
 		priceRange: '$$$$',
 		image: DEFAULT_OG_IMAGE,
-		logo: absoluteUrl('/logo.png'),
+		logo: absoluteUrl('/brand/logo-black.svg'),
 		founder: { '@id': `${SITE.url}/#paula-ambrosio` },
 		address: {
 			'@type': 'PostalAddress',

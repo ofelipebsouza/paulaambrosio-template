@@ -14,6 +14,7 @@ const posts = (await getCollection('journal'))
 const [featured, ...rest] = posts;
 
 const breadcrumbs: BreadcrumbEntry[] = [{ name: 'Journal', url: '/journal' }];
+const categories = ['All', ...new Set(posts.map((post) => post.data.category))];
 ---
 
 <Layout
@@ -65,9 +66,15 @@ const breadcrumbs: BreadcrumbEntry[] = [{ name: 'Journal', url: '/journal' }];
 	)}
 
 	<section class="container-editorial pb-24">
-		<div class="grid gap-x-8 gap-y-14 border-t border-sand pt-14 md:grid-cols-2 lg:grid-cols-3">
+		<div class="mb-12 flex flex-wrap items-center gap-x-8 gap-y-3 border-y border-sand py-5" aria-label="Filter journal articles by category">
+			<p class="eyebrow mr-2 text-stone">Browse by</p>
+			{categories.map((category, index) => (
+				<button type="button" class:list={['journal-filter eyebrow border-b border-transparent pb-1 text-slate transition-colors hover:text-ink', index === 0 && 'is-active border-stone text-ink']} data-filter={category} aria-pressed={index === 0 ? 'true' : 'false'}>{category}</button>
+			))}
+		</div>
+		<div id="journal-grid" class="grid gap-x-8 gap-y-14 border-t border-sand pt-14 md:grid-cols-2 lg:grid-cols-3">
 			{rest.map((post) => (
-				<article class="group">
+				<article class="group" data-category={post.data.category}>
 					<a href={`/journal/${post.id}`} class="block overflow-hidden bg-sand">
 						<Image
 							src={post.data.featuredImage}
@@ -90,6 +97,16 @@ const breadcrumbs: BreadcrumbEntry[] = [{ name: 'Journal', url: '/journal' }];
 			))}
 		</div>
 	</section>
+
+	<script>
+		const filters = document.querySelectorAll<HTMLButtonElement>('.journal-filter');
+		const articles = document.querySelectorAll<HTMLElement>('#journal-grid article');
+		filters.forEach((filter) => filter.addEventListener('click', () => {
+			const value = filter.dataset.filter ?? 'All';
+			filters.forEach((item) => { item.classList.toggle('is-active', item === filter); item.setAttribute('aria-pressed', item === filter ? 'true' : 'false'); });
+			articles.forEach((article) => { article.hidden = value !== 'All' && article.dataset.category !== value; });
+		}));
+	</script>
 
 	<CtaBanner />
 </Layout>

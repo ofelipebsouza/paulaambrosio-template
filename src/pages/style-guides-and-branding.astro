@@ -1,0 +1,92 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Logo from '../components/ui/Logo.astro';
+import { schemaScript, webPageSchema } from '../lib/seo';
+
+const swatches = [
+	{ name: 'Black', value: '#000000', className: 'bg-ink' },
+	{ name: 'Warm Brown / Taupe', value: '#8C6A54', className: 'bg-stone' },
+	{ name: 'Warm Beige', value: '#CEB297', className: 'bg-sand' },
+	{ name: 'Ivory / Off White', value: '#F9F5F0', className: 'bg-bone' },
+	{ name: 'White', value: '#FFFFFF', className: 'bg-white' },
+];
+---
+
+<Layout
+	title="Branding & Style Guide | Paula Ambrosio Interiors"
+	description="Internal visual reference for the Paula Ambrosio Interiors identity system."
+	canonical="/style-guides-and-branding"
+	noindex
+>
+	<Fragment slot="head" set:html={schemaScript(webPageSchema({
+		path: '/style-guides-and-branding',
+		title: 'Branding & Style Guide | Paula Ambrosio Interiors',
+		description: 'Internal visual reference for the Paula Ambrosio Interiors identity system.',
+	}))} />
+
+	<article class="container-editorial py-20 lg:py-32">
+		<header class="max-w-4xl border-b border-sand pb-16">
+			<p class="eyebrow text-stone">Internal reference · v1.0</p>
+			<h1 class="font-display mt-5 text-display">Branding &amp; digital style guide.</h1>
+			<p class="mt-8 max-w-2xl text-lede text-slate">The visual system for a Miami interior design studio shaped by architecture, photography, proportion and quiet confidence.</p>
+		</header>
+
+		<section class="grid gap-12 border-b border-sand py-20 lg:grid-cols-12" aria-labelledby="logo-heading">
+			<div class="lg:col-span-4">
+				<p class="eyebrow text-stone">01 · Identity</p>
+				<h2 id="logo-heading" class="font-display mt-4 text-4xl">The mark is the signature.</h2>
+				<p class="mt-5 leading-relaxed text-slate">Use the official vector artwork at its original proportions. Never recreate the wordmark as text or distort its clear space.</p>
+			</div>
+			<div class="grid gap-6 sm:grid-cols-2 lg:col-span-7 lg:col-start-6">
+				<div class="flex min-h-36 items-center border border-sand bg-white p-8"><Logo variant="dark" /></div>
+				<div class="flex min-h-36 items-center bg-ink p-8"><Logo variant="light" /></div>
+				<div class="flex min-h-36 items-center border border-sand bg-bone p-8 text-ink"><Logo variant="auto" /></div>
+				<div class="flex min-h-36 items-center bg-stone p-8 text-white"><Logo variant="light" /></div>
+			</div>
+		</section>
+
+		<section class="grid gap-12 border-b border-sand py-20 lg:grid-cols-12" aria-labelledby="color-heading">
+			<div class="lg:col-span-4">
+				<p class="eyebrow text-stone">02 · Palette</p>
+				<h2 id="color-heading" class="font-display mt-4 text-4xl">Warmth, contrast, restraint.</h2>
+				<p class="mt-5 leading-relaxed text-slate">Ivory carries the atmosphere. Black provides authority. Taupe and beige should warm the system, never overpower the photography.</p>
+			</div>
+			<div class="grid gap-px border border-sand bg-sand sm:grid-cols-2 lg:col-span-7 lg:col-start-6">
+				{swatches.map((swatch) => (
+					<div class:list={['min-h-32 p-5', swatch.className, swatch.name === 'Black' ? 'text-white' : 'text-ink']}>
+						<p class="eyebrow">{swatch.name}</p>
+						<p class="mt-8 text-sm tracking-wide">{swatch.value}</p>
+					</div>
+				))}
+			</div>
+		</section>
+
+		<section class="grid gap-12 border-b border-sand py-20 lg:grid-cols-12" aria-labelledby="type-heading">
+			<div class="lg:col-span-4">
+				<p class="eyebrow text-stone">03 · Typography</p>
+				<h2 id="type-heading" class="font-display mt-4 text-4xl">Editorial presence, comfortable reading.</h2>
+			</div>
+			<div class="space-y-10 lg:col-span-7 lg:col-start-6">
+				<div><p class="eyebrow text-stone">Display · Didot / Bodoni Moda / Cormorant Garamond</p><p class="font-display mt-3 text-6xl leading-none">A considered point of view.</p></div>
+				<div><p class="eyebrow text-stone">Labels · Loew Bold</p><p class="mt-3 text-sm font-bold uppercase tracking-[0.24em]">Services · Portfolio · Miami</p></div>
+				<div><p class="eyebrow text-stone">Body · Open Sans / Plus Jakarta Sans</p><p class="mt-3 max-w-xl leading-relaxed text-slate">Text should feel clear, calm and assured, with generous line-height and a readable measure.</p></div>
+			</div>
+		</section>
+
+		<section class="grid gap-12 border-b border-sand py-20 lg:grid-cols-12" aria-labelledby="principles-heading">
+			<div class="lg:col-span-4"><p class="eyebrow text-stone">04 · Principles</p><h2 id="principles-heading" class="font-display mt-4 text-4xl">Less, with intention.</h2></div>
+			<ol class="grid gap-8 sm:grid-cols-2 lg:col-span-7 lg:col-start-6">
+				<li class="border-t border-sand pt-5"><span class="font-display text-3xl text-stone">01</span><p class="mt-3 leading-relaxed">Photography leads. Containers support the work; they do not compete with it.</p></li>
+				<li class="border-t border-sand pt-5"><span class="font-display text-3xl text-stone">02</span><p class="mt-3 leading-relaxed">Use space, fine rules and rhythm to create the feeling of a private editorial.</p></li>
+				<li class="border-t border-sand pt-5"><span class="font-display text-3xl text-stone">03</span><p class="mt-3 leading-relaxed">Keep interaction quiet: a shift in contrast, a line, an arrow — never spectacle.</p></li>
+				<li class="border-t border-sand pt-5"><span class="font-display text-3xl text-stone">04</span><p class="mt-3 leading-relaxed">Every page should answer who Paula is, what she does and where she works.</p></li>
+			</ol>
+		</section>
+
+		<div class="pt-12 text-sm text-slate">
+			<a class="underline decoration-stone underline-offset-4 hover:text-stone" href="/">Return to the studio</a>
+			<span class="mx-3 text-sand">·</span>
+			<a class="underline decoration-stone underline-offset-4 hover:text-stone" href="/Paula-Ambrosio-Branding-Styleguide.pdf">Download supplied PDF guide</a>
+		</div>
+	</article>
+</Layout>

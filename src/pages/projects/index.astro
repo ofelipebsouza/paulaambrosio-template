@@ -14,6 +14,7 @@ const projects = (await getCollection('projects'))
 );
 
 const breadcrumbs: BreadcrumbEntry[] = [{ name: 'Projects', url: '/projects' }];
+const categories = ['All', ...new Set(projects.map((project) => project.data.projectType).filter(Boolean))];
 ---
 
 <Layout
@@ -39,8 +40,26 @@ const breadcrumbs: BreadcrumbEntry[] = [{ name: 'Projects', url: '/projects' }];
 	</section>
 
 	<section class="container-editorial pb-24">
-		<ProjectGrid projects={projects} columns={3} />
+		<div class="mb-12 flex flex-wrap items-center gap-x-8 gap-y-3 border-y border-sand py-5" aria-label="Filter projects by type">
+			<p class="eyebrow mr-2 text-stone">View by</p>
+			{categories.map((category, index) => (
+				<button type="button" class:list={['project-filter eyebrow border-b border-transparent pb-1 text-slate transition-colors hover:text-ink', index === 0 && 'is-active border-stone text-ink']} data-filter={category ?? 'All'} aria-pressed={index === 0 ? 'true' : 'false'}>{category}</button>
+			))}
+		</div>
+		<div id="project-grid">
+			<ProjectGrid projects={projects} columns={3} />
+		</div>
 	</section>
+
+	<script>
+		const filters = document.querySelectorAll<HTMLButtonElement>('.project-filter');
+		const cards = document.querySelectorAll<HTMLElement>('#project-grid article');
+		filters.forEach((filter) => filter.addEventListener('click', () => {
+			const value = filter.dataset.filter ?? 'All';
+			filters.forEach((item) => { item.classList.toggle('is-active', item === filter); item.setAttribute('aria-pressed', item === filter ? 'true' : 'false'); });
+			cards.forEach((card) => { const category = card.dataset.category; card.hidden = value !== 'All' && category !== value; });
+		}));
+	</script>
 
 	<CtaBanner />
 </Layout>

@@ -1,0 +1,20 @@
+---
+interface Props {
+	variant?: 'dark' | 'light' | 'auto';
+	class?: string;
+	alt?: string;
+}
+
+const { variant = 'auto', class: className = '', alt = 'Paula Ambrosio Interior Design' } = Astro.props;
+const source = variant === 'light' ? '/brand/logo-black.svg' : variant === 'dark' ? '/brand/logo-black.svg' : '/brand/logo-currentColor.svg';
+---
+
+<img
+	src={source}
+	alt={alt}
+	width="320"
+	height="44"
+	class:list={['block max-w-full', variant === 'light' && 'brightness-0 invert', className]}
+	loading="eager"
+	decoding="async"
+/>

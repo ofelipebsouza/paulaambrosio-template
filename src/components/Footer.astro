@@ -1,5 +1,6 @@
 ---
 import { SITE, FOOTER_LOCATIONS, NAV_LINKS, serviceUrl, locationUrl } from '../config';
+import Logo from './ui/Logo.astro';
 
 const year = new Date().getFullYear();
 ---
@@ -8,8 +9,10 @@ const year = new Date().getFullYear();
 	<div class="container-editorial py-16 lg:py-20">
 		<div class="grid gap-12 lg:grid-cols-12">
 			<div class="lg:col-span-5">
-				<p class="eyebrow text-brass">Miami Luxury Interior Design</p>
-				<h2 class="font-display mt-4 text-3xl">Paula Ambrosio Interiors</h2>
+				<div class="w-56">
+					<Logo variant="light" class="h-auto" />
+				</div>
+				<p class="eyebrow mt-8 text-brass">Miami Luxury Interior Design</p>
 				<p class="mt-5 max-w-md text-sm leading-relaxed text-bone/60">
 					Full-service and turnkey interior design for luxury residences, penthouses and
 					hospitality spaces across Miami and South Florida.
@@ -49,6 +52,7 @@ const year = new Date().getFullYear();
 					))}
 					<li><a href="/faq" class="hover:text-bone">FAQ</a></li>
 					<li><a href="/sitemap-pages" class="hover:text-bone">Sitemap &amp; Index</a></li>
+					<li><a href="/style-guides-and-branding" class="hover:text-bone">Branding Guide</a></li>
 				</ul>
 				<button type="button" class="inquiry-open btn-primary mt-6 cursor-pointer">Start Your Project</button>
 			</nav>
