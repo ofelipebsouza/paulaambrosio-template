@@ -41,7 +41,6 @@ const gallerySources = hasOptimizedGallery
 const heroSource = hasOptimizedGallery
 	? sourceGallery[0]
 	: (await getImage({ src: project.data.featuredImage, width: 1920, quality: 75, format: 'webp' })).src;
-const heroSlides = hasOptimizedGallery ? [] : gallerySources;
 const full = gallerySources;
 
 // §13 project facts row
@@ -81,24 +80,18 @@ const breadcrumbs: BreadcrumbEntry[] = [
 	}))} />
 
 	<article>
-		<!-- Project hero carousel -->
-		<section class="relative flex min-h-[70vh] items-end bg-ink overflow-hidden" data-hero-carousel>
-			{[heroSource, ...heroSlides].map((img, i) => (
-				<img
-					src={img}
-					alt={i === 0 ? (project.data.imageAlt ?? project.data.title) : `${project.data.title}, ${project.data.location ?? 'interior'} ${i + 1}`}
-					width="1920"
-					height="1280"
-					loading={i === 0 ? 'eager' : 'lazy'}
-					decoding="async"
-					fetchpriority={i === 0 ? 'high' : 'auto'}
-					class:list={[
-						"absolute inset-0 h-full w-full object-cover opacity-90 transition-opacity duration-1000",
-						i === 0 ? 'opacity-100' : 'opacity-0'
-					]}
-					data-hero-slide
-				/>
-			))}
+		<!-- Project hero: one cover image, with no carousel -->
+		<section class="relative flex min-h-[70vh] items-end bg-ink overflow-hidden">
+			<img
+				src={heroSource}
+				alt={project.data.imageAlt ?? project.data.title}
+				width="1920"
+				height="1280"
+				loading="eager"
+				decoding="async"
+				fetchpriority="high"
+				class="absolute inset-0 h-full w-full object-cover opacity-90"
+			/>
 			<div class="absolute inset-0 bg-gradient-to-t from-ink/40 via-transparent to-transparent" aria-hidden="true"></div>
 			<div class="relative container-editorial pb-14 pt-40 text-bone z-10">
 				<Breadcrumbs items={breadcrumbs} tone="light" />
@@ -220,20 +213,6 @@ const breadcrumbs: BreadcrumbEntry[] = [
 	/>
 
 			<script>
-			// Hero carousel auto-slide
-			const heroCarousel = document.querySelector('[data-hero-carousel]');
-			if (heroCarousel) {
-				const slides = heroCarousel.querySelectorAll<HTMLElement>('[data-hero-slide]');
-				if (slides.length > 1) {
-					let current = 0;
-					setInterval(() => {
-						slides[current].classList.replace('opacity-100', 'opacity-0');
-						current = (current + 1) % slides.length;
-						slides[current].classList.replace('opacity-0', 'opacity-100');
-					}, 5000);
-				}
-			}
-
 			const dialog = document.getElementById('lightbox') as HTMLDialogElement | null;
 			const triggers = [...document.querySelectorAll<HTMLButtonElement>('[data-lightbox-trigger]')];
 			if (dialog && triggers.length > 0) {
