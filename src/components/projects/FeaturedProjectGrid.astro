@@ -17,6 +17,16 @@ interface Props {
 }
 
 const { projects, columns = 3 } = Astro.props;
+const optimizedImages = import.meta.glob('../../assets/projects/*/web/*.webp', {
+	eager: true,
+	import: 'default',
+	query: '?url',
+}) as Record<string, string>;
+const optimizedByProject = new Map<string, string>();
+for (const [path, url] of Object.entries(optimizedImages)) {
+	const match = path.match(/projects\/([^/]+)\/web\//);
+	if (match) optimizedByProject.set(match[1], url);
+}
 const cols =
 	columns === 3 ? 'md:grid-cols-2 lg:grid-cols-3' : 'md:grid-cols-2 max-w-4xl mx-auto';
 ---
@@ -30,16 +40,28 @@ const cols =
 				data-analytics-event="portfolio_open"
 				data-analytics-project={project.id}
 			>
-				<Image
-					src={project.data.featuredImage}
-					alt={project.data.imageAlt ?? project.data.title}
-					widths={[400, 800]}
-					sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
-					loading="lazy"
-					quality={55}
-					decoding="async"
-					class="aspect-[4/3] w-full object-cover transition-transform duration-700 ease-editorial group-hover:scale-[1.03]"
-				/>
+				{optimizedByProject.has(project.id) ? (
+					<img
+						src={optimizedByProject.get(project.id)}
+						alt={project.data.imageAlt ?? project.data.title}
+						width="1000"
+						height="750"
+						loading="lazy"
+						decoding="async"
+						class="aspect-[4/3] w-full object-cover transition-transform duration-700 ease-editorial group-hover:scale-[1.03]"
+					/>
+				) : (
+					<Image
+						src={project.data.featuredImage}
+						alt={project.data.imageAlt ?? project.data.title}
+						widths={[400, 800]}
+						sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+						loading="lazy"
+						quality={55}
+						decoding="async"
+						class="aspect-[4/3] w-full object-cover transition-transform duration-700 ease-editorial group-hover:scale-[1.03]"
+					/>
+				)}
 			</a>
 			<p class="eyebrow mt-5 text-stone">{project.data.location}</p>
 			<h3 class="font-display mt-2 text-2xl leading-snug">

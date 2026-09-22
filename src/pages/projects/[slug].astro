@@ -1,6 +1,5 @@
 ---
 import { getCollection, render } from 'astro:content';
-import { Image } from 'astro:assets';
 import Layout from '../../layouts/Layout.astro';
 import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
 import CtaBanner from '../../components/ui/CtaBanner.astro';
@@ -23,11 +22,27 @@ const { project } = Astro.props;
 const { Content } = await render(project);
 const ogImage = await ogFromImage(project.data.featuredImage);
 
-// Lightbox full-size variants (real image size, higher quality than grid thumbs).
-const gallery = project.data.gallery;
-const full = await Promise.all(
-	gallery.map(async (img) => (await getImage({ src: img, width: 1800, quality: 80 })).src),
-);
+// The supplied camera originals are prepared once as local WebP files. Vite copies
+// these already-optimized files directly, avoiding hundreds of build-time variants.
+const sourceImages = import.meta.glob('../../assets/projects/*/web/*.webp', {
+	eager: true,
+	import: 'default',
+	query: '?url',
+}) as Record<string, string>;
+const sourceGallery = Object.entries(sourceImages)
+	.filter(([path]) => path.includes(`/projects/${project.id}/web/`))
+	.sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }))
+	.map(([, image]) => image);
+
+const hasOptimizedGallery = sourceGallery.length > 0;
+const gallerySources = hasOptimizedGallery
+	? sourceGallery
+	: await Promise.all(project.data.gallery.map(async (img) => (await getImage({ src: img, width: 1600, quality: 75, format: 'webp' })).src));
+const heroSource = hasOptimizedGallery
+	? sourceGallery[0]
+	: (await getImage({ src: project.data.featuredImage, width: 1920, quality: 75, format: 'webp' })).src;
+const heroSlides = hasOptimizedGallery ? [] : gallerySources;
+const full = gallerySources;
 
 // §13 project facts row
 	const facts = [
@@ -68,15 +83,15 @@ const breadcrumbs: BreadcrumbEntry[] = [
 	<article>
 		<!-- Project hero carousel -->
 		<section class="relative flex min-h-[70vh] items-end bg-ink overflow-hidden" data-hero-carousel>
-			{[project.data.featuredImage, ...gallery].map((img, i) => (
-				<Image
+			{[heroSource, ...heroSlides].map((img, i) => (
+				<img
 					src={img}
 					alt={i === 0 ? (project.data.imageAlt ?? project.data.title) : `${project.data.title}, ${project.data.location ?? 'interior'} ${i + 1}`}
-					widths={[768, 1200, 1920]}
-					sizes="100vw"
+					width="1920"
+					height="1280"
 					loading={i === 0 ? 'eager' : 'lazy'}
-					quality={60}
 					decoding="async"
+					fetchpriority={i === 0 ? 'high' : 'auto'}
 					class:list={[
 						"absolute inset-0 h-full w-full object-cover opacity-90 transition-opacity duration-1000",
 						i === 0 ? 'opacity-100' : 'opacity-0'
@@ -141,24 +156,23 @@ const breadcrumbs: BreadcrumbEntry[] = [
 		</section>
 
 		<!-- Gallery (§13: 12-25 images when official photography arrives) -->
-		{project.data.gallery.length > 0 && (
+		{gallerySources.length > 0 && (
 			<section class="container-editorial pb-20">
 				<div class="columns-1 gap-6 sm:columns-2" style="column-fill: balance;">
-					{gallery.map((img, i) => (
+					{gallerySources.map((img, i) => (
 						<button
 							type="button"
 							class="group relative mb-6 block w-full cursor-zoom-in overflow-hidden break-inside-avoid"
-							data-lightbox-trigger
-							data-full={full[i]}
-							aria-label={`Open image ${i + 1} of ${gallery.length} fullscreen`}
+							data-lightbox-trigger								data-full={full[i]}
+								aria-label={`Open image ${i + 1} of ${gallerySources.length} fullscreen`}
+
 						>
-							<Image
+							<img
 								src={img}
 								alt={`${project.data.title}, ${project.data.location ?? 'interior'} detail ${i + 1}`}
-								widths={[600, 1000]}
-								sizes="(min-width: 768px) 50vw, 100vw"
+								width="1000"
+								height="750"
 								loading="lazy"
-								quality={55}
 								decoding="async"
 								class="w-full object-cover motion-safe:transition-transform motion-safe:duration-700 group-hover:scale-[1.03]"
 							/>
@@ -176,7 +190,7 @@ const breadcrumbs: BreadcrumbEntry[] = [
 
 
 		<!-- Fullscreen lightbox (real-size, uncropped viewing) -->
-		{project.data.gallery.length > 0 && <ProjectLightbox title={project.data.title} full={full} />}
+		{gallerySources.length > 0 && <ProjectLightbox title={project.data.title} full={full} />}
 
 		<!-- Related projects -->
 		{related.length > 0 && (
