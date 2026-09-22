@@ -49,46 +49,23 @@ const processSteps = [
 		description: 'Full-service and turnkey luxury interior design for Miami and South Florida.',
 	}))} />
 
-	<!-- 1. Hero: crossfade carousel, title sits below -->
+	<!-- 1. Hero: single static image -->
 	<section class="bg-bone pb-20 text-center lg:pb-28">
-		<div id="hero-carousel" class="relative w-full overflow-hidden min-h-[80vw] sm:min-h-0 sm:aspect-[16/10] lg:aspect-[21/8]">
-			{heroSlides.map((slide, i) => (
-				<div
-					class="hero-slide absolute inset-0 transition-opacity duration-[1400ms] ease-in-out"
-					style={`opacity: ${i === 0 ? '1' : '0'};`}
-					aria-hidden={i !== 0 ? 'true' : undefined}
-				>
-					<Image
-						src={slide.src}
-						alt={slide.alt}
-						widths={[768, 1200, 1600]}
-						sizes="100vw"
-						loading={i === 0 ? 'eager' : 'lazy'}
-						fetchpriority={i === 0 ? 'high' : 'auto'}
-						quality={60}
-						decoding="async"
-						class="h-full w-full object-cover"
-					/>
-				</div>
-			))}
+		<div class="relative w-full overflow-hidden min-h-[80vw] sm:min-h-0 sm:aspect-[16/10] lg:aspect-[21/8]">
+			<Image
+				src={heroSlides[0].src}
+				alt={heroSlides[0].alt}
+				widths={[768, 1200, 1600]}
+				sizes="100vw"
+				loading="eager"
+				fetchpriority="high"
+				quality={70}
+				decoding="async"
+				class="h-full w-full object-cover"
+			/>
 
 			<!-- Gradient fade into bone background -->
 			<div class="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-bone via-bone/70 to-transparent lg:h-64" aria-hidden="true"></div>
-
-			<!-- Dot indicators -->
-			<div class="absolute bottom-5 left-1/2 -translate-x-1/2 flex items-center gap-2.5 z-10" role="tablist" aria-label="Select image">
-				{heroSlides.map((_, i) => (
-					<button
-						type="button"
-						role="tab"
-						aria-selected={i === 0 ? 'true' : 'false'}
-						aria-label={`Image ${i + 1}`}
-						data-index={i}
-						class="hero-dot block h-1 rounded-full bg-bone/50 transition-all duration-500 ease-in-out"
-						style={`width: ${i === 0 ? '1.75rem' : '0.5rem'}; opacity: ${i === 0 ? '1' : '0.5'};`}
-					></button>
-				))}
-			</div>
 		</div>
 
 		<div class="container-editorial relative">
@@ -341,52 +318,6 @@ const processSteps = [
 </Layout>
 
 <script>
-	// Hero crossfade carousel
-	const slides = document.querySelectorAll<HTMLElement>('.hero-slide');
-	const dots   = document.querySelectorAll<HTMLButtonElement>('.hero-dot');
-	let current  = 0;
-	let timer: ReturnType<typeof setInterval>;
-
-	const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-	function goTo(index: number) {
-		// Fade out current
-		slides[current].style.opacity = '0';
-		slides[current].setAttribute('aria-hidden', 'true');
-		dots[current].style.width   = '0.5rem';
-		dots[current].style.opacity = '0.5';
-		dots[current].setAttribute('aria-selected', 'false');
-
-		current = index;
-
-		// Fade in next
-		slides[current].style.opacity = '1';
-		slides[current].removeAttribute('aria-hidden');
-		dots[current].style.width   = '1.75rem';
-		dots[current].style.opacity = '1';
-		dots[current].setAttribute('aria-selected', 'true');
-	}
-
-	function advance() {
-		goTo((current + 1) % slides.length);
-	}
-
-	function startTimer() {
-		clearInterval(timer);
-		if (!reduced) timer = setInterval(advance, 8000);
-	}
-
-	// Dot click → jump to slide and reset timer
-	dots.forEach((dot, i) => {
-		dot.addEventListener('click', () => {
-			if (i === current) return;
-			goTo(i);
-			startTimer();
-		});
-	});
-
-	startTimer();
-
 	// Scroll-reveal: add .is-visible when element enters viewport
 	const observer = new IntersectionObserver(
 		(entries) => {
