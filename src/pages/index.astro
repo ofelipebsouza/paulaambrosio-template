@@ -73,7 +73,7 @@ const processSteps = [
 			))}
 
 			<!-- Gradient fade into bone background -->
-			<div class="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-bone via-bone/70 to-transparent lg:h-64" aria-hidden="true"></div>
+			<div class="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-bone via-bone/70 to-transparent lg:h-64"></div>
 
 			<!-- Dot indicators -->
 			<div class="absolute bottom-5 left-1/2 -translate-x-1/2 flex items-center gap-2.5 z-10" role="tablist" aria-label="Select image">
@@ -386,6 +386,7 @@ const processSteps = [
 	});
 
 	startTimer();
+
 
 	// Scroll-reveal: add .is-visible when element enters viewport
 	const observer = new IntersectionObserver(
