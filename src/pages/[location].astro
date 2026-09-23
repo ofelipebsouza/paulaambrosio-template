@@ -6,7 +6,8 @@ import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
 import CtaBanner from '../components/ui/CtaBanner.astro';
 import FAQ from '../components/ui/FAQ.astro';
 import ProjectGrid from '../components/projects/FeaturedProjectGrid.astro';
-import { webPageSchema, faqSchema, schemaScript, ogFromImage } from '../lib/seo';
+import { webPageSchema, faqSchema, schemaScript } from '../lib/seo';
+import { brandedOg } from '../lib/og';
 import type { BreadcrumbEntry } from '../lib/seo';
 import { locationUrl, serviceUrl } from '../config';
 
@@ -21,7 +22,7 @@ export async function getStaticPaths() {
 
 const { location } = Astro.props;
 const { Content } = await render(location);
-const ogImage = await ogFromImage(location.data.featuredImage);
+const ogImage = brandedOg('location', location.id);
 
 // Featured projects genuinely tied to this city via relatedLocations.
 const allProjects = (await getCollection('projects')).filter((p) => !p.data.draft);
@@ -44,6 +45,7 @@ const ctas = location.data.ctas;
 	description={location.data.seoDescription ?? location.data.introduction}
 	canonical={path}
 	ogImage={ogImage}
+	ogImageAlt={location.data.imageAlt}
 >
 	<Fragment slot="head" set:html={schemaScript(webPageSchema({
 		path,

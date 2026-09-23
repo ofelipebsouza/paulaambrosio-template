@@ -7,6 +7,7 @@ import ProjectGrid from '../../components/projects/FeaturedProjectGrid.astro';
 import { webPageSchema, schemaScript } from '../../lib/seo';
 import type { BreadcrumbEntry } from '../../lib/seo';
 import { serviceUrl, locationUrl, projectUrl } from '../../config';
+import { brandedOg } from '../../lib/og';
 import ProjectLightbox from '../../components/projects/ProjectLightbox.astro';
 
 export async function getStaticPaths() {
@@ -27,7 +28,7 @@ const featuredSource = project.data.featuredImage.src;
 const gallerySources = project.data.gallery.map((img) => img.src);
 const heroSource = featuredSource;
 const full = gallerySources;
-const ogImage = featuredSource;
+const ogImage = brandedOg('project', project.id);
 
 // §13 project facts row
 	const facts = [
@@ -57,6 +58,7 @@ const breadcrumbs: BreadcrumbEntry[] = [
 	description={project.data.seoDescription ?? project.data.description}
 	canonical={projectUrl(project.id)}
 	ogImage={ogImage}
+	ogImageAlt={project.data.imageAlt ?? project.data.title}
 >
 	<Fragment slot="head" set:html={schemaScript(webPageSchema({
 		path: projectUrl(project.id),

@@ -6,12 +6,10 @@ import ProjectGrid from '../components/projects/ProjectGrid.astro';
 import CtaBanner from '../components/ui/CtaBanner.astro';
 import { webPageSchema, schemaScript } from '../lib/seo';
 import { serviceUrl, locationUrl } from '../config';
-import { getImage } from 'astro:assets';
+import { HOME_OG } from '../lib/og';
 import paulaProfile from '../assets/paula-profile.webp';
 
 const allProjects = (await getCollection('projects')).filter((p) => !p.data.draft);
-
-const heroOg = await getImage({ src: allProjects[0]?.data.featuredImage, width: 1200, format: 'jpeg', quality: 70 });
 
 const heroSlides = allProjects.slice(0, 9).map((p) => ({
 	src: p.data.featuredImage,
@@ -40,7 +38,8 @@ const processSteps = [
 	title="Luxury Interior Design in Miami | Paula Ambrosio Interiors"
 	description="Paula Ambrosio Interiors is a Miami luxury interior design studio creating full-service and turnkey interiors for residences, penthouses and hospitality spaces across South Florida."
 	canonical="/"
-	ogImage={heroOg.src}
+	ogImage={HOME_OG}
+	ogImageAlt={allProjects[0]?.data.imageAlt}
 >
 	<Fragment slot="head" set:html={schemaScript(webPageSchema({
 		path: '/',

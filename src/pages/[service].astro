@@ -6,7 +6,8 @@ import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
 import CtaBanner from '../components/ui/CtaBanner.astro';
 import FAQ from '../components/ui/FAQ.astro';
 import ProjectGrid from '../components/projects/FeaturedProjectGrid.astro';
-import { webPageSchema, serviceSchema, faqSchema, schemaScript, ogFromImage } from '../lib/seo';
+import { webPageSchema, serviceSchema, faqSchema, schemaScript } from '../lib/seo';
+import { brandedOg } from '../lib/og';
 import type { BreadcrumbEntry } from '../lib/seo';
 import { locationUrl, serviceUrl } from '../config';
 
@@ -21,7 +22,7 @@ export async function getStaticPaths() {
 
 const { service } = Astro.props;
 const { Content } = await render(service);
-const ogImage = await ogFromImage(service.data.featuredImage);
+const ogImage = brandedOg('service', service.id);
 
 // Featured projects genuinely relevant to this service.
 const allProjects = (await getCollection('projects')).filter((p) => !p.data.draft);
@@ -44,6 +45,7 @@ const ctas = service.data.ctas;
 	description={service.data.seoDescription ?? service.data.introduction}
 	canonical={path}
 	ogImage={ogImage}
+	ogImageAlt={service.data.imageAlt}
 >
 	<Fragment slot="head" set:html={schemaScript(serviceSchema({
 		path,
