@@ -4,8 +4,7 @@ import Layout from '../../layouts/Layout.astro';
 import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
 import CtaBanner from '../../components/ui/CtaBanner.astro';
 import ProjectGrid from '../../components/projects/FeaturedProjectGrid.astro';
-import { webPageSchema, schemaScript, ogFromImage } from '../../lib/seo';
-import { getImage } from 'astro:assets';
+import { webPageSchema, schemaScript } from '../../lib/seo';
 import type { BreadcrumbEntry } from '../../lib/seo';
 import { serviceUrl, locationUrl, projectUrl } from '../../config';
 import ProjectLightbox from '../../components/projects/ProjectLightbox.astro';
@@ -20,28 +19,15 @@ export async function getStaticPaths() {
 
 const { project } = Astro.props;
 const { Content } = await render(project);
-const ogImage = await ogFromImage(project.data.featuredImage);
 
-// The supplied camera originals are prepared once as local WebP files. Vite copies
-// these already-optimized files directly, avoiding hundreds of build-time variants.
-const sourceImages = import.meta.glob('../../assets/projects/*/web/*.webp', {
-	eager: true,
-	import: 'default',
-	query: '?url',
-}) as Record<string, string>;
-const sourceGallery = Object.entries(sourceImages)
-	.filter(([path]) => path.includes(`/projects/${project.id}/web/`))
-	.sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }))
-	.map(([, image]) => image);
-
-const hasOptimizedGallery = sourceGallery.length > 0;
-const gallerySources = hasOptimizedGallery
-	? sourceGallery
-	: await Promise.all(project.data.gallery.map(async (img) => (await getImage({ src: img, width: 1600, quality: 75, format: 'webp' })).src));
-const heroSource = hasOptimizedGallery
-	? sourceGallery[0]
-	: (await getImage({ src: project.data.featuredImage, width: 1920, quality: 75, format: 'webp' })).src;
+// Project photography is pre-optimized in `src/assets/projects/*/web/*.webp`
+// and referenced directly by the content frontmatter, so Vite copies the files
+// as-is (no build-time image variants). `entry.src` is always a valid asset URL.
+const featuredSource = project.data.featuredImage.src;
+const gallerySources = project.data.gallery.map((img) => img.src);
+const heroSource = featuredSource;
 const full = gallerySources;
+const ogImage = featuredSource;
 
 // §13 project facts row
 	const facts = [
@@ -156,9 +142,9 @@ const breadcrumbs: BreadcrumbEntry[] = [
 						<button
 							type="button"
 							class="group relative mb-6 block w-full cursor-zoom-in overflow-hidden break-inside-avoid"
-							data-lightbox-trigger								data-full={full[i]}
-								aria-label={`Open image ${i + 1} of ${gallerySources.length} fullscreen`}
-
+							data-lightbox-trigger
+							data-full={full[i]}
+							aria-label={`Open image ${i + 1} of ${gallerySources.length} fullscreen`}
 						>
 							<img
 								src={img}

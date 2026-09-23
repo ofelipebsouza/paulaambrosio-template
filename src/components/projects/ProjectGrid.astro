@@ -1,5 +1,4 @@
 ---
-import { Image } from 'astro:assets';
 import { projectUrl } from '../../config';
 
 interface Props {
@@ -7,16 +6,6 @@ interface Props {
 	columns?: 2 | 3;
 }
 const { projects, columns = 3 } = Astro.props;
-const optimizedImages = import.meta.glob('../../assets/projects/*/web/*.webp', {
-	eager: true,
-	import: 'default',
-	query: '?url',
-}) as Record<string, string>;
-const optimizedByProject = new Map<string, string>();
-for (const [path, url] of Object.entries(optimizedImages)) {
-	const match = path.match(/projects\/([^/]+)\/web\//);
-	if (match) optimizedByProject.set(match[1], url);
-}
 ---
 
 <div class:list={['grid gap-x-8 gap-y-14', columns === 3 ? 'md:grid-cols-2 lg:grid-cols-3' : 'md:grid-cols-2']}>
@@ -28,28 +17,15 @@ for (const [path, url] of Object.entries(optimizedImages)) {
 				data-analytics-event="portfolio_open"
 				data-analytics-project={project.id}
 			>
-				{optimizedByProject.has(project.id) ? (
-					<img
-						src={optimizedByProject.get(project.id)}
-						alt={project.data.imageAlt ?? `${project.data.title}, ${project.data.location ?? 'luxury interior'}, designed by Paula Ambrosio Interiors`}
-						width="1000"
-						height="750"
-						loading="lazy"
-						decoding="async"
-						class="aspect-[4/3] w-full object-cover transition-transform duration-700 ease-editorial group-hover:scale-[1.03]"
-					/>
-				) : (
-					<Image
-						src={project.data.featuredImage}
-						alt={project.data.imageAlt ?? `${project.data.title}, ${project.data.location ?? 'luxury interior'}, designed by Paula Ambrosio Interiors`}
-						widths={[400, 600, 800]}
-						sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
-						loading="lazy"
-						quality={55}
-						decoding="async"
-						class="aspect-[4/3] w-full object-cover transition-transform duration-700 ease-editorial group-hover:scale-[1.03]"
-					/>
-				)}
+				<img
+					src={project.data.featuredImage.src}
+					alt={project.data.imageAlt ?? `${project.data.title}, ${project.data.location ?? 'luxury interior'}, designed by Paula Ambrosio Interiors`}
+					width="1000"
+					height="750"
+					loading="lazy"
+					decoding="async"
+					class="aspect-[4/3] w-full object-cover transition-transform duration-700 ease-editorial group-hover:scale-[1.03]"
+				/>
 			</a>
 			<div class="mt-5">
 				<p class="eyebrow text-stone">{project.data.location ?? project.data.projectType}</p>
