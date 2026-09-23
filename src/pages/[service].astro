@@ -58,20 +58,20 @@ const ctas = service.data.ctas;
 	}))} />
 	{faqs.length > 0 && <Fragment slot="head" set:html={schemaScript(faqSchema(faqs))} />}
 
-	<article>
-		<section class="relative flex min-h-[60vh] items-end bg-ink">
+	<article>		<section class="relative flex min-h-[70vh] items-end bg-ink overflow-hidden">
 			<Image
 				src={service.data.featuredImage}
 				alt={service.data.imageAlt ?? service.data.title}
 				widths={[768, 1200, 1920]}
 				sizes="100vw"
-	loading="eager"
+				loading="eager"
 				quality={60}
 				decoding="async"
+				fetchpriority="high"
 				class="absolute inset-0 h-full w-full object-cover opacity-90"
 			/>
-			<div class="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/50 to-ink/10" aria-hidden="true"></div>
-			<div class="relative container-editorial pb-14 pt-40 text-bone">
+			<div class="absolute inset-0 bg-gradient-to-t from-ink/40 via-transparent to-transparent" aria-hidden="true"></div>
+			<div class="relative container-editorial pb-14 pt-40 text-bone z-10">
 				<Breadcrumbs items={breadcrumbs} tone="light" />
 				<h1 class="font-display mt-8 max-w-3xl text-4xl lg:text-6xl">{service.data.title}</h1>
 				{sub && <p class="mt-4 max-w-2xl text-lg leading-relaxed text-bone/80">{sub}</p>}
