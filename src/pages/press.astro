@@ -13,6 +13,8 @@ const articles = [
 		publication: 'Florida Design',
 		description: 'Featured in the Miami edition of Florida Design magazine, showcasing luxury residential work across South Florida.',
 		image: 'https://framerusercontent.com/images/ORm0Rfr2yRKJcQWbUpd1e9YFp8.png?width=853&height=1389',
+		width: 853,
+		height: 1389,
 		url: 'https://issuu.com/pbmg/docs/florida_design_miami_22.3',
 	},
 	{
@@ -20,6 +22,8 @@ const articles = [
 		publication: 'Ruxone',
 		description: 'The journey of a Brazilian designer who turned challenges into achievements in the United States.',
 		image: 'https://framerusercontent.com/images/cGOQZQKGMW5AU6XUjE3GzZi6IE.png?width=279&height=450',
+		width: 279,
+		height: 450,
 		url: 'https://ruxone.com.br/paula-ambrosio-a-trajetoria-de-uma-brasileira-que-transformou-desafios-em-conquistas-nos-estados-unidos/',
 	},
 	{
@@ -27,6 +31,8 @@ const articles = [
 		publication: 'Hotmart',
 		description: 'Paula Ambrosio featured as a reference in luxury hospitality design and hosting.',
 		image: 'https://framerusercontent.com/images/OgYsofq5sjqJlqlwOqIJVp5uQ.png?width=279&height=450',
+		width: 279,
+		height: 450,
 		url: 'https://hotmart.com/pt-br/marketplace/produtos/host-up-receba-em-grande-estilo/N95610430C',
 	},
 	{
@@ -34,6 +40,8 @@ const articles = [
 		publication: 'Dwell',
 		description: 'A turnkey contemporary residence in Boca Raton with sleek features and loft, designed by Paula Ambrosio Interiors.',
 		image: 'https://framerusercontent.com/images/lnIhFjlj0IlQ30z3Lh2tr9uj4A.png?width=279&height=450',
+		width: 279,
+		height: 450,
 		url: 'https://www.dwell.com/home/turnkey-contemporary-marvel-in-boca-raton-with-sleek-features-and-loft-9ab9ca10',
 	},
 	{
@@ -41,6 +49,8 @@ const articles = [
 		publication: 'Business Feed',
 		description: 'How a Brazilian designer transformed challenges into achievements building a luxury design business in the United States.',
 		image: 'https://framerusercontent.com/images/v34jMaftkc3aQhKWqw3H5OnSGU.png?width=279&height=450',
+		width: 279,
+		height: 450,
 		url: 'https://businessfeed.com.br/paula-ambrosio-a-trajetoria-de-uma-brasileira-que-transformou-desafios-em-conquistas-nos-estados-unidos/',
 	},
 ];
@@ -70,24 +80,26 @@ const articles = [
 	</section>
 
 	<section class="container-editorial pb-24">
-		<div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+		<div class="columns-2 gap-x-4 sm:gap-x-8 lg:columns-3">
 			{articles.map((article) => (
 				<a
 					href={article.url}
 					target="_blank"
 					rel="noopener noreferrer"
-					class="group block overflow-hidden bg-linen transition-colors hover:bg-sand"
+					class="group mb-4 block break-inside-avoid bg-linen transition-colors hover:bg-sand sm:mb-8"
 				>
-					<div class="aspect-[3/4] overflow-hidden">
+					<div class="overflow-hidden">
 						<img
 							src={article.image}
 							alt={article.title}
-							class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+							width={article.width}
+							height={article.height}
+							class="h-auto w-full transition-transform duration-700 group-hover:scale-[1.03]"
 							loading="lazy"
 							decoding="async"
 						/>
 					</div>
-					<div class="p-5">
+					<div class="p-4 sm:p-5">
 						<p class="eyebrow text-stone">{article.publication}</p>
 						<h3 class="font-display mt-2 text-lg leading-snug">{article.title}</h3>
 						<p class="mt-2 text-sm leading-relaxed text-slate">{article.description}</p>
