@@ -1,0 +1,201 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import paulaProfile from '../assets/paula-profile.webp';
+import { webPageSchema, schemaScript } from '../lib/seo';
+import type { BreadcrumbEntry } from '../lib/seo';
+import { SITE, SOCIAL_LINKS, projectUrl } from '../config';
+
+const breadcrumbs: BreadcrumbEntry[] = [{ name: 'Links', url: '/links' }];
+
+const socialIconMap: Record<string, string> = {
+	Instagram: 'ph ph-instagram-logo',
+	TikTok: 'ph ph-tiktok-logo',
+	Threads: 'ph ph-threads-logo',
+	LinkedIn: 'ph ph-linkedin-logo',
+	Houzz: 'ph ph-buildings',
+};
+
+const projects = (await getCollection('projects')).filter((p) => !p.data.draft);
+const featured = projects.find((p) => p.id === 'commercial-hs') ?? projects[0];
+
+const linkGroups: Array<{
+	label: string;
+	links: Array<{ label: string; description?: string; href: string; event?: string }>;
+}> = [
+	{
+		label: 'Portfolio',
+		links: [
+			{ label: 'View Projects', description: `${projects.length} featured projects`, href: '/projects', event: 'cta_view_project' },
+			{ label: 'Explore Services', href: '/services', event: 'cta_explore_services' },
+			{ label: 'Discover Turnkey', description: 'From concept to move-in ready', href: '/turnkey-interior-design-miami', event: 'cta_turnkey' },
+		],
+	},
+	{
+		label: 'Studio',
+		links: [
+			{ label: 'Meet Paula', href: '/about' },
+			{ label: 'Press', href: '/press' },
+		],
+	},
+	{
+		label: 'Read',
+		links: [{ label: 'Journal', href: '/journal' }],
+	},
+];
+---
+
+<Layout
+	title="Links | Paula Ambrosio Interiors"
+	description="All essential links for Paula Ambrosio Interiors — luxury interior design in Miami. Projects, services, turnkey design, studio contact and social profiles."
+	canonical="/links"
+	compactFooter
+>
+	<Fragment slot="head" set:html={schemaScript(webPageSchema({
+		path: '/links',
+		title: 'Links | Paula Ambrosio Interiors',
+		description: 'Essential links for Paula Ambrosio Interiors — projects, services, contact and social profiles.',
+		breadcrumbs,
+	}))} />
+
+	<section class="container-editorial flex justify-center pb-12 pt-14 lg:pt-20">
+		<div class="w-full max-w-lg">
+			<div class="flex flex-col items-center text-center">
+				<a
+					href="https://www.instagram.com/paulaambrosio_"
+					target="_blank"
+					rel="noopener noreferrer"
+					data-analytics-location="links_profile"
+					class="group flex flex-col items-center focus-visible:outline-2 focus-visible:outline-coffee focus-visible:outline-offset-4"
+				>
+					<span class="block h-24 w-24 overflow-hidden rounded-full border border-sand transition-colors group-hover:border-brass">
+						<Image
+							src={paulaProfile}
+							alt="Portrait of Paula Ambrosio"
+							widths={[192, 256]}
+							sizes="96px"
+							quality={80}
+							loading="eager"
+							decoding="async"
+							class="aspect-square w-full object-cover"
+						/>
+					</span>
+					<span class="mt-4 inline-flex items-center gap-2 text-sm tracking-[0.12em] text-graphite transition-colors group-hover:text-coffee">
+						<i class="ph ph-instagram-logo text-base" aria-hidden="true"></i>
+						@paulaambrosio_
+					</span>
+				</a>
+				<h1 class="font-display mt-6 text-4xl leading-tight lg:text-5xl">Luxury Interior Design in Miami</h1>
+				<p class="mt-5 max-w-md text-base leading-relaxed text-slate">
+					Sophisticated interiors. Seamless execution. Designed around the way you live.
+				</p>
+			</div>
+
+			<div class="mt-7 border-t border-sand pt-5 text-center">
+				<p class="text-sm tracking-wide text-graphite">21 years in design · 2,000+ projects</p>
+				<p class="eyebrow mt-3 text-stone">Turnkey · Full-Service · Residential · Hospitality</p>
+			</div>
+
+			<a
+				href="/contact"
+				data-analytics-event="cta_start_project"
+				data-analytics-location="links"
+				class="btn-primary mt-8 flex w-full items-center justify-center text-center"
+			>
+				Start Your Project
+			</a>
+
+			{linkGroups.map((group) => (
+				<div class="mt-9">
+					<p class="eyebrow text-stone">{group.label}</p>
+					<ul class="mt-3 space-y-3">
+						{group.links.map(({ label, description, href, event }) => (
+							<li>
+								<a
+									href={href}
+									data-analytics-event={event}
+									data-analytics-location="links"
+									class="group flex items-center justify-between gap-4 border border-sand bg-white px-6 py-5 transition-colors hover:border-brass hover:text-coffee focus-visible:outline-2 focus-visible:outline-coffee focus-visible:outline-offset-2"
+								>
+									<span class="min-w-0">
+										<span class="block text-sm uppercase tracking-[0.18em]">{label}</span>
+										{description && <span class="mt-1.5 block text-xs leading-snug text-slate">{description}</span>}
+									</span>
+									<span aria-hidden="true" class="transition-transform duration-300 group-hover:translate-x-1">→</span>
+								</a>
+							</li>
+						))}
+					</ul>
+				</div>
+			))}
+		</div>
+	</section>
+
+	<section>
+		<a
+			href={projectUrl(featured.id)}
+			data-analytics-event="cta_view_project"
+			data-analytics-project={featured.id}
+			data-analytics-location="links"
+			aria-label={`View project: ${featured.data.title}`}
+			class="group relative block focus-visible:outline-2 focus-visible:outline-coffee focus-visible:outline-offset-[-4px]"
+		>
+			<Image
+				src={featured.data.featuredImage}
+				alt={featured.data.imageAlt}
+				widths={[640, 960, 1440]}
+				sizes="100vw"
+				quality={80}
+				loading="lazy"
+				decoding="async"
+				class="h-[46vh] max-h-[520px] min-h-[280px] w-full object-cover"
+			/>
+			<span class="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/20 to-transparent" aria-hidden="true"></span>
+			<span class="absolute inset-x-0 bottom-0 flex flex-col items-start gap-1 p-6 text-bone lg:p-10">
+				<span class="eyebrow text-bone/80">Featured Project</span>
+				<span class="font-display text-3xl lg:text-4xl">{featured.data.title}</span>
+				<span class="mt-2 inline-flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-bone/80">
+					{featured.data.location}
+					<span aria-hidden="true">·</span>
+					<span class="inline-flex items-center gap-2">
+						View Project
+						<span aria-hidden="true" class="transition-transform duration-300 group-hover:translate-x-1">→</span>
+					</span>
+				</span>
+			</span>
+		</a>
+	</section>
+
+	<section class="container-editorial flex justify-center pb-16 pt-12 lg:pb-24">
+		<div class="w-full max-w-lg">
+			<div class="grid gap-3 sm:grid-cols-2">
+				<a href={`tel:${SITE.phoneE164}`} class="btn-secondary block px-5 text-center">{SITE.phone}</a>
+				<a href={`mailto:${SITE.email}`} class="btn-secondary block px-5 text-center">{SITE.email}</a>
+			</div>
+			<p class="mt-3 text-center text-xs text-slate">
+				<a href="tel:+17862085412" class="underline-offset-4 transition-colors hover:text-coffee hover:underline">{SITE.phone2}</a>
+			</p>
+
+			<div class="mt-10 flex flex-wrap justify-center gap-3">
+				{SOCIAL_LINKS.map(({ label, href }) => (
+					<a
+						href={href}
+						target="_blank"
+						rel="noopener noreferrer"
+						aria-label={`${SITE.name} on ${label}`}
+						title={label}
+						class="inline-flex h-11 w-11 items-center justify-center border border-sand bg-white text-graphite transition-colors hover:border-brass hover:text-coffee"
+					>
+						<i class={`${socialIconMap[label] ?? 'ph ph-link'} text-xl`} aria-hidden="true"></i>
+					</a>
+				))}
+			</div>
+
+			<p class="mt-10 text-center text-xs tracking-wide text-stone">
+				Paula Ambrosio Interiors ·{' '}
+				<a href="/contact" class="underline-offset-4 transition-colors hover:text-coffee hover:underline">{SITE.address}</a>
+			</p>
+		</div>
+	</section>
+</Layout>

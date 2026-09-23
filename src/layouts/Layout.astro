@@ -13,6 +13,7 @@ export interface Props {
 	ogType?: 'website' | 'article';
 	ogImage?: string;
 	noindex?: boolean;
+	compactFooter?: boolean;
 }
 
 const {
@@ -22,6 +23,7 @@ const {
 	ogType = 'website',
 	ogImage = '/og-default.svg',
 	noindex = false,
+	compactFooter = false,
 } = Astro.props;
 
 const canonicalUrl = buildCanonical(canonical);
@@ -90,7 +92,7 @@ const titleTemplate = title.includes(SITE.name) ? title : `${title} | ${SITE.nam
 		<main id="main" class="flex-grow pt-16 lg:pt-20">
 			<slot />
 		</main>
-		<Footer />
+		<Footer compactFooter={compactFooter} />
 		<Analytics />
 	</body>
 </html>
