@@ -18,7 +18,8 @@ const socialIconMap: Record<string, string> = {
 };
 
 const projects = (await getCollection('projects')).filter((p) => !p.data.draft);
-const featured = projects.find((p) => p.id === 'commercial-hs') ?? projects[0];
+const showcase = projects.find((p) => p.id === 'commercial-hs')!;
+const carouselProjects = [showcase, ...projects.filter((p) => p.id !== 'commercial-hs')];
 
 const linkGroups: Array<{
 	label: string;
@@ -132,39 +133,60 @@ const linkGroups: Array<{
 		</div>
 	</section>
 
-	<section>
-		<a
-			href={projectUrl(featured.id)}
-			data-analytics-event="cta_view_project"
-			data-analytics-project={featured.id}
-			data-analytics-location="links"
-			aria-label={`View project: ${featured.data.title}`}
-			class="group relative block focus-visible:outline-2 focus-visible:outline-coffee focus-visible:outline-offset-[-4px]"
-		>
-			<Image
-				src={featured.data.featuredImage}
-				alt={featured.data.imageAlt}
-				widths={[640, 960, 1440]}
-				sizes="100vw"
-				quality={80}
-				loading="lazy"
-				decoding="async"
-				class="h-[46vh] max-h-[520px] min-h-[280px] w-full object-cover"
-			/>
-			<span class="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/20 to-transparent" aria-hidden="true"></span>
-			<span class="absolute inset-x-0 bottom-0 flex flex-col items-start gap-1 p-6 text-bone lg:p-10">
-				<span class="eyebrow text-bone/80">Featured Project</span>
-				<span class="font-display text-3xl lg:text-4xl">{featured.data.title}</span>
-				<span class="mt-2 inline-flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-bone/80">
-					{featured.data.location}
-					<span aria-hidden="true">·</span>
-					<span class="inline-flex items-center gap-2">
-						View Project
-						<span aria-hidden="true" class="transition-transform duration-300 group-hover:translate-x-1">→</span>
+	<section aria-label="Featured projects">
+		<div id="project-carousel" class="relative h-[46vh] max-h-[520px] min-h-[280px] w-full overflow-hidden">
+			{carouselProjects.map((p, i) => (
+				<a
+					href={projectUrl(p.id)}
+					data-analytics-event="cta_view_project"
+					data-analytics-project={p.id}
+					data-analytics-location="links"
+					aria-label={`View project: ${p.data.title}`}
+					class="project-slide group absolute inset-0 transition-opacity duration-[1400ms] ease-in-out focus-visible:outline-2 focus-visible:outline-coffee focus-visible:outline-offset-[-4px]"
+					style={`opacity: ${i === 0 ? '1' : '0'};`}
+					aria-hidden={i !== 0 ? 'true' : undefined}
+					inert={i !== 0}
+				>
+					<Image
+						src={p.data.featuredImage}
+						alt={p.data.imageAlt}
+						widths={[640, 960, 1440]}
+						sizes="100vw"
+						quality={75}
+						loading="lazy"
+						decoding="async"
+						class="h-full w-full object-cover"
+					/>
+					<span class="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/20 to-transparent" aria-hidden="true"></span>
+					<span class="absolute inset-x-0 bottom-0 flex flex-col items-start gap-1 p-6 pb-12 text-bone lg:p-10 lg:pb-14">
+						<span class="font-display text-3xl lg:text-4xl">{p.data.title}</span>
+						<span class="mt-2 inline-flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-bone/80">
+							{p.data.location}
+							<span aria-hidden="true">·</span>
+							<span class="inline-flex items-center gap-2">
+								View Project
+								<span aria-hidden="true" class="transition-transform duration-300 group-hover:translate-x-1">→</span>
+							</span>
+						</span>
 					</span>
-				</span>
-			</span>
-		</a>
+				</a>
+			))}
+
+			{/* Dot indicators */}
+			<div class="absolute bottom-5 right-6 z-10 flex items-center gap-2.5" role="tablist" aria-label="Select project">
+				{carouselProjects.map((p, i) => (
+					<button
+						type="button"
+						role="tab"
+						aria-selected={i === 0 ? 'true' : 'false'}
+						aria-label={p.data.title}
+						data-index={i}
+						class="project-dot block h-1 rounded-full bg-bone/50 transition-all duration-500 ease-in-out"
+						style={`width: ${i === 0 ? '1.75rem' : '0.5rem'}; opacity: ${i === 0 ? '1' : '0.5'};`}
+					></button>
+				))}
+			</div>
+		</div>
 	</section>
 
 	<section class="container-editorial flex justify-center pb-16 pt-12 lg:pb-24">
@@ -199,3 +221,50 @@ const linkGroups: Array<{
 		</div>
 	</section>
 </Layout>
+
+<script>
+	// Featured project carousel — mirrors the home hero crossfade (4s, dots, reduced-motion aware).
+	const slides = document.querySelectorAll<HTMLElement>('.project-slide');
+	const dots = document.querySelectorAll<HTMLButtonElement>('.project-dot');
+	let current = 0;
+	let timer: ReturnType<typeof setInterval>;
+
+	const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+	function goTo(index: number) {
+		slides[current].style.opacity = '0';
+		slides[current].setAttribute('aria-hidden', 'true');
+		slides[current].setAttribute('inert', '');
+		dots[current].style.width = '0.5rem';
+		dots[current].style.opacity = '0.5';
+		dots[current].setAttribute('aria-selected', 'false');
+
+		current = index;
+
+		slides[current].style.opacity = '1';
+		slides[current].removeAttribute('aria-hidden');
+		slides[current].removeAttribute('inert');
+		dots[current].style.width = '1.75rem';
+		dots[current].style.opacity = '1';
+		dots[current].setAttribute('aria-selected', 'true');
+	}
+
+	function advance() {
+		goTo((current + 1) % slides.length);
+	}
+
+	function startTimer() {
+		clearInterval(timer);
+		if (!reduced) timer = setInterval(advance, 4000);
+	}
+
+	dots.forEach((dot, i) => {
+		dot.addEventListener('click', () => {
+			if (i === current) return;
+			goTo(i);
+			startTimer();
+		});
+	});
+
+	startTimer();
+</script>
