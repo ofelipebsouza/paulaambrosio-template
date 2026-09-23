@@ -9,7 +9,10 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "projects:sync": "node scripts/projects.mjs sync",
+    "projects:import": "node scripts/projects.mjs import",
+    "projects:check": "node scripts/projects.mjs check"
   },
   "dependencies": {
     "@astrojs/mdx": "^8.0.1",
