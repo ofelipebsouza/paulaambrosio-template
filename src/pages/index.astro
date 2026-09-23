@@ -19,8 +19,7 @@ const heroSlides = allProjects.slice(0, 9).map((p) => ({
 }));
 
 const featuredProjects = allProjects
-	.sort((a, b) => (b.data.year ?? 0) - (a.data.year ?? 0))
-	.slice(0, 6);
+	.sort((a, b) => (b.data.year ?? 0) - (a.data.year ?? 0));
 
 const latestJournal = (await getCollection('journal'))
 	.filter((p) => !p.data.draft)
@@ -186,7 +185,7 @@ const processSteps = [
 		<div class="container-editorial">
 			<div class="mb-16 flex flex-wrap items-end justify-between gap-6 fade-up">
 				<div>
-					<p class="eyebrow text-stone">Selected Projects</p>
+					<p class="eyebrow text-stone">Projects</p>
 					<h2 class="font-display mt-5 text-4xl">Recent work</h2>
 				</div>
 				<a href="/projects" class="eyebrow text-stone underline decoration-brass/60 underline-offset-8 hover:text-ink transition-colors">View all projects</a>
