@@ -265,6 +265,7 @@ const socialIconMap: Record<string, string> = {
 				data-analytics-form="project_inquiry"
 				data-contact-email={SITE.email}
 			>
+				<input type="hidden" name="form_id" value="project_inquiry" />
 				<div>
 					<label for="inq-name" class="eyebrow text-slate">Full Name</label>
 					<input id="inq-name" name="name" type="text" required autocomplete="name" placeholder="Your full name"

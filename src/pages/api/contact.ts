@@ -87,6 +87,14 @@ function validate(raw: Record<string, unknown>): ValidationResult {
 		payload[spec.name] = value;
 
 		if (spec.required && !value) {
+			// Location and service are required on the comprehensive /contact/ page,
+			// but optional on compact forms like the project inquiry modal.
+			if (
+				(spec.name === 'location' || spec.name === 'service') &&
+				(raw[spec.name] === undefined || raw.form_id === 'project_inquiry' || raw.form === 'project_inquiry')
+			) {
+				continue;
+			}
 			errors[spec.name] = `${spec.label} is required.`;
 			continue;
 		}
