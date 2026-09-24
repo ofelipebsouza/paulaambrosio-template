@@ -13,6 +13,11 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# local dev / preview / lighthouse output — rewritten on every run
+.freebuff/*.log
+.freebuff/*.log.err
+.freebuff/*.pid
+
 # environment variables — never commit credentials
 .env
 .env.local
