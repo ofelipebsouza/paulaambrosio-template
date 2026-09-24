@@ -182,31 +182,41 @@ function emailShell({ heading, body, footnote }: { heading: string; body: string
 		<meta name="color-scheme" content="light only" />
 		<title>${escapeHtml(heading)}</title>
 	</head>
-	<body style="margin:0;padding:0;background:${IVORY};">
-		<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${IVORY};padding:32px 16px;">
+	<body style="margin:0;padding:0;background:${IVORY};-webkit-font-smoothing:antialiased;">
+		<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${IVORY};padding:40px 16px;">
 			<tr>
 				<td align="center">
-					<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px;background:#FFFFFF;border:1px solid rgba(17,17,17,0.10);">
+					<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px;background:#FFFFFF;border:1px solid rgba(17,17,17,0.10);box-shadow:0 4px 20px rgba(0,0,0,0.03);">
+						<!-- Brand header: logo centered -->
 						<tr>
-							<td style="padding:40px 40px 28px 40px;border-bottom:1px solid rgba(17,17,17,0.10);">
-								<div style="font-family:${SERIF};font-size:22px;letter-spacing:0.02em;color:${INK};">Paula Ambrosio</div>
-								<div style="font-family:${SANS};font-size:9px;letter-spacing:0.42em;text-transform:uppercase;color:${STONE};padding-top:6px;">Interior Design</div>
+							<td align="center" style="padding:44px 40px 32px 40px;border-bottom:1px solid rgba(17,17,17,0.08);background:#FFFFFF;">
+								<a href="https://${SITE_HOST}/" target="_blank" rel="noopener noreferrer" style="display:inline-block;text-decoration:none;">
+									<img
+										src="https://${SITE_HOST}/brand/logo-email.png"
+										alt="${STUDIO_SIGNATURE}"
+										width="260"
+										style="display:block;width:260px;max-width:100%;height:auto;border:0;outline:none;margin:0 auto;"
+									/>
+								</a>
 							</td>
 						</tr>
+						<!-- Section heading -->
 						<tr>
-							<td style="padding:36px 40px 8px 40px;">
-								<div style="font-family:${SANS};font-size:10px;letter-spacing:0.24em;text-transform:uppercase;color:${STONE};">${escapeHtml(heading)}</div>
+							<td style="padding:36px 40px 12px 40px;">
+								<div style="font-family:${SANS};font-size:10px;font-weight:600;letter-spacing:0.24em;text-transform:uppercase;color:${STONE};">${escapeHtml(heading)}</div>
 							</td>
 						</tr>
+						<!-- Email body content -->
 						<tr>
-							<td style="padding:0 40px 32px 40px;">
+							<td style="padding:0 40px 36px 40px;">
 								<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
 									${body}
 								</table>
 							</td>
 						</tr>
+						<!-- Footnote -->
 						<tr>
-							<td style="padding:22px 40px 32px 40px;border-top:1px solid rgba(17,17,17,0.10);font-family:${SANS};font-size:12px;line-height:1.8;color:${GRAPHITE};">
+							<td style="padding:24px 40px 36px 40px;border-top:1px solid rgba(17,17,17,0.08);background:#FCFAF7;font-family:${SANS};font-size:12px;line-height:1.8;color:${GRAPHITE};">
 								${footnote}
 							</td>
 						</tr>
