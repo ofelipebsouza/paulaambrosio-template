@@ -164,7 +164,7 @@ const formattedDate = post.data.date.toLocaleDateString('en-US', {
 							<li><a class="underline decoration-brass/60 underline-offset-4" href={serviceUrl(s)}>{formatRelatedLabel(s)}</a></li>
 						))}
 						{post.data.relatedProjects?.filter(Boolean).map((p) => (
-							<li><a class="underline decoration-brass/60 underline-offset-4" href={`/projects/${p}`}>{formatRelatedLabel(p)}</a></li>
+							<li><a class="underline decoration-brass/60 underline-offset-4" href={`/projects/${p}/`}>{formatRelatedLabel(p)}</a></li>
 						))}
 					</ul>
 				</div>

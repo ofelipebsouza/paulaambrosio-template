@@ -21,7 +21,7 @@ const socialIconMap: Record<string, string> = {
 					<Logo variant="light" class="h-auto" loading="lazy" />
 				</div>
 				<p class="text-xs text-bone/60">© {year} {SITE.legalName}. All Rights Reserved. Miami, FL.</p>
-				<a href="/privacy" class="text-xs text-bone/60 transition-colors hover:text-brass">Privacy Policy</a>
+				<a href="/privacy/" class="text-xs text-bone/60 transition-colors hover:text-brass">Privacy Policy</a>
 			</div>
 		</div>
 	</footer>
@@ -61,7 +61,7 @@ const socialIconMap: Record<string, string> = {
 					<li><a href={serviceUrl('turnkey-interior-design-miami')} class="hover:text-bone">Turnkey Interior Design</a></li>
 					<li><a href={serviceUrl('luxury-residential-interior-design-miami')} class="hover:text-bone">Luxury Residential</a></li>
 					<li><a href={serviceUrl('hospitality-interior-design-miami')} class="hover:text-bone">Hospitality Design</a></li>
-					<li><a href="/services" class="hover:text-bone">All Services</a></li>
+					<li><a href="/services/" class="hover:text-bone">All Services</a></li>
 				</ul>
 			</nav>
 
@@ -80,10 +80,10 @@ const socialIconMap: Record<string, string> = {
 					{NAV_LINKS.map((link) => (
 						<li><a href={link.href} class="hover:text-bone">{link.label}</a></li>
 					))}
-					<li><a href="/podcast" class="hover:text-bone">Design Podcast</a></li>
-					<li><a href="/faq" class="hover:text-bone">FAQ</a></li>
-					<li><a href="/sitemap-pages" class="hover:text-bone">Sitemap &amp; Index</a></li>
-					<li><a href="/style-guides-and-branding" class="hover:text-bone">Style Guide &amp; Branding</a></li>
+					<li><a href="/podcast/" class="hover:text-bone">Design Podcast</a></li>
+					<li><a href="/faq/" class="hover:text-bone">FAQ</a></li>
+					<li><a href="/sitemap-pages/" class="hover:text-bone">Sitemap &amp; Index</a></li>
+					<li><a href="/style-guides-and-branding/" class="hover:text-bone">Style Guide &amp; Branding</a></li>
 				</ul>
 				<button type="button" class="inquiry-open btn-primary mt-6 cursor-pointer" data-analytics-event="cta_start_project" data-analytics-location="footer">Start Your Project</button>
 			</nav>

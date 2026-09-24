@@ -89,7 +89,7 @@ const ctas = service.data.ctas;
 					<ul class="mt-4 space-y-2 text-sm text-graphite">
 						<li class="border-b border-sand pb-2"><a href={locationUrl('miami')} class="hover:text-stone">Interior Design in Miami</a></li>
 						<li class="border-b border-sand pb-2"><a href={locationUrl('miami-beach')} class="hover:text-stone">Interior Design in Miami Beach</a></li>
-						<li class="border-b border-sand pb-2"><a href="/projects" class="hover:text-stone" data-analytics-event="cta_view_project" data-analytics-location="service" data-analytics-service={service.id}>Selected Projects</a></li>
+						<li class="border-b border-sand pb-2"><a href="/projects/" class="hover:text-stone" data-analytics-event="cta_view_project" data-analytics-location="service" data-analytics-service={service.id}>Selected Projects</a></li>
 					</ul>
 				</div>
 			</div>
@@ -126,7 +126,7 @@ const ctas = service.data.ctas;
 			primaryAnalyticsEvent={ctas?.primary?.toLowerCase().includes('turnkey') ? 'cta_turnkey' : 'cta_start_project'}
 			analyticsLocation="final_cta"
 			secondaryLabel={ctas?.secondary ?? 'Explore Our Work'}
-			secondaryHref="/projects"
+			secondaryHref="/projects/"
 		/>
 	</article>
 </Layout>

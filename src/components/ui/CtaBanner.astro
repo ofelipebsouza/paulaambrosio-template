@@ -14,15 +14,17 @@ const {
 	body = 'Tell us about your residence or property. We will schedule a confidential discovery session with our design team.',
 	primaryLabel = 'Start Your Project',
 	secondaryLabel = 'Explore Our Work',
-	secondaryHref = '/projects',
+	secondaryHref = '/projects/',
 	primaryAnalyticsEvent = 'cta_start_project',
 	analyticsLocation = 'final_cta',
 } = Astro.props;
-const secondaryAnalyticsEvent = secondaryHref === '/services'
+// Compare on the normalised route (served URLs carry a trailing slash).
+const secondaryRoute = secondaryHref.replace(/\/+$/, '') || '/';
+const secondaryAnalyticsEvent = secondaryRoute === '/services'
 	? 'cta_explore_services'
-	: secondaryHref === '/contact'
+	: secondaryRoute === '/contact'
 		? 'cta_contact'
-		: secondaryHref.startsWith('/projects')
+		: secondaryRoute.startsWith('/projects')
 			? 'cta_view_project'
 			: undefined;
 ---

@@ -33,7 +33,7 @@ const linkGroups: Array<{
 			{
 				label: 'Design Podcast (Episodes)',
 				description: 'Conversations with designers, architects & creative leaders',
-				href: '/podcast',
+				href: '/podcast/',
 				event: 'podcast_page_open',
 			},
 			{
@@ -65,21 +65,21 @@ const linkGroups: Array<{
 	{
 		label: 'Portfolio',
 		links: [
-			{ label: 'View Projects', description: `${projects.length} featured projects`, href: '/projects', event: 'cta_view_project' },
-			{ label: 'Explore Services', href: '/services', event: 'cta_explore_services' },
-			{ label: 'Discover Turnkey', description: 'From concept to move-in ready', href: '/turnkey-interior-design-miami', event: 'cta_turnkey' },
+			{ label: 'View Projects', description: `${projects.length} featured projects`, href: '/projects/', event: 'cta_view_project' },
+			{ label: 'Explore Services', href: '/services/', event: 'cta_explore_services' },
+			{ label: 'Discover Turnkey', description: 'From concept to move-in ready', href: '/turnkey-interior-design-miami/', event: 'cta_turnkey' },
 		],
 	},
 	{
 		label: 'Studio',
 		links: [
-			{ label: 'Meet Paula', href: '/about' },
-			{ label: 'Press', href: '/press' },
+			{ label: 'Meet Paula', href: '/about/' },
+			{ label: 'Press', href: '/press/' },
 		],
 	},
 	{
 		label: 'Read',
-		links: [{ label: 'Journal', href: '/journal' }],
+		links: [{ label: 'Journal', href: '/journal/' }],
 	},
 ];
 ---
@@ -136,7 +136,7 @@ const linkGroups: Array<{
 			</div>
 
 			<a
-				href="/contact"
+				href="/contact/"
 				data-analytics-event="cta_start_project"
 				data-analytics-location="links"
 				class="btn-primary mt-8 flex w-full items-center justify-center text-center"
@@ -267,7 +267,7 @@ const linkGroups: Array<{
 
 			<p class="mt-10 text-center text-xs tracking-wide text-stone">
 				Paula Ambrosio Interiors ·{' '}
-				<a href="/contact" class="underline-offset-4 transition-colors hover:text-coffee hover:underline">{SITE.address}</a>
+				<a href="/contact/" class="underline-offset-4 transition-colors hover:text-coffee hover:underline">{SITE.address}</a>
 			</p>
 		</div>
 	</section>

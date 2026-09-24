@@ -9,10 +9,16 @@ Premium editorial website for Paula Ambrosio Interiors — luxury interior desig
 | Command           | Action                                    |
 | ----------------- | ----------------------------------------- |
 | `npm run dev`     | Local dev server at `localhost:4321`      |
-| `npm run build`   | Production build to `./dist/`             |
+| `npm run build`   | Production build to `./dist/`, then the post-build guard |
+| `npm run check`   | Post-build guard on its own (`dist/`)     |
 | `npm run preview` | Preview the production build locally      |
 | `npm run lint`    | Typecheck (`astro check`)                 |
-| `node scripts/check-links.mjs` | Post-build link + schema validation |
+
+`npm run build` fails if the output contains an insecure form action, a plain-http
+reference, more than one `<h1>`, a canonical that does not match the served URL, or
+a broken internal link. That guard is what keeps Best Practices at 100 — a
+`<form action="mailto:…">` on an HTTPS page is flagged by Chrome as insecure form
+submission and drops the Lighthouse category to 77.
 
 ## Architecture
 
@@ -57,6 +63,18 @@ Agent workflow (Hermes-compatible): branch → edit/create MDX → `npm run buil
 
 | Variable                | Purpose                                              |
 | ----------------------- | ---------------------------------------------------- |
-| `CONTACT_FORM_ENDPOINT` | Optional. Routes the contact form to a CRM/webhook. Falls back to `mailto:` when unset. |
+| `CONTACT_FORM_ENDPOINT` | Optional. An **https** URL that receives the contact form (CRM, email API, webhook) and answers 2xx once the lead is stored. Unset — or set to anything that is not https — the form composes the inquiry into a `mailto:` URL and opens the visitor's mail client. |
 
 No secrets belong in the repository.
+
+## URL contract
+
+The site is served with `trailingSlash: true` (see `vercel.json`), so every route
+ends with a slash: `/about/`, `/projects/home-ka/`. Canonicals, `og:url`, the XML
+sitemap and all internal links use that exact form — anything else costs a 308
+redirect. `src/config.ts` owns the helpers (`serviceUrl`, `locationUrl`,
+`projectUrl`, `absoluteUrl`) and `npm run build` verifies it.
+
+The canonical origin is `https://www.paulaambrosio.com` (`astro.config.mjs` `site`
+and `SITE.url` in `src/config.ts`). The apex domain redirects to it in
+`vercel.json`.

@@ -12,7 +12,7 @@ Web Analytics provides privacy-focused pageviews, visitors, routes, referrers, d
 
 **Primary conversion**
 
-- `form_submit`: a configured `CONTACT_FORM_ENDPOINT` responds successfully with a 2xx status.
+- `form_submit`: the inquiry actually leaves the browser — either a configured `CONTACT_FORM_ENDPOINT` answers 2xx, or the `mailto:` fallback opens the visitor's mail client. Metadata carries `delivery: 'endpoint' | 'mailto'` so the two paths can be compared.
 
 **Secondary conversions**
 
@@ -70,7 +70,7 @@ The Contact page and the Header inquiry modal use `data-analytics-form` values `
 
 `form_start` is emitted once per form instance on the first focus interaction. The central event delegation layer prevents duplicate submit listeners and safely reinitializes if Astro navigation is introduced later.
 
-When `CONTACT_FORM_ENDPOINT` is present, submission is progressively intercepted with `fetch()` and `FormData`. Only the HTTP result is sent to Analytics; form contents are never included. When it is absent, the native `mailto:` behavior is preserved.
+Delivery is resolved in one place (`src/lib/forms.ts`): when `CONTACT_FORM_ENDPOINT` is an https URL the form posts to it with `fetch()` and `FormData`, and only a 2xx response emits `form_submit`. When it is absent the form renders **without an `action` attribute** — a `mailto:` action is reported by Chrome as insecure form submission on HTTPS pages and fails Lighthouse `is-on-https` — and the client composes the inquiry (`subject` + labelled body) into a `mailto:` URL that opens the visitor's mail client, then emits `form_submit` with `delivery: 'mailto'`. Only the delivery result is sent to Analytics; field values are never included, and the composed email goes to the studio, not to Analytics.
 
 For production conversion measurement, configure `CONTACT_FORM_ENDPOINT` as an endpoint that accepts the form and returns an appropriate 2xx response after the lead has been accepted. Cross-origin endpoints must permit the browser request with the appropriate CORS policy.
 

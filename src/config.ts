@@ -5,7 +5,7 @@
  */
 
 export const SITE = {
-	url: 'https://paulaambrosiointeriors.com',
+	url: 'https://www.paulaambrosio.com',
 	name: 'Paula Ambrosio Interiors',
 	shortName: 'Paula Ambrosio',
 	legalName: 'Paula Ambrosio Interiors LLC',
@@ -30,15 +30,19 @@ export const PERSON = {
 	],
 } as const;
 
-/** Canonical flat URLs per the SEO plan (§14): legacy Framer paths stay canonical. */
-export const serviceUrl = (id: string): string => `/${id}`;
+/**
+ * Canonical flat URLs per the SEO plan (§14): legacy Framer paths stay canonical.
+ * Every served route ends with a slash (vercel.json `trailingSlash: true`), so the
+ * helpers emit that form and internal links never trigger a 308 redirect.
+ */
+export const serviceUrl = (id: string): string => `/${id}/`;
 export const locationUrl = (id: string): string =>
 	id === 'miami'
-		? '/interior-design-miami'
+		? '/interior-design-miami/'
 		: id === 'sunny-isles-beach'
-			? '/interior-designer-sunny-isles'
-			: `/interior-designer-${id}`;
-export const projectUrl = (id: string): string => `/projects/${id}`;
+			? '/interior-designer-sunny-isles/'
+			: `/interior-designer-${id}/`;
+export const projectUrl = (id: string): string => `/projects/${id}/`;
 
 export const FOOTER_LOCATIONS = [
 	{ label: 'Miami', href: locationUrl('miami') },
@@ -57,30 +61,30 @@ export const FOOTER_LOCATIONS = [
  */
 export const NAV_LEFT = [
 	{ label: 'Home', href: '/' },
-	{ label: 'About', href: '/about' },
+	{ label: 'About', href: '/about/' },
 	{
 		label: 'Services',
-		href: '/services',
+		href: '/services/',
 		children: [
-			{ label: 'All Services', href: '/services' },
+			{ label: 'All Services', href: '/services/' },
 			{ label: 'Design Consultation', href: serviceUrl('design-consultation-miami') },
 			{ label: 'Turnkey Interior Design', href: serviceUrl('turnkey-interior-design-miami') },
 			{ label: 'Luxury Residential Design', href: serviceUrl('luxury-residential-interior-design-miami') },
 			{ label: 'Hospitality Interior Design', href: serviceUrl('hospitality-interior-design-miami') },
 		],
 	},
-	{ label: 'Projects', href: '/projects' },
+	{ label: 'Projects', href: '/projects/' },
 ] as const;
 
 export const NAV_RIGHT = [
 	{
 		label: 'Locations',
-		href: '/locations',
+		href: '/locations/',
 		children: FOOTER_LOCATIONS.map((loc) => ({ label: loc.label, href: loc.href })),
 	},
-	{ label: 'Journal', href: '/journal' },
-	{ label: 'Press', href: '/press' },
-	{ label: 'Contact', href: '/contact' },
+	{ label: 'Journal', href: '/journal/' },
+	{ label: 'Press', href: '/press/' },
+	{ label: 'Contact', href: '/contact/' },
 ] as const;
 
 /** Every navigation destination, in menu order — used by the mobile menu. */
@@ -95,8 +99,18 @@ export const SOCIAL_LINKS = [
 	{ label: 'Houzz', href: 'https://www.houzz.com/pro/paulaambrosio' },
 ] as const;
 
-/** Absolute URL helper — keeps canonicals/OG images correct on any host. */
+/**
+ * Absolute URL helper — keeps canonicals/OG images correct on any host.
+ *
+ * Pages are served with a trailing slash (vercel.json sets `trailingSlash: true`
+ * and the XML sitemap already emits that form), so page paths are normalised to
+ * it: canonical, og:url and structured-data URLs then match the URL the server
+ * actually serves instead of pointing at a 308 redirect. Asset paths keep their
+ * extension and are returned untouched.
+ */
 export function absoluteUrl(path: string): string {
 	if (path.startsWith('http')) return path;
-	return `${SITE.url}${path.startsWith('/') ? path : `/${path}`}`;
+	const normalized = path.startsWith('/') ? path : `/${path}`;
+	if (normalized.endsWith('/') || /\.[a-z0-9]{2,5}$/i.test(normalized)) return `${SITE.url}${normalized}`;
+	return `${SITE.url}${normalized}/`;
 }

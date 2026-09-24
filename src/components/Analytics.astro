@@ -9,6 +9,7 @@ import SpeedInsights from '@vercel/speed-insights/astro';
 <script>
 	import { trackEvent } from '../lib/analytics/track';
 	import { ANALYTICS_EVENTS } from '../lib/analytics/events';
+	import { composeMailtoHref } from '../lib/forms';
 
 	const globalWindow = window as Window & { __paulaAnalyticsInitialized?: boolean };
 
@@ -90,9 +91,48 @@ import SpeedInsights from '@vercel/speed-insights/astro';
 					status.textContent = 'We could not send the inquiry. Please try again or contact the studio directly.';
 					status.className = 'analytics-form-status mt-3 text-sm text-red-800';
 				});
+				form.addEventListener('analytics-form-mailto', () => {
+					if (!status) return;
+					const address = form.dataset.formMailto;
+					status.textContent = address
+						? `Opening your email app with the inquiry. If nothing opens, write to ${address}.`
+						: 'Opening your email app with the inquiry.';
+					status.className = 'analytics-form-status mt-3 text-sm text-coffee';
+				});
+
+			const delivery = form.dataset.formDelivery === 'mailto' ? 'mailto' : 'endpoint';
+			const mailtoAddress = form.dataset.formMailto ?? '';
+
+			if (delivery === 'mailto') {
+				// No endpoint configured. The form carries no action attribute (a mailto:
+				// action is insecure form submission over HTTPS), so the inquiry is
+				// composed into a mailto: URL and handed to the visitor's mail client.
+				form.addEventListener('submit', (event) => {
+					event.preventDefault();
+					const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+					if (submit?.disabled) return;
+					try {
+						window.location.href = composeMailtoHref(form, mailtoAddress);
+						trackEvent(ANALYTICS_EVENTS.FORM_SUBMIT, {
+							page: page(),
+							form: form.dataset.analyticsForm,
+							delivery: 'mailto',
+						});
+						form.dispatchEvent(new CustomEvent('analytics-form-mailto'));
+					} catch {
+						trackEvent(ANALYTICS_EVENTS.FORM_ERROR, {
+							page: page(),
+							form: form.dataset.analyticsForm,
+							delivery: 'mailto',
+						});
+						form.dispatchEvent(new CustomEvent('analytics-form-error'));
+					}
+				});
+				return;
+			}
 
 			const action = form.getAttribute('action') ?? '';
-			if (!action || action.startsWith('mailto:')) return;
+			if (!action) return;
 
 			form.addEventListener('submit', async (event) => {
 				event.preventDefault();
@@ -109,6 +149,7 @@ import SpeedInsights from '@vercel/speed-insights/astro';
 					trackEvent(ANALYTICS_EVENTS.FORM_SUBMIT, {
 						page: page(),
 						form: form.dataset.analyticsForm,
+						delivery: 'endpoint',
 					});
 					form.reset();
 					form.dispatchEvent(new CustomEvent('analytics-form-success'));
@@ -116,6 +157,7 @@ import SpeedInsights from '@vercel/speed-insights/astro';
 					trackEvent(ANALYTICS_EVENTS.FORM_ERROR, {
 						page: page(),
 						form: form.dataset.analyticsForm,
+						delivery: 'endpoint',
 					});
 					form.dispatchEvent(new CustomEvent('analytics-form-error'));
 				} finally {

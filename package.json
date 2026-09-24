@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro build",
+    "build": "astro build && node scripts/check-links.mjs",
+    "check": "node scripts/check-links.mjs",
     "preview": "astro preview",
     "astro": "astro",
     "lint": "tsc --noEmit",

@@ -10,6 +10,9 @@ const { items, tone = 'dark' } = Astro.props;
 const linkClass = tone === 'light' ? 'text-bone/70 hover:text-bone' : 'text-mist hover:text-ink';
 const currentClass = tone === 'light' ? 'text-bone' : 'text-ink';
 const separatorClass = tone === 'light' ? 'text-bone/40' : 'text-sand';
+// Served routes end with a slash (vercel.json `trailingSlash: true`) — link to
+// that exact form so the breadcrumb never costs a redirect.
+const href = (url: string) => (url.endsWith('/') ? url : `${url}/`);
 ---
 
 <nav aria-label="Breadcrumb">
@@ -20,7 +23,7 @@ const separatorClass = tone === 'light' ? 'text-bone/40' : 'text-sand';
 				<span aria-hidden="true" class={separatorClass}>/</span>
 				{i === items.length - 1
 					? <span aria-current="page" class={currentClass}>{item.name}</span>
-					: <a href={item.url} class={linkClass}>{item.name}</a>}
+					: <a href={href(item.url)} class={linkClass}>{item.name}</a>}
 			</li>
 		))}
 	</ol>

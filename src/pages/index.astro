@@ -148,7 +148,7 @@ const processSteps = [
 			</p>
 			<div class="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
 				<button type="button" class="inquiry-open btn-primary" data-analytics-event="cta_start_project" data-analytics-location="hero">Start Your Project</button>
-				<a href="/services" class="btn-secondary" data-analytics-event="cta_explore_services" data-analytics-location="hero">Explore Our Services</a>
+				<a href="/services/" class="btn-secondary" data-analytics-event="cta_explore_services" data-analytics-location="hero">Explore Our Services</a>
 			</div>
 		</div>
 	</section>
@@ -237,7 +237,7 @@ const processSteps = [
 					<p class="eyebrow text-stone">Projects</p>
 					<h2 class="font-display mt-5 text-4xl">Recent work</h2>
 				</div>
-				<a href="/projects" class="eyebrow text-stone underline decoration-brass/60 underline-offset-8 hover:text-ink transition-colors">View all projects</a>
+				<a href="/projects/" class="eyebrow text-stone underline decoration-brass/60 underline-offset-8 hover:text-ink transition-colors">View all projects</a>
 			</div>
 			<div class="fade-up">
 				<ProjectGrid projects={featuredProjects} columns={3} />
@@ -271,7 +271,7 @@ const processSteps = [
 				<p class="eyebrow text-stone">Locations</p>
 				<h2 class="font-display mt-5 text-4xl">Serving Miami and South Florida</h2>
 			</div>
-			<a href="/locations" class="eyebrow text-stone underline decoration-brass/60 underline-offset-8 hover:text-ink transition-colors">All locations</a>
+			<a href="/locations/" class="eyebrow text-stone underline decoration-brass/60 underline-offset-8 hover:text-ink transition-colors">All locations</a>
 		</div>
 		<ul class="grid grid-cols-2 gap-px bg-sand sm:grid-cols-3 lg:grid-cols-4 fade-up stagger-children">
 			{['Miami', 'Miami Beach', 'Sunny Isles Beach', 'Aventura', 'Bal Harbour', 'Boca Raton', 'Palm Beach'].map((loc) => (
@@ -316,7 +316,7 @@ const processSteps = [
 				<p class="mt-5 leading-relaxed text-slate">
 					Our story began 21 years ago in Rio de Janeiro, Brazil, when sisters Paula and Amanda Ambrosio founded Studio Decore. Ten years ago, Paula founded Paula Ambrosio Interior Design in Miami, bringing her international design experience and sophisticated aesthetic to the South Florida market.
 				</p>
-				<a href="/about" class="btn-secondary mt-10">Meet Paula</a>
+				<a href="/about/" class="btn-secondary mt-10">Meet Paula</a>
 			</div>
 		</div>
 	</section>
@@ -350,7 +350,7 @@ const processSteps = [
 					<p class="eyebrow text-stone">Journal</p>
 					<h2 class="font-display mt-5 text-4xl">Notes on design</h2>
 				</div>
-				<a href="/journal" class="eyebrow text-stone underline decoration-brass/60 underline-offset-8 hover:text-ink transition-colors">Read the journal</a>
+				<a href="/journal/" class="eyebrow text-stone underline decoration-brass/60 underline-offset-8 hover:text-ink transition-colors">Read the journal</a>
 			</div>
 			<div class="grid gap-10 md:grid-cols-3 fade-up stagger-children">
 				{latestJournal.map((post) => {
@@ -358,7 +358,7 @@ const processSteps = [
 					const formatted = d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 					return (
 						<article class="group">
-							<a href={`/journal/${post.id}`} class="block overflow-hidden bg-sand">
+							<a href={`/journal/${post.id}/`} class="block overflow-hidden bg-sand">
 								<Image
 									src={post.data.featuredImage}
 									alt={post.data.imageAlt ?? post.data.title}
@@ -376,7 +376,7 @@ const processSteps = [
 								<p class="text-[0.65rem] uppercase tracking-widest text-mist font-medium">{formatted}</p>
 							</div>
 							<h3 class="font-display mt-3 text-2xl leading-snug">
-								<a href={`/journal/${post.id}`} class="transition-colors duration-300 hover:text-stone">{post.data.title}</a>
+								<a href={`/journal/${post.id}/`} class="transition-colors duration-300 hover:text-stone">{post.data.title}</a>
 							</h3>
 						</article>
 					);
