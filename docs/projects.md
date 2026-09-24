@@ -51,14 +51,20 @@ gallery:
   - "../../assets/projects/render-pm/web/03.webp"
 ```
 
+**A ordem dos setores é a ordem declarada em `sectors:`** — é ela que ordena a numeração no
+`import` e no `sync`. Sem declaração, a ordem cai no alfabético das pastas de origem. Por isso,
+antes de importar, renomeie as pastas de origem como você quer que o setor apareça no site
+(`KITCHEN` → `Kitchen`, `LOUNGEBAR+CARDROOM` → `Lounge Bar & Card Room`) e declare os setores
+na ordem editorial desejada no MDX.
+
 Regras (validadas pelo `check`):
 - a soma de `images` cobre exatamente a galeria (a capa `01` fica fora das faixas);
 - nomes de setor sem duplicata;
 - a contiguidade é estrutural: cada faixa é uma fatia sequencial da galeria.
 
 Na página do projeto a galeria é exibida **agrupada por setor**, com um heading editorial
-(um `<h2>`) por bloco. O `sync` recalcula as faixas a partir das etiquetas em memória
-(ordem de import), então mover imagens entre setores = reordenar no MDX + `sync`.
+(um `<h2>`) por bloco. O `sync` recalcula as faixas a partir das imagens em disco na ordem
+declarada, então nunca edite caminhos de imagem à mão: mude a ordem declarada e rode o `sync`.
 
 ## Workflow: adicionar fotos de um projeto
 
@@ -72,9 +78,11 @@ Na página do projeto a galeria é exibida **agrupada por setor**, com um headin
    npm run projects:import -- render-pm "C:\Users\...\render-pm"
    ```
 
-3. Se o projeto for novo, crie `src/content/projects/<slug>.mdx` antes (copie a estrutura
-   de um projeto existente — para renders, use `render-pm.mdx` como base) e rode
-   `npm run projects:sync` depois de preencher o conteúdo.
+3. Se o projeto for novo, crie `src/content/projects/<slug>.mdx` **antes** do import — copie a
+   estrutura de um projeto existente (para renders, `render-pm.mdx`) e declare `sectors:` na
+   ordem desejada, com `images:` = nº de arquivos de cada pasta de origem (a capa entra nessa
+   contagem; o `sync` a move para fora das faixas depois). Para projetos planos, deixe
+   `gallery: []` e nenhum setor.
 4. Valide e só então faça build:
 
    ```bash
@@ -90,9 +98,23 @@ na faixa do setor certo (import recursivo por pasta).
 
 ## Trocar a capa de um projeto
 
-A capa é sempre `01`. Para escolher outra foto: troque a posição dela no MDX e rode
-`npm run projects:sync -- <slug>` (renumera e reescreve refs). Ex.: mover a foto `14`
-para capa = reordenar para o topo da lista antes do sync.
+A capa é sempre `01` e vem de `featuredImage`. Para escolher outra foto: aponte `featuredImage`
+para o número desejado e rode `npm run projects:sync -- <slug>` — a foto vira `01`, as demais
+são renumeradas na mesma ordem relativa e as faixas de setor são recalculadas.
+
+## Reordenar setores
+
+Para mudar a ordem em que os setores aparecem na página (só a ordem; o conteúdo não muda):
+reescreva o bloco `sectors:` na ordem desejada (com os nomes exatos das pastas de origem) e o
+`gallery:` na sequência correspondente — as refs usam os números **atuais** na nova ordem — e
+rode `npm run projects:sync -- <slug>`. O `sync` renumera `01..NN` seguindo a ordem escrita e
+recalcula as faixas; `projects:check` falha se as faixas não fecharem com a galeria.
+
+## Conferir que nada ficou de fora
+
+Depois de um import, vale provar cobertura: cada fonte em `src/assets/projects/<slug>/NN.ext`
+pode ser casada por hash (md5) com as fotos originais recebidas. Contagem de fontes = contagem
+de `web/*.webp` = nº de refs no MDX, e toda foto original encontrada = nenhuma foto perdida.
 
 ## Comandos
 

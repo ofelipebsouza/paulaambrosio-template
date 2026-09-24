@@ -140,7 +140,7 @@ async function sync(slug, { includeAll = false, sectorOf = new Map() } = {}) {
   const addRank = (s) => {
     if (s && s !== 'Others' && !rank.has(s)) rank.set(s, rank.size);
   };
-  declared.forEach(addRank);
+  declared.forEach((s) => addRank(s.name));
   for (const s of new Set(sectorOf.values())) addRank(s);
   items.forEach((it) => addRank(it.sector));
 
