@@ -67,7 +67,7 @@ Agent workflow (Hermes-compatible): branch → edit/create MDX → `npm run buil
 
 ## Environment variables
 
-The contact form posts to `POST /api/contact`, a server-side Astro route that
+The contact form posts to `POST /api/contact/`, a server-side Astro route that
 validates the inquiry and delivers it over SMTP (Nodemailer). It is the only
 on-demand route in the project — everything else stays statically generated.
 

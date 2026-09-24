@@ -12,7 +12,7 @@ Web Analytics provides privacy-focused pageviews, visitors, routes, referrers, d
 
 **Primary conversion**
 
-- `form_success`: the server accepted the inquiry **and** the SMTP delivery of the notification to the studio did not fail. This is the only event that proves a lead exists, and it is emitted from the browser after `POST /api/contact` answers `200 { ok: true }`.
+- `form_success`: the server accepted the inquiry **and** the SMTP delivery of the notification to the studio did not fail. This is the only event that proves a lead exists, and it is emitted from the browser after `POST /api/contact/` answers `200 { ok: true }`.
 
 Nothing is tracked on the server: the API route never calls Analytics, so preview/QA submissions and bot spam are not counted unless the browser reported a success.
 
@@ -80,11 +80,11 @@ Metadata is intentionally small and uses public stable identifiers such as route
 
 ## Form behavior
 
-Both forms — the Contact page and the Header inquiry drawer — use `data-analytics-form` values `contact` and `project_inquiry`, and both carry `action="/api/contact"`, a same-origin HTTPS endpoint. The delegated layer in `src/components/Analytics.astro` intercepts the submit and sends it with `fetch()`, so the visitor never leaves the page; without JavaScript the browser posts the form normally and each form offers an explicit email/phone alternative in `<noscript>`. A `mailto:` action is deliberately never rendered: Chrome flags it as insecure form submission on HTTPS pages and fails Lighthouse `is-on-https`.
+Both forms — the Contact page and the Header inquiry drawer — use `data-analytics-form` values `contact` and `project_inquiry`, and both carry `action="/api/contact/"`, a same-origin HTTPS endpoint (the trailing slash matches how the deployment serves URLs, so a submission is a single request instead of a 308 hop). The delegated layer in `src/components/Analytics.astro` intercepts the submit and sends it with `fetch()`, so the visitor never leaves the page; without JavaScript the browser posts the form normally and each form offers an explicit email/phone alternative in `<noscript>`. A `mailto:` action is deliberately never rendered: Chrome flags it as insecure form submission on HTTPS pages and fails Lighthouse `is-on-https`.
 
 `form_start` is emitted once per form instance, on the first `focusin` inside it (the listener is attached once to the document, at capture). The delegated layer marks each form as processed via `dataset`, so a second bind cannot happen, and it re-runs on `astro:page-load` for pages added later. The submit listener is only attached to forms that have an `action`, and it is the only place that talks to the API — no component posts on its own.
 
-Sequence: first focus → `form_start` · submit → native constraint validation → `form_submit` → `POST /api/contact` (server validates, rate limits, checks the honeypot and Turnstile, resolves the recipient, sends over SMTP) → `200 { ok: true }` → `form_success`, form reset and the accessible status message. Any failure — non-2xx response (validation, rate limit, missing transport, SMTP error) or a network failure — throws in the same place and emits `form_error`; the status message is generic and the typed values are kept. The reason is decided server-side, returned in the JSON body and written to the server log; the browser never reports an internal error and Analytics never receives one.
+Sequence: first focus → `form_start` · submit → native constraint validation → `form_submit` → `POST /api/contact/` (server validates, rate limits, checks the honeypot and Turnstile, resolves the recipient, sends over SMTP) → `200 { ok: true }` → `form_success`, form reset and the accessible status message. Any failure — non-2xx response (validation, rate limit, missing transport, SMTP error) or a network failure — throws in the same place and emits `form_error`; the status message is generic and the typed values are kept. The reason is decided server-side, returned in the JSON body and written to the server log; the browser never reports an internal error and Analytics never receives one.
 
 Server response shape: `200 { ok: true }` on success (also the answer to a honeypot hit, which sends nothing); `422 { ok: false, error: 'validation_failed', errors }` for validation; `429` with a `Retry-After` header when rate limited; `503` when no mail transport is configured; `502` when the SMTP server rejects the message. Internal errors are logged server-side with a request id and never returned to the browser.
 

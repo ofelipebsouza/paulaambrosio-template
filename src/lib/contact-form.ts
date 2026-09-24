@@ -8,8 +8,16 @@
  * the keys of the lead email and of the analytics metadata.
  */
 
-/** Server endpoint that receives inquiries. */
-export const CONTACT_API_PATH = '/api/contact';
+/**
+ * Server endpoint that receives inquiries.
+ *
+ * The trailing slash is deliberate: the deployment serves every URL with one
+ * (`vercel.json` sets `trailingSlash: true`) and a form action without it would
+ * cost a 308 round trip — method and body are replayed, but the inquiry would
+ * take two requests instead of one. Astro's dev server accepts both forms, so
+ * this is the single path the browser, the guard and the docs use.
+ */
+export const CONTACT_API_PATH = '/api/contact/';
 
 /** Field length limits, enforced server-side and mirrored as `maxlength`. */
 export const FIELD_LIMITS = {

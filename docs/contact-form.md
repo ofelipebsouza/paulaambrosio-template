@@ -5,7 +5,7 @@ API route do Astro, que valida no servidor e entrega por SMTP. Nenhuma
 credencial, host ou senha chega ao bundle do cliente.
 
 ```
-Visitante → <form action="/api/contact"> → POST /api/contact
+Visitante → <form action="/api/contact/"> → POST /api/contact/
           → tamanho do corpo → parsing → honeypot
           → sanitização + validação → Turnstile (opcional)
           → rate limit → SMTP
@@ -137,7 +137,7 @@ Com o dev server rodando:
 
 ```bash
 # caminho do browser (multipart com Origin)
-curl -X POST http://localhost:4321/api/contact \
+curl -X POST http://localhost:4321/api/contact/ \
   -H "Origin: http://localhost:4321" \
   -F "name=Marina Albuquerque" -F "email=marina@example.com" \
   -F "location=Miami Beach" -F "service=Turnkey Interior Design" \
