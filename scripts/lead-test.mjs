@@ -7,19 +7,30 @@
  * variables are present and that the mail server accepted the message.
  *
  * Usage:
- *   npm run lead:test                       # production
- *   npm run lead:test -- http://127.0.0.1:4321
+ *   npm run lead:test                                    # production
+ *   npm run lead:test -- http://127.0.0.1:4321           # a local site
+ *   npm run lead:test -- --email=someone@example.com     # that inbox becomes the
+ *                                                        # lead and receives the
+ *                                                        # confirmation (Reply-To)
  *
  * It does deliver a real message to the studio's inbox, so run it on purpose.
  */
-const base = (process.argv[2] ?? 'https://www.paulaambrosio.com').replace(/\/$/, '');
+const flags = Object.fromEntries(
+	process.argv.slice(2).filter((arg) => arg.startsWith('--')).map((arg) => {
+		const [key, ...rest] = arg.slice(2).split('=');
+		return [key, rest.join('=') || 'true'];
+	}),
+);
+const base = (process.argv.slice(2).find((arg) => !arg.startsWith('--')) ?? 'https://www.paulaambrosio.com').replace(/\/$/, '');
 const origin = base;
 const endpoint = `${base}/api/contact/`;
 const stamp = new Date().toISOString();
+const leadEmail = flags.email?.trim() || 'test@paulaambrosio.com';
+const leadName = flags.name?.trim() || 'Website configuration test';
 
 const form = new FormData();
-form.set('name', 'Website configuration test');
-form.set('email', 'test@paulaambrosio.com');
+form.set('name', leadName);
+form.set('email', leadEmail);
 form.set('phone', '+1 (000) 000-0000');
 form.set('location', 'Miami');
 form.set('propertyType', 'Other');
@@ -29,7 +40,9 @@ form.set('timeline', 'Flexible');
 form.set('message', `Automated delivery check from the website tooling. No action needed — this inquiry was generated to confirm the contact form can reach this inbox.\n\nReference: ${stamp}`);
 
 console.log(`\nEnviando consulta de teste para ${endpoint}`);
-console.log('Assunto do lead: "New Project Inquiry — Website configuration test"\n');
+console.log(`Assunto do lead: "New Project Inquiry — ${leadName}"`);
+console.log(`Visitante/Reply-To: ${leadEmail}`);
+console.log('Destino do lead: info@paulaambrosio.com\n');
 
 let status;
 let body;
