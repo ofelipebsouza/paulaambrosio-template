@@ -9,7 +9,7 @@ import SpeedInsights from '@vercel/speed-insights/astro';
 <script>
 	import { trackEvent } from '../lib/analytics/track';
 	import { ANALYTICS_EVENTS } from '../lib/analytics/events';
-	import { composeMailtoHref } from '../lib/forms';
+	import { CONTACT_FIELDS, HONEYPOT_FIELD } from '../lib/contact-form';
 
 	const globalWindow = window as Window & { __paulaAnalyticsInitialized?: boolean };
 
@@ -81,87 +81,120 @@ import SpeedInsights from '@vercel/speed-insights/astro';
 				form.dataset.analyticsBound = 'true';
 
 				const status = form.querySelector<HTMLElement>('.analytics-form-status');
-				form.addEventListener('analytics-form-success', () => {
+				form.addEventListener('analytics-form-success', (event) => {
 					if (!status) return;
-					status.textContent = 'Thank you. We received your inquiry and will be in touch shortly.';
+					const message = (event as CustomEvent<{ message?: string }>).detail?.message;
+					status.textContent =
+						message ??
+						'Thank you. Your project inquiry has been received. Our team will be in touch soon.';
 					status.className = 'analytics-form-status mt-3 text-sm text-coffee';
 				});
 				form.addEventListener('analytics-form-error', () => {
 					if (!status) return;
-					status.textContent = 'We could not send the inquiry. Please try again or contact the studio directly.';
+					const email = form.dataset.contactEmail;
+					status.textContent = email
+						? `Something went wrong while sending your inquiry. Please try again or contact us directly at ${email}.`
+						: 'Something went wrong while sending your inquiry. Please try again.';
 					status.className = 'analytics-form-status mt-3 text-sm text-red-800';
 				});
-				form.addEventListener('analytics-form-mailto', () => {
-					if (!status) return;
-					const address = form.dataset.formMailto;
-					status.textContent = address
-						? `Opening your email app with the inquiry. If nothing opens, write to ${address}.`
-						: 'Opening your email app with the inquiry.';
-					status.className = 'analytics-form-status mt-3 text-sm text-coffee';
-				});
-
-			const delivery = form.dataset.formDelivery === 'mailto' ? 'mailto' : 'endpoint';
-			const mailtoAddress = form.dataset.formMailto ?? '';
-
-			if (delivery === 'mailto') {
-				// No endpoint configured. The form carries no action attribute (a mailto:
-				// action is insecure form submission over HTTPS), so the inquiry is
-				// composed into a mailto: URL and handed to the visitor's mail client.
-				form.addEventListener('submit', (event) => {
-					event.preventDefault();
-					const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
-					if (submit?.disabled) return;
-					try {
-						window.location.href = composeMailtoHref(form, mailtoAddress);
-						trackEvent(ANALYTICS_EVENTS.FORM_SUBMIT, {
-							page: page(),
-							form: form.dataset.analyticsForm,
-							delivery: 'mailto',
-						});
-						form.dispatchEvent(new CustomEvent('analytics-form-mailto'));
-					} catch {
-						trackEvent(ANALYTICS_EVENTS.FORM_ERROR, {
-							page: page(),
-							form: form.dataset.analyticsForm,
-							delivery: 'mailto',
-						});
-						form.dispatchEvent(new CustomEvent('analytics-form-error'));
-					}
-				});
-				return;
-			}
 
 			const action = form.getAttribute('action') ?? '';
 			if (!action) return;
 
+			/**
+			 * Delivery fallback.
+			 *
+			 * The endpoint answers 503 `delivery_unavailable` only when the server has
+			 * no SMTP transport configured (Vercel environment variables not set yet).
+			 * Rather than losing the inquiry, hand it to the visitor's own mail client —
+			 * the same behaviour this site had before the endpoint existed. A real SMTP
+			 * or network failure never reaches this branch.
+			 */
+			const openMailFallback = (data: FormData): boolean => {
+				const to = form.dataset.contactEmail;
+				if (!to) return false;
+
+				const lines: string[] = [];
+				for (const spec of CONTACT_FIELDS) {
+					const value = String(data.get(spec.name) ?? '').trim();
+					if (value) lines.push(`${spec.label}: ${value}`);
+				}
+				if (String(data.get(HONEYPOT_FIELD) ?? '').trim()) return false;
+
+				const subject = `New Project Inquiry — ${String(data.get('name') ?? '').trim()}`;
+				window.location.href = `mailto:${to}?subject=${encodeURIComponent(
+					subject,
+				)}&body=${encodeURIComponent(lines.join('\n'))}`;
+				return true;
+			};
+
+			const submitButton = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+			const submitLabel = submitButton?.textContent ?? '';
+			const setSending = (sending: boolean) => {
+				form.setAttribute('aria-busy', sending ? 'true' : 'false');
+				if (!submitButton) return;
+				submitButton.disabled = sending;
+				submitButton.textContent = sending ? 'Sending…' : submitLabel;
+			};
+
 			form.addEventListener('submit', async (event) => {
 				event.preventDefault();
-				const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
-				if (submit?.disabled) return;
-				if (submit) submit.disabled = true;
+				if (submitButton?.disabled) return;
+
+				// Captured before the request: the only field values Analytics may see.
+				const data = new FormData(form);
+				const service = String(data.get('service') ?? '').trim();
+				const propertyType = String(data.get('propertyType') ?? '').trim();
+
+				setSending(true);
+				trackEvent(ANALYTICS_EVENTS.FORM_SUBMIT, {
+					page: page(),
+					form: form.dataset.analyticsForm,
+				});
+
 				try {
 					const response = await fetch(action, {
 						method: form.method || 'POST',
-						body: new FormData(form),
+						body: data,
 						headers: { Accept: 'application/json' },
 					});
+
+					if (response.status === 503 && openMailFallback(data)) {
+						trackEvent(ANALYTICS_EVENTS.FORM_SUCCESS, {
+							page: page(),
+							form: form.dataset.analyticsForm,
+							service: service || undefined,
+							property_type: propertyType || undefined,
+							delivery: 'mailto',
+						});
+						form.dispatchEvent(
+							new CustomEvent('analytics-form-success', {
+								detail: {
+									message: `Opening your email app — send the message to reach us. You can also write to ${form.dataset.contactEmail}.`,
+								},
+							}),
+						);
+						return;
+					}
 					if (!response.ok) throw new Error(`Form request failed with ${response.status}`);
-					trackEvent(ANALYTICS_EVENTS.FORM_SUBMIT, {
+
+					trackEvent(ANALYTICS_EVENTS.FORM_SUCCESS, {
 						page: page(),
 						form: form.dataset.analyticsForm,
-						delivery: 'endpoint',
+						service: service || undefined,
+						property_type: propertyType || undefined,
 					});
 					form.reset();
 					form.dispatchEvent(new CustomEvent('analytics-form-success'));
 				} catch {
+					// Fields are intentionally kept: retyping an inquiry is not acceptable.
 					trackEvent(ANALYTICS_EVENTS.FORM_ERROR, {
 						page: page(),
 						form: form.dataset.analyticsForm,
-						delivery: 'endpoint',
 					});
 					form.dispatchEvent(new CustomEvent('analytics-form-error'));
 				} finally {
-					if (submit) submit.disabled = false;
+					setSending(false);
 				}
 			});
 			});

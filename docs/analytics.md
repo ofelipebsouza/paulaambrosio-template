@@ -4,7 +4,7 @@
 
 - Vercel Web Analytics via `@vercel/analytics` 2.x.
 - Vercel Speed Insights via `@vercel/speed-insights` 2.x.
-- Astro static output with one integration in `src/layouts/Layout.astro`.
+- Astro with the Vercel adapter; pages stay static and a single integration lives in `src/layouts/Layout.astro`.
 
 Web Analytics provides privacy-focused pageviews, visitors, routes, referrers, device/browser data and available geographic aggregation. Speed Insights provides Real User Monitoring for Web Vitals, including LCP, INP, CLS, FCP and TTFB when the site receives real traffic.
 
@@ -12,11 +12,14 @@ Web Analytics provides privacy-focused pageviews, visitors, routes, referrers, d
 
 **Primary conversion**
 
-- `form_submit`: the inquiry actually leaves the browser — either a configured `CONTACT_FORM_ENDPOINT` answers 2xx, or the `mailto:` fallback opens the visitor's mail client. Metadata carries `delivery: 'endpoint' | 'mailto'` so the two paths can be compared.
+- `form_success`: the server accepted the inquiry **and** the SMTP delivery of the notification to the studio did not fail. This is the only event that proves a lead exists, and it is emitted from the browser after `POST /api/contact` answers `200 { ok: true }`.
+
+Nothing is tracked on the server: the API route never calls Analytics, so preview/QA submissions and bot spam are not counted unless the browser reported a success.
 
 **Secondary conversions**
 
 - `cta_start_project`
+- `form_submit`
 - `phone_click`
 - `email_click`
 - `whatsapp_click` (reserved for a real WhatsApp link; none currently exists)
@@ -43,8 +46,9 @@ Web Analytics provides privacy-focused pageviews, visitors, routes, referrers, d
 | `cta_turnkey` | Measures Turnkey-specific intent | `page`, `location`, `service` | Turnkey CTA/link |
 | `cta_contact` | Measures direct contact CTA engagement | `page`, `location` | Contact CTA, when present |
 | `form_start` | Measures first form interaction | `page`, `form` | First focus on an input/select/textarea |
-| `form_submit` | Measures confirmed form conversion | `page`, `form` | Configured endpoint returns 2xx |
-| `form_error` | Measures failed endpoint submission | `page`, `form` | Network error or non-2xx response |
+| `form_submit` | Measures a submission attempt (intent) | `page`, `form` | The form is submitted and the request is sent |
+| `form_success` | Measures the confirmed conversion | `page`, `form`, `service`, `property_type`, `delivery` | Server answers `200 { ok: true }` (SMTP) or hands the inquiry to the visitor's mail client because the transport is not configured yet (`delivery: 'mailto'`) |
+| `form_error` | Measures a failed submission | `page`, `form` | Non-2xx response or network failure |
 | `phone_click` | Measures phone intent | `page`, `location` | Click on `tel:` |
 | `email_click` | Measures email intent | `page`, `location` | Click on `mailto:` |
 | `whatsapp_click` | Measures WhatsApp intent | `page`, `location` | Click on WhatsApp URL; reserved currently |
@@ -53,6 +57,17 @@ Web Analytics provides privacy-focused pageviews, visitors, routes, referrers, d
 | `service_open` | Measures opening a public service | `page`, `service` | Service listing/card click |
 | `faq_open` | Measures FAQ engagement | `page`, `faq` | Opening a FAQ disclosure |
 
+Mapping to the names used in the contact-form brief:
+
+| Brief | Implemented |
+| --- | --- |
+| `contact_form_started` | `form_start` |
+| `contact_form_submitted` | `form_submit` |
+| `contact_form_success` | `form_success` |
+| `contact_form_error` | `form_error` |
+
+`service` and `property_type` are the only field-derived values allowed in metadata, and both are the visitor's own selection from a fixed list (never free text). Message, name, email, phone and location are never tracked.
+
 Metadata is intentionally small and uses public stable identifiers such as route paths and content slugs. Event names and IDs do not come from visible copy.
 
 ## Privacy
@@ -60,19 +75,20 @@ Metadata is intentionally small and uses public stable identifiers such as route
 - Never send name, email, phone, address, message, project details, tokens, secrets or any field value to Analytics.
 - The central wrapper rejects private field names and non-scalar metadata.
 - Vercel Web Analytics is designed to use aggregated, anonymized data without third-party cookies. This implementation does not add cookies or a marketing tracker.
-- The `mailto:` fallback remains available when no endpoint is configured. Opening an email client is **not** counted as `form_submit`, because it does not prove delivery.
-- `form_submit` is emitted only after the configured endpoint confirms success with a 2xx response. `form_error` is emitted for network failures or non-2xx responses.
+- `form_success` is emitted only after the server confirms `200 { ok: true }`, i.e. the notification email was accepted by the SMTP server. A submission that fails validation, is rate limited or fails at SMTP emits `form_error` instead and shows a generic message to the visitor. The single exception is the `503 delivery_unavailable` answer (no SMTP credentials configured on the deployment yet): the inquiry is handed to the visitor's mail client instead of being lost, and the event is emitted with `delivery: 'mailto'` so the fallback path stays measurable.
 - Vercel's own privacy and compliance documentation should be reviewed with the site's legal advisor for the applicable jurisdiction.
 
 ## Form behavior
 
-The Contact page and the Header inquiry modal use `data-analytics-form` values `contact` and `project_inquiry`.
+Both forms — the Contact page and the Header inquiry drawer — use `data-analytics-form` values `contact` and `project_inquiry`, and both carry `action="/api/contact"`, a same-origin HTTPS endpoint. The delegated layer in `src/components/Analytics.astro` intercepts the submit and sends it with `fetch()`, so the visitor never leaves the page; without JavaScript the browser posts the form normally and each form offers an explicit email/phone alternative in `<noscript>`. A `mailto:` action is deliberately never rendered: Chrome flags it as insecure form submission on HTTPS pages and fails Lighthouse `is-on-https`.
 
-`form_start` is emitted once per form instance on the first focus interaction. The central event delegation layer prevents duplicate submit listeners and safely reinitializes if Astro navigation is introduced later.
+`form_start` is emitted once per form instance, on the first `focusin` inside it (the listener is attached once to the document, at capture). The delegated layer marks each form as processed via `dataset`, so a second bind cannot happen, and it re-runs on `astro:page-load` for pages added later. The submit listener is only attached to forms that have an `action`, and it is the only place that talks to the API — no component posts on its own.
 
-Delivery is resolved in one place (`src/lib/forms.ts`): when `CONTACT_FORM_ENDPOINT` is an https URL the form posts to it with `fetch()` and `FormData`, and only a 2xx response emits `form_submit`. When it is absent the form renders **without an `action` attribute** — a `mailto:` action is reported by Chrome as insecure form submission on HTTPS pages and fails Lighthouse `is-on-https` — and the client composes the inquiry (`subject` + labelled body) into a `mailto:` URL that opens the visitor's mail client, then emits `form_submit` with `delivery: 'mailto'`. Only the delivery result is sent to Analytics; field values are never included, and the composed email goes to the studio, not to Analytics.
+Sequence: first focus → `form_start` · submit → native constraint validation → `form_submit` → `POST /api/contact` (server validates, rate limits, checks the honeypot and Turnstile, resolves the recipient, sends over SMTP) → `200 { ok: true }` → `form_success`, form reset and the accessible status message. Any failure — non-2xx response (validation, rate limit, missing transport, SMTP error) or a network failure — throws in the same place and emits `form_error`; the status message is generic and the typed values are kept. The reason is decided server-side, returned in the JSON body and written to the server log; the browser never reports an internal error and Analytics never receives one.
 
-For production conversion measurement, configure `CONTACT_FORM_ENDPOINT` as an endpoint that accepts the form and returns an appropriate 2xx response after the lead has been accepted. Cross-origin endpoints must permit the browser request with the appropriate CORS policy.
+Server response shape: `200 { ok: true }` on success (also the answer to a honeypot hit, which sends nothing); `422 { ok: false, error: 'validation_failed', errors }` for validation; `429` with a `Retry-After` header when rate limited; `503` when no mail transport is configured; `502` when the SMTP server rejects the message. Internal errors are logged server-side with a request id and never returned to the browser.
+
+Form architecture, SMTP setup and the DNS prerequisite are documented in [`contact-form.md`](./contact-form.md).
 
 ## Campaign tracking / UTM
 

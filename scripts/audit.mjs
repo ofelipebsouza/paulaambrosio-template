@@ -5,7 +5,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const DIST = path.resolve('dist');
+// The Vercel adapter writes the client build to `dist/client/` once a route is
+// on-demand; a plain static build writes straight to `dist/`.
+const DIST = path.resolve(fs.existsSync('dist/client') ? 'dist/client' : 'dist');
 
 function walk(dir) {
 	return fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => {

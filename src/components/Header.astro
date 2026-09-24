@@ -1,13 +1,13 @@
 ---
 import { SITE, NAV_LEFT, NAV_RIGHT, NAV_LINKS, SOCIAL_LINKS } from '../config';
 import Logo from './ui/Logo.astro';
-import { resolveFormEndpoint } from '../lib/forms';
+import Turnstile from './ui/Turnstile.astro';
+import { CONTACT_API_PATH, FIELD_LIMITS, HONEYPOT_FIELD } from '../lib/contact-form';
 
-// Same delivery contract as the contact page (src/lib/forms.ts): a real https
-// endpoint when CONTACT_FORM_ENDPOINT is set, otherwise a client-composed
-// mailto: URL. Never a mailto: action — Chrome flags it as insecure form
-// submission and Lighthouse fails `is-on-https`.
-const formEndpoint = resolveFormEndpoint();
+// The compact inquiry form posts to the same server-side endpoint as the
+// contact page (src/pages/api/contact.ts): server-side validation, honeypot and
+// SMTP delivery. There is deliberately no mailto: action — an insecure form
+// action on an HTTPS page fails Lighthouse `is-on-https`.
 
 // Routes are served with a trailing slash; normalise both sides so active state
 // works regardless of how the href is written.
@@ -260,31 +260,43 @@ const socialIconMap: Record<string, string> = {
 
 			<form
 				class="mt-7 space-y-5"
-				{...(formEndpoint ? { method: 'POST', action: formEndpoint } : {})}
+				method="POST"
+				action={CONTACT_API_PATH}
 				data-analytics-form="project_inquiry"
-				data-form-delivery={formEndpoint ? 'endpoint' : 'mailto'}
-				data-form-mailto={SITE.email}
+				data-contact-email={SITE.email}
 			>
 				<div>
 					<label for="inq-name" class="eyebrow text-slate">Full Name</label>
 					<input id="inq-name" name="name" type="text" required autocomplete="name" placeholder="Your full name"
+						maxlength={FIELD_LIMITS.name}
 						class="mt-2 w-full border border-sand bg-white px-4 py-3 text-sm placeholder:text-mist focus:border-brass focus:outline-none" />
 				</div>
 				<div>
 					<label for="inq-email" class="eyebrow text-slate">Email</label>
 					<input id="inq-email" name="email" type="email" required autocomplete="email" placeholder="you@email.com"
+						maxlength={FIELD_LIMITS.email}
 						class="mt-2 w-full border border-sand bg-white px-4 py-3 text-sm placeholder:text-mist focus:border-brass focus:outline-none" />
 				</div>
 				<div>
 					<label for="inq-phone" class="eyebrow text-slate">Phone</label>
 					<input id="inq-phone" name="phone" type="tel" autocomplete="tel" placeholder="Your phone number"
+						maxlength={FIELD_LIMITS.phone}
 						class="mt-2 w-full border border-sand bg-white px-4 py-3 text-sm placeholder:text-mist focus:border-brass focus:outline-none" />
 				</div>
 				<div>
 					<label for="inq-message" class="eyebrow text-slate">Tell us briefly about your project</label>
 					<textarea id="inq-message" name="message" rows="4" placeholder="Share a few details about your vision…"
+						maxlength={FIELD_LIMITS.message}
 						class="mt-2 w-full border border-sand bg-white px-4 py-3 text-sm placeholder:text-mist focus:border-brass focus:outline-none"></textarea>
 				</div>
+
+				<!-- Honeypot: hidden from visitors and assistive tech, irresistible to bots. -->
+				<div class="hidden" aria-hidden="true">
+					<label for="inq-website">Website</label>
+					<input id="inq-website" name={HONEYPOT_FIELD} type="text" tabindex="-1" autocomplete="off" />
+				</div>
+
+				<Turnstile />
 				<p class="text-center text-xs italic leading-relaxed text-slate">
 					We work with a limited number of full-service projects at a time to ensure quality and attention to detail.
 				</p>

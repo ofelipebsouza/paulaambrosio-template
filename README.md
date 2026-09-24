@@ -9,16 +9,22 @@ Premium editorial website for Paula Ambrosio Interiors — luxury interior desig
 | Command           | Action                                    |
 | ----------------- | ----------------------------------------- |
 | `npm run dev`     | Local dev server at `localhost:4321`      |
-| `npm run build`   | Production build to `./dist/`, then the post-build guard |
-| `npm run check`   | Post-build guard on its own (`dist/`)     |
+| `npm run build`   | Production build (`dist/client` + `.vercel/output`), then the post-build guard |
+| `npm run check`   | Post-build guard on its own (`dist/client`) |
 | `npm run preview` | Preview the production build locally      |
 | `npm run lint`    | Typecheck (`astro check`)                 |
 
-`npm run build` fails if the output contains an insecure form action, a plain-http
-reference, more than one `<h1>`, a canonical that does not match the served URL, or
-a broken internal link. That guard is what keeps Best Practices at 100 — a
-`<form action="mailto:…">` on an HTTPS page is flagged by Chrome as insecure form
-submission and drops the Lighthouse category to 77.
+`npm run build` fails if the output contains an unsafe form action, a plain-http
+reference, more than one `<h1>`, a canonical that does not match the served URL, an
+internal link that would redirect, a broken internal link, or an `/api/*` form
+action that was not routed to a server function. That guard is what keeps Best
+Practices at 100 — a `<form action="mailto:…">` on an HTTPS page is flagged by
+Chrome as insecure form submission and drops the Lighthouse category to 77.
+
+The contact endpoint requires the Vercel adapter, so the client build lands in
+`dist/client/` and the deployable output in `.vercel/output/`; the guard picks the
+right directory on its own. Details, environment variables and the Windows/OneDrive
+build note: [`docs/contact-form.md`](docs/contact-form.md).
 
 ## Architecture
 
@@ -61,11 +67,27 @@ Agent workflow (Hermes-compatible): branch → edit/create MDX → `npm run buil
 
 ## Environment variables
 
-| Variable                | Purpose                                              |
-| ----------------------- | ---------------------------------------------------- |
-| `CONTACT_FORM_ENDPOINT` | Optional. An **https** URL that receives the contact form (CRM, email API, webhook) and answers 2xx once the lead is stored. Unset — or set to anything that is not https — the form composes the inquiry into a `mailto:` URL and opens the visitor's mail client. |
+The contact form posts to `POST /api/contact`, a server-side Astro route that
+validates the inquiry and delivers it over SMTP (Nodemailer). It is the only
+on-demand route in the project — everything else stays statically generated.
 
-No secrets belong in the repository.
+| Variable | Required | Purpose |
+| --- | --- | --- |
+| `SMTP_HOST` | yes | `smtpout.secureserver.net` for GoDaddy Professional Email (Titan) |
+| `SMTP_PORT` / `SMTP_SECURE` | yes | `465` / `true` (Titan) · `587` / `false` (Microsoft 365) |
+| `SMTP_USER` | yes | mailbox that authenticates and signs every message |
+| `SMTP_PASSWORD` | yes | mailbox password — **server only** |
+| `CONTACT_RECIPIENT_EMAIL` | recommended | inbox that receives the leads (defaults to `SMTP_USER`) |
+| `CONTACT_MAIL_MODE` | no | `json` writes the composed email to the server log instead of sending |
+| `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` | no | distributed rate limiting |
+| `PUBLIC_TURNSTILE_SITE_KEY` / `TURNSTILE_SECRET_KEY` | no | Cloudflare Turnstile challenge |
+
+Set them in Vercel (Production, Preview **and** Development) and redeploy: Astro
+inlines `import.meta.env.*` at build time. Full architecture, DNS prerequisite and
+testing procedure: [`docs/contact-form.md`](docs/contact-form.md).
+
+No secrets belong in the repository: `.env`, `.env.local`, `.env.*.local` and
+`.vercel` are gitignored, and `.env.example` is a template without values.
 
 ## URL contract
 

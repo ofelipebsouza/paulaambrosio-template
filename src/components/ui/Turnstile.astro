@@ -1,0 +1,53 @@
+---
+/**
+ * Cloudflare Turnstile — optional anti-bot challenge.
+ *
+ * Renders nothing (and loads nothing) unless PUBLIC_TURNSTILE_SITE_KEY is set,
+ * so the third-party script never enters the critical path or the Lighthouse
+ * budget while the keys are absent. When the key exists, the script is injected
+ * on the visitor's first interaction with the enclosing form, which is early
+ * enough for the token to be ready at submit time and late enough not to delay
+ * the first paint.
+ *
+ * The token lands in a hidden `cf-turnstile-response` field inside the widget,
+ * which the API route reads and verifies against TURNSTILE_SECRET_KEY.
+ */
+const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
+---
+
+{
+	siteKey && (
+		<>
+			<div
+				class="cf-turnstile"
+				data-sitekey={siteKey}
+				data-theme="light"
+				data-size="flexible"
+				data-language="en"
+			></div>
+			<script is:inline data-turnstile-loader>
+				(() => {
+					const boot = () => {
+						if (document.querySelector('script[data-turnstile-api]')) return;
+						const script = document.createElement('script');
+						script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+						script.async = true;
+						script.defer = true;
+						script.setAttribute('data-turnstile-api', '');
+						document.head.appendChild(script);
+					};
+					document.addEventListener(
+						'focusin',
+						(event) => {
+							const target = event.target;
+							if (!(target instanceof Element)) return;
+							if (!target.closest('form')?.querySelector('.cf-turnstile')) return;
+							boot();
+						},
+						true,
+					);
+				})();
+			</script>
+		</>
+	)
+}

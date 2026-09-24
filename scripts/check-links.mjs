@@ -21,7 +21,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const DIST = path.resolve('dist');
+// The Vercel adapter re-arranges the build output: as soon as one route is
+// on-demand (the contact endpoint), Astro writes the client build to
+// `dist/client/`. Without the adapter the same pages land in `dist/`.
+const DIST = path.resolve(fs.existsSync('dist/client') ? 'dist/client' : 'dist');
 
 /** Namespaces that are legitimately http in generated XML / JSON-LD. */
 const ALLOWED_HTTP = /(?:www\.w3\.org|www\.sitemaps\.org|www\.google\.com\/schemas|schema\.org|purl\.org|ogp\.me)/i;
@@ -74,6 +77,8 @@ if (!sitemapOrigin) {
 const noSchema = [];
 const notInSitemap = [];
 const insecureForms = [];
+/** Endpoint paths referenced by form actions, checked against the build output. */
+const apiActions = new Set();
 const insecureRefs = [];
 const headingIssues = [];
 const canonicalIssues = [];
@@ -86,11 +91,18 @@ for (const file of htmlFiles) {
 	const html = fs.readFileSync(file, 'utf8');
 	const route = routeOf(file);
 
-	// 1. Insecure form actions (the Lighthouse `is-on-https` failure).
+	// 1. Form actions must be same-origin paths or https — never mailto:, http,
+	//    protocol-relative or a foreign origin. A `mailto:` action on an HTTPS
+	//    page is exactly what pinned Lighthouse Best Practices at 77.
 	for (const form of html.match(/<form[\s>][^>]*>/g) ?? []) {
 		const action = form.match(/\saction="([^"]*)"/)?.[1];
 		if (action === undefined) continue;
-		if (!action.startsWith('https://')) insecureForms.push(`${route}  action="${action}"`);
+		if (action.startsWith('/') && !action.startsWith('//')) {
+			if (action.startsWith('/api/')) apiActions.add(action.slice(1).split('?')[0]);
+			continue;
+		}
+		if (action.startsWith('https://')) continue;
+		insecureForms.push(`${route}  action="${action}"`);
 	}
 
 	// 2. Non-https references.
@@ -144,6 +156,43 @@ for (const file of htmlFiles) {
 	if (sitemapLocs.size && canonical && !sitemapLocs.has(canonical)) notInSitemap.push(route);
 }
 
+// 6. Every /api/ form action must be routed to a server function in the Vercel
+//    build output (otherwise the form posts into a 404 once deployed). The
+//    adapter serves every on-demand route through one function, so the proof is
+//    a matching route in `.vercel/output/config.json` — not a folder per route.
+const missingApiRoutes = [];
+if (apiActions.size) {
+	const vercelConfigPath = path.join(path.resolve('.'), '.vercel', 'output', 'config.json');
+	let vercelRoutes = null;
+	try {
+		vercelRoutes = JSON.parse(fs.readFileSync(vercelConfigPath, 'utf8'))?.routes ?? null;
+	} catch {
+		vercelRoutes = null;
+	}
+
+	for (const api of apiActions) {
+		// A prerendered page needs no function at all.
+		if (fs.existsSync(path.join(DIST, api, 'index.html'))) continue;
+
+		const routed = vercelRoutes?.some((route) => {
+			// Skip the 404 catch-all, which matches everything.
+			if (!route?.src || !route?.dest || route.status === 404) return false;
+			try {
+				const pattern = new RegExp(route.src);
+				return pattern.test(`/${api}`) || pattern.test(`/${api}/`);
+			} catch {
+				return false;
+			}
+		});
+
+		if (vercelRoutes === null) {
+			missingApiRoutes.push(`/${api}: .vercel/output/config.json is missing — was the Vercel adapter applied?`);
+		} else if (!routed) {
+			missingApiRoutes.push(`/${api} is not routed to a server function in .vercel/output/config.json`);
+		}
+	}
+}
+
 function report(title, list, limit = 12) {
 	if (!list.length) return;
 	console.log(`\n${title} (${list.length}):`);
@@ -156,7 +205,8 @@ console.log(`Canonical origin: ${sitemapOrigin ?? 'unknown'}`);
 console.log(`Sitemap URLs: ${sitemapLocs.size}`);
 
 errors.push(
-	...insecureForms.map((i) => `INSECURE FORM ACTION  ${i}`),
+	...insecureForms.map((i) => `UNSAFE FORM ACTION  ${i}`),
+	...missingApiRoutes.map((i) => `MISSING API ROUTE  ${i}`),
 	...insecureRefs.map((i) => `NON-HTTPS REFERENCE  ${i}`),
 	...headingIssues.map((i) => `HEADING  ${i}`),
 	...canonicalIssues.map((i) => `CANONICAL  ${i}`),
@@ -164,7 +214,8 @@ errors.push(
 	...brokenLinks.map((i) => `BROKEN LINK  ${i}`),
 );
 
-report('Insecure form actions', insecureForms);
+report('Unsafe form actions', insecureForms);
+report('API routes referenced by forms but not built', missingApiRoutes);
 report('Non-https references', insecureRefs);
 report('Heading problems', headingIssues);
 report('Canonical / og:url problems', canonicalIssues);
@@ -179,5 +230,8 @@ if (errors.length) {
 	process.exit(1);
 }
 
-console.log(`\nOK — no insecure form actions, no http references, one h1 per page, canonicals match the sitemap.`);
+console.log(
+	`\nOK — no unsafe form actions, no http references, one h1 per page, canonicals match the sitemap` +
+		(apiActions.size ? `, ${apiActions.size} API route(s) built and reachable.` : '.'),
+);
 if (warnings.length) console.log(`${warnings.length} informational note(s) above.`);
