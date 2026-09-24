@@ -71,13 +71,17 @@ const formattedDate = post.data.date.toLocaleDateString('en-US', {
 
 			<!-- Category badge -->
 			<div class="mt-10 flex items-center gap-3">
-				<span class="eyebrow text-brass">{post.data.category}</span>
+				<span class="eyebrow text-stone">{post.data.category}</span>
 			</div>
 
 			<!-- Title -->
 			<h1 class="font-display mt-5 max-w-4xl text-3xl leading-tight lg:text-5xl lg:leading-tight">
 				{post.data.title}
 			</h1>
+
+			<!-- Guarantees a valid h1→h2→h3 outline even when an article opens
+			     with an h3 subheading (sr-only — no visual change). -->
+			<h2 class="sr-only">In this article</h2>
 
 			<!-- Excerpt -->
 			{post.data.excerpt && (
@@ -89,8 +93,7 @@ const formattedDate = post.data.date.toLocaleDateString('en-US', {
 			<!-- Article meta: author · date · reading time -->
 			<div class="mt-8 flex flex-wrap items-center gap-x-4 gap-y-3 border-t border-b border-sand/60 py-5 text-sm">
 				<!-- Author -->
-				<div class="flex items-center gap-2.5">
-					<div class="flex h-9 w-9 items-center justify-center rounded-full bg-coffee/10 text-xs font-bold uppercase tracking-wide text-coffee">
+				<div class="flex items-center gap-2.5">						<div class="flex h-9 w-9 items-center justify-center rounded-full bg-coffee/10 text-xs font-bold uppercase tracking-wide text-coffee-deep">
 						{post.data.author.split(' ').map((n: string) => n[0]).join('')}
 					</div>
 					<div>

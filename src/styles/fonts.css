@@ -1,11 +1,10 @@
-/* Self-hosted fonts — preloaded in Layout.astro, no third-party requests. */
-
+/* Self-hosted fonts — bundled through global.css (no render-blocking <link>). */
 @font-face {
 	font-family: 'Loew';
 	font-style: normal;
 	font-weight: 700;
 	font-display: swap;
-	src: url('/fonts/Loew-Bold.otf') format('opentype');
+	src: url('/fonts/Loew-Bold.woff2') format('woff2');
 }
 
 @font-face {

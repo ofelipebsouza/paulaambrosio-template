@@ -70,10 +70,16 @@ const titleTemplate = title.includes(SITE.name) ? title : `${title} | ${SITE.nam
 		<link rel="icon" type="image/webp" href="/favicon.webp" />
 		<link rel="sitemap" href="/sitemap-index.xml" />
 
+		<!-- Page head extras (page schema, LCP preload) — the hero preload comes
+		     before the font preloads so the LCP image wins the bandwidth race. -->
+		<slot name="head" />
+
 		<!-- Self-hosted fonts (no render-blocking Google Fonts requests) -->
 		<link rel="preload" href="/fonts/cormorant-garamond-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin />
 		<link rel="preload" href="/fonts/plus-jakarta-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
-		<link rel="stylesheet" href="/fonts/fonts.css" />
+		<link rel="preload" href="/fonts/plus-jakarta-sans-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin />
+		<link rel="preload" href="/fonts/Loew-Bold.woff2" as="font" type="font/woff2" crossorigin />
+		<link rel="preload" href="/fonts/Phosphor.woff2" as="font" type="font/woff2" crossorigin />
 
 		<!-- Phosphor Icons are bundled locally through global.css; no render-blocking third-party request. -->
 		<script is:inline>document.documentElement.classList.add('js');</script>
@@ -84,8 +90,8 @@ const titleTemplate = title.includes(SITE.name) ? title : `${title} | ${SITE.nam
 			'@graph': [organizationSchema(), personSchema(), websiteSchema()],
 		})} />
 
-		<!-- Page-level SEO: schemas, breadcrumbs, web page graph -->
-		<slot name="head" />
+		<!-- Page-level SEO: schemas, breadcrumbs, web page graph (slot rendered
+		     earlier — right after the sitemap link) -->
 	</head>
 	<body class="min-h-screen flex flex-col bg-bone text-ink antialiased selection:bg-brass/30 selection:text-ink">
 		<a

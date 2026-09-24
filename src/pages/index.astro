@@ -1,6 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import ProjectGrid from '../components/projects/ProjectGrid.astro';
 import CtaBanner from '../components/ui/CtaBanner.astro';
@@ -15,6 +15,23 @@ const heroSlides = allProjects.filter((p) => p.data.projectType !== 'Renders').s
 	src: p.data.featuredImage,
 	alt: p.data.imageAlt ?? p.data.title,
 }));
+
+// Slides 0–1 load up front; the rest defer (data-src) so the LCP image owns the
+// bandwidth — the carousel swaps each one in before it becomes visible.
+const heroShots = await Promise.all(
+	heroSlides.map(async (slide, i) => {
+		const optimized = await getImage({ src: slide.src, widths: [768, 1200, 1600], sizes: '100vw', quality: 60 });
+		return {
+			alt: slide.alt,
+			src: optimized.src,
+			// `srcSet.attribute` is the ready-made "url 768w, url 1200w, …" string.
+			srcset: optimized.srcSet.attribute,
+			width: optimized.attributes.width,
+			height: optimized.attributes.height,
+			eager: i === 0,
+		};
+	}),
+);
 
 const featuredProjects = allProjects
 	.sort((a, b) => (b.data.year ?? 0) - (a.data.year ?? 0));
@@ -41,6 +58,19 @@ const processSteps = [
 	ogImage={HOME_OG}
 	ogImageAlt={allProjects[0]?.data.imageAlt}
 >
+	<Fragment slot="head">
+		<!-- LCP image: preloaded first in <head> so it starts before the font
+		     preloads; the <img> below reuses this exact response. -->
+		<link
+			rel="preload"
+			as="image"
+			href={heroShots[0].src}
+			imagesrcset={heroShots[0].srcset}
+			imagesizes="100vw"
+			fetchpriority="high"
+		/>
+	</Fragment>
+
 	<Fragment slot="head" set:html={schemaScript(webPageSchema({
 		path: '/',
 		title: 'Paula Ambrosio Interiors | Luxury Interior Design in Miami',
@@ -50,23 +80,38 @@ const processSteps = [
 	<!-- 1. Hero: crossfade carousel, title sits below -->
 	<section class="bg-bone pb-20 text-center lg:pb-28">
 		<div id="hero-carousel" class="relative w-full overflow-hidden min-h-[80vw] sm:min-h-0 sm:aspect-[16/10] lg:aspect-[21/8]">
-			{heroSlides.map((slide, i) => (
+			{heroShots.map((shot, i) => (
 				<div
 					class="hero-slide absolute inset-0 transition-opacity duration-[1400ms] ease-in-out"
 					style={`opacity: ${i === 0 ? '1' : '0'};`}
 					aria-hidden={i !== 0 ? 'true' : undefined}
 				>
-					<Image
-						src={slide.src}
-						alt={slide.alt}
-						widths={[768, 1200, 1600]}
-						sizes="100vw"
-						loading={i === 0 ? 'eager' : 'lazy'}
-						fetchpriority={i === 0 ? 'high' : 'auto'}
-						quality={60}
-						decoding="async"
-						class="h-full w-full object-cover"
-					/>
+					{shot.eager ? (
+						<img
+							src={shot.src}
+							srcset={shot.srcset}
+							sizes="100vw"
+							width={shot.width}
+							height={shot.height}
+							alt={shot.alt}
+							loading="eager"
+							fetchpriority={i === 0 ? 'high' : 'auto'}
+							decoding="async"
+							class="h-full w-full object-cover"
+						/>
+					) : (
+						<img
+							data-src={shot.src}
+							data-srcset={shot.srcset}
+							sizes="100vw"
+							width={shot.width}
+							height={shot.height}
+							alt={shot.alt}
+							loading="lazy"
+							decoding="async"
+							class="h-full w-full object-cover"
+						/>
+					)}
 				</div>
 			))}
 
@@ -82,9 +127,14 @@ const processSteps = [
 						aria-selected={i === 0 ? 'true' : 'false'}
 						aria-label={`Image ${i + 1}`}
 						data-index={i}
-						class="hero-dot block h-1 rounded-full bg-bone/50 transition-all duration-500 ease-in-out"
-						style={`width: ${i === 0 ? '1.75rem' : '0.5rem'}; opacity: ${i === 0 ? '1' : '0.5'};`}
-					></button>
+						class="hero-dot flex h-6 w-7 items-center justify-center"
+						style={`opacity: ${i === 0 ? '1' : '0.5'};`}
+					>
+						<span
+							class="block h-1 rounded-full bg-bone transition-all duration-500 ease-in-out"
+							style={`width: ${i === 0 ? '1.75rem' : '0.5rem'};`}
+						></span>
+					</button>
 				))}
 			</div>
 		</div>
@@ -120,7 +170,7 @@ const processSteps = [
 	</section>
 
 	<!-- 3. Services -->
-	<section class="bg-bone py-28 lg:py-36 border-t border-sand">
+	<section class="cv-auto bg-bone py-28 lg:py-36 border-t border-sand">
 		<div class="container-editorial">
 			<div class="text-center mb-20 fade-up">
 				<div class="ornament-divider mb-8">
@@ -180,7 +230,7 @@ const processSteps = [
 	</section>
 
 	<!-- 4. Selected projects -->
-	<section class="bg-linen py-28 lg:py-36 border-t border-sand">
+	<section class="cv-auto bg-linen py-28 lg:py-36 border-t border-sand">
 		<div class="container-editorial">
 			<div class="mb-16 flex flex-wrap items-end justify-between gap-6 fade-up">
 				<div>
@@ -196,7 +246,7 @@ const processSteps = [
 	</section>
 
 	<!-- 5. Turnkey dark positioning -->
-	<section class="bg-graphite py-28 text-bone lg:py-36">
+	<section class="cv-auto bg-graphite py-28 text-bone lg:py-36">
 		<div class="container-editorial grid gap-12 lg:grid-cols-12 fade-up">
 			<div class="lg:col-span-5">
 				<p class="eyebrow text-brass">Turnkey Interior Design</p>
@@ -215,7 +265,7 @@ const processSteps = [
 	</section>
 
 	<!-- 7. Locations -->
-	<section class="container-editorial py-28 lg:py-36">
+	<section class="cv-auto container-editorial py-28 lg:py-36">
 		<div class="mb-16 flex flex-wrap items-end justify-between gap-6 fade-up">
 			<div>
 				<p class="eyebrow text-stone">Locations</p>
@@ -231,7 +281,7 @@ const processSteps = [
 						class="group flex h-full min-h-[8rem] flex-col justify-between p-7 transition-colors duration-300 hover:bg-linen"
 					>
 						<span class="font-display text-xl transition-colors duration-300 group-hover:text-coffee">{loc}</span>
-						<span aria-hidden="true" class="mt-6 eyebrow text-brass transition-transform duration-500 group-hover:translate-x-1.5">→</span>
+						<span aria-hidden="true" class="mt-6 eyebrow text-stone transition-transform duration-500 group-hover:translate-x-1.5">→</span>
 					</a>
 				</li>
 			))}
@@ -239,7 +289,7 @@ const processSteps = [
 	</section>
 
 	<!-- 8. About Paula -->
-	<section class="container-editorial py-28 lg:py-36 border-t border-sand">
+	<section class="cv-auto container-editorial py-28 lg:py-36 border-t border-sand">
 		<div class="grid items-center gap-16 lg:grid-cols-12">
 			<div class="lg:col-span-5 fade-up">
 				<div class="relative overflow-hidden border border-sand">
@@ -272,7 +322,7 @@ const processSteps = [
 	</section>
 
 	<!-- 9. Process -->
-	<section class="bg-graphite py-28 text-bone lg:py-36">
+	<section class="cv-auto bg-graphite py-28 text-bone lg:py-36">
 		<div class="container-editorial">
 			<div class="fade-up">
 				<p class="eyebrow text-brass">The Process</p>
@@ -293,7 +343,7 @@ const processSteps = [
 	</section>
 
 	<!-- 10. Journal -->
-	<section class="bg-linen py-28 lg:py-36">
+	<section class="cv-auto bg-linen py-28 lg:py-36">
 		<div class="container-editorial">
 			<div class="mb-16 flex flex-wrap items-end justify-between gap-6 fade-up">
 				<div>
@@ -347,20 +397,33 @@ const processSteps = [
 
 	const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+	// Deferred hero slides: promote data-src/data-srcset when needed.
+	function loadSlide(index: number) {
+		const img = slides[index]?.querySelector<HTMLImageElement>('img[data-src]');
+		if (!img) return;
+		if (img.dataset.srcset) img.srcset = img.dataset.srcset;
+		if (img.dataset.src) img.src = img.dataset.src;
+		img.removeAttribute('data-src');
+		img.removeAttribute('data-srcset');
+	}
+
+	// Prefetch the next slide as soon as the current one is shown (4s of margin).
 	function goTo(index: number) {
 		// Fade out current
 		slides[current].style.opacity = '0';
 		slides[current].setAttribute('aria-hidden', 'true');
-		dots[current].style.width   = '0.5rem';
+		(dots[current].firstElementChild as HTMLElement).style.width = '0.5rem';
 		dots[current].style.opacity = '0.5';
 		dots[current].setAttribute('aria-selected', 'false');
 
 		current = index;
+		loadSlide(current);
+		loadSlide((current + 1) % slides.length);
 
 		// Fade in next
 		slides[current].style.opacity = '1';
 		slides[current].removeAttribute('aria-hidden');
-		dots[current].style.width   = '1.75rem';
+		(dots[current].firstElementChild as HTMLElement).style.width = '1.75rem';
 		dots[current].style.opacity = '1';
 		dots[current].setAttribute('aria-selected', 'true');
 	}
@@ -372,6 +435,15 @@ const processSteps = [
 	function startTimer() {
 		clearInterval(timer);
 		if (!reduced) timer = setInterval(advance, 4000);
+	}
+
+	// Warm the second slide once the browser is idle so the first 4s
+	// transition shows an already-decoded image without stealing LCP bandwidth.
+	const warmNextSlide = () => loadSlide(1);
+	if ('requestIdleCallback' in window) {
+		requestIdleCallback(warmNextSlide);
+	} else {
+		setTimeout(warmNextSlide, 2000);
 	}
 
 	// Dot click → jump to slide and reset timer

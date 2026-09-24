@@ -3,9 +3,10 @@ interface Props {
 	variant?: 'dark' | 'light' | 'auto';
 	class?: string;
 	alt?: string;
+	loading?: 'eager' | 'lazy';
 }
 
-const { variant = 'auto', class: className = '', alt = 'Paula Ambrosio Interior Design' } = Astro.props;
+const { variant = 'auto', class: className = '', alt = 'Paula Ambrosio Interior Design', loading = 'eager' } = Astro.props;
 const source = variant === 'light' ? '/brand/logo-white.svg' : variant === 'dark' ? '/brand/logo-black.svg' : '/brand/logo-currentColor.svg';
 ---
 
@@ -15,6 +16,6 @@ const source = variant === 'light' ? '/brand/logo-white.svg' : variant === 'dark
 	width="320"
 	height="44"
 	class:list={['block max-w-full', className]}
-	loading="eager"
+	loading={loading}
 	decoding="async"
 />

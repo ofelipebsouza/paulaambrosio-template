@@ -1,5 +1,6 @@
 @import "tailwindcss";
-@import "@phosphor-icons/web/regular";
+@import "./fonts.css";
+@import "./phosphor-lite.css";
 
 /* ============================================================
    Design tokens — the single source for color, type and motion.
@@ -12,7 +13,7 @@
 	--color-bone: #f9f5f0;
 	--color-linen: #f9f5f0;
 	--color-sand: #ceb297;
-	--color-stone: #8c6a54;
+	--color-stone: #8a6851;
 	--color-brass: #ceb297;
 	--color-coffee: #8c6a54;
 	--color-coffee-deep: #6f503f;
@@ -84,7 +85,15 @@
 		letter-spacing: -0.01em;
 	}
 
-	::selection {
+	/* Skip rendering of below-the-fold sections until they approach the viewport.
+   Cuts initial style/layout + scripting work; `auto <length>` remembers the real
+   size after first render, so the scrollbar never jumps. */
+.cv-auto {
+	content-visibility: auto;
+	contain-intrinsic-size: auto 800px;
+}
+
+::selection {
 		background-color: color-mix(in srgb, var(--color-brass) 30%, transparent);
 	}
 
