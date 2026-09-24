@@ -12,7 +12,9 @@ Premium editorial website for Paula Ambrosio Interiors — luxury interior desig
 | `npm run build`   | Production build (`dist/client` + `.vercel/output`), then the post-build guard |
 | `npm run check`   | Post-build guard on its own (`dist/client`) |
 | `npm run preview` | Preview the production build locally      |
-| `npm run lint`    | Typecheck (`astro check`)                 |
+| `npm run lint`    | Typecheck (`tsc --noEmit`)                |
+| `npm run dns:check` | Audits MX/SPF/DKIM/DMARC of the mail path and prints what to publish |
+| `npm run smtp:check` | Verifies the SMTP host, port and password the form uses (`--send` delivers a test message) |
 
 `npm run build` fails if the output contains an unsafe form action, a plain-http
 reference, more than one `<h1>`, a canonical that does not match the served URL, an

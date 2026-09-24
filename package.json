@@ -13,7 +13,9 @@
     "lint": "tsc --noEmit",
     "projects:sync": "node scripts/projects.mjs sync",
     "projects:import": "node scripts/projects.mjs import",
-    "projects:check": "node scripts/projects.mjs check"
+    "projects:check": "node scripts/projects.mjs check",
+    "smtp:check": "node scripts/smtp-check.mjs",
+    "dns:check": "node scripts/dns-check.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^8.0.1",

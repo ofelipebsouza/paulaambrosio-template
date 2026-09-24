@@ -61,9 +61,21 @@ SMTP_SECURE=false
 
 Participantes do `Prefer to discuss`/`Other` etc. vêm de `src/lib/contact-form.ts`.
 
-**Pendente de confirmação:** se a caixa é Professional Email/Titan ou Microsoft
-365. Não foi possível determinar a partir do repositório — o MX do domínio não
-existe (veja abaixo).
+**Provedor confirmado: Professional Email / Titan.** Além da confirmação do
+proprietário, o domínio foi testado no endpoint público de descoberta da Microsoft
+(`login.microsoftonline.com/getuserrealm.srf`), que responde `Unknown` — ou seja,
+não existe tenant Microsoft 365 para este domínio (o controle com um domínio
+Microsoft responde `Federated`). Logo, os padrões do Titan em `SMTP_HOST`,
+`SMTP_PORT` e `SMTP_SECURE` estão certos e não há nada a mudar no código.
+
+**Pendente: a senha da caixa.** A credencial fornecida é recusada pelo próprio
+provedor — `535 Authentication Failed` em `smtpout.secureserver.net:465` e `:587`
+e em `smtp.titan.email`, e `[AUTHENTICATIONFAILED]` no IMAP dos dois hosts. O teste
+com um endereço inexistente devolve a mesma resposta, então não é possível
+distinguir senha desatualizada de caixa não provisionada; as duas hipóteses se
+resolvem no painel do GoDaddy (*E-mail e Office → Gerenciar*). O login no webmail
+usa o SSO do GoDaddy e chegou a responder `429 Too Many Requests`, sem relação com
+a senha.
 
 ## Pré-requisito de DNS (bloqueador atual)
 
@@ -91,6 +103,20 @@ mostra os valores exatos em *Email & Office → Configurar DNS*; os do Titan sã
 O SPF é o que mais importa para o lead não cair em spam: sem ele, mensagens
 enviadas pelo servidor em nome de `info@paulaambrosio.com` são tratadas como
 não autorizadas.
+
+## Verificando cada etapa (sem olhar painel)
+
+Três comandos, todos sem dependência extra:
+
+| Comando | Responde |
+| --- | --- |
+| `npm run dns:check` | O caminho de e-mail existe? Confere MX, SPF, DKIM (seletores comuns) e DMARC via DNS-over-HTTPS, mostrando o registro exato a publicar quando falta algo. Sai com código 1 enquanto incompleto. |
+| `npm run smtp:check` | O host, a porta e a senha funcionam? Monta o **mesmo transporte** do endpoint, verifica conexão e autenticação e traduz o erro (535 = credencial recusada, `ENOTFOUND`/`ETIMEDOUT` = host/rede). `--send` envia uma mensagem de teste de verdade e devolve o id aceito pelo servidor. A senha nunca é impressa. |
+| `npm run build` | O site está publicável? Inclui o guard que prova que `/api/contact/` foi construído como função. |
+
+Os valores vêm de `.env.local`/`.env` (nenhum dos dois é versionado) ou do
+ambiente. Estado atual: `dns:check` acusa os quatro registros ausentes e
+`smtp:check` acusa `EAUTH 535`.
 
 ## Proteções implementadas
 
