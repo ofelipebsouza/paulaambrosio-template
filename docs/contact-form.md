@@ -77,32 +77,49 @@ resolvem no painel do GoDaddy (*E-mail e Office → Gerenciar*). O login no webm
 usa o SSO do GoDaddy e chegou a responder `429 Too Many Requests`, sem relação com
 a senha.
 
-## Pré-requisito de DNS (bloqueador atual)
+## DNS (estado verificado em 24/09/2026)
 
-O domínio `paulaambrosio.com` usa o **Vercel DNS** (`ns1/ns2.vercel-dns.com`) e
-**não tem nenhum registro de e-mail**:
+O domínio é **registrado na GoDaddy** com nameservers **Vercel**
+(`ns1/ns2.vercel-dns.com`) — quem responde pelo domínio é o DNS da Vercel, e é
+lá que os registros de e-mail foram publicados. Consulta via DNS-over-HTTPS
+(`npm run dns:check`):
 
-| Registro | Situação | Consequência |
+| Registro | Valor publicado | Estado |
 | --- | --- | --- |
-| `MX` | ausente | e-mail para `info@paulaambrosio.com` **retorna erro** para quem envia |
-| `TXT` (SPF) | ausente | mensagens enviadas pelo site não têm autorização declarada |
-| `_dmarc` | ausente | sem política de proteção contra spoofing |
-| `DKIM` | ausente | sem assinatura |
+| `NS` | `ns1.vercel-dns.com.`, `ns2.vercel-dns.com.` | OK |
+| `MX` | `0 smtp.secureserver.net.` · `10 mailstore1.secureserver.net.` | OK |
+| `TXT` (SPF) | `v=spf1 include:secureserver.net -all` | OK |
+| `DKIM` | nenhum seletor público (`default`, `titan`, `selector1`, `selector2`) | **falta** |
+| `TXT` `_dmarc` | nenhum | **falta** |
 
-Para o formulário funcionar em produção, adicionar no painel de DNS (o GoDaddy
-mostra os valores exatos em *Email & Office → Configurar DNS*; os do Titan são):
+Esses MX e esse SPF são **exatamente o que a GoDaddy publica** para
+*Professional Email powered by Titan* (help 42767), então a configuração atual
+está certa e **não deve ser substituída** por `mx1/mx2.titan.email` — depende da
+geração da conta e a atual já é a documentada. Dois cuidados pedidos pela
+própria GoDaddy:
+
+- **Um único registro SPF.** O domínio já tem `v=spf1 include:secureserver.net -all`.
+  Um segundo TXT `v=spf1` invalida o SPF de todos; se um `include:` precisar
+  entrar, ele vai **dentro do registro existente**, nunca em um TXT novo.
+- Nameservers seguem na Vercel e e-mail segue na GoDaddy: sem CNAME de servidor
+  de e-mail e sem mover o DNS de volta para a GoDaddy.
+
+Restam dois registros, ambos de **entrega**, não de conexão:
 
 | Tipo | Nome | Valor |
 | --- | --- | --- |
-| MX | `@` | `mx1.titan.email` (prioridade 10) |
-| MX | `@` | `mx2.titan.email` (prioridade 20) |
-| TXT | `@` | `v=spf1 include:spf.titan.email ~all` |
 | TXT | `_dmarc` | `v=DMARC1; p=none; rua=mailto:info@paulaambrosio.com` |
-| TXT/CNAME | DKIM | valor gerado pelo Titan para o domínio (`default._domainkey`) |
+| TXT | `default._domainkey` | valor gerado pelo GoDaddy (*E-mail e Office → Configurar DNS/DKIM*) |
 
-O SPF é o que mais importa para o lead não cair em spam: sem ele, mensagens
-enviadas pelo servidor em nome de `info@paulaambrosio.com` são tratadas como
-não autorizadas.
+Sem DKIM o lead ainda chega, mas com mais chance de cair em spam; DMARC gera o
+relatório de autenticação. Nenhum dos dois impede o envio do formulário.
+
+**Como provar que a caixa recebe:** os MTAs da GoDaddy recusam na própria
+saudação conexões vindas de IP de datacenter listado no Spamhaus (neste ambiente:
+`45.161.5.194`, resposta `554 … SBL`), então o teste automatizado local só
+consegue confirmar que os dois MX estão no ar e respondendo com banner do
+GoDaddy — ele não fecha o `RCPT TO`. O teste decisivo é abrir o webmail da caixa
+ou mandar um e-mail de um provedor comum e ver a mensagem chegar.
 
 ## Verificando cada etapa (sem olhar painel)
 
@@ -125,8 +142,10 @@ npm run lead:test                 # o formulário em produção aceita e entrega
 ```
 
 Os valores vêm de `.env.local`/`.env` (nenhum dos dois é versionado) ou do
-ambiente. Estado atual: `dns:check` acusa os quatro registros ausentes e
-`smtp:check` acusa `EAUTH 535`.
+ambiente. Estado atual (24/09/2026): `dns:check` passa NS, MX e SPF e acusa só
+DKIM e DMARC; `smtp:check` acusa `EAUTH 535` (senha da caixa recusada);
+`lead:test` contra produção responde `503 delivery_unavailable` (variáveis ainda
+não cadastradas na Vercel).
 
 ## Proteções implementadas
 
@@ -227,8 +246,13 @@ faria o formulário postar num 404).
 
 ## Pendências
 
-1. Confirmar o produto de e-mail (Titan ou Microsoft 365) na GoDaddy.
-2. Cadastrar as variáveis acima na Vercel e refazer o deploy.
-3. Adicionar MX/SPF/DKIM/DMARC no DNS do domínio (bloqueador: sem MX, o e-mail
-   não chega; sem SPF, cai em spam).
-4. Opcional: criar conta Upstash e as chaves do Turnstile.
+1. ~~Confirmar o produto de e-mail~~ — **confirmado: Professional Email / Titan**
+   (MX documentados pela GoDaddy para Titan + `getuserrealm` da Microsoft
+   respondendo `Unknown`). Nada a mudar no código.
+2. ~~MX e SPF no DNS~~ — **publicados e propagados** no Vercel DNS (ver seção DNS).
+3. Publicar **DKIM** (valor gerado no painel do GoDaddy) e **DMARC**
+   (`v=DMARC1; p=none; rua=mailto:info@paulaambrosio.com`).
+4. **Senha da caixa válida** → `npm run smtp:check -- --send`.
+5. **Cadastrar as variáveis na Vercel** (Production, Preview, Development) e
+   refazer o deploy → `npm run lead:test` deve responder `200`.
+6. Opcional: criar conta Upstash e as chaves do Turnstile.
