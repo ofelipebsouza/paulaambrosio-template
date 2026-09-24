@@ -112,7 +112,17 @@ Três comandos, todos sem dependência extra:
 | --- | --- |
 | `npm run dns:check` | O caminho de e-mail existe? Confere MX, SPF, DKIM (seletores comuns) e DMARC via DNS-over-HTTPS, mostrando o registro exato a publicar quando falta algo. Sai com código 1 enquanto incompleto. |
 | `npm run smtp:check` | O host, a porta e a senha funcionam? Monta o **mesmo transporte** do endpoint, verifica conexão e autenticação e traduz o erro (535 = credencial recusada, `ENOTFOUND`/`ETIMEDOUT` = host/rede). `--send` envia uma mensagem de teste de verdade e devolve o id aceito pelo servidor. A senha nunca é impressa. |
+| `npm run mail:test` | Os e-mails estão corretos? Sobe um sink SMTP no próprio processo, transmite o lead e a confirmação por uma conversa SMTP real e verifica 17 propriedades: remetente é o estúdio (nunca o visitante), `Reply-To` volta para o visitante, multipart com texto e HTML, escaping de tags/`&`/aspas, quebras de linha preservadas, assunto sem CR/LF e sem dados além do necessário na confirmação. Sem rede, sem credencial e sem dependência nova. |
+| `npm run lead:test` | A configuração publicada funciona? Envia uma consulta de teste marcada como tal pelo endpoint em execução (produção por padrão; aceita uma URL) e interpreta a resposta: `200` = aceito e entregue ao SMTP, `503` = faltam as variáveis, `502` = o SMTP recusou, `404` = o endpoint não está roteado. |
 | `npm run build` | O site está publicável? Inclui o guard que prova que `/api/contact/` foi construído como função. |
+
+Ordem da prova final, depois de DNS e variáveis:
+
+```bash
+npm run dns:check                 # os 4 registros publicados
+npm run smtp:check -- --send      # a mensagem de teste chega em info@paulaambrosio.com
+npm run lead:test                 # o formulário em produção aceita e entrega (200)
+```
 
 Os valores vêm de `.env.local`/`.env` (nenhum dos dois é versionado) ou do
 ambiente. Estado atual: `dns:check` acusa os quatro registros ausentes e

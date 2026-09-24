@@ -15,6 +15,8 @@ Premium editorial website for Paula Ambrosio Interiors — luxury interior desig
 | `npm run lint`    | Typecheck (`tsc --noEmit`)                |
 | `npm run dns:check` | Audits MX/SPF/DKIM/DMARC of the mail path and prints what to publish |
 | `npm run smtp:check` | Verifies the SMTP host, port and password the form uses (`--send` delivers a test message) |
+| `npm run mail:test` | Integration test of both inquiry emails against a local SMTP sink |
+| `npm run lead:test` | Sends a real test inquiry through a running site and interprets the answer |
 
 `npm run build` fails if the output contains an unsafe form action, a plain-http
 reference, more than one `<h1>`, a canonical that does not match the served URL, an

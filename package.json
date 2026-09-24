@@ -14,6 +14,8 @@
     "projects:sync": "node scripts/projects.mjs sync",
     "projects:import": "node scripts/projects.mjs import",
     "projects:check": "node scripts/projects.mjs check",
+    "mail:test": "node scripts/mail-test.mjs",
+    "lead:test": "node scripts/lead-test.mjs",
     "smtp:check": "node scripts/smtp-check.mjs",
     "dns:check": "node scripts/dns-check.mjs"
   },
