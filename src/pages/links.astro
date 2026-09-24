@@ -11,6 +11,8 @@ const breadcrumbs: BreadcrumbEntry[] = [{ name: 'Links', url: '/links' }];
 
 const socialIconMap: Record<string, string> = {
 	Instagram: 'ph ph-instagram-logo',
+	YouTube: 'ph ph-youtube-logo',
+	Spotify: 'ph ph-spotify-logo',
 	TikTok: 'ph ph-tiktok-logo',
 	Threads: 'ph ph-threads-logo',
 	LinkedIn: 'ph ph-linkedin-logo',
@@ -23,8 +25,43 @@ const carouselProjects = [showcase, ...projects.filter((p) => p.id !== 'commerci
 
 const linkGroups: Array<{
 	label: string;
-	links: Array<{ label: string; description?: string; href: string; event?: string }>;
+	links: Array<{ label: string; description?: string; href: string; event?: string; external?: boolean; icon?: string }>;
 }> = [
+	{
+		label: 'Design Podcast',
+		links: [
+			{
+				label: 'Design Podcast (Episodes)',
+				description: 'Conversations with designers, architects & creative leaders',
+				href: '/podcast',
+				event: 'podcast_page_open',
+			},
+			{
+				label: 'Listen on Spotify',
+				description: 'Official Spotify channel & episodes',
+				href: 'https://creators.spotify.com/pod/profile/paula-ambrsio/',
+				event: 'spotify_click',
+				external: true,
+				icon: 'ph ph-spotify-logo',
+			},
+			{
+				label: 'Watch on YouTube',
+				description: 'Official video episodes & talks',
+				href: 'https://www.youtube.com/@paulaambrosio_',
+				event: 'youtube_click',
+				external: true,
+				icon: 'ph ph-youtube-logo',
+			},
+			{
+				label: 'Instagram @design.podcast',
+				description: 'Daily inspiration & community highlights',
+				href: 'https://www.instagram.com/design.podcast/',
+				event: 'instagram_click',
+				external: true,
+				icon: 'ph ph-instagram-logo',
+			},
+		],
+	},
 	{
 		label: 'Portfolio',
 		links: [
@@ -111,16 +148,21 @@ const linkGroups: Array<{
 				<div class="mt-9">
 					<p class="eyebrow text-stone">{group.label}</p>
 					<ul class="mt-3 space-y-3">
-						{group.links.map(({ label, description, href, event }) => (
+						{group.links.map(({ label, description, href, event, external, icon }) => (
 							<li>
 								<a
 									href={href}
+									target={external ? '_blank' : undefined}
+									rel={external ? 'noopener noreferrer' : undefined}
 									data-analytics-event={event}
 									data-analytics-location="links"
 									class="group flex items-center justify-between gap-4 border border-sand bg-white px-6 py-5 transition-colors hover:border-brass hover:text-coffee focus-visible:outline-2 focus-visible:outline-coffee focus-visible:outline-offset-2"
 								>
 									<span class="min-w-0">
-										<span class="block text-sm uppercase tracking-[0.18em]">{label}</span>
+										<span class="inline-flex items-center gap-2.5 text-sm uppercase tracking-[0.18em]">
+											{icon && <i class={`${icon} text-base text-coffee`} aria-hidden="true"></i>}
+											<span>{label}</span>
+										</span>
 										{description && <span class="mt-1.5 block text-xs leading-snug text-slate">{description}</span>}
 									</span>
 									<span aria-hidden="true" class="transition-transform duration-300 group-hover:translate-x-1">→</span>
@@ -141,7 +183,7 @@ const linkGroups: Array<{
 					data-analytics-event="cta_view_project"
 					data-analytics-project={p.id}
 					data-analytics-location="links"
-					aria-label={`View project: ${p.data.title}`}
+					aria-label={`${p.data.title}, ${p.data.location} — View Project`}
 					class="project-slide group absolute inset-0 transition-opacity duration-[1400ms] ease-in-out focus-visible:outline-2 focus-visible:outline-coffee focus-visible:outline-offset-[-4px]"
 					style={`opacity: ${i === 0 ? '1' : '0'};`}
 					aria-hidden={i !== 0 ? 'true' : undefined}
@@ -181,9 +223,14 @@ const linkGroups: Array<{
 						aria-selected={i === 0 ? 'true' : 'false'}
 						aria-label={p.data.title}
 						data-index={i}
-						class="project-dot block h-1 rounded-full bg-bone/50 transition-all duration-500 ease-in-out"
-						style={`width: ${i === 0 ? '1.75rem' : '0.5rem'}; opacity: ${i === 0 ? '1' : '0.5'};`}
-					></button>
+						class="project-dot flex h-6 w-7 items-center justify-center"
+						style={`opacity: ${i === 0 ? '1' : '0.5'};`}
+					>
+						<span
+							class="block h-1 rounded-full bg-bone transition-all duration-500 ease-in-out"
+							style={`width: ${i === 0 ? '1.75rem' : '0.5rem'};`}
+						></span>
+					</button>
 				))}
 			</div>
 		</div>
@@ -200,7 +247,11 @@ const linkGroups: Array<{
 			</p>
 
 			<div class="mt-10 flex flex-wrap justify-center gap-3">
-				{SOCIAL_LINKS.map(({ label, href }) => (
+				{[
+					...SOCIAL_LINKS,
+					{ label: 'YouTube', href: 'https://www.youtube.com/@paulaambrosio_' },
+					{ label: 'Spotify', href: 'https://creators.spotify.com/pod/profile/paula-ambrsio/' },
+				].map(({ label, href }) => (
 					<a
 						href={href}
 						target="_blank"
@@ -235,7 +286,7 @@ const linkGroups: Array<{
 		slides[current].style.opacity = '0';
 		slides[current].setAttribute('aria-hidden', 'true');
 		slides[current].setAttribute('inert', '');
-		dots[current].style.width = '0.5rem';
+		(dots[current].firstElementChild as HTMLElement).style.width = '0.5rem';
 		dots[current].style.opacity = '0.5';
 		dots[current].setAttribute('aria-selected', 'false');
 
@@ -244,7 +295,7 @@ const linkGroups: Array<{
 		slides[current].style.opacity = '1';
 		slides[current].removeAttribute('aria-hidden');
 		slides[current].removeAttribute('inert');
-		dots[current].style.width = '1.75rem';
+		(dots[current].firstElementChild as HTMLElement).style.width = '1.75rem';
 		dots[current].style.opacity = '1';
 		dots[current].setAttribute('aria-selected', 'true');
 	}

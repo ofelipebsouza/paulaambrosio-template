@@ -1,0 +1,242 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { Image } from 'astro:assets';
+import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
+import CtaBanner from '../components/ui/CtaBanner.astro';
+import { webPageSchema, schemaScript } from '../lib/seo';
+import type { BreadcrumbEntry } from '../lib/seo';
+import podcastLogoBlack from '../assets/podcast/design-podcast-logo-black.png';
+
+const breadcrumbs: BreadcrumbEntry[] = [
+	{ name: 'Design Podcast', url: '/podcast' },
+];
+
+const platforms = [
+	{
+		title: 'Spotify Podcasts',
+		desc: 'Listen to all episodes, interviews, and interior design discussions on Spotify.',
+		action: 'Listen on Spotify',
+		href: 'https://creators.spotify.com/pod/profile/paula-ambrsio/',
+		icon: 'ph ph-spotify-logo',
+		badge: 'Audio Episodes',
+	},
+	{
+		title: 'YouTube Channel',
+		desc: 'Watch full video episodes, studio talks, behind-the-scenes, and design insights.',
+		action: 'Watch on YouTube',
+		href: 'https://www.youtube.com/@paulaambrosio_',
+		icon: 'ph ph-youtube-logo',
+		badge: 'Video & Talks',
+	},
+	{
+		title: 'Instagram Community',
+		desc: 'Follow @design.podcast for daily design inspiration, episode highlights, and announcements.',
+		action: 'Follow @design.podcast',
+		href: 'https://www.instagram.com/design.podcast/',
+		icon: 'ph ph-instagram-logo',
+		badge: 'Social & Highlights',
+	},
+];
+
+const topics = [
+	{
+		number: '01',
+		title: 'Luxury Residential & Hospitality',
+		desc: 'Deep dives into bespoke residential builds, Miami architecture, and world-class hospitality concepts.',
+	},
+	{
+		number: '02',
+		title: 'Design Philosophy & Process',
+		desc: 'Unpacking turnkey execution, materiality, spatial planning, and how spaces shape human emotion.',
+	},
+	{
+		number: '03',
+		title: 'Industry & Creative Leadership',
+		desc: 'Frank conversations with prominent architects, creators, artisans, and leading real estate figures.',
+	},
+];
+---
+
+<Layout
+	title="Design Podcast | Interior Design Talks by Paula Ambrosio"
+	description="Design Podcast: conversations with interior designers, architects and creative leaders hosted by Paula Ambrosio in Miami. Available on Spotify, YouTube and Instagram."
+	canonical="/podcast"
+>
+	<Fragment slot="head" set:html={schemaScript(webPageSchema({
+		path: '/podcast',
+		title: 'Design Podcast | Interior Design Talks by Paula Ambrosio',
+		description: 'Conversations with designers, architects & creative leaders hosted by Paula Ambrosio. Stream on Spotify and YouTube.',
+		breadcrumbs,
+	}))} />
+
+	<!-- Hero Header -->
+	<header class="container-editorial pt-16 lg:pt-24">
+		<Breadcrumbs items={breadcrumbs} />
+
+		<div class="mt-12 flex flex-col items-start gap-8 lg:flex-row lg:items-center lg:justify-between">
+			<div class="max-w-2xl">
+				<p class="eyebrow text-stone">Interior Design Talks · Miami</p>
+				<h1 class="font-display mt-4 text-4xl leading-tight sm:text-5xl lg:text-6xl">
+					Design Podcast
+				</h1>
+				<p class="mt-6 text-lg leading-relaxed text-slate">
+					Conversations with designers, architects &amp; creative leaders. Hosted by Paula Ambrosio in Miami, exploring the nuances of luxury spaces, timeless architecture, and high-end living.
+				</p>
+
+				<div class="mt-8 flex flex-wrap items-center gap-6 text-sm text-graphite border-y border-sand py-4">
+					<span class="inline-flex items-center gap-2">
+						<i class="ph ph-microphone text-lg text-coffee" aria-hidden="true"></i>
+						<span>Host: <a href="https://www.instagram.com/paulaambrosio_" target="_blank" rel="noopener noreferrer" class="font-medium text-ink hover:text-coffee underline-offset-4 hover:underline">@paulaambrosio_</a></span>
+					</span>
+					<span class="inline-flex items-center gap-2">
+						<i class="ph ph-buildings text-lg text-coffee" aria-hidden="true"></i>
+						<span>Production: <a href="https://www.instagram.com/xstudiomiami" target="_blank" rel="noopener noreferrer" class="font-medium text-ink hover:text-coffee underline-offset-4 hover:underline">@xstudiomiami</a></span>
+					</span>
+				</div>
+			</div>
+
+			<!-- Official Podcast Logo Card -->
+			<div class="w-full max-w-sm rounded-none border border-sand bg-white p-8 sm:p-10 text-center shadow-xs">
+				<div class="mx-auto flex max-w-[260px] items-center justify-center">
+					<Image
+						src={podcastLogoBlack}
+						alt="Design Podcast Logo"
+						widths={[260, 520]}
+						sizes="260px"
+						quality={85}
+						loading="eager"
+						decoding="async"
+						class="h-auto w-full object-contain"
+					/>
+				</div>
+				<p class="eyebrow mt-6 text-stone text-xs">Curated Episodes &amp; Talks</p>
+				<div class="mt-6 flex justify-center gap-3">
+					<a
+						href="https://creators.spotify.com/pod/profile/paula-ambrsio/"
+						target="_blank"
+						rel="noopener noreferrer"
+						aria-label="Spotify Podcast"
+						class="inline-flex h-10 w-10 items-center justify-center border border-sand bg-bone text-graphite transition-colors hover:border-brass hover:text-coffee"
+					>
+						<i class="ph ph-spotify-logo text-lg" aria-hidden="true"></i>
+					</a>
+					<a
+						href="https://www.youtube.com/@paulaambrosio_"
+						target="_blank"
+						rel="noopener noreferrer"
+						aria-label="YouTube Channel"
+						class="inline-flex h-10 w-10 items-center justify-center border border-sand bg-bone text-graphite transition-colors hover:border-brass hover:text-coffee"
+					>
+						<i class="ph ph-youtube-logo text-lg" aria-hidden="true"></i>
+					</a>
+					<a
+						href="https://www.instagram.com/design.podcast/"
+						target="_blank"
+						rel="noopener noreferrer"
+						aria-label="Instagram Profile"
+						class="inline-flex h-10 w-10 items-center justify-center border border-sand bg-bone text-graphite transition-colors hover:border-brass hover:text-coffee"
+					>
+						<i class="ph ph-instagram-logo text-lg" aria-hidden="true"></i>
+					</a>
+				</div>
+			</div>
+		</div>
+	</header>
+
+	<!-- Streaming Platforms Grid -->
+	<section class="container-editorial py-20 lg:py-28" aria-labelledby="platforms-heading">
+		<h2 id="platforms-heading" class="sr-only">Where to listen and watch</h2>
+		<div class="grid gap-6 md:grid-cols-3">
+			{platforms.map((platform) => (
+				<div class="flex flex-col justify-between border border-sand bg-white p-8 transition-all hover:border-brass">
+					<div>
+						<div class="flex items-center justify-between">
+							<span class="inline-flex h-12 w-12 items-center justify-center rounded-none bg-bone text-coffee">
+								<i class={`${platform.icon} text-2xl`} aria-hidden="true"></i>
+							</span>
+							<span class="eyebrow text-stone text-[0.65rem]">{platform.badge}</span>
+						</div>
+						<h3 class="font-display mt-6 text-2xl">{platform.title}</h3>
+						<p class="mt-3 text-sm leading-relaxed text-slate">{platform.desc}</p>
+					</div>
+
+					<a
+						href={platform.href}
+						target="_blank"
+						rel="noopener noreferrer"
+						class="btn-secondary mt-8 inline-flex items-center justify-center gap-2 text-center text-xs tracking-[0.14em]"
+					>
+						<span>{platform.action}</span>
+						<span aria-hidden="true">→</span>
+					</a>
+				</div>
+			))}
+		</div>
+	</section>
+
+	<!-- Editorial Focus / Topics Section -->
+	<section class="bg-linen py-20 lg:py-28 border-t border-sand" aria-labelledby="topics-heading">
+		<div class="container-editorial">
+			<div class="max-w-2xl">
+				<p class="eyebrow text-stone">Editorial Vision</p>
+				<h2 id="topics-heading" class="font-display mt-4 text-3xl sm:text-4xl lg:text-5xl">
+					Inside the Creative Mind
+				</h2>
+				<p class="mt-4 text-base leading-relaxed text-slate">
+					Beyond trends and surface finishes, the podcast opens the studio door to explore what truly defines timeless spaces and high-level execution in luxury interior design.
+				</p>
+			</div>
+
+			<div class="mt-14 grid gap-8 md:grid-cols-3">
+				{topics.map((t) => (
+					<div class="border-t border-sand/80 pt-6">
+						<span class="eyebrow font-display text-2xl text-coffee">{t.number}</span>
+						<h3 class="font-display mt-3 text-xl">{t.title}</h3>
+						<p class="mt-2 text-sm leading-relaxed text-slate">{t.desc}</p>
+					</div>
+				))}
+			</div>
+		</div>
+	</section>
+
+	<!-- Host & Production Spotlight -->
+	<section class="container-editorial py-20 lg:py-28">
+		<div class="grid gap-12 lg:grid-cols-12 lg:items-center">
+			<div class="lg:col-span-5">
+				<p class="eyebrow text-stone">The Host</p>
+				<h2 class="font-display mt-4 text-3xl sm:text-4xl">Paula Ambrosio</h2>
+				<p class="mt-4 text-base leading-relaxed text-slate">
+					With over 21 years of experience in interior design and architecture across Brazil, the United States, and international destinations, Paula brings sharp perspective, practical mastery, and genuine passion for design dialog.
+				</p>
+				<div class="mt-6 flex flex-wrap gap-4 text-sm">
+					<a href="/about" class="btn-secondary text-xs">
+						About Paula Ambrosio →
+					</a>
+					<a href="https://www.instagram.com/paulaambrosio_" target="_blank" rel="noopener noreferrer" class="btn-secondary text-xs">
+						Instagram @paulaambrosio_ →
+					</a>
+				</div>
+			</div>
+
+			<div class="lg:col-span-2 hidden lg:flex justify-center">
+				<span class="h-32 w-px bg-sand" aria-hidden="true"></span>
+			</div>
+
+			<div class="lg:col-span-5">
+				<p class="eyebrow text-stone">Filmed &amp; Recorded In Miami</p>
+				<h2 class="font-display mt-4 text-3xl sm:text-4xl">Studio &amp; Production</h2>
+				<p class="mt-4 text-base leading-relaxed text-slate">
+					Produced and recorded in collaboration with X Studio Miami, capturing high-definition video, audio, and editorial talks with the leading voices of South Florida architecture and design.
+				</p>
+				<div class="mt-6">
+					<a href="https://www.instagram.com/xstudiomiami" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-sm tracking-[0.12em] text-coffee-deep hover:underline underline-offset-4">
+						<i class="ph ph-instagram-logo text-base" aria-hidden="true"></i>
+						<span>Follow @xstudiomiami on Instagram →</span>
+					</a>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<CtaBanner />
+</Layout>
