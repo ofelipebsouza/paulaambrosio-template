@@ -17,15 +17,22 @@
 ## Run the dev server
 
 ```
-npm run dev
+npm run dev -- --host 127.0.0.1
 ```
 
 - Default port **4321** (Astro default; keep it if free, otherwise pass `--port <n>`).
-- Binds `localhost` only (`http://localhost:4321/`); add `--host` to expose on the network.
+- **Always pass `--host 127.0.0.1`.** Plain `npm run dev` binds `localhost`, which resolves to
+  IPv6 `::1` on this machine — the Freebuff preview checker resolves to IPv4 `127.0.0.1`
+  (and vice versa), so `register_preview` fails with "did not answer an HTTP request".
+  Binding IPv4 explicitly fixes it; register the preview with `http://127.0.0.1:4321/`
+  (NOT `http://localhost:4321/`).
 - Windows detached start (Freebuff preview recipe), with stdout/stderr in separate files:
 
   ```
-  powershell -NoProfile -Command "(Start-Process -FilePath 'npm.cmd' -ArgumentList 'run','dev' -RedirectStandardOutput '<log>' -RedirectStandardError '<log>.err' -WindowStyle Hidden -PassThru).Id"
+  powershell -NoProfile -Command "(Start-Process -FilePath 'npm.cmd' -ArgumentList 'run','dev','--','--host','127.0.0.1' -RedirectStandardOutput '<log>' -RedirectStandardError '<log>.err' -WindowStyle Hidden -PassThru).Id"
+
+  Note: the PowerShell call may hang the calling shell even though the child starts fine;
+  grab the pid from `netstat -ano | findstr :4321` if no Id is printed.
   ```
 
 - Verify: `netstat -ano | findstr :4321` shows LISTENING, `curl http://localhost:4321/` returns 200,
@@ -34,7 +41,7 @@ npm run dev
 ## Verify before deploy
 
 ```
-npm run build          # static output to dist/ (34 pages)
+npm run build          # static output to dist/ (75 pages at last count; takes ~10 min on this disk)
 node scripts/check-links.mjs
 npx tsc --noEmit
 ```
