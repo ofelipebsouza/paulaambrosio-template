@@ -14,12 +14,21 @@ const projects = (await getCollection('projects'))
 );
 
 const breadcrumbs: BreadcrumbEntry[] = [{ name: 'Projects', url: '/projects' }];
-const categories = ['All', ...new Set(projects.map((project) => project.data.projectType).filter(Boolean))];
+// Browsing tabs: fine-grained project types grouped into three editorial buckets.
+const TABS: { label: string; types: string[] }[] = [
+	{ label: 'Residential', types: ['Residential', 'Penthouse'] },
+	{ label: 'Commercial', types: ['Commercial', 'Hospitality'] },
+	{ label: 'Renders', types: ['Renders'] },
+];
+const tabs = [
+	{ label: 'All', types: null as string[] | null },
+	...TABS.filter((tab) => projects.some((project) => tab.types.includes(project.data.projectType ?? ''))),
+];
 ---
 
 <Layout
 	title="Interior Design Portfolio | Projects in Miami & South Florida"
-	description="Selected residential, penthouse and hospitality projects by Paula Ambrosio Interiors, full-service luxury interior design across Miami and South Florida."
+	description="Selected residential and hospitality projects and 3D render studies by Paula Ambrosio Interiors, full-service luxury interior design across Miami and South Florida."
 	canonical="/projects"
 >
 	<Fragment slot="head" set:html={schemaScript(webPageSchema({
@@ -42,8 +51,8 @@ const categories = ['All', ...new Set(projects.map((project) => project.data.pro
 	<section class="container-editorial pb-24">
 		<div class="mb-12 flex flex-wrap items-center gap-x-8 gap-y-3 border-y border-sand py-5" aria-label="Filter projects by type">
 			<p class="eyebrow mr-2 text-stone">View by</p>
-			{categories.map((category, index) => (
-				<button type="button" class:list={['project-filter eyebrow border-b border-transparent pb-1 text-slate transition-colors hover:text-ink', index === 0 && 'is-active border-stone text-ink']} data-filter={category ?? 'All'} aria-pressed={index === 0 ? 'true' : 'false'}>{category}</button>
+			{tabs.map((tab, index) => (
+				<button type="button" class:list={['project-filter eyebrow border-b border-transparent pb-1 text-slate transition-colors hover:text-ink', index === 0 && 'is-active border-stone text-ink']} data-filter={tab.types ? tab.types.join(',') : 'All'} aria-pressed={index === 0 ? 'true' : 'false'}>{tab.label}</button>
 			))}
 		</div>
 		<div id="project-grid">
@@ -57,7 +66,7 @@ const categories = ['All', ...new Set(projects.map((project) => project.data.pro
 		filters.forEach((filter) => filter.addEventListener('click', () => {
 			const value = filter.dataset.filter ?? 'All';
 			filters.forEach((item) => { item.classList.toggle('is-active', item === filter); item.setAttribute('aria-pressed', item === filter ? 'true' : 'false'); });
-			cards.forEach((card) => { const category = card.dataset.category; card.hidden = value !== 'All' && category !== value; });
+			cards.forEach((card) => { const category = card.dataset.category ?? ''; card.hidden = value !== 'All' && !value.split(',').includes(category); });
 		}));
 	</script>
 

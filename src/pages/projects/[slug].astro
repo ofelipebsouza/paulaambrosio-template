@@ -25,9 +25,24 @@ const { Content } = await render(project);
 // and referenced directly by the content frontmatter, so Vite copies the files
 // as-is (no build-time image variants). `entry.src` is always a valid asset URL.
 const featuredSource = project.data.featuredImage.src;
-const gallerySources = project.data.gallery.map((img) => img.src);
+const galleryItems = project.data.gallery.map((img, i) => ({ url: img.src, i }));
+const gallerySources = galleryItems.map((item) => item.url);
 const heroSource = featuredSource;
 const full = gallerySources;
+
+// Gallery grouped by sector when the project declares them (e.g. render-pm: Club Room, Living, Master).
+let sectorCursor = 0;
+const sectorGroups = project.data.sectors
+	.map(({ name, images }) => {
+		const items = galleryItems.slice(sectorCursor, sectorCursor + images).map((item) => ({ ...item, sector: name }));
+		sectorCursor += images;
+		return { sector: name, items };
+	})
+	.filter((group) => group.items.length > 0);
+if (sectorCursor < galleryItems.length) {
+	sectorGroups.push({ sector: 'Others', items: galleryItems.slice(sectorCursor).map((item) => ({ ...item, sector: 'Others' })) });
+}
+const useSectors = project.data.sectors.length > 0;
 const ogImage = brandedOg('project', project.id);
 
 // §13 project facts row
@@ -139,33 +154,42 @@ const breadcrumbs: BreadcrumbEntry[] = [
 		<!-- Gallery (§13: 12-25 images when official photography arrives) -->
 		{gallerySources.length > 0 && (
 			<section class="container-editorial pb-20">
-				<div class="columns-1 gap-6 sm:columns-2" style="column-fill: balance;">
-					{gallerySources.map((img, i) => (
-						<button
-							type="button"
-							class="group relative mb-6 block w-full cursor-zoom-in overflow-hidden break-inside-avoid"
-							data-lightbox-trigger
-							data-full={full[i]}
-							aria-label={`Open image ${i + 1} of ${gallerySources.length} fullscreen`}
-						>
-							<img
-								src={img}
-								alt={`${project.data.title}, ${project.data.location ?? 'interior'} detail ${i + 1}`}
-								width="1000"
-								height="750"
-								loading="lazy"
-								decoding="async"
-								class="w-full object-cover motion-safe:transition-transform motion-safe:duration-700 group-hover:scale-[1.03]"
-							/>
-							<span
-								class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100"
-								aria-hidden="true"
-							>
-								<svg class="absolute right-4 top-4 h-9 w-9 text-bone drop-shadow-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 3H3v6M15 3h6v6M9 21H3v-6M15 21h6v-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-							</span>
-						</button>
-					))}
-				</div>
+				{sectorGroups.map((group) => (
+					<div class="mt-14 first:mt-0">
+						{useSectors && (
+							<div class="mb-10 border-t border-sand pt-6">
+								<h2 class="font-display text-2xl">{group.sector}</h2>
+							</div>
+						)}
+						<div class="columns-1 gap-6 sm:columns-2" style="column-fill: balance;">
+							{group.items.map((item) => (
+								<button
+									type="button"
+									class="group relative mb-6 block w-full cursor-zoom-in overflow-hidden break-inside-avoid"
+									data-lightbox-trigger
+									data-full={full[item.i]}
+									aria-label={`Open image ${item.i + 1} of ${gallerySources.length} fullscreen`}
+								>
+									<img
+										src={item.url}
+										alt={`${project.data.title}, ${useSectors && item.sector !== 'Others' ? `${item.sector}, ` : ''}${project.data.location ?? 'interior'} detail ${item.i + 1}`}
+										width="1000"
+										height="750"
+										loading="lazy"
+										decoding="async"
+										class="w-full object-cover motion-safe:transition-transform motion-safe:duration-700 group-hover:scale-[1.03]"
+									/>
+									<span
+										class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100"
+										aria-hidden="true"
+									>
+										<svg class="absolute right-4 top-4 h-9 w-9 text-bone drop-shadow-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 3H3v6M15 3h6v6M9 21H3v-6M15 21h6v-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+									</span>
+								</button>
+							))}
+						</div>
+					</div>
+				))}
 			</section>
 		)}
 

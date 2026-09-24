@@ -39,6 +39,8 @@ const projectsCollection = defineCollection({
 			featuredImage: image(),
 			imageAlt: z.string().optional(),
 			gallery: z.array(image()).default([]),
+			// Gallery grouped by contiguous sector slices (render studies: Club Room / Living / Master).
+			sectors: z.array(z.object({ name: z.string(), images: z.number().int().positive() })).default([]),
 			credits: z.string().optional(),
 			relatedServices: z.array(z.string()).default([]),
 			relatedLocations: z.array(z.string()).default([]),

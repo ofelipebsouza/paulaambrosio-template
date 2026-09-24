@@ -11,7 +11,7 @@ import paulaProfile from '../assets/paula-profile.webp';
 
 const allProjects = (await getCollection('projects')).filter((p) => !p.data.draft);
 
-const heroSlides = allProjects.slice(0, 9).map((p) => ({
+const heroSlides = allProjects.filter((p) => p.data.projectType !== 'Renders').slice(0, 9).map((p) => ({
 	src: p.data.featuredImage,
 	alt: p.data.imageAlt ?? p.data.title,
 }));

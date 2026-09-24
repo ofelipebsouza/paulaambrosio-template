@@ -28,7 +28,7 @@ const { projects, columns = 3 } = Astro.props;
 				/>
 			</a>
 			<div class="mt-5">
-				<p class="eyebrow text-stone">{project.data.location ?? project.data.projectType}</p>
+				<p class="eyebrow text-stone">{project.data.projectType === 'Renders' ? 'Render' : project.data.location ?? project.data.projectType}</p>
 				<h3 class="font-display mt-2 text-2xl">
 					<a
 						href={projectUrl(project.id)}
