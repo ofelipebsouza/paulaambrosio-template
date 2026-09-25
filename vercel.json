@@ -58,5 +58,11 @@
 		{ "source": "/blog/", "destination": "/journal/", "permanent": true },
 		{ "source": "/blog/:slug", "destination": "/journal/:slug/", "permanent": true },
 		{ "source": "/blog/:slug/", "destination": "/journal/:slug/", "permanent": true }
+	],
+	"crons": [
+		{
+			"path": "/api/crm/cron/followups/",
+			"schedule": "0 9 * * *"
+		}
 	]
 }

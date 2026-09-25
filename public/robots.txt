@@ -1,4 +1,8 @@
 User-agent: *
 Allow: /
 
+# Internal CRM — never crawl the dashboard or its API.
+Disallow: /admin/
+Disallow: /api/crm/
+
 Sitemap: https://www.paulaambrosio.com/sitemap-index.xml

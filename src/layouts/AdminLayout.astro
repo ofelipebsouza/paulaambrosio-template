@@ -1,0 +1,99 @@
+---
+/**
+ * Shell for the internal CRM.
+ *
+ * Deliberately not the public `Layout`: no site header, no footer, no SEO
+ * graph, and a hard `noindex` — but the same design tokens, fonts and utility
+ * classes, so the dashboard reads as the studio's own product rather than an
+ * admin panel bolted on.
+ */
+import '../styles/global.css';
+import Logo from '../components/ui/Logo.astro';
+import { SITE } from '../config';
+
+export interface Props {
+	title: string;
+	description?: string;
+	/** Hide the sign-out control — the login page has no session to close. */
+	signOut?: boolean;
+}
+
+const { title, description = 'Internal pipeline dashboard for the studio team.', signOut = true } = Astro.props;
+const titleTemplate = `${title} · Studio CRM`;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="generator" content={Astro.generator} />
+
+		<title>{titleTemplate}</title>
+		<meta name="description" content={description} />
+		<meta name="robots" content="noindex, nofollow, noarchive" />
+		<meta name="color-scheme" content="light" />
+
+		<link rel="icon" type="image/webp" href="/favicon.webp" />
+
+		<!-- Self-hosted fonts, same preloads as the public layout. -->
+		<link rel="preload" href="/fonts/cormorant-garamond-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin />
+		<link rel="preload" href="/fonts/plus-jakarta-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+		<link rel="preload" href="/fonts/Loew-Bold.woff2" as="font" type="font/woff2" crossorigin />
+
+		<script is:inline>document.documentElement.classList.add('js');</script>
+	</head>
+	<body class="min-h-screen bg-bone text-ink antialiased selection:bg-brass/30 selection:text-ink">
+		<a
+			href="#crm-main"
+			class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:bg-brass focus:px-4 focus:py-2 focus:text-ink"
+		>
+			Skip to content
+		</a>
+
+		<header class="sticky top-0 z-40 border-b border-sand/60 bg-bone/95 backdrop-blur-sm">
+			<div class="container-editorial">
+				<div class="flex h-16 items-center justify-between gap-4 lg:h-20">
+					<a href="/admin/" class="flex items-center gap-4" aria-label="Studio CRM home">
+						<Logo variant="dark" class="h-7 w-auto lg:h-8" loading="eager" alt={SITE.name} />
+						<span class="eyebrow hidden text-stone sm:block">Studio CRM</span>
+					</a>
+
+					<div class="flex items-center gap-4 lg:gap-6">
+						<slot name="actions" />
+						{signOut && (
+							<button
+								id="crm-logout"
+								type="button"
+								class="eyebrow text-slate transition-colors duration-300 hover:text-ink"
+							>
+								Sign out
+							</button>
+						)}
+					</div>
+				</div>
+			</div>
+		</header>
+
+		<main id="crm-main" class="container-editorial py-10 lg:py-14">
+			<slot />
+		</main>
+
+		<footer class="border-t border-sand/60 py-8">
+			<div class="container-editorial flex flex-col gap-2 text-xs text-mist sm:flex-row sm:items-center sm:justify-between">
+				<p>{SITE.name} · Internal use only</p>
+				<p>Leads are stored in Upstash Redis and never leave the studio.</p>
+			</div>
+		</footer>
+
+		<script is:inline>
+			document.getElementById('crm-logout')?.addEventListener('click', async () => {
+				try {
+					await fetch('/api/crm/session/', { method: 'DELETE', headers: { Accept: 'application/json' } });
+				} finally {
+					window.location.href = '/admin/login/';
+				}
+			});
+		</script>
+	</body>
+</html>

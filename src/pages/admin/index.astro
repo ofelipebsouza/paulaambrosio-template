@@ -1,0 +1,898 @@
+---
+/**
+ * /admin/ — the studio pipeline.
+ *
+ * On-demand, session-guarded, `noindex`. The first paint is fully server
+ * rendered (the team should never stare at spinner-only KPIs), and a small
+ * script keeps it live: metrics, leads, follow-up queue and the Hermes report
+ * refresh every 30 seconds.
+ *
+ * Every value shown here is either authored by the studio or already stored by
+ * the API — nothing on this page is indexed, cached or linked from the site.
+ */
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { readSession } from '../../lib/crm/auth';
+import { buildMetrics, responseRate } from '../../lib/crm/metrics';
+import {
+	LEAD_STATUSES,
+	OPEN_STATUSES,
+	STATUS_LABELS,
+	type CrmLead,
+	type CrmTask,
+	type LeadStatus,
+} from '../../lib/crm/schema';
+import { allLeads, dailyCounts, getReport, listTasks, storeStatus } from '../../lib/crm/store';
+
+export const prerender = false;
+
+if (!readSession(Astro.request)) return Astro.redirect('/admin/login/');
+
+const now = Date.now();
+const [leads, tasks, daily, report] = await Promise.all([
+	allLeads(),
+	listTasks(),
+	dailyCounts(30),
+	getReport(),
+]);
+const metrics = buildMetrics({ leads, tasks, daily, now });
+const storage = storeStatus();
+const answered24h = responseRate(leads, 24, now);
+const recent = leads.slice(0, 25);
+const queue = tasks.filter((task) => task.state === 'open').slice(0, 8);
+const chartMax = Math.max(1, ...Object.values(daily));
+const chartDays = Object.entries(daily);
+const funnelMax = Math.max(1, ...LEAD_STATUSES.map((status) => metrics.byStatus[status]));
+
+const STATUS_COLORS: Record<LeadStatus, string> = {
+	novo: 'bg-brass',
+	em_contato: 'bg-stone',
+	proposta: 'bg-coffee',
+	fechado: 'bg-ink',
+	perdido: 'bg-mist',
+};
+
+const STATUS_OPTIONS = LEAD_STATUSES.map((value) => ({ value, label: STATUS_LABELS[value] }));
+
+/** Queue wording: "due in 5h" for the future, "late 30h" once it passes. */
+function dueLabel(ts: number): string {
+	if (ts > now) return `due ${relative(ts)}`;
+	const hours = Math.max(1, Math.round((now - ts) / 3_600_000));
+	return hours < 24 ? `late ${hours}h` : `late ${Math.round(hours / 24)}d`;
+}
+
+function fmtDate(ts: number): string {
+	return new Date(ts).toLocaleString('en-US', {
+		month: 'short',
+		day: 'numeric',
+		hour: '2-digit',
+		minute: '2-digit',
+	});
+}
+
+function relative(ts: number): string {
+	const diff = now - ts;
+	const abs = Math.abs(diff);
+	const hours = Math.floor(abs / 3_600_000);
+	const suffix = diff > 0 ? ' ago' : '';
+	const prefix = diff > 0 ? '' : 'in ';
+	if (hours < 1) return diff > 0 ? 'just now' : `in ${Math.max(1, Math.round(abs / 60_000))} min`;
+	if (hours < 24) return `${prefix}${hours}h${suffix}`;
+	return `${prefix}${Math.floor(hours / 24)}d${suffix}`;
+}
+
+const kpis = [
+	{ key: 'last30', label: 'Leads · 30 days', value: String(metrics.last30), note: `${metrics.total} all time` },
+	{
+		key: 'awaitingReply',
+		label: 'Awaiting reply',
+		value: String(metrics.awaitingReply),
+		note: `${metrics.open} in pipeline`,
+	},
+	{
+		key: 'responseHours',
+		label: 'Avg. first response',
+		value: metrics.avgFirstResponseHours === null ? '—' : `${metrics.avgFirstResponseHours.toFixed(1)} h`,
+		note: `${Math.round(answered24h * 100)}% answered in 24 h`,
+	},
+	{
+		key: 'conversion',
+		label: 'Conversion · won',
+		value: `${Math.round(metrics.conversionRate * 100)}%`,
+		note: 'of closed leads',
+	},
+	{ key: 'today', label: 'New today', value: String(metrics.today), note: 'since midnight (UTC)' },
+	{
+		key: 'overdue',
+		label: 'Follow-ups late',
+		value: String(metrics.tasksOverdue),
+		note: `${metrics.tasksOpen} open tasks`,
+	},
+];
+---
+
+<AdminLayout title="Pipeline">
+	<!-- Page head ------------------------------------------------------------ -->
+	<div class="flex flex-col gap-6 border-b border-sand/60 pb-8 lg:flex-row lg:items-end lg:justify-between">
+		<div>
+			<p class="eyebrow text-stone">Studio CRM</p>
+			<h1 class="mt-3 font-display text-4xl lg:text-5xl">Pipeline</h1>
+			<p class="mt-4 max-w-xl text-sm leading-relaxed text-slate">
+				Every inquiry that reaches the studio, in the order it arrived — with follow-ups, conversion and the
+				live Hermes report.
+			</p>
+		</div>
+
+		<div class="flex flex-wrap items-center gap-3">
+			<span
+				class:list={[
+					'eyebrow border px-3 py-2',
+					storage.backend === 'upstash' ? 'border-sand bg-white text-stone' : 'border-coffee/40 bg-white text-coffee',
+				]}
+				title={storage.backend === 'upstash' ? 'Leads are stored in Upstash Redis' : 'In-process storage only'}
+			>
+				{storage.backend === 'upstash' ? 'Storage · Redis' : 'Storage · in memory'}
+			</span>
+			<button id="crm-remind" type="button" class="eyebrow border border-sand bg-white px-3 py-2 text-slate transition-colors hover:border-brass hover:text-ink">
+				Send reminders
+			</button>
+			<a href="/api/crm/export/?format=csv" class="eyebrow border border-sand bg-white px-3 py-2 text-slate transition-colors hover:border-brass hover:text-ink">
+				Export CSV
+			</a>
+			<button id="crm-refresh" type="button" class="btn-primary">Refresh</button>
+		</div>
+	</div>
+
+	<!-- KPI strip ------------------------------------------------------------ -->
+	<section aria-label="Key metrics" class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+		{kpis.map((kpi) => (
+			<div class="border border-sand/70 bg-white p-5">
+				<p class="eyebrow text-stone">{kpi.label}</p>
+				<p class="mt-3 font-display text-4xl" data-kpi={kpi.key}>{kpi.value}</p>
+				<p class="mt-1 text-xs text-mist" data-kpi-note={kpi.key}>{kpi.note}</p>
+			</div>
+		))}
+	</section>
+
+	<!-- Chart + funnel ------------------------------------------------------- -->
+	<section class="mt-8 grid items-start gap-6 lg:grid-cols-3">
+		<div class="border border-sand/70 bg-white p-6 lg:col-span-2">
+			<div class="flex items-baseline justify-between gap-4">
+				<p class="eyebrow text-stone">Arrivals · last 30 days</p>
+				<p class="text-xs text-mist">peak {chartMax} / day</p>
+			</div>
+			<div class="mt-6" id="crm-chart">
+				<svg viewBox="0 0 600 170" class="h-52 w-full" role="img" aria-label="Daily lead volume">
+					{chartDays.map(([day, count], index) => {
+						const slot = 600 / chartDays.length;
+						const x = index * slot + (slot - 14) / 2;
+						const h = (count / chartMax) * 130;
+						return <rect x={x} y={140 - h} width="14" height={Math.max(count > 0 ? 2 : 0, h)} class="fill-stone" rx="1"><title>{day}: {count}</title></rect>;
+					})}
+					<line x1="0" y1="140" x2="600" y2="140" class="stroke-sand" stroke-width="1"></line>
+					<text x="0" y="162" class="fill-mist text-[10px]">{chartDays[0]?.[0] ?? ''}</text>
+					<text x="600" y="162" text-anchor="end" class="fill-mist text-[10px]">{chartDays[chartDays.length - 1]?.[0] ?? ''}</text>
+				</svg>
+			</div>
+		</div>
+
+		<div class="border border-sand/70 bg-white p-6">
+			<p class="eyebrow text-stone">Pipeline by status</p>
+			<ul class="mt-6 space-y-4" id="crm-funnel">
+				{LEAD_STATUSES.map((status) => {
+					const count = metrics.byStatus[status];
+					return (
+						<li>
+							<div class="flex items-baseline justify-between gap-3">
+								<span class="eyebrow text-slate">{STATUS_LABELS[status]}</span>
+								<span class="font-display text-2xl">{count}</span>
+							</div>
+							<div class="mt-2 h-1.5 w-full bg-sand/30">
+								<div class={`h-full ${STATUS_COLORS[status]}`} style={`width:${(count / funnelMax) * 100}%`} />
+							</div>
+						</li>
+					);
+				})}
+			</ul>
+			<p class="mt-6 border-t border-sand/60 pt-4 text-xs leading-relaxed text-mist">
+				Moving a lead out of <em>New</em> records its first response and closes its follow-up tasks.
+			</p>
+		</div>
+	</section>
+
+	<!-- Hermes + queue ------------------------------------------------------- -->
+	<section class="mt-6 grid gap-6 lg:grid-cols-2">
+		<div class="border border-sand/70 bg-white p-6">
+			<div class="flex items-baseline justify-between gap-4">
+				<p class="eyebrow text-stone">Hermes · live report</p>
+				<p class="text-xs text-mist" id="crm-report-time" data-generated-at={report?.generatedAt ?? 0}>
+					{report ? `generated ${relative(report.generatedAt)}` : 'no report yet'}
+				</p>
+			</div>
+
+			<div id="crm-report">
+				{report ? (
+					<>
+						<p class="mt-5 text-base leading-relaxed text-graphite" id="crm-report-summary">{report.summary}</p>
+						{report.highlights.length > 0 && (
+							<ul class="mt-5 space-y-2" id="crm-report-highlights">
+								{report.highlights.map((item) => (
+									<li class="flex gap-3 text-sm text-slate">
+										<span class="mt-2 h-1 w-1 shrink-0 rotate-45 bg-brass" aria-hidden="true"></span>
+										<span>{item}</span>
+									</li>
+								))}
+							</ul>
+						)}
+						{report.actions.length > 0 && (
+							<div class="mt-6 border-t border-sand/60 pt-4">
+								<p class="eyebrow text-stone">Suggested actions</p>
+								<ol class="mt-3 space-y-2" id="crm-report-actions">
+									{report.actions.map((item, index) => (
+										<li class="text-sm text-graphite">
+											<span class="mr-2 font-display text-lg text-stone">{index + 1}.</span>{item}
+										</li>
+									))}
+								</ol>
+							</div>
+						)}
+					</>
+				) : (
+					<p class="mt-5 text-sm leading-relaxed text-mist">
+						Waiting for Hermes. The moment the agent posts a report it appears here — until then the
+						KPIs above are computed directly from the pipeline.
+					</p>
+				)}
+			</div>
+		</div>
+
+		<div class="border border-sand/70 bg-white p-6">
+			<div class="flex items-baseline justify-between gap-4">
+				<p class="eyebrow text-stone">Follow-up queue</p>
+				<p class="text-xs text-mist"><span id="crm-queue-overdue">{metrics.tasksOverdue}</span> late</p>
+			</div>
+
+			<ul class="mt-5 space-y-1" id="crm-queue">
+				{queue.length === 0 && (
+					<li class="py-6 text-sm text-mist">Nothing waiting. Every lead has been answered.</li>
+				)}
+				{queue.map((task: CrmTask) => (
+					<li class="flex items-start justify-between gap-4 border-b border-sand/50 py-3 last:border-0" data-task={task.id}>
+						<div class="min-w-0">
+							<p class="truncate text-sm text-graphite">{task.title}</p>
+							<p class:list={['mt-1 text-xs', task.dueAt <= now ? 'text-coffee' : 'text-mist']}>
+								{dueLabel(task.dueAt)}
+							</p>
+						</div>
+						<div class="flex shrink-0 gap-2">
+							<button type="button" class="eyebrow border border-sand px-2 py-1 text-slate transition-colors hover:border-brass hover:text-ink" data-task-open={task.leadId}>
+								Open
+							</button>
+							<button type="button" class="eyebrow border border-sand px-2 py-1 text-slate transition-colors hover:border-brass hover:text-ink" data-task-done={task.id}>
+								Done
+							</button>
+						</div>
+					</li>
+				))}
+			</ul>
+		</div>
+	</section>
+
+	<!-- Leads ---------------------------------------------------------------- -->
+	<section class="mt-6 border border-sand/70 bg-white">
+		<div class="flex flex-col gap-4 border-b border-sand/60 p-6 lg:flex-row lg:items-center lg:justify-between">
+			<div>
+				<p class="eyebrow text-stone">Leads</p>
+				<p class="mt-2 text-sm text-slate"><span id="crm-lead-count">{metrics.total}</span> in the pipeline</p>
+			</div>
+
+			<div class="flex flex-col gap-3 sm:flex-row">
+				<label class="sr-only" for="crm-search">Search leads</label>
+				<input
+					id="crm-search"
+					type="search"
+					placeholder="Search name, email, service…"
+					class="w-full border border-sand bg-white px-4 py-2.5 text-sm placeholder:text-mist focus:border-brass focus:outline-none sm:w-72"
+				/>
+				<label class="sr-only" for="crm-filter">Filter by status</label>
+				<select
+					id="crm-filter"
+					class="border border-sand bg-white px-4 py-2.5 text-sm focus:border-brass focus:outline-none"
+				>
+					<option value="">All statuses</option>
+					{STATUS_OPTIONS.map((option) => <option value={option.value}>{option.label}</option>)}
+				</select>
+			</div>
+		</div>
+
+		<div class="overflow-x-auto">
+			<table class="w-full min-w-[720px] text-left text-sm">
+				<thead>
+					<tr class="border-b border-sand/60">
+						<th class="eyebrow px-6 py-4 text-slate">Received</th>
+						<th class="eyebrow px-6 py-4 text-slate">Lead</th>
+						<th class="eyebrow px-6 py-4 text-slate">Service</th>
+						<th class="eyebrow px-6 py-4 text-slate">Location</th>
+						<th class="eyebrow px-6 py-4 text-slate">Status</th>
+						<th class="eyebrow px-6 py-4 text-slate">Source</th>
+						<th class="eyebrow px-6 py-4 text-slate">First reply</th>
+					</tr>
+				</thead>
+				<tbody id="crm-leads" class="divide-y divide-sand/50">
+					{recent.length === 0 && (
+						<tr><td colspan="7" class="px-6 py-10 text-center text-sm text-mist">
+							No leads yet. The first inquiry will appear here as soon as it arrives.
+						</td></tr>
+					)}
+					{recent.map((lead: CrmLead) => (
+						<tr
+							class="cursor-pointer transition-colors hover:bg-bone focus-visible:bg-bone"
+							data-lead-row={lead.id}
+							tabindex="0"
+							aria-label={`Open ${lead.name}`}
+						>
+							<td class="whitespace-nowrap px-6 py-4 text-slate">{fmtDate(lead.createdAt)}</td>
+							<td class="px-6 py-4">
+								<p class="text-graphite">{lead.name}</p>
+								<p class="text-xs text-mist">{lead.email}</p>
+							</td>
+							<td class="px-6 py-4 text-slate">{lead.service || '—'}</td>
+							<td class="px-6 py-4 text-slate">{lead.location || '—'}</td>
+							<td class="px-6 py-4">
+								<select
+									data-lead-status={lead.id}
+									class="border border-sand bg-white px-2 py-1.5 text-xs focus:border-brass focus:outline-none"
+									aria-label={`Status for ${lead.name}`}
+								>
+									{STATUS_OPTIONS.map((option) => (
+										<option value={option.value} selected={option.value === lead.status}>{option.label}</option>
+									))}
+								</select>
+							</td>
+							<td class="px-6 py-4 text-xs text-mist">
+								{lead.form === 'project_inquiry' ? 'Modal' : 'Contact page'}
+							</td>
+							<td class="whitespace-nowrap px-6 py-4 text-slate">
+								{lead.firstResponseAt ? relative(lead.firstResponseAt) : '—'}
+							</td>
+						</tr>
+					))}
+				</tbody>
+			</table>
+		</div>
+
+		<p class="border-t border-sand/60 px-6 py-4 text-xs text-mist" id="crm-leads-foot">
+			Showing the {recent.length} most recent of {metrics.total}.
+		</p>
+	</section>
+
+	<!-- Lead detail ---------------------------------------------------------- -->
+	<dialog
+		id="crm-lead-dialog"
+		class="fixed inset-0 m-auto max-h-[85vh] w-full max-w-2xl border border-sand bg-white p-0 shadow-2xl backdrop:bg-ink/40"
+	>
+		<div class="max-h-[85vh] overflow-y-auto p-6 lg:p-8">
+			<div class="flex items-start justify-between gap-4">
+				<div>
+					<p class="eyebrow text-stone">Lead</p>
+					<h2 class="mt-2 font-display text-3xl" id="crm-dialog-name">—</h2>
+				</div>
+				<button type="button" class="eyebrow text-slate hover:text-ink" id="crm-dialog-close">Close</button>
+			</div>
+
+			<dl class="mt-6 grid gap-4 sm:grid-cols-2" id="crm-dialog-meta"></dl>
+
+			<div class="mt-6 border-t border-sand/60 pt-5">
+				<p class="eyebrow text-stone">Message</p>
+				<p class="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-graphite" id="crm-dialog-message"></p>
+			</div>
+
+			<div class="mt-6 flex flex-wrap gap-3">
+				<select id="crm-dialog-status" class="border border-sand bg-white px-3 py-2 text-sm focus:border-brass focus:outline-none" aria-label="Change status">
+					{STATUS_OPTIONS.map((option) => <option value={option.value}>{option.label}</option>)}
+				</select>
+				<button type="button" id="crm-dialog-responded" class="btn-secondary">Mark as answered</button>
+				<a id="crm-dialog-mail" href="#" class="btn-secondary">Reply by email</a>
+			</div>
+
+			<div class="mt-6 border-t border-sand/60 pt-5">
+				<p class="eyebrow text-stone">Notes</p>
+				<form id="crm-note-form" class="mt-3 flex flex-col gap-3 sm:flex-row">
+					<label class="sr-only" for="crm-note">Add a note</label>
+					<input id="crm-note" type="text" maxlength="600" placeholder="What happened on this lead?"
+						class="w-full border border-sand bg-white px-4 py-2.5 text-sm placeholder:text-mist focus:border-brass focus:outline-none" />
+					<button type="submit" class="btn-primary shrink-0">Add</button>
+				</form>
+				<ul class="mt-4 space-y-3" id="crm-dialog-notes"></ul>
+			</div>
+
+			<div class="mt-6 border-t border-sand/60 pt-5">
+				<p class="eyebrow text-stone">Timeline</p>
+				<ol class="mt-3 space-y-2" id="crm-dialog-timeline"></ol>
+			</div>
+		</div>
+	</dialog>
+
+	<p class="mt-6 text-xs text-mist" id="crm-status-line" role="status" aria-live="polite">
+		Last updated just now · refreshing every 30 s.
+	</p>
+</AdminLayout>
+
+<script>
+	type LeadStatusValue = 'novo' | 'em_contato' | 'proposta' | 'fechado' | 'perdido';
+
+	const STATUS_LABELS: Record<LeadStatusValue, string> = {
+		novo: 'New',
+		em_contato: 'In contact',
+		proposta: 'Proposal sent',
+		fechado: 'Won',
+		perdido: 'Lost',
+	};
+
+	const esc = (value: unknown): string =>
+		String(value ?? '').replace(/[&<>"']/g, (char) =>
+			({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char] as string,
+		);
+
+	const fmtDate = (ts: number): string =>
+		new Date(ts).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+	const relative = (ts: number): string => {
+		const diff = Date.now() - ts;
+		const abs = Math.abs(diff);
+		const hours = Math.floor(abs / 3_600_000);
+		if (hours < 1) return diff > 0 ? 'just now' : `in ${Math.max(1, Math.round(abs / 60_000))} min`;
+		if (hours < 24) return diff > 0 ? `${hours}h ago` : `in ${hours}h`;
+		const days = Math.floor(hours / 24);
+		return diff > 0 ? `${days}d ago` : `in ${days}d`;
+	};
+
+	const $ = <T extends HTMLElement>(selector: string): T | null => document.querySelector<T>(selector);
+	const statusLine = $<HTMLElement>('#crm-status-line');
+	const setStatus = (message: string): void => {
+		if (statusLine) statusLine.textContent = message;
+	};
+
+	let search = '';
+	let filter = '';
+	let currentLeadId: string | null = null;
+	let leads: Array<Record<string, unknown>> = [];
+
+	/* ---------------------------------------------------------------- API */
+
+	async function getJson(path: string, init?: RequestInit): Promise<Record<string, unknown> | null> {
+		try {
+			const response = await fetch(path, { headers: { Accept: 'application/json' }, ...init });
+			if (response.status === 401) {
+				window.location.href = '/admin/login/';
+				return null;
+			}
+			if (!response.ok) return null;
+			return (await response.json()) as Record<string, unknown>;
+		} catch {
+			return null;
+		}
+	}
+
+	async function refresh(): Promise<void> {
+		const [metricsRes, leadsRes, tasksRes, reportRes] = await Promise.all([
+			getJson('/api/crm/metrics/'),
+			getJson(`/api/crm/leads/?limit=500${search ? `&q=${encodeURIComponent(search)}` : ''}${filter ? `&status=${filter}` : ''}`),
+			getJson('/api/crm/tasks/'),
+			getJson('/api/crm/report/'),
+		]);
+
+		if (metricsRes?.metrics) renderMetrics(metricsRes.metrics as Record<string, unknown>, metricsRes.storage as { backend?: string });
+		if (leadsRes?.leads) {
+			leads = (leadsRes.leads as Array<Record<string, unknown>>) ?? [];
+			renderLeads();
+		}
+		if (tasksRes) renderQueue(tasksRes);
+		if (reportRes) renderReport(reportRes.report ?? null);
+		setStatus(`Last updated ${new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })} · refreshing every 30 s.`);
+	}
+
+	/* ----------------------------------------------------------- Rendering */
+
+	function renderMetrics(metrics: Record<string, unknown>, storage?: { backend?: string }): void {
+		const answered = Number(metrics.answeredWithin24h ?? 0);
+		const values: Record<string, { value: string; note: string }> = {
+			last30: { value: String(metrics.last30 ?? 0), note: `${metrics.total ?? 0} all time` },
+			awaitingReply: { value: String(metrics.awaitingReply ?? 0), note: `${metrics.open ?? 0} in pipeline` },
+			responseHours: {
+				value: metrics.avgFirstResponseHours === null || metrics.avgFirstResponseHours === undefined
+					? '—'
+					: `${(Number(metrics.avgFirstResponseHours) || 0).toFixed(1)} h`,
+				note: `${Math.round(answered * 100)}% answered in 24 h`,
+			},
+			conversion: { value: `${Math.round(Number(metrics.conversionRate ?? 0) * 100)}%`, note: 'of closed leads' },
+			today: { value: String(metrics.today ?? 0), note: 'since midnight (UTC)' },
+			overdue: { value: String(metrics.tasksOverdue ?? 0), note: `${metrics.tasksOpen ?? 0} open tasks` },
+		};
+
+		for (const [key, entry] of Object.entries(values)) {
+			const el = document.querySelector<HTMLElement>(`[data-kpi="${key}"]`);
+			if (el) el.textContent = entry.value;
+			const note = document.querySelector<HTMLElement>(`[data-kpi-note="${key}"]`);
+			if (note) note.textContent = entry.note;
+		}
+
+		const count = $('crm-lead-count');
+		if (count) count.textContent = String(metrics.total ?? 0);
+
+		renderChart((metrics.daily ?? {}) as Record<string, number>);
+		renderFunnel((metrics.byStatus ?? {}) as Record<string, number>);
+	}
+
+	function renderChart(daily: Record<string, number>): void {
+		const host = $('#crm-chart');
+		if (!host) return;
+		const entries = Object.entries(daily);
+		if (!entries.length) return;
+		const max = Math.max(1, ...entries.map(([, count]) => count));
+		const slot = 600 / entries.length;
+
+		const bars = entries
+			.map(([day, count], index) => {
+				const x = index * slot + (slot - 14) / 2;
+				const h = (count / max) * 130;
+				const height = Math.max(count > 0 ? 2 : 0, h);
+				return `<rect x="${x}" y="${140 - height}" width="14" height="${height}" class="fill-stone" rx="1"><title>${esc(day)}: ${count}</title></rect>`;
+			})
+			.join('');
+
+		host.innerHTML = `<svg viewBox="0 0 600 170" class="h-52 w-full" role="img" aria-label="Daily lead volume">
+			${bars}
+			<line x1="0" y1="140" x2="600" y2="140" class="stroke-sand" stroke-width="1"></line>
+			<text x="0" y="162" class="fill-mist text-[10px]">${esc(entries[0][0])}</text>
+			<text x="600" y="162" text-anchor="end" class="fill-mist text-[10px]">${esc(entries[entries.length - 1][0])}</text>
+		</svg>`;
+	}
+
+	function renderFunnel(byStatus: Record<string, number>): void {
+		const list = $('#crm-funnel');
+		if (!list) return;
+		const colors: Record<string, string> = {
+			novo: 'bg-brass',
+			em_contato: 'bg-stone',
+			proposta: 'bg-coffee',
+			fechado: 'bg-ink',
+			perdido: 'bg-mist',
+		};
+		const entries = Object.entries(STATUS_LABELS) as [LeadStatusValue, string][];
+		const max = Math.max(1, ...entries.map(([key]) => Number(byStatus[key] ?? 0)));
+
+		list.innerHTML = entries
+			.map(([key, label]) => {
+				const count = Number(byStatus[key] ?? 0);
+				return `<li>
+					<div class="flex items-baseline justify-between gap-3">
+						<span class="eyebrow text-slate">${esc(label)}</span>
+						<span class="font-display text-2xl">${count}</span>
+					</div>
+					<div class="mt-2 h-1.5 w-full bg-sand/30">
+						<div class="h-full ${colors[key]}" style="width:${(count / max) * 100}%"></div>
+					</div>
+				</li>`;
+			})
+			.join('');
+	}
+
+	function renderLeads(): void {
+		const body = $('crm-leads');
+		const foot = $('crm-leads-foot');
+		if (!body) return;
+
+		if (!leads.length) {
+			body.innerHTML = `<tr><td colspan="7" class="px-6 py-10 text-center text-sm text-mist">No leads match this filter.</td></tr>`;
+		} else {
+			body.innerHTML = leads
+				.slice(0, 100)
+				.map((lead) => {
+					const status = String(lead.status ?? 'novo') as LeadStatusValue;
+					const options = (Object.entries(STATUS_LABELS) as [LeadStatusValue, string][])
+						.map(
+							([value, label]) =>
+								`<option value="${value}"${value === status ? ' selected' : ''}>${esc(label)}</option>`,
+						)
+						.join('');
+					const first = lead.firstResponseAt ? relative(Number(lead.firstResponseAt)) : '—';
+					return `<tr class="cursor-pointer transition-colors hover:bg-bone" data-lead-row="${esc(lead.id)}">
+						<td class="whitespace-nowrap px-6 py-4 text-slate">${esc(fmtDate(Number(lead.createdAt)))}</td>
+						<td class="px-6 py-4">
+							<p class="text-graphite">${esc(lead.name)}</p>
+							<p class="text-xs text-mist">${esc(lead.email)}</p>
+						</td>
+						<td class="px-6 py-4 text-slate">${esc(lead.service || '—')}</td>
+						<td class="px-6 py-4 text-slate">${esc(lead.location || '—')}</td>
+						<td class="px-6 py-4">
+							<select data-lead-status="${esc(lead.id)}" class="border border-sand bg-white px-2 py-1.5 text-xs focus:border-brass focus:outline-none" aria-label="Status for ${esc(lead.name)}">${options}</select>
+						</td>
+						<td class="px-6 py-4 text-xs text-mist">${lead.form === 'project_inquiry' ? 'Modal' : 'Contact page'}</td>
+						<td class="whitespace-nowrap px-6 py-4 text-slate">${esc(first)}</td>
+					</tr>`;
+				})
+				.join('');
+		}
+
+		if (foot) foot.textContent = `Showing ${Math.min(leads.length, 100)} of ${leads.length} matching leads.`;
+	}
+
+	function renderQueue(payload: Record<string, unknown>): void {
+		const list = $('#crm-queue');
+		const overdueEl = $('crm-queue-overdue');
+		const tasks = (payload.tasks as Array<Record<string, unknown>>) ?? [];
+		const open = tasks.filter((task) => task.state === 'open').slice(0, 8);
+		const overdue = Number(payload.overdue ?? 0);
+
+		if (overdueEl) overdueEl.textContent = String(overdue);
+		if (!list) return;
+
+		if (!open.length) {
+			list.innerHTML = `<li class="py-6 text-sm text-mist">Nothing waiting. Every lead has been answered.</li>`;
+			return;
+		}
+
+		const now = Date.now();
+		list.innerHTML = open
+			.map((task) => {
+				const due = Number(task.dueAt ?? 0);
+				const late = due <= now;
+				return `<li class="flex items-start justify-between gap-4 border-b border-sand/50 py-3 last:border-0" data-task="${esc(task.id)}">
+					<div class="min-w-0">
+						<p class="truncate text-sm text-graphite">${esc(task.title)}</p>							<p class="mt-1 text-xs ${late ? 'text-coffee' : 'text-mist'}">${late ? `late ${Math.max(1, Math.round((now - due) / 3_600_000))}h` : esc(relative(due))}</p>
+					</div>
+					<div class="flex shrink-0 gap-2">
+						<button type="button" class="eyebrow border border-sand px-2 py-1 text-slate transition-colors hover:border-brass hover:text-ink" data-task-open="${esc(task.leadId)}">Open</button>
+						<button type="button" class="eyebrow border border-sand px-2 py-1 text-slate transition-colors hover:border-brass hover:text-ink" data-task-done="${esc(task.id)}">Done</button>
+					</div>
+				</li>`;
+			})
+			.join('');
+	}
+
+	function renderReport(report: Record<string, unknown> | null): void {
+		const host = $('#crm-report');
+		const time = $<HTMLElement>('#crm-report-time');
+		if (!host) return;
+
+		if (!report) {
+			host.innerHTML = `<p class="mt-5 text-sm leading-relaxed text-mist">Waiting for Hermes. The moment the agent posts a report it appears here — until then the KPIs above are computed directly from the pipeline.</p>`;
+			if (time) time.textContent = 'no report yet';
+			return;
+		}
+
+		const generated = Number(report.generatedAt ?? Date.now());
+		const summary = String(report.summary ?? '');
+		const highlights = (report.highlights as string[]) ?? [];
+		const actions = (report.actions as string[]) ?? [];
+
+		let html = `<p class="mt-5 text-base leading-relaxed text-graphite">${esc(summary)}</p>`;
+		if (highlights.length) {
+			html += `<ul class="mt-5 space-y-2">${highlights
+				.map(
+					(item) =>
+						`<li class="flex gap-3 text-sm text-slate"><span class="mt-2 h-1 w-1 shrink-0 rotate-45 bg-brass" aria-hidden="true"></span><span>${esc(item)}</span></li>`,
+				)
+				.join('')}</ul>`;
+		}
+		if (actions.length) {
+			html += `<div class="mt-6 border-t border-sand/60 pt-4"><p class="eyebrow text-stone">Suggested actions</p>
+				<ol class="mt-3 space-y-2">${actions
+					.map(
+						(item, index) =>
+							`<li class="text-sm text-graphite"><span class="mr-2 font-display text-lg text-stone">${index + 1}.</span>${esc(item)}</li>`,
+					)
+					.join('')}</ol></div>`;
+		}
+
+		host.innerHTML = html;
+		if (time) time.textContent = `generated ${relative(generated)}`;
+	}
+
+	/* ---------------------------------------------------------- Lead dialog */
+
+	const dialog = $<HTMLDialogElement>('#crm-lead-dialog');
+
+	async function openLead(id: string): Promise<void> {
+		const payload = await getJson(`/api/crm/leads/${encodeURIComponent(id)}/`);
+		if (!payload?.lead || !dialog) return;
+
+		const lead = payload.lead as Record<string, unknown>;
+		currentLeadId = String(lead.id);
+
+		const name = $('#crm-dialog-name');
+		if (name) name.textContent = String(lead.name ?? 'Lead');
+
+		const meta = $('#crm-dialog-meta');
+		if (meta) {
+			const rows: Array<[string, string]> = [
+				['Email', String(lead.email ?? '')],
+				['Phone', String(lead.phone || '—')],
+				['Service', String(lead.service || '—')],
+				['Location', String(lead.location || '—')],
+				['Budget', String(lead.budget || '—')],
+				['Timeline', String(lead.timeline || '—')],
+				['Received', fmtDate(Number(lead.createdAt))],
+				['Source', `${lead.form === 'project_inquiry' ? 'Modal' : 'Contact page'} · ${String(lead.page ?? '/')}`],
+				['Status', STATUS_LABELS[lead.status as LeadStatusValue] ?? String(lead.status)],
+				['First reply', lead.firstResponseAt ? relative(Number(lead.firstResponseAt)) : 'not yet'],
+			];
+			meta.innerHTML = rows
+				.map(
+					([label, value]) =>
+						`<div><dt class="eyebrow text-stone">${esc(label)}</dt><dd class="mt-1.5 text-sm text-graphite">${esc(value)}</dd></div>`,
+				)
+				.join('');
+		}
+
+		const message = $('#crm-dialog-message');
+		if (message) message.textContent = String(lead.message ?? '');
+
+		const status = $<HTMLSelectElement>('#crm-dialog-status');
+		if (status) status.value = String(lead.status ?? 'novo');
+
+		const mail = $<HTMLAnchorElement>('#crm-dialog-mail');
+		if (mail) {
+			// Only an address may go into a mailto: — nothing else from the record.
+			const address = String(lead.email ?? '').replace(/[^\w.@+-]/g, '');
+			mail.href = `mailto:${address}?subject=${encodeURIComponent('Re: your project inquiry')}`;
+			mail.toggleAttribute('aria-disabled', !address);
+		}
+
+		const notes = $('#crm-dialog-notes');
+		const noteList = (lead.notes as Array<{ ts: number; text: string }>) ?? [];
+		if (notes) {
+			notes.innerHTML = noteList.length
+				? noteList
+						.map(
+							(note) =>
+								`<li class="border-l-2 border-sand pl-3 text-sm text-graphite"><span class="block text-xs text-mist">${esc(fmtDate(note.ts))}</span>${esc(note.text)}</li>`,
+						)
+						.join('')
+				: `<li class="text-sm text-mist">No notes yet.</li>`;
+		}
+
+		const timeline = $('#crm-dialog-timeline');
+		const events = (payload.events as Array<{ ts: number; type: string; detail: string }>) ?? [];
+		if (timeline) {
+			timeline.innerHTML = events.length
+				? events
+						.map(
+							(event) =>
+								`<li class="flex gap-3 text-sm"><span class="w-28 shrink-0 text-xs text-mist">${esc(fmtDate(event.ts))}</span><span class="text-graphite">${esc(event.detail)}</span></li>`,
+						)
+						.join('')
+				: `<li class="text-sm text-mist">No events recorded.</li>`;
+		}
+
+		// showModal() throws if the dialog is already open (double click).
+		if (!dialog.open) dialog.showModal();
+	}
+
+	/* ------------------------------------------------------------- Actions */
+
+	async function patchLead(id: string, body: Record<string, unknown>): Promise<boolean> {
+		const payload = await getJson(`/api/crm/leads/${encodeURIComponent(id)}/`, {
+			method: 'PATCH',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(body),
+		});
+		if (payload?.ok) {
+			await refresh();
+			return true;
+		}
+		setStatus('That change could not be saved. Try again.');
+		return false;
+	}
+
+	async function patchTask(id: string, state: string): Promise<void> {
+		await getJson('/api/crm/tasks/', {
+			method: 'PATCH',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ id, state }),
+		});
+		await refresh();
+	}
+
+	/* ------------------------------------------------------------ Wiring up */
+
+	let debounce: ReturnType<typeof setTimeout> | undefined;
+	const searchInput = $<HTMLInputElement>('#crm-search');
+	const filterInput = $<HTMLSelectElement>('#crm-filter');
+
+	searchInput?.addEventListener('input', () => {
+		clearTimeout(debounce);
+		debounce = setTimeout(() => {
+			search = searchInput.value.trim();
+			void refresh();
+		}, 300);
+	});
+
+	filterInput?.addEventListener('change', () => {
+		filter = filterInput.value;
+		void refresh();
+	});
+
+	$<HTMLButtonElement>('#crm-refresh')?.addEventListener('click', () => void refresh());
+
+	$<HTMLButtonElement>('#crm-remind')?.addEventListener('click', async () => {
+		setStatus('Sending follow-up reminders…');
+		const result = await getJson('/api/crm/cron/followups/', { method: 'POST' });
+		if (result?.ok) {
+			setStatus(`Reminders: ${result.overdue ?? 0} overdue, ${result.reminded ?? 0} emailed.`);
+			await refresh();
+		} else {
+			setStatus('Reminders could not be sent (check CRON_SECRET).');
+		}
+	});
+
+	document.addEventListener('click', (event) => {
+		const target = event.target as HTMLElement;
+
+		const openButton = target.closest<HTMLElement>('[data-task-open]');
+		if (openButton) {
+			void openLead(openButton.dataset.taskOpen ?? '');
+			return;
+		}
+
+		const doneButton = target.closest<HTMLElement>('[data-task-done]');
+		if (doneButton) {
+			void patchTask(doneButton.dataset.taskDone ?? '', 'done');
+			return;
+		}
+
+		const row = target.closest<HTMLElement>('[data-lead-row]');
+		if (row && !target.closest('select')) {
+			void openLead(row.dataset.leadRow ?? '');
+		}
+	});
+
+	// Rows are reachable by keyboard: Enter/Space opens the same detail panel.
+	document.addEventListener('keydown', (event) => {
+		if (event.key !== 'Enter' && event.key !== ' ') return;
+		const row = (event.target as HTMLElement).closest<HTMLElement>('[data-lead-row]');
+		if (!row || (event.target as HTMLElement).closest('select')) return;
+		event.preventDefault();
+		void openLead(row.dataset.leadRow ?? '');
+	});
+
+	document.addEventListener('change', (event) => {
+		const target = event.target as HTMLElement;
+		const statusSelect = target.closest<HTMLSelectElement>('[data-lead-status]');
+		if (statusSelect) {
+			void patchLead(statusSelect.dataset.leadStatus ?? '', { status: statusSelect.value });
+			return;
+		}
+		if (target.id === 'crm-dialog-status' && currentLeadId) {
+			void patchLead(currentLeadId, { status: (target as HTMLSelectElement).value }).then(() =>
+				openLead(currentLeadId ?? ''),
+			);
+		}
+	});
+
+	$<HTMLButtonElement>('#crm-dialog-responded')?.addEventListener('click', async () => {
+		if (!currentLeadId) return;
+		const ok = await patchLead(currentLeadId, { responded: true });
+		if (ok) await openLead(currentLeadId);
+	});
+
+	$<HTMLFormElement>('#crm-note-form')?.addEventListener('submit', async (event) => {
+		event.preventDefault();
+		const input = $<HTMLInputElement>('#crm-note');
+		if (!currentLeadId || !input?.value.trim()) return;
+		const ok = await patchLead(currentLeadId, { note: input.value.trim() });
+		if (ok) {
+			input.value = '';
+			await openLead(currentLeadId);
+		}
+	});
+
+	$<HTMLButtonElement>('#crm-dialog-close')?.addEventListener('click', () => dialog?.close());
+	dialog?.addEventListener('click', (event) => {
+		if (event.target === dialog) dialog.close();
+	});
+
+	/* --------------------------------------------------------------- Start */
+
+	void refresh();
+	setInterval(() => void refresh(), 30_000);
+</script>

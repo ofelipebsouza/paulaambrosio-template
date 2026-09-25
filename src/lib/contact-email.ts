@@ -38,7 +38,7 @@ const GRAPHITE = '#5A5651';
 const SERIF = "Georgia, 'Times New Roman', Times, serif";
 const SANS = "'Helvetica Neue', Helvetica, Arial, sans-serif";
 
-const SITE_HOST = 'paulaambrosio.com';
+export const SITE_HOST = 'paulaambrosio.com';
 const STUDIO_SIGNATURE = 'Paula Ambrosio Interiors';
 const STUDIO_LOCATION = 'Miami, Florida';
 
@@ -173,7 +173,7 @@ export function composeConfirmationEmail(data: ContactPayload): ComposedEmail {
 /* Shared shell                                                               */
 /* -------------------------------------------------------------------------- */
 
-function emailShell({ heading, body, footnote }: { heading: string; body: string; footnote: string }): string {
+export function emailShell({ heading, body, footnote }: { heading: string; body: string; footnote: string }): string {
 	return `<!doctype html>
 <html lang="en">
 	<head>

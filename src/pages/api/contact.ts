@@ -2,7 +2,8 @@
  * POST /api/contact — server-side inquiry endpoint.
  *
  * Pipeline: body limits → parse → honeypot → sanitise → validate → optional
- * Turnstile → rate limit → SMTP delivery (studio lead + visitor confirmation).
+ * Turnstile → rate limit → CRM store → SMTP delivery (studio lead + visitor
+ * confirmation).
  *
  * Rules that must not be relaxed:
  *  - no credential or SMTP detail ever reaches the browser or an error message;
@@ -24,6 +25,9 @@ import {
 } from '../../lib/contact-form';
 import { composeConfirmationEmail, composeLeadEmail, type ContactPayload } from '../../lib/contact-email';
 import { checkRateLimit, hashIdentifier } from '../../lib/rate-limit';
+import { buildLead, newId, type CrmLead } from '../../lib/crm/schema';
+import { insertLead, pushEvent, saveLead } from '../../lib/crm/store';
+import { emitJev, leadData, scheduleFollowUps } from '../../lib/crm/automation';
 
 /** On-demand route: the rest of the site stays statically generated. */
 export const prerender = false;
@@ -263,6 +267,22 @@ export const ALL: APIRoute = async ({ request }) => {
 
 	const ip = clientIp(request);
 
+	// Where the inquiry came from: the modal and the contact page share this
+	// endpoint, and the CRM reports them separately.
+	const formId =
+		(typeof raw.form_id === 'string' && raw.form_id.trim()) ||
+		(typeof raw.form === 'string' && raw.form.trim()) ||
+		'contact';
+	let page = '/';
+	const referer = request.headers.get('referer');
+	if (referer) {
+		try {
+			page = new URL(referer).pathname || '/';
+		} catch {
+			// A malformed referer is not worth a log line.
+		}
+	}
+
 	// 3. Optional CAPTCHA, active only when the secret is configured.
 	if (import.meta.env.TURNSTILE_SECRET_KEY) {
 		const token = typeof raw[TURNSTILE_FIELD] === 'string' ? String(raw[TURNSTILE_FIELD]) : '';
@@ -278,9 +298,42 @@ export const ALL: APIRoute = async ({ request }) => {
 		return json({ ok: false, error: 'rate_limited' }, 429, { 'Retry-After': String(rateLimit.retryAfterSeconds) });
 	}
 
-	// 5. Deliver.
+	// 5. Store the lead before delivering it. The team's pipeline must survive
+	//    an SMTP outage, and the CRM write is best effort: a Redis hiccup never
+	//    changes the answer the visitor gets.
+	let crmLead: CrmLead | null = null;
+	try {
+		crmLead = buildLead({
+			payload,
+			form: formId,
+			page,
+			id: newId(),
+			now: Date.now(),
+		});
+		await insertLead(crmLead);
+		await pushEvent(crmLead.id, {
+			ts: crmLead.createdAt,
+			type: 'created',
+			detail: `Received from ${page} (${formId})`,
+			actor: 'system',
+		});
+		await scheduleFollowUps(crmLead, crmLead.createdAt);
+		await emitJev('lead.created', leadData(crmLead), crmLead.createdAt);
+	} catch (error) {
+		log('warn', 'crm_store_failed', {
+			requestId,
+			reason: error instanceof Error ? error.message : 'unknown',
+		});
+		crmLead = null;
+	}
+
+	// 6. Deliver.
 	const { transporter, from, recipient, mode } = buildTransport(requestId);
 	if (!transporter) {
+		if (crmLead) {
+			crmLead.delivery = 'unavailable';
+			await saveLead(crmLead).catch(() => undefined);
+		}
 		return json({ ok: false, error: 'delivery_unavailable' }, 503);
 	}
 
@@ -295,6 +348,11 @@ export const ALL: APIRoute = async ({ request }) => {
 			text: lead.text,
 			html: lead.html,
 		});
+		if (crmLead) {
+			crmLead.delivery = 'sent';
+			crmLead.updatedAt = Date.now();
+			await saveLead(crmLead).catch(() => undefined);
+		}
 	} catch (error) {
 		log('error', 'smtp_delivery_failed', {
 			requestId,
@@ -303,6 +361,17 @@ export const ALL: APIRoute = async ({ request }) => {
 			code: (error as { code?: string })?.code ?? 'unknown',
 			reason: error instanceof Error ? error.message : 'unknown',
 		});
+		if (crmLead) {
+			crmLead.delivery = 'failed';
+			crmLead.updatedAt = Date.now();
+			await saveLead(crmLead).catch(() => undefined);
+			await pushEvent(crmLead.id, {
+				ts: crmLead.updatedAt,
+				type: 'delivery',
+				detail: 'Studio notification was not accepted by the mail server',
+				actor: 'system',
+			}).catch(() => undefined);
+		}
 		return json({ ok: false, error: 'delivery_failed' }, 502);
 	}
 
@@ -311,6 +380,8 @@ export const ALL: APIRoute = async ({ request }) => {
 		mode,
 		service: payload.service,
 		hasPhone: Boolean(payload.phone),
+		form: formId,
+		crm: Boolean(crmLead),
 	});
 
 	// The confirmation is a courtesy: if it fails the lead is already safe.

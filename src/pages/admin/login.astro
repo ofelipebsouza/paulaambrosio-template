@@ -1,0 +1,113 @@
+---
+/**
+ * /admin/login/ — the only public CRM route.
+ *
+ * Server-rendered (on-demand) so a valid session bounces straight to the
+ * dashboard. The password never touches the URL, the page or a log line.
+ */
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { readSession } from '../../lib/crm/auth';
+
+export const prerender = false;
+
+if (readSession(Astro.request)) return Astro.redirect('/admin/');
+
+const inputClass =
+	'w-full border border-sand bg-white px-4 py-3 text-sm placeholder:text-mist focus:border-brass focus:outline-none';
+---
+
+<AdminLayout title="Sign in" description="Internal access for the Paula Ambrosio Interiors team." signOut={false}>
+	<div class="mx-auto max-w-md">
+		<p class="eyebrow text-stone">Studio CRM</p>
+		<h1 class="mt-4 font-display text-4xl lg:text-5xl">Internal access</h1>
+		<p class="mt-5 text-base leading-relaxed text-slate">
+			The pipeline for new inquiries: leads, follow-ups and the live Hermes report. Available to the studio
+			team only.
+		</p>
+
+		<form id="crm-login" class="mt-10 space-y-6" novalidate>
+			<div>
+				<label for="crm-password" class="eyebrow text-slate">Password</label>
+				<input
+					id="crm-password"
+					name="password"
+					type="password"
+					autocomplete="current-password"
+					required
+					class={`mt-3 ${inputClass}`}
+				/>
+			</div>
+
+			<p
+				id="crm-login-error"
+				class="hidden border border-coffee/30 bg-white px-4 py-3 text-sm text-coffee"
+				role="alert"
+				aria-live="polite"
+			>
+			</p>
+
+			<button type="submit" id="crm-login-submit" class="btn-primary w-full">Sign in</button>
+		</form>
+
+		<p class="mt-8 text-xs leading-relaxed text-mist">
+			The password is configured once in the project environment as <code class="bg-bone px-1">CRM_PASSWORD</code>.
+			Session expires after 12 hours.
+		</p>
+	</div>
+</AdminLayout>
+
+<script>
+	const form = document.getElementById('crm-login') as HTMLFormElement | null;
+	const input = document.getElementById('crm-password') as HTMLInputElement | null;
+	const errorBox = document.getElementById('crm-login-error') as HTMLParagraphElement | null;
+	const submit = document.getElementById('crm-login-submit') as HTMLButtonElement | null;
+
+	function showError(message: string): void {
+		if (!errorBox) return;
+		errorBox.textContent = message;
+		errorBox.classList.remove('hidden');
+	}
+
+	form?.addEventListener('submit', async (event) => {
+		event.preventDefault();
+		if (!input?.value) {
+			showError('Enter the studio password.');
+			input?.focus();
+			return;
+		}
+
+		errorBox?.classList.add('hidden');
+		if (submit) {
+			submit.disabled = true;
+			submit.textContent = 'Signing in…';
+		}
+
+		try {
+			const response = await fetch('/api/crm/session/', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+				body: JSON.stringify({ password: input.value }),
+			});
+			const data = (await response.json().catch(() => ({}))) as { ok?: boolean; error?: string };
+
+			if (response.ok && data.ok) {
+				window.location.href = '/admin/';
+				return;
+			}
+
+			const messages: Record<string, string> = {
+				invalid_credentials: 'That password was not accepted. Try again.',
+				rate_limited: 'Too many attempts. Wait a minute before trying again.',
+				crm_not_configured: 'The CRM password is not configured on this deployment.',
+			};
+			showError(messages[data.error ?? ''] ?? 'Sign-in failed. Please try again.');
+		} catch {
+			showError('Could not reach the server. Check your connection and try again.');
+		} finally {
+			if (submit) {
+				submit.disabled = false;
+				submit.textContent = 'Sign in';
+			}
+		}
+	});
+</script>

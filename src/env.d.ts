@@ -33,4 +33,29 @@ interface ImportMetaEnv {
 	/** Cloudflare Turnstile. Both keys are required to activate the challenge. */
 	readonly TURNSTILE_SECRET_KEY?: string;
 	readonly PUBLIC_TURNSTILE_SITE_KEY?: string;
+
+	/* ---------------------------------------------------------------- CRM -- */
+
+	/** Team credential for /admin/. Required — the login refuses without it. */
+	readonly CRM_PASSWORD?: string;
+	/** HMAC key for the session cookie. Falls back to a key derived from CRM_PASSWORD. */
+	readonly CRM_SESSION_SECRET?: string;
+	/** Session lifetime in seconds (default 43200 = 12 h). */
+	readonly CRM_SESSION_TTL?: string;
+	/** Pepper for the hashed email lookup key. */
+	readonly CRM_INDEX_PEPPER?: string;
+	/** Static token Hermes sends as `x-hermes-token` when pulling KPIs. */
+	readonly HERMES_TOKEN?: string;
+	/** HMAC secret required on POST /api/crm/report/ once set. */
+	readonly HERMES_WEBHOOK_SECRET?: string;
+	/** JEV webhook target. Empty disables outbound automation events. */
+	readonly JEV_WEBHOOK_URL?: string;
+	/** HMAC secret included as `x-jev-signature` on JEV payloads. */
+	readonly JEV_WEBHOOK_SECRET?: string;
+	/** Bearer secret accepted by /api/crm/cron/followups/. */
+	readonly CRON_SECRET?: string;
+	/** Hours before the first-contact follow-up becomes overdue (default 24). */
+	readonly CRM_FOLLOWUP_HOURS?: string;
+	/** Hours before the second-attempt follow-up becomes overdue (default 72). */
+	readonly CRM_FOLLOWUP_SECOND_HOURS?: string;
 }
