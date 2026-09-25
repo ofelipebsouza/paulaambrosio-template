@@ -2,8 +2,8 @@
 /**
  * /journal/[slug]/ — Single Journal article page.
  *
- * Rendered on-demand (SSR) so articles created via Admin or Hermes
- * are visible immediately or upon scheduled release time.
+ * Pre-rendered at build time with support for both Markdown collection articles
+ * and published articles stored in Redis.
  */
 import { getCollection, render } from 'astro:content';
 import { Image } from 'astro:assets';
@@ -13,18 +13,33 @@ import CtaBanner from '../../components/ui/CtaBanner.astro';
 import { articleSchema, webPageSchema, schemaScript } from '../../lib/seo';
 import { brandedOg } from '../../lib/og';
 import type { BreadcrumbEntry } from '../../lib/seo';
-import { getJournalPost, incrementPostViews } from '../../lib/journal/store';
+import { listJournalPosts } from '../../lib/journal/store';
 import { estimateReadingTime } from '../../lib/journal/schema';
-import { readSession } from '../../lib/crm/auth';
 
-export const prerender = false;
+export async function getStaticPaths() {
+	// 1. Static posts from content collection
+	const staticPosts = (await getCollection('journal')).filter((p) => !p.data.draft);
+	const staticPaths = staticPosts.map((post) => ({
+		params: { slug: post.id },
+		props: { post, isDynamic: false as const, dynamicData: null },
+	}));
 
-const { slug } = Astro.params;
-if (!slug) return Astro.redirect('/journal/');
+	// 2. Published posts from Redis
+	let dynamicPaths: any[] = [];
+	try {
+		const redisPosts = await listJournalPosts({ status: 'published', limit: 100 });
+		dynamicPaths = redisPosts.map((dp) => ({
+			params: { slug: dp.id },
+			props: { post: null, isDynamic: true as const, dynamicData: dp },
+		}));
+	} catch {
+		// Fallback
+	}
 
-// 1. Check static markdown collections first
-const staticPosts = await getCollection('journal');
-const staticPost = staticPosts.find((p) => p.id === slug && !p.data.draft);
+	return [...staticPaths, ...dynamicPaths];
+}
+
+const { post, isDynamic, dynamicData } = Astro.props;
 
 let title = '';
 let excerpt = '';
@@ -36,67 +51,47 @@ let featuredImage: any = null;
 let imageAlt = '';
 let renderedContentHtml = '';
 let readingTime = 3;
-let isDynamic = false;
 let seoTitle: string | undefined;
 let seoDescription: string | undefined;
-
 let StaticContent: any = null;
 
-if (staticPost) {
-	const rendered = await render(staticPost);
+if (!isDynamic && post) {
+	const rendered = await render(post);
 	StaticContent = rendered.Content;
-	title = staticPost.data.title;
-	excerpt = staticPost.data.excerpt;
-	category = staticPost.data.category;
-	author = staticPost.data.author;
-	publishedDate = staticPost.data.date;
-	updatedDate = staticPost.data.updatedDate;
-	featuredImage = staticPost.data.featuredImage;
-	imageAlt = staticPost.data.imageAlt ?? staticPost.data.title;
-	seoTitle = staticPost.data.seoTitle;
-	seoDescription = staticPost.data.seoDescription;
-	const rawContent = staticPost.body ?? '';
+	title = post.data.title;
+	excerpt = post.data.excerpt;
+	category = post.data.category;
+	author = post.data.author;
+	publishedDate = post.data.date;
+	updatedDate = post.data.updatedDate;
+	featuredImage = post.data.featuredImage;
+	imageAlt = post.data.imageAlt ?? post.data.title;
+	seoTitle = post.data.seoTitle;
+	seoDescription = post.data.seoDescription;
+	const rawContent = post.body ?? '';
 	const wordCount = rawContent.split(/\s+/).filter(Boolean).length;
 	readingTime = Math.max(1, Math.ceil(wordCount / 200));
-} else {
-	// 2. Check dynamic Redis store
-	const dynamicPost = await getJournalPost(slug);
-	if (!dynamicPost) {
-		return Astro.rewrite('/404');
-	}
+} else if (dynamicData) {
+	title = dynamicData.title;
+	excerpt = dynamicData.excerpt;
+	category = dynamicData.category;
+	author = dynamicData.author;
+	publishedDate = new Date(dynamicData.publishedAt);
+	updatedDate = new Date(dynamicData.updatedAt);
+	featuredImage = dynamicData.featuredImage;
+	imageAlt = dynamicData.imageAlt || dynamicData.title;
+	seoTitle = dynamicData.seoTitle;
+	seoDescription = dynamicData.seoDescription;
+	readingTime = estimateReadingTime(dynamicData.content);
 
-	// Check publication status: scheduled or draft require active session
-	const isStaff = Boolean(readSession(Astro.request));
-	const isDue = dynamicPost.status === 'published' || (dynamicPost.status === 'scheduled' && (dynamicPost.scheduledFor ?? 0) <= Date.now());
-
-	if (!isDue && !isStaff) {
-		return Astro.rewrite('/404');
-	}
-
-	title = dynamicPost.title;
-	excerpt = dynamicPost.excerpt;
-	category = dynamicPost.category;
-	author = dynamicPost.author;
-	publishedDate = new Date(dynamicPost.publishedAt);
-	updatedDate = new Date(dynamicPost.updatedAt);
-	featuredImage = dynamicPost.featuredImage;
-	imageAlt = dynamicPost.imageAlt || dynamicPost.title;
-	seoTitle = dynamicPost.seoTitle;
-	seoDescription = dynamicPost.seoDescription;
-	readingTime = estimateReadingTime(dynamicPost.content);
-	isDynamic = true;
-
-	// Simple paragraphs / markdown line breaks rendering
-	const paragraphs = dynamicPost.content
+	const paragraphs = dynamicData.content
 		.split(/\n\n+/)
 		.map((p) => `<p class="mb-6 leading-relaxed">${p.replace(/\n/g, '<br />')}</p>`)
 		.join('');
 	renderedContentHtml = paragraphs;
-
-	// Count view in background
-	void incrementPostViews(slug);
 }
 
+const slug = Astro.params.slug;
 const ogImage = brandedOg('journal', slug);
 const breadcrumbs: BreadcrumbEntry[] = [
 	{ name: 'Journal', url: '/journal' },

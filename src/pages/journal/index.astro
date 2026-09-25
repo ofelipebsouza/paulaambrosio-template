@@ -2,7 +2,8 @@
 /**
  * /journal/ — Design Journal listing.
  *
- * Merges markdown collection articles with dynamic articles stored in Upstash Redis.
+ * Statically pre-rendered for maximum performance and full SEO sitemap inclusion.
+ * Combines markdown collection articles with published dynamic articles from Redis.
  */
 import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
@@ -12,8 +13,6 @@ import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
 import { webPageSchema, schemaScript } from '../../lib/seo';
 import type { BreadcrumbEntry } from '../../lib/seo';
 import { listJournalPosts } from '../../lib/journal/store';
-
-export const prerender = false;
 
 // 1. Static markdown posts
 const staticPosts = (await getCollection('journal'))
@@ -26,10 +25,9 @@ const staticPosts = (await getCollection('journal'))
 		date: p.data.date,
 		featuredImage: p.data.featuredImage,
 		imageAlt: p.data.imageAlt ?? p.data.title,
-		isDynamic: false,
 	}));
 
-// 2. Dynamic published posts from Redis
+// 2. Published posts from Redis
 let dynamicPosts: Array<{
 	id: string;
 	title: string;
@@ -38,11 +36,10 @@ let dynamicPosts: Array<{
 	date: Date;
 	featuredImage: string;
 	imageAlt: string;
-	isDynamic: true;
 }> = [];
 
 try {
-	const redisPosts = await listJournalPosts({ status: 'published', limit: 50 });
+	const redisPosts = await listJournalPosts({ status: 'published', limit: 100 });
 	dynamicPosts = redisPosts.map((p) => ({
 		id: p.id,
 		title: p.title,
@@ -51,10 +48,9 @@ try {
 		date: new Date(p.publishedAt),
 		featuredImage: p.featuredImage,
 		imageAlt: p.imageAlt || p.title,
-		isDynamic: true as const,
 	}));
 } catch {
-	// Fallback to static if redis read fails
+	// Fallback to static if redis is unreachable during build
 }
 
 // Combine and deduplicate by id
