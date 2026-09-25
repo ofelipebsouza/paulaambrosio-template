@@ -184,6 +184,39 @@ const maxLengthFor = (field: ContactFieldName) => FIELD_LIMITS[field];
 					</p>
 				</noscript>
 			</form>
+
+			<!-- Studio Location & Interactive Google Map -->
+			<div class="mt-14 border border-sand/70 bg-white p-4 sm:p-6">
+				<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-sand/60 pb-4">
+					<div>
+						<p class="eyebrow text-stone">Studio Location</p>
+						<p class="font-display text-xl text-ink mt-1">North Miami Studio</p>
+						<p class="text-xs text-mist mt-0.5">{SITE.address}</p>
+					</div>
+					<a
+						href="https://maps.google.com/?q=1938+NE+149th+St,+North+Miami,+FL+33181"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="eyebrow self-start sm:self-auto inline-flex items-center gap-1.5 border border-sand bg-bone px-3 py-2 text-slate transition-colors hover:border-brass hover:text-ink min-h-11 sm:min-h-0"
+						aria-label="Get directions to Paula Ambrosio Interiors studio on Google Maps"
+					>
+						Get Directions &nearr;
+					</a>
+				</div>
+				<div class="mt-4 overflow-hidden rounded-xs border border-sand/40 bg-bone aspect-[16/9] max-h-96 w-full">
+					<iframe
+						title="Paula Ambrosio Interiors Studio Location"
+						src="https://maps.google.com/maps?q=1938+NE+149th+St,+North+Miami,+FL+33181&t=&z=15&ie=UTF8&iwloc=&output=embed"
+						width="100%"
+						height="100%"
+						style="border:0;"
+						allowfullscreen=""
+						loading="lazy"
+						referrerpolicy="no-referrer-when-downgrade"
+						class="w-full h-full opacity-90 contrast-[1.02] grayscale-[0.2] transition-all duration-700 hover:grayscale-0 hover:opacity-100"
+					></iframe>
+				</div>
+			</div>
 		</div>
 	</section>
 </Layout>
