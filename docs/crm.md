@@ -16,19 +16,24 @@ session cookie that never leaves the server.
 contact page / header modal
         │  POST /api/contact/
         ▼
- api/contact.ts ──┬─► Upstash Redis   crm:lead:*   ← the pipeline
+ api/contact.ts ──┬─► blocklist check  silent 200 for a blocked sender
+                  ├─► enrichment       ip, geo headers, UA, UTM, flags
+                  ├─► Upstash Redis   crm:lead:*   ← the pipeline
+                  ├─► daily ledger    crm:metrics:* (attempts, accepted, …)
                   ├─► SMTP            studio inbox + visitor confirmation
                   └─► JEV webhook     lead.created (signed)
 
- GET  /api/crm/metrics/    KPIs                      ┐
- GET  /api/crm/leads/      paged pipeline            │
- PATCH /api/crm/leads/:id/ status, note, assignee    │ session cookie
- GET  /api/crm/tasks/      follow-up queue           │
- GET  /api/crm/report/     latest Hermes report      ┘
- GET  /api/crm/export/     CSV                       ┘
+ GET  /api/crm/metrics/    KPIs + 14-day ledger        ┐
+ GET  /api/crm/leads/      paged pipeline              │
+ PATCH /api/crm/leads/:id/ status, note, assignee      │ session cookie
+ GET  /api/crm/tasks/      follow-up queue             │
+ GET  /api/crm/blocks/     blocklist rules             │
+ POST /api/crm/blocks/     add / remove a rule         ┘
+ GET  /api/crm/export/     CSV (incl. country / IP / UTM)
 
  GET  /api/crm/report/  + x-hermes-token   ← Hermes pulls its KPI payload
  POST /api/crm/report/  + HMAC signature   ← Hermes posts the report back
+ POST /api/crm/agent/   + token / HMAC     ← Hermes moves, notes, answers
  GET  /api/crm/cron/followups/             ← Vercel Cron (09:00) or JEV
 ```
 
@@ -47,9 +52,10 @@ SDK, no new dependency. Keys are prefixed `crm:` and cannot collide with
 | `crm:idx:time` | zset | timeline, score = received epoch |
 | `crm:idx:email:{hmac}` | string | lookup by address without storing it raw |
 | `crm:events:{id}` | zset | status changes, notes, delivery results |
-| `crm:metrics:{YYYY-MM-DD}` | hash | daily counters |
+| `crm:metrics:{YYYY-MM-DD}` | hash | daily counters **and the submission ledger** |
 | `crm:task:{id}` · `crm:idx:tasks` | string · zset | follow-up deadlines |
 | `crm:report:last` | string (JSON) | latest Hermes report |
+| `crm:block:{type}:{value}` · `crm:idx:block` | string · zset | blocklist rules |
 
 **Without credentials** every operation falls back to an in-process store and
 the dashboard header shows `Storage · in memory` — data survives the request,
@@ -73,12 +79,63 @@ add `CRM_RETENTION_DAYS` and delete from `crm:idx:time` in the cron route.
 
 ## 4. Pipeline and metrics
 
-Statuses: `novo → em_contato → proposta → fechado | perdido`
-(labels shown in English, matching the site copy).
+The funnel is the hybrid one — eight stages, each a board column:
+
+```
+novo → atendimento_ia → atendimento_humano → reuniao_agendada
+     → reuniao_realizada → proposta → fechado | perdido
+```
+
+Labels shown in English (matching the site copy): *New · AI handling · Human
+handling · Meeting scheduled · Meeting held · Proposal sent · Won · Lost*.
+Won and Lost live outside the board as tabs. Records stored before the Kanban
+still carry `em_contato`; reads normalise it to `atendimento_humano`, so no
+migration is required.
 
 Moving a lead out of `novo` (or clicking *Mark as answered*) stamps
 `firstResponseAt`, closes that lead's open follow-up tasks, records a timeline
-event and fires `lead.status_changed` / `lead.responded` to JEV.
+event and fires `lead.status_changed` / `lead.responded` to JEV. A *Transfer
+to human* button on every `atendimento_ia` card does both in one click.
+
+The board is plain HTML5 drag & drop (no library); each card also carries a
+`<select>` so the same move works with a keyboard or on touch. A drop is
+optimistic — the card moves immediately and `PATCH` repaints or rolls it back.
+
+### Lead enrichment
+
+Captured server-side at `POST /api/contact/`, stored on the lead, shown only
+inside the CRM (session + `noindex`), never logged raw and never sent to a
+webhook or to Analytics:
+
+| Field | Source |
+| --- | --- |
+| `ip` | first `x-forwarded-for` hop |
+| `geo` | `x-vercel-ip-country/city/latitude/longitude/timezone` (city is base64) |
+| `userAgent` | `User-Agent`, truncated (300) |
+| `referrer`, `landing` | `Referer` header |
+| `utm` | hidden fields the browser fills from `location.search` |
+| `flags` | `disposable_email`, `repeat_submitter`, `missing_ua`, `automation_ua` |
+
+Flags **mark** a lead for review (badges in the dialog, a timeline entry) —
+they never discard it. Blocking is a deliberate human act (§4.1).
+
+### 4.1 Blocklist
+
+`GET|POST|DELETE /api/crm/blocks/` (session) manages exact rules of type
+`ip`, `email` or `domain`. The contact endpoint checks them **before** the
+rate limit and the CRM write: a hit answers `200 {ok:true}` — identical to a
+success, so the sender learns nothing — logs `blocked_submission` with only
+the rule type, and increments `blocked` in the ledger and `hits` on the rule.
+One click from any lead's dialog: *Block IP* / *Block domain*.
+
+### Submission ledger
+
+Every parsed body increments `attempts`; each outcome increments
+`accepted`, `rejected_validation`, `rejected_rate`, `honeypot`, `turnstile`,
+`smtp_failed` or `blocked` in `crm:metrics:{day}`. The dashboard's *Submission
+ledger* panel shows 14 days beside the reconciliation instructions — the
+server's account of what happened, next to what Vercel Analytics reports
+(see `docs/analytics.md` → *Reconciliation*).
 
 KPIs served by `GET /api/crm/metrics/`:
 
@@ -87,7 +144,8 @@ KPIs served by `GET /api/crm/metrics/`:
 - average first response (hours) and % answered within 24 h;
 - conversion = won ÷ closed;
 - funnel by status; breakdowns by service, location, source form and budget;
-- 30-day daily volume; open and late follow-up tasks.
+- 30-day daily volume; open and late follow-up tasks;
+- the 14-day submission ledger (`ledger`).
 
 ## 5. Hermes contract
 
@@ -117,6 +175,27 @@ token is accepted. `summary` is mandatory (max 2000 chars), `highlights` and
 
 The dashboard polls it every 30 s and falls back to "Waiting for Hermes" — a
 missing or malformed report never breaks the page.
+
+### Writing: `POST /api/crm/agent/`
+
+The hybrid half — the agent acts on a lead exactly like a person, through the
+same validation (`src/lib/crm/lead-actions.ts`), always recorded as
+`actor: 'hermes'` in the timeline:
+
+```json
+{ "leadId": "m1a2b3", "action": "move", "status": "atendimento_humano" }
+{ "leadId": "m1a2b3", "action": "note", "text": "Called; callback at 3 pm." }
+{ "leadId": "m1a2b3", "action": "responded" }
+{ "leadId": "m1a2b3", "action": "assign", "to": "hermes" }
+```
+
+Auth: the static `x-hermes-token` or the `x-hermes-signature` HMAC — the same
+rule as the report route (a configured `HERMES_WEBHOOK_SECRET` makes the
+signature mandatory). Rate limited per IP through the shared limiter. Out of
+scope by design: no delete, no note erasure — an agent that can only move,
+note and answer cannot cover its tracks. Timeline examples:
+`Moved from novo to atendimento_ia` · `Closed 2 follow-up task(s)…`, both
+signed `hermes`.
 
 ## 6. JEV contract
 
@@ -175,6 +254,8 @@ npm run lead:test       # real inquiry → appears in /admin/
 ```
 
 Manual pass: sign in → wrong password rejected; `/api/crm/metrics/` without a
-cookie answers 401; changing a status in the table updates the funnel and the
-first-reply column; *Send reminders* returns counts; `POST /api/crm/report/`
-with a bad signature answers 401.
+cookie answers 401; dragging a card moves it (and the select mirrors it);
+*Transfer to human* lands the card in *Human handling* with a `hermes`-free
+timeline entry; *Block IP* then resubmitting from that IP answers 200 and
+increments the ledger's `blocked`; `POST /api/crm/agent/` with a bad token
+answers 401; `POST /api/crm/report/` with a bad signature answers 401.

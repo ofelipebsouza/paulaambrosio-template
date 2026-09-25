@@ -13,14 +13,18 @@
  *   crm:idx:time          ZSET  score = createdAt  member = id
  *   crm:idx:email:{hmac}  STRING id (lookup without storing a raw address)
  *   crm:events:{id}       ZSET  score = ts  member = JSON event
- *   crm:metrics:{day}     HASH  counters (leads, by service, …)
+ *   crm:metrics:{day}     HASH  counters (leads, by service, …) + the
+ *                              submission ledger (attempts, accepted, blocked…)
  *   crm:task:{id}         JSON document
  *   crm:idx:tasks         ZSET  score = dueAt  member = id
  *   crm:report:last       JSON document
+ *   crm:block:{type}:{v}   STRING JSON rule (ip / email / domain blocklist)
+ *   crm:idx:block         ZSET  score = createdAt  member = `{type}:{value}`
  */
 import { createHash } from 'node:crypto';
 import {
 	dayKey,
+	normalizeStatus,
 	type CrmEvent,
 	type CrmLead,
 	type CrmTask,
@@ -111,6 +115,17 @@ interface MemoryDb {
 	tasks: Map<string, CrmTask>;
 	taskIdx: Map<string, number>;
 	report: HermesReport | null;
+	blocks: Map<string, BlockRule>;
+}
+
+export interface BlockRule {
+	type: 'ip' | 'email' | 'domain';
+	/** Raw value for IP/domain rules; the hashed form is never stored. */
+	value: string;
+	reason: string;
+	createdAt: number;
+	/** Hits counted since the rule was added. */
+	hits: number;
 }
 
 const mem: MemoryDb = {
@@ -122,6 +137,7 @@ const mem: MemoryDb = {
 	tasks: new Map(),
 	taskIdx: new Map(),
 	report: null,
+	blocks: new Map(),
 };
 
 /** Bounded: a hostile burst must not grow the instance forever. */
@@ -213,8 +229,15 @@ export async function insertLead(lead: CrmLead): Promise<void> {
 
 export async function getLead(id: string): Promise<CrmLead | null> {
 	const results = await redis([['GET', `crm:lead:${id}`]]);
-	if (results) return parseJson<CrmLead>(results[0]);
-	return mem.leads.get(id) ?? null;
+	const doc = results ? parseJson<CrmLead>(results[0]) : (mem.leads.get(id) ?? null);
+	return doc ? normalizeLead(doc) : null;
+}
+
+/** Applies the current funnel to a stored document (legacy `em_contato` …). */
+function normalizeLead<T extends { status: LeadStatus }>(lead: T): T {
+	const status = normalizeStatus(lead.status);
+	if (status !== lead.status) lead.status = status;
+	return lead;
 }
 
 /** Lookup used to keep one lead per visitor address. */
@@ -268,10 +291,13 @@ export async function listLeads({ status, query, limit = 200, offset = 0 }: Lead
 		const fetched = await redis(ids.map((id) => ['GET', `crm:lead:${id}`]));
 		if (fetched) {
 			fromRedis = true;
-			docs = fetched.map((row) => parseJson<CrmLead>(row)).filter((row): row is CrmLead => row !== null);
+			docs = fetched
+				.map((row) => parseJson<CrmLead>(row))
+				.filter((row): row is CrmLead => row !== null)
+				.map((row) => normalizeLead(row));
 		}
 	} else if (!results) {
-		docs = [...mem.leads.values()];
+		docs = [...mem.leads.values()].map((row) => normalizeLead(row));
 	}
 
 	// A failed read on a Redis-backed index must not present an empty pipeline:
@@ -280,7 +306,7 @@ export async function listLeads({ status, query, limit = 200, offset = 0 }: Lead
 
 	const needle = query?.trim().toLowerCase() ?? '';
 	const filtered = docs.filter((lead) => {
-		if (status && lead.status !== status) return false;
+		if (status && normalizeStatus(lead.status) !== status) return false;
 		if (!needle) return true;
 		return [lead.name, lead.email, lead.service, lead.location, lead.message, lead.form]
 			.join(' ')
@@ -344,6 +370,168 @@ export async function dailyCounts(days = 30): Promise<Record<string, number>> {
 	const out: Record<string, number> = {};
 	for (const day of keys) out[day] = mem.days.get(day)?.leads ?? 0;
 	return out;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Submission ledger — the server's own account of what happened              */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Counters written by the contact endpoint for every outcome it produced.
+ * This is the ground truth the dashboard puts next to Vercel Analytics: the
+ * platform only ever sees what the browser reported, the ledger sees what the
+ * server did — including submissions no browser will admit to.
+ */
+export type LedgerField =
+	| 'attempts'
+	| 'accepted'
+	| 'rejected_validation'
+	| 'rejected_rate'
+	| 'honeypot'
+	| 'turnstile'
+	| 'smtp_failed'
+	| 'blocked';
+
+const LEDGER_FIELDS: readonly LedgerField[] = [
+	'attempts',
+	'accepted',
+	'rejected_validation',
+	'rejected_rate',
+	'honeypot',
+	'turnstile',
+	'smtp_failed',
+	'blocked',
+];
+
+/** Best effort: a missing counter must never fail an inquiry. */
+export async function bumpLedger(field: LedgerField, day = dayKey(Date.now())): Promise<void> {
+	try {
+		const results = await redis([['HINCRBY', `crm:metrics:${day}`, field, 1]]);
+		if (results) return;
+	} catch {
+		// Fall through to the in-process bucket below.
+	}
+	const bucket = mem.days.get(day) ?? {};
+	bucket[field] = (bucket[field] ?? 0) + 1;
+	mem.days.set(day, bucket);
+}
+
+export interface LedgerDay {
+	day: string;
+	fields: Record<LedgerField, number>;
+}
+
+/** The last `days` calendar days (UTC), zero-filled — ready for a table. */
+export async function ledgerCounts(days = 14): Promise<LedgerDay[]> {
+	const keys: string[] = [];
+	const now = Date.now();
+	for (let i = days - 1; i >= 0; i -= 1) keys.push(dayKey(now - i * 86_400_000));
+
+	const empty = (): Record<LedgerField, number> =>
+		Object.fromEntries(LEDGER_FIELDS.map((field) => [field, 0])) as Record<LedgerField, number>;
+
+	const pipeline = await redis(keys.map((day) => ['HGETALL', `crm:metrics:${day}`]));
+	const out: LedgerDay[] = [];
+	for (let i = 0; i < keys.length; i += 1) {
+		const fields = empty();
+		if (pipeline) {
+			const raw = pipeline[i];
+			const counts = (raw && typeof raw === 'object' ? raw : {}) as Record<string, string>;
+			for (const field of LEDGER_FIELDS) fields[field] = Number.parseInt(counts[field] ?? '0', 10) || 0;
+		} else {
+			const bucket = mem.days.get(keys[i]) ?? {};
+			for (const field of LEDGER_FIELDS) fields[field] = bucket[field] ?? 0;
+		}
+		out.push({ day: keys[i], fields });
+	}
+	return out;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Blocklist — manual rules that refuse a sender before the lead is written   */
+/* -------------------------------------------------------------------------- */
+
+const BLOCK_LIMIT = 500;
+
+function blockKey(type: BlockRule['type'], value: string): string {
+	return `${type}:${value}`;
+}
+
+export async function saveBlock(rule: BlockRule): Promise<void> {
+	const key = blockKey(rule.type, rule.value);
+	const results = await redis([
+		['SET', `crm:block:${key}`, JSON.stringify(rule)],
+		['ZADD', 'crm:idx:block', rule.createdAt, key],
+	]);
+	if (results) return;
+	mem.blocks.set(key, rule);
+}
+
+/** The matching rule for a sender, or `null`. Exact match by design: a
+ * blocklist entry the team cannot audit is worse than a heuristic. */
+export async function findBlock(ip: string, email: string): Promise<BlockRule | null> {
+	const domain = email.slice(email.lastIndexOf('@') + 1).toLowerCase().trim();
+	const address = email.toLowerCase().trim();
+	const candidates = [
+		...(ip ? [`ip:${ip}`] : []),
+		...(address && address.includes('@') ? [`email:${address}`] : []),
+		...(domain ? [`domain:${domain}`] : []),
+	];
+	if (!candidates.length) return null;
+
+	const results = await redis(candidates.map((key) => ['GET', `crm:block:${key}`]));
+	if (results) {
+		for (const row of results) {
+			const rule = parseJson<BlockRule>(row);
+			if (rule) return rule;
+		}
+		return null;
+	}
+	for (const key of candidates) {
+		const rule = mem.blocks.get(key);
+		if (rule) return rule;
+	}
+	return null;
+}
+
+/** Increments the rule's hit counter. Best effort — never blocks a response. */
+export async function countBlockHit(rule: BlockRule): Promise<void> {
+	const key = blockKey(rule.type, rule.value);
+	const updated: BlockRule = { ...rule, hits: rule.hits + 1 };
+	mem.blocks.set(key, updated);
+	const results = await redis([['SET', `crm:block:${key}`, JSON.stringify(updated)]]);
+	if (results) return;
+}
+
+export async function listBlocks(): Promise<BlockRule[]> {
+	const results = await redis([['ZREVRANGE', 'crm:idx:block', '0', String(BLOCK_LIMIT - 1)]]);
+	let keys: string[] = [];
+	if (results) {
+		const raw = results[0];
+		keys = Array.isArray(raw) ? (raw as string[]) : [];
+	} else {
+		keys = [...mem.blocks.keys()];
+	}
+	if (!keys.length) return [];
+
+	const fetched = await redis(keys.map((key) => ['GET', `crm:block:${key}`]));
+	if (fetched) {
+		return fetched
+			.map((row) => parseJson<BlockRule>(row))
+			.filter((rule): rule is BlockRule => rule !== null)
+			.sort((a, b) => b.createdAt - a.createdAt);
+	}
+	return [...mem.blocks.values()].sort((a, b) => b.createdAt - a.createdAt);
+}
+
+export async function deleteBlock(type: BlockRule['type'], value: string): Promise<boolean> {
+	const key = blockKey(type, value);
+	const results = await redis([
+		['DEL', `crm:block:${key}`],
+		['ZREM', 'crm:idx:block', key],
+	]);
+	if (results) return Number(results[0] ?? 0) > 0;
+	return mem.blocks.delete(key);
 }
 
 /**

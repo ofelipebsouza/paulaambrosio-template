@@ -4,10 +4,15 @@
  * Excel-friendly (UTF-8 BOM, CRLF) and formula-safe: a value starting with
  * `=`, `+`, `-` or `@` is prefixed with an apostrophe so a lead's message
  * cannot execute when the file is opened.
+ *
+ * The enrichment columns (IP, country, city, UTM) join the sheet: the team
+ * exports to share a pipeline review, and blocking a bad sender starts with
+ * knowing where the traffic came from.
  */
 import type { APIRoute } from 'astro';
 import { requireCrm } from '../../../lib/crm/guard';
 import { text } from '../../../lib/crm/http';
+import { normalizeStatus } from '../../../lib/crm/schema';
 import { allLeads } from '../../../lib/crm/store';
 
 export const prerender = false;
@@ -26,6 +31,13 @@ const HEADERS = [
 	'Timeline',
 	'Form',
 	'Page',
+	'Country',
+	'City',
+	'IP',
+	'Flags',
+	'UTM source',
+	'UTM medium',
+	'UTM campaign',
 	'Assigned to',
 	'First response',
 	'Delivery',
@@ -54,7 +66,7 @@ export const ALL: APIRoute = async ({ request }) => {
 		[
 			lead.id,
 			iso(lead.createdAt),
-			lead.status,
+			normalizeStatus(lead.status),
 			lead.name,
 			lead.email,
 			lead.phone,
@@ -65,6 +77,13 @@ export const ALL: APIRoute = async ({ request }) => {
 			lead.timeline,
 			lead.form,
 			lead.page,
+			lead.geo?.country ?? '',
+			lead.geo?.city ?? '',
+			lead.ip ?? '',
+			(lead.flags ?? []).join(' '),
+			lead.utm?.source ?? '',
+			lead.utm?.medium ?? '',
+			lead.utm?.campaign ?? '',
 			lead.assignedTo,
 			iso(lead.firstResponseAt),
 			lead.delivery,

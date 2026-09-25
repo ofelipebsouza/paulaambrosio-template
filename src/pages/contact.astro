@@ -5,6 +5,7 @@ import { webPageSchema, schemaScript } from '../lib/seo';
 import type { BreadcrumbEntry } from '../lib/seo';
 import { SITE, SOCIAL_LINKS } from '../config';
 import Turnstile from '../components/ui/Turnstile.astro';
+import UtmFields from '../components/UtmFields.astro';
 import {
 	BUDGET_OPTIONS,
 	CONTACT_API_PATH,
@@ -167,6 +168,9 @@ const maxLengthFor = (field: ContactFieldName) => FIELD_LIMITS[field];
 					<label for="contact-website">Website</label>
 					<input id="contact-website" name={HONEYPOT_FIELD} type="text" tabindex="-1" autocomplete="off" />
 				</div>
+
+				<!-- Campaign attribution, kept in the form backend — never in Analytics. -->
+				<UtmFields />
 
 				<Turnstile />
 

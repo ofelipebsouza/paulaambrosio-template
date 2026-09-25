@@ -14,25 +14,38 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
 import { readSession } from '../../lib/crm/auth';
 import { buildMetrics, responseRate } from '../../lib/crm/metrics';
 import {
+	BOARD_STATUSES,
+	CLOSED_STATUSES,
 	LEAD_STATUSES,
 	OPEN_STATUSES,
 	STATUS_LABELS,
+	normalizeStatus,
 	type CrmLead,
 	type CrmTask,
 	type LeadStatus,
 } from '../../lib/crm/schema';
-import { allLeads, dailyCounts, getReport, listTasks, storeStatus } from '../../lib/crm/store';
+import {
+	allLeads,
+	dailyCounts,
+	getReport,
+	ledgerCounts,
+	listBlocks,
+	listTasks,
+	storeStatus,
+} from '../../lib/crm/store';
 
 export const prerender = false;
 
 if (!readSession(Astro.request)) return Astro.redirect('/admin/login/');
 
 const now = Date.now();
-const [leads, tasks, daily, report] = await Promise.all([
+const [leads, tasks, daily, report, ledger, blocks] = await Promise.all([
 	allLeads(),
 	listTasks(),
 	dailyCounts(30),
 	getReport(),
+	ledgerCounts(14),
+	listBlocks(),
 ]);
 const metrics = buildMetrics({ leads, tasks, daily, now });
 const storage = storeStatus();
@@ -45,11 +58,48 @@ const funnelMax = Math.max(1, ...LEAD_STATUSES.map((status) => metrics.byStatus[
 
 const STATUS_COLORS: Record<LeadStatus, string> = {
 	novo: 'bg-brass',
-	em_contato: 'bg-stone',
-	proposta: 'bg-coffee',
+	atendimento_ia: 'bg-stone',
+	atendimento_humano: 'bg-coffee',
+	reuniao_agendada: 'bg-graphite',
+	reuniao_realizada: 'bg-slate',
+	proposta: 'bg-sand',
 	fechado: 'bg-ink',
 	perdido: 'bg-mist',
 };
+
+/** First paint of the board: the client script re-renders it on every poll. */
+const boardColumns = BOARD_STATUSES.map((status) => ({
+	status,
+	label: STATUS_LABELS[status],
+	color: STATUS_COLORS[status],
+	items: leads.filter((lead) => normalizeStatus(lead.status) === status).slice(0, 20),
+}));
+
+const closedTabs = CLOSED_STATUSES.map((status) => ({
+	status,
+	label: STATUS_LABELS[status],
+	count: leads.filter((lead) => normalizeStatus(lead.status) === status).length,
+	items: leads.filter((lead) => normalizeStatus(lead.status) === status).slice(0, 30),
+}));
+
+const ledgerTotals = ledger.reduce(
+	(acc, day) => {
+		for (const [key, value] of Object.entries(day.fields)) {
+			acc[key as keyof (typeof day)['fields']] += value;
+		}
+		return acc;
+	},
+	{
+		attempts: 0,
+		accepted: 0,
+		rejected_validation: 0,
+		rejected_rate: 0,
+		honeypot: 0,
+		turnstile: 0,
+		smtp_failed: 0,
+		blocked: 0,
+	},
+);
 
 const STATUS_OPTIONS = LEAD_STATUSES.map((value) => ({ value, label: STATUS_LABELS[value] }));
 
@@ -123,6 +173,24 @@ const kpis = [
 		</div>
 
 		<div class="flex flex-wrap items-center gap-3">
+			<div class="flex border border-sand bg-white" role="group" aria-label="Pipeline view">
+				<button
+					type="button"
+					id="crm-view-board"
+					class="eyebrow px-3 py-2 text-ink bg-bone"
+					aria-pressed="true"
+				>
+					Board
+				</button>
+				<button
+					type="button"
+					id="crm-view-table"
+					class="eyebrow px-3 py-2 text-slate hover:text-ink"
+					aria-pressed="false"
+				>
+					Table
+				</button>
+			</div>
 			<span
 				class:list={[
 					'eyebrow border px-3 py-2',
@@ -277,8 +345,91 @@ const kpis = [
 		</div>
 	</section>
 
+	<!-- Board ---------------------------------------------------------------- -->
+	<section id="crm-board" class="mt-6" aria-label="Pipeline board">
+		<div class="flex items-baseline justify-between gap-4 border-b border-sand/60 pb-4">
+			<p class="eyebrow text-stone">Board · drag a card to move it, or use its menu</p>
+			<p class="text-xs text-mist"><span id="crm-board-open">{metrics.open}</span> open</p>
+		</div>
+
+		<div class="mt-5 flex gap-4 overflow-x-auto pb-4" id="crm-columns">
+			{boardColumns.map((column) => (
+				<div class="flex w-64 shrink-0 flex-col" data-column={column.status}>
+					<div class="flex items-center justify-between border border-sand/70 bg-white px-4 py-3">
+						<span class="flex items-center gap-2">
+							<span class={`h-2 w-2 ${column.color}`} aria-hidden="true"></span>
+							<span class="eyebrow text-slate">{column.label}</span>
+						</span>
+						<span class="font-display text-xl" data-column-count={column.status}>{column.items.length}</span>
+					</div>
+					<div class="mt-3 flex min-h-24 flex-col gap-3" data-dropzone={column.status}>
+						{column.items.map((lead) => (
+							<article
+								class="cursor-grab border border-sand/70 bg-white p-4 transition-colors hover:border-brass active:cursor-grabbing"
+								data-card={lead.id}
+								data-card-status={normalizeStatus(lead.status)}
+								draggable="true"
+								tabindex="0"
+								aria-label={`${lead.name} — ${STATUS_LABELS[normalizeStatus(lead.status)]}`}
+							>
+								<div class="flex items-start justify-between gap-2">
+									<p class="text-sm font-medium text-ink">{lead.name}</p>
+									{lead.geo?.country && <span class="text-xs text-mist">{lead.geo.country}</span>}
+								</div>
+								<p class="mt-1 line-clamp-2 text-xs text-slate">{lead.service || lead.location || '—'}</p>
+								<div class="mt-3 flex items-center justify-between gap-2">
+									<span class="text-[10px] uppercase tracking-wider text-mist">{relative(lead.createdAt)}</span>
+									<label class="sr-only" for={`move-${lead.id}`}>Move {lead.name}</label>
+									<select
+										id={`move-${lead.id}`}
+										data-card-move={lead.id}
+										class="border border-sand bg-bone px-1.5 py-1 text-[11px] focus:border-brass focus:outline-none"
+									>
+										{LEAD_STATUSES.map((value) => (
+											<option value={value} selected={value === normalizeStatus(lead.status)}>
+												{STATUS_LABELS[value]}
+											</option>
+										))}
+									</select>
+								</div>
+								{normalizeStatus(lead.status) === 'atendimento_ia' && (
+									<button
+										type="button"
+										class="eyebrow mt-3 w-full border border-sand px-2 py-1.5 text-slate transition-colors hover:border-brass hover:text-ink"
+										data-transfer-human={lead.id}
+									>
+										Transfer to human
+									</button>
+								)}
+							</article>
+						))}
+						{column.items.length === 0 && (
+							<p class="border border-dashed border-sand/70 px-4 py-6 text-center text-xs text-mist">
+								Drop a lead here
+							</p>
+						)}
+					</div>
+				</div>
+			))}
+		</div>
+
+		<div class="mt-4 flex flex-wrap gap-3 border-t border-sand/60 pt-4" id="crm-closed-tabs">
+			{closedTabs.map((tab) => (
+				<button
+					type="button"
+					class="eyebrow border border-sand bg-white px-3 py-2 text-slate transition-colors hover:border-brass hover:text-ink"
+					data-closed-tab={tab.status}
+					aria-expanded="false"
+				>
+					{tab.label} · {tab.count}
+				</button>
+			))}
+		</div>
+		<div class="mt-3 hidden space-y-2" id="crm-closed-list"></div>
+	</section>
+
 	<!-- Leads ---------------------------------------------------------------- -->
-	<section class="mt-6 border border-sand/70 bg-white">
+	<section id="crm-leads-section" class="mt-6 border border-sand/70 bg-white hidden">
 		<div class="flex flex-col gap-4 border-b border-sand/60 p-6 lg:flex-row lg:items-center lg:justify-between">
 			<div>
 				<p class="eyebrow text-stone">Leads</p>
@@ -382,6 +533,12 @@ const kpis = [
 			<dl class="mt-6 grid gap-4 sm:grid-cols-2" id="crm-dialog-meta"></dl>
 
 			<div class="mt-6 border-t border-sand/60 pt-5">
+				<p class="eyebrow text-stone">Origin</p>
+				<dl class="mt-3 grid gap-4 sm:grid-cols-2" id="crm-dialog-origin"></dl>
+				<div class="mt-4 flex flex-wrap gap-2" id="crm-dialog-flags"></div>
+			</div>
+
+			<div class="mt-6 border-t border-sand/60 pt-5">
 				<p class="eyebrow text-stone">Message</p>
 				<p class="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-graphite" id="crm-dialog-message"></p>
 			</div>
@@ -392,6 +549,8 @@ const kpis = [
 				</select>
 				<button type="button" id="crm-dialog-responded" class="btn-secondary">Mark as answered</button>
 				<a id="crm-dialog-mail" href="#" class="btn-secondary">Reply by email</a>
+				<button type="button" id="crm-dialog-block-ip" class="btn-secondary">Block IP</button>
+				<button type="button" id="crm-dialog-block-domain" class="btn-secondary">Block domain</button>
 			</div>
 
 			<div class="mt-6 border-t border-sand/60 pt-5">
@@ -412,20 +571,164 @@ const kpis = [
 		</div>
 	</dialog>
 
+	<!-- Submission ledger ---------------------------------------------------- -->
+	<section class="mt-6 grid gap-6 lg:grid-cols-2">
+		<div class="border border-sand/70 bg-white p-6">
+			<div class="flex items-baseline justify-between gap-4">
+				<p class="eyebrow text-stone">Submission ledger · 14 days</p>
+				<p class="text-xs text-mist">what the server did</p>
+			</div>
+			<p class="mt-3 text-xs leading-relaxed text-mist">
+				Ground truth for reconciliation: compare <strong class="font-normal text-slate">Accepted</strong> with
+				Vercel Analytics → Custom Events → <code class="text-slate">form_success</code>, and
+				<strong class="font-normal text-slate">Attempts</strong> with <code class="text-slate">form_submit</code>.
+				Honeypot hits answer 200 but store no lead; blocks never reach the platform's count either.
+			</p>
+			<div class="mt-5 overflow-x-auto">
+				<table class="w-full min-w-[560px] text-left text-xs">
+					<thead>
+						<tr class="border-b border-sand/60">
+							<th class="eyebrow py-2 pr-3 text-slate">Day</th>
+							<th class="eyebrow py-2 pr-3 text-slate">Attempts</th>
+							<th class="eyebrow py-2 pr-3 text-slate">Accepted</th>
+							<th class="eyebrow py-2 pr-3 text-slate">Validation</th>
+							<th class="eyebrow py-2 pr-3 text-slate">Rate</th>
+							<th class="eyebrow py-2 pr-3 text-slate">Honeypot</th>
+							<th class="eyebrow py-2 pr-3 text-slate">Blocked</th>
+						</tr>
+					</thead>
+					<tbody class="divide-y divide-sand/40">
+						{ledger.map((day) => (
+							<tr data-ledger-day={day.day}>
+								<td class="py-2 pr-3 text-graphite">{day.day}</td>
+								<td class="py-2 pr-3 text-slate" data-ledger="attempts">{day.fields.attempts}</td>
+								<td class="py-2 pr-3 text-slate" data-ledger="accepted">{day.fields.accepted}</td>
+								<td class="py-2 pr-3 text-mist" data-ledger="rejected_validation">{day.fields.rejected_validation}</td>
+								<td class="py-2 pr-3 text-mist" data-ledger="rejected_rate">{day.fields.rejected_rate}</td>
+								<td class="py-2 pr-3 text-mist" data-ledger="honeypot">{day.fields.honeypot}</td>
+								<td class="py-2 pr-3 text-coffee" data-ledger="blocked">{day.fields.blocked}</td>
+							</tr>
+						))}
+					</tbody>
+					<tfoot>
+						<tr class="border-t border-sand/60 font-medium" id="crm-ledger-totals">
+							<td class="py-2 pr-3 text-slate">Total</td>
+							<td class="py-2 pr-3 text-ink">{ledgerTotals.attempts}</td>
+							<td class="py-2 pr-3 text-ink">{ledgerTotals.accepted}</td>
+							<td class="py-2 pr-3 text-slate">{ledgerTotals.rejected_validation}</td>
+							<td class="py-2 pr-3 text-slate">{ledgerTotals.rejected_rate}</td>
+							<td class="py-2 pr-3 text-slate">{ledgerTotals.honeypot}</td>
+							<td class="py-2 pr-3 text-ink">{ledgerTotals.blocked}</td>
+						</tr>
+					</tfoot>
+				</table>
+			</div>
+		</div>
+
+		<div class="border border-sand/70 bg-white p-6">
+			<div class="flex items-baseline justify-between gap-4">
+				<p class="eyebrow text-stone">Security · blocklist</p>
+				<p class="text-xs text-mist"><span id="crm-block-count">{blocks.length}</span> rules</p>
+			</div>
+			<p class="mt-3 text-xs leading-relaxed text-mist">
+				A blocked IP, address or domain is answered like a success and never reaches the pipeline.
+				Rules are exact matches — add one from any lead's dialog.
+			</p>
+
+			<form id="crm-block-form" class="mt-5 flex flex-wrap gap-2">
+				<label class="sr-only" for="crm-block-type">Rule type</label>
+				<select id="crm-block-type" class="border border-sand bg-white px-3 py-2 text-sm focus:border-brass focus:outline-none">
+					<option value="ip">IP</option>
+					<option value="email">Email</option>
+					<option value="domain">Domain</option>
+				</select>
+				<label class="sr-only" for="crm-block-value">Value to block</label>
+				<input
+					id="crm-block-value"
+					type="text"
+					placeholder="203.0.113.9 · name@host · host.com"
+					class="min-w-40 flex-1 border border-sand bg-white px-3 py-2 text-sm placeholder:text-mist focus:border-brass focus:outline-none"
+				/>
+				<button type="submit" class="btn-primary">Block</button>
+			</form>
+
+			<ul class="mt-5 space-y-2" id="crm-block-list">
+				{blocks.map((rule) => (
+					<li class="flex items-center justify-between gap-3 border-b border-sand/50 py-2 last:border-0" data-block={rule.type}>
+						<div class="min-w-0">
+							<p class="truncate text-sm text-graphite">{rule.value}</p>
+							<p class="text-xs text-mist">
+								{rule.type} · {rule.hits} hit{rule.hits === 1 ? '' : 's'}
+								{rule.reason ? ` · ${rule.reason}` : ''}
+							</p>
+						</div>
+						<button
+							type="button"
+							class="eyebrow shrink-0 border border-sand px-2 py-1 text-slate transition-colors hover:border-brass hover:text-ink"
+							data-block-remove={rule.type}
+							data-block-value={rule.value}
+						>
+							Remove
+						</button>
+					</li>
+				))}
+				{blocks.length === 0 && <li class="py-4 text-sm text-mist">No rules yet.</li>}
+			</ul>
+		</div>
+	</section>
+
 	<p class="mt-6 text-xs text-mist" id="crm-status-line" role="status" aria-live="polite">
 		Last updated just now · refreshing every 30 s.
 	</p>
 </AdminLayout>
 
 <script>
-	type LeadStatusValue = 'novo' | 'em_contato' | 'proposta' | 'fechado' | 'perdido';
+	type LeadStatusValue =
+		| 'novo'
+		| 'atendimento_ia'
+		| 'atendimento_humano'
+		| 'reuniao_agendada'
+		| 'reuniao_realizada'
+		| 'proposta'
+		| 'fechado'
+		| 'perdido';
 
 	const STATUS_LABELS: Record<LeadStatusValue, string> = {
 		novo: 'New',
-		em_contato: 'In contact',
+		atendimento_ia: 'AI handling',
+		atendimento_humano: 'Human handling',
+		reuniao_agendada: 'Meeting scheduled',
+		reuniao_realizada: 'Meeting held',
 		proposta: 'Proposal sent',
 		fechado: 'Won',
 		perdido: 'Lost',
+	};
+
+	const BOARD_COLUMNS: LeadStatusValue[] = [
+		'novo',
+		'atendimento_ia',
+		'atendimento_humano',
+		'reuniao_agendada',
+		'reuniao_realizada',
+		'proposta',
+	];
+
+	const COLUMN_COLORS: Record<LeadStatusValue, string> = {
+		novo: 'bg-brass',
+		atendimento_ia: 'bg-stone',
+		atendimento_humano: 'bg-coffee',
+		reuniao_agendada: 'bg-graphite',
+		reuniao_realizada: 'bg-slate',
+		proposta: 'bg-sand',
+		fechado: 'bg-ink',
+		perdido: 'bg-mist',
+	};
+
+	/** Legacy records may still say `em_contato` — count them where they belong. */
+	const normalize = (value: unknown): LeadStatusValue => {
+		const status = String(value ?? 'novo');
+		if (status === 'em_contato') return 'atendimento_humano';
+		return (STATUS_LABELS[status as LeadStatusValue] ? status : 'novo') as LeadStatusValue;
 	};
 
 	const esc = (value: unknown): string =>
@@ -455,6 +758,8 @@ const kpis = [
 	let filter = '';
 	let currentLeadId: string | null = null;
 	let leads: Array<Record<string, unknown>> = [];
+	/** The record currently open in the dialog — used by the block buttons. */
+	let currentLead: Record<string, unknown> | null = null;
 
 	/* ---------------------------------------------------------------- API */
 
@@ -480,9 +785,15 @@ const kpis = [
 			getJson('/api/crm/report/'),
 		]);
 
-		if (metricsRes?.metrics) renderMetrics(metricsRes.metrics as Record<string, unknown>, metricsRes.storage as { backend?: string });
+		if (metricsRes?.metrics) {
+			renderMetrics(metricsRes.metrics as Record<string, unknown>, metricsRes.storage as { backend?: string });
+			if (Array.isArray(metricsRes.ledger)) {
+				renderLedger(metricsRes.ledger as Array<Record<string, unknown>>);
+			}
+		}
 		if (leadsRes?.leads) {
 			leads = (leadsRes.leads as Array<Record<string, unknown>>) ?? [];
+			renderBoard();
 			renderLeads();
 		}
 		if (tasksRes) renderQueue(tasksRes);
@@ -550,13 +861,6 @@ const kpis = [
 	function renderFunnel(byStatus: Record<string, number>): void {
 		const list = $('#crm-funnel');
 		if (!list) return;
-		const colors: Record<string, string> = {
-			novo: 'bg-brass',
-			em_contato: 'bg-stone',
-			proposta: 'bg-coffee',
-			fechado: 'bg-ink',
-			perdido: 'bg-mist',
-		};
 		const entries = Object.entries(STATUS_LABELS) as [LeadStatusValue, string][];
 		const max = Math.max(1, ...entries.map(([key]) => Number(byStatus[key] ?? 0)));
 
@@ -569,11 +873,123 @@ const kpis = [
 						<span class="font-display text-2xl">${count}</span>
 					</div>
 					<div class="mt-2 h-1.5 w-full bg-sand/30">
-						<div class="h-full ${colors[key]}" style="width:${(count / max) * 100}%"></div>
+						<div class="h-full ${COLUMN_COLORS[key]}" style="width:${(count / max) * 100}%"></div>
 					</div>
 				</li>`;
 			})
 			.join('');
+	}
+
+	/* ------------------------------------------------------------- Board */
+
+	function renderBoard(): void {
+		const byStatus = new Map<LeadStatusValue, Array<Record<string, unknown>>>();
+		for (const status of Object.keys(STATUS_LABELS) as LeadStatusValue[]) byStatus.set(status, []);
+		for (const lead of leads) byStatus.get(normalize(lead.status))?.push(lead);
+
+		let openCount = 0;
+		for (const status of BOARD_COLUMNS) openCount += byStatus.get(status)?.length ?? 0;
+		const openEl = $('crm-board-open');
+		if (openEl) openEl.textContent = String(openCount);
+
+		for (const status of BOARD_COLUMNS) {
+			const zone = document.querySelector<HTMLElement>(`[data-dropzone="${status}"]`);
+			const counter = document.querySelector<HTMLElement>(`[data-column-count="${status}"]`);
+			if (!zone) continue;
+			const items = byStatus.get(status) ?? [];
+			if (counter) counter.textContent = String(items.length);
+
+			const cards = items
+				.slice(0, 20)
+				.map((lead) => {
+					const id = esc(lead.id);
+					const country = lead.geo && typeof lead.geo === 'object' && (lead.geo as { country?: string }).country
+						? esc((lead.geo as { country?: string }).country)
+						: '';
+					const summary = esc(String(lead.service || lead.location || '—'));
+					const options = (Object.entries(STATUS_LABELS) as [LeadStatusValue, string][])
+						.map(
+							([value, label]) =>
+								`<option value="${value}"${value === status ? ' selected' : ''}>${esc(label)}</option>`,
+						)
+						.join('');
+					const transfer =
+						status === 'atendimento_ia'
+							? `<button type="button" class="eyebrow mt-3 w-full border border-sand px-2 py-1.5 text-slate transition-colors hover:border-brass hover:text-ink" data-transfer-human="${id}">Transfer to human</button>`
+							: '';
+					return `<article class="cursor-grab border border-sand/70 bg-white p-4 transition-colors hover:border-brass active:cursor-grabbing" data-card="${id}" data-card-status="${status}" draggable="true" tabindex="0" aria-label="${esc(lead.name)} — ${esc(STATUS_LABELS[status])}">
+						<div class="flex items-start justify-between gap-2">
+							<p class="text-sm font-medium text-ink">${esc(lead.name)}</p>
+							${country ? `<span class="text-xs text-mist">${country}</span>` : ''}
+						</div>
+						<p class="mt-1 line-clamp-2 text-xs text-slate">${summary}</p>
+						<div class="mt-3 flex items-center justify-between gap-2">
+							<span class="text-[10px] uppercase tracking-wider text-mist">${esc(relative(Number(lead.createdAt)))}</span>
+							<label class="sr-only" for="move-${id}">Move ${esc(lead.name)}</label>
+							<select id="move-${id}" data-card-move="${id}" class="border border-sand bg-bone px-1.5 py-1 text-[11px] focus:border-brass focus:outline-none">${options}</select>
+						</div>
+						${transfer}
+					</article>`;
+				})
+				.join('');
+
+			zone.innerHTML =
+				cards ||
+				`<p class="border border-dashed border-sand/70 px-4 py-6 text-center text-xs text-mist">Drop a lead here</p>`;
+		}
+
+		// Won / Lost tabs reflect the same data without leaving the board.
+		for (const status of ['fechado', 'perdido'] as LeadStatusValue[]) {
+			const tab = document.querySelector<HTMLElement>(`[data-closed-tab="${status}"]`);
+			if (tab) {
+				const wasOpen = tab.getAttribute('aria-expanded') === 'true';
+				tab.textContent = `${STATUS_LABELS[status]} · ${byStatus.get(status)?.length ?? 0}`;
+				if (wasOpen) renderClosedList(status);
+			}
+		}
+	}
+
+	function renderClosedList(status: LeadStatusValue): void {
+		const host = $('#crm-closed-list');
+		if (!host) return;
+		const items = leads.filter((lead) => normalize(lead.status) === status).slice(0, 30);
+		host.classList.remove('hidden');
+		host.innerHTML = items.length
+			? items
+					.map(
+						(lead) =>
+							`<button type="button" class="flex w-full items-center justify-between gap-3 border border-sand/70 bg-white px-4 py-3 text-left transition-colors hover:border-brass" data-lead-row="${esc(lead.id)}">
+								<span class="text-sm text-graphite">${esc(lead.name)}</span>
+								<span class="text-xs text-mist">${esc(String(lead.service || lead.location || '—'))} · ${esc(relative(Number(lead.createdAt)))}</span>
+							</button>`,
+					)
+					.join('')
+			: `<p class="border border-dashed border-sand/70 px-4 py-6 text-center text-xs text-mist">Nothing here yet.</p>`;
+	}
+
+	/* ------------------------------------------------------------ Ledger */
+
+	function renderLedger(days: Array<Record<string, unknown>>): void {
+		const totals: Record<string, number> = {};
+		for (const day of days) {
+			const fields = (day.fields ?? {}) as Record<string, number>;
+			const row = document.querySelector<HTMLElement>(`[data-ledger-day="${String(day.day)}"]`);
+			if (row) {
+				for (const [key, value] of Object.entries(fields)) {
+					const cell = row.querySelector<HTMLElement>(`[data-ledger="${key}"]`);
+					if (cell) cell.textContent = String(value);
+				}
+			}
+			for (const [key, value] of Object.entries(fields)) totals[key] = (totals[key] ?? 0) + value;
+		}
+		// Totals live in the footer; read them from the computed sum.
+		const footer = document.querySelector<HTMLElement>('#crm-ledger-totals');
+		if (footer) {
+			for (const [key, value] of Object.entries(totals)) {
+				const cell = footer.querySelector<HTMLElement>(`[data-ledger="${key}"]`);
+				if (cell) cell.textContent = String(value);
+			}
+		}
 	}
 
 	function renderLeads(): void {
@@ -587,7 +1003,7 @@ const kpis = [
 			body.innerHTML = leads
 				.slice(0, 100)
 				.map((lead) => {
-					const status = String(lead.status ?? 'novo') as LeadStatusValue;
+					const status = normalize(lead.status);
 					const options = (Object.entries(STATUS_LABELS) as [LeadStatusValue, string][])
 						.map(
 							([value, label]) =>
@@ -698,6 +1114,7 @@ const kpis = [
 
 		const lead = payload.lead as Record<string, unknown>;
 		currentLeadId = String(lead.id);
+		currentLead = lead;
 
 		const name = $('#crm-dialog-name');
 		if (name) name.textContent = String(lead.name ?? 'Lead');
@@ -726,6 +1143,42 @@ const kpis = [
 
 		const message = $('#crm-dialog-message');
 		if (message) message.textContent = String(lead.message ?? '');
+
+		/* Origin — enrichment captured server-side, shown only here. */
+		const origin = $('#crm-dialog-origin');
+		if (origin) {
+			const geo = (lead.geo ?? {}) as { country?: string; city?: string; tz?: string };
+			const utm = (lead.utm ?? {}) as Record<string, string>;
+			const utmText = [utm.source, utm.medium, utm.campaign].filter(Boolean).join(' / ');
+			const device = String(lead.userAgent ?? '');
+			const rows: Array<[string, string]> = [
+				['IP', String(lead.ip || '—')],
+				['Country', [geo.country, geo.city].filter(Boolean).join(' · ') || '—'],
+				['Timezone', geo.tz || '—'],
+				['Device', device ? device.slice(0, 120) : '—'],
+				['Landing', String(lead.landing || lead.page || '/')],
+				['UTM', utmText || '—'],
+			];
+			origin.innerHTML = rows
+				.map(
+					([label, value]) =>
+						`<div><dt class="eyebrow text-stone">${esc(label)}</dt><dd class="mt-1.5 break-all text-sm text-graphite">${esc(value)}</dd></div>`,
+				)
+				.join('');
+		}
+
+		const flags = $('#crm-dialog-flags');
+		if (flags) {
+			const list = (lead.flags as string[]) ?? [];
+			flags.innerHTML = list.length
+				? list
+						.map(
+							(flag) =>
+								`<span class="eyebrow border border-coffee/40 bg-coffee/5 px-2 py-1 text-coffee">${esc(flag.replace(/_/g, ' '))}</span>`,
+						)
+						.join('')
+				: '<span class="text-xs text-mist">No review flags.</span>';
+		}
 
 		const status = $<HTMLSelectElement>('#crm-dialog-status');
 		if (status) status.value = String(lead.status ?? 'novo');
@@ -862,6 +1315,12 @@ const kpis = [
 			void patchLead(statusSelect.dataset.leadStatus ?? '', { status: statusSelect.value });
 			return;
 		}
+		// The card's own <select> — keyboard and touch way to move a card.
+		const cardMove = target.closest<HTMLSelectElement>('[data-card-move]');
+		if (cardMove) {
+			void patchLead(cardMove.dataset.cardMove ?? '', { status: cardMove.value });
+			return;
+		}
 		if (target.id === 'crm-dialog-status' && currentLeadId) {
 			void patchLead(currentLeadId, { status: (target as HTMLSelectElement).value }).then(() =>
 				openLead(currentLeadId ?? ''),
@@ -889,6 +1348,201 @@ const kpis = [
 	$<HTMLButtonElement>('#crm-dialog-close')?.addEventListener('click', () => dialog?.close());
 	dialog?.addEventListener('click', (event) => {
 		if (event.target === dialog) dialog.close();
+	});
+
+	/* ---------------------------------------------------- View toggle */
+
+	const boardBtn = $<HTMLButtonElement>('#crm-view-board');
+	const tableBtn = $<HTMLButtonElement>('#crm-view-table');
+	const boardSection = $('#crm-board');
+	const tableSection = $('#crm-leads-section');
+
+	function setView(view: 'board' | 'table'): void {
+		const isBoard = view === 'board';
+		boardSection?.classList.toggle('hidden', !isBoard);
+		tableSection?.classList.toggle('hidden', isBoard);
+		boardBtn?.setAttribute('aria-pressed', String(isBoard));
+		tableBtn?.setAttribute('aria-pressed', String(!isBoard));
+		boardBtn?.classList.toggle('bg-bone', isBoard);
+		boardBtn?.classList.toggle('text-ink', isBoard);
+		boardBtn?.classList.toggle('text-slate', !isBoard);
+		tableBtn?.classList.toggle('bg-bone', !isBoard);
+		tableBtn?.classList.toggle('text-ink', !isBoard);
+		tableBtn?.classList.toggle('text-slate', isBoard);
+	}
+
+	boardBtn?.addEventListener('click', () => setView('board'));
+	tableBtn?.addEventListener('click', () => setView('table'));
+
+	/* ------------------------------------------------ Drag & drop board */
+
+	let dragId: string | null = null;
+
+	document.addEventListener('dragstart', (event) => {
+		const card = (event.target as HTMLElement).closest<HTMLElement>('[data-card]');
+		if (!card) return;
+		dragId = card.dataset.card ?? null;
+		card.classList.add('opacity-50');
+		// Firefox needs dataTransfer to enter drag mode; the value is never read.
+		event.dataTransfer?.setData('text/plain', dragId);
+		if (event.dataTransfer) event.dataTransfer.effectAllowed = 'move';
+	});
+
+	document.addEventListener('dragend', (event) => {
+		const card = (event.target as HTMLElement).closest<HTMLElement>('[data-card]');
+		card?.classList.remove('opacity-50');
+		document.querySelectorAll('[data-dropzone]').forEach((zone) => zone.classList.remove('border-brass', 'bg-bone'));
+		dragId = null;
+	});
+
+	document.addEventListener('dragover', (event) => {
+		const zone = (event.target as HTMLElement).closest<HTMLElement>('[data-dropzone]');
+		if (!zone || !dragId) return;
+		event.preventDefault();
+		if (event.dataTransfer) event.dataTransfer.dropEffect = 'move';
+		zone.classList.add('border-brass', 'bg-bone');
+	});
+
+	document.addEventListener('dragleave', (event) => {
+		const zone = (event.target as HTMLElement).closest<HTMLElement>('[data-dropzone]');
+		if (zone && !zone.contains(event.relatedTarget as Node)) {
+			zone.classList.remove('border-brass', 'bg-bone');
+		}
+	});
+
+	document.addEventListener('drop', (event) => {
+		const zone = (event.target as HTMLElement).closest<HTMLElement>('[data-dropzone]');
+		if (!zone || !dragId) return;
+		event.preventDefault();
+		zone.classList.remove('border-brass', 'bg-bone');
+		const next = zone.dataset.dropzone;
+		const id = dragId;
+		dragId = null;
+		if (!next || !id) return;
+		if (normalize(currentStatusOf(id)) === next) return;
+		// Optimistic: move it now, let patchLead repaint on success or roll back.
+		moveCardDom(id, next as LeadStatusValue);
+		void patchLead(id, { status: next });
+	});
+
+	function currentStatusOf(id: string): unknown {
+		return leads.find((lead) => String(lead.id) === id)?.status ?? 'novo';
+	}
+
+	function moveCardDom(id: string, status: LeadStatusValue): void {
+		const card = document.querySelector<HTMLElement>(`[data-card="${CSS.escape(id)}"]`);
+		const zone = document.querySelector<HTMLElement>(`[data-dropzone="${status}"]`);
+		if (!card || !zone) return;
+		card.dataset.cardStatus = status;
+		const select = card.querySelector<HTMLSelectElement>('select');
+		if (select) select.value = status;
+		zone.prepend(card);
+		// Refresh re-renders every column anyway; this keeps counts honest meanwhile.
+		for (const column of BOARD_COLUMNS) {
+			const count = document.querySelector<HTMLElement>(`[data-column-count="${column}"]`);
+			if (count) count.textContent = String(document.querySelectorAll(`[data-dropzone="${column}"] [data-card]`).length);
+		}
+	}
+
+	/* ------------------------------------------------------ Board clicks */
+
+	document.addEventListener('click', (event) => {
+		const target = event.target as HTMLElement;
+
+		const transfer = target.closest<HTMLElement>('[data-transfer-human]');
+		if (transfer) {
+			const id = transfer.dataset.transferHuman ?? '';
+			setStatus('Transferring to the studio…');
+			void patchLead(id, { status: 'atendimento_humano', assignedTo: 'studio' }).then((ok) => {
+				if (ok) setStatus('Lead transferred to a human handler.');
+			});
+			return;
+		}
+
+		const closedTab = target.closest<HTMLElement>('[data-closed-tab]');
+		if (closedTab) {
+			const status = closedTab.dataset.closedTab as LeadStatusValue;
+			const open = closedTab.getAttribute('aria-expanded') === 'true';
+			document.querySelectorAll('[data-closed-tab]').forEach((tab) => tab.setAttribute('aria-expanded', 'false'));
+			if (open) {
+				$('#crm-closed-list')?.classList.add('hidden');
+			} else {
+				closedTab.setAttribute('aria-expanded', 'true');
+				renderClosedList(status);
+			}
+			return;
+		}
+
+		const card = target.closest<HTMLElement>('[data-card]');
+		if (card && !target.closest('select') && !target.closest('button')) {
+			void openLead(card.dataset.card ?? '');
+		}
+	});
+
+	// Cards are focusable: Enter/Space opens the same detail panel as a row.
+	document.addEventListener('keydown', (event) => {
+		if (event.key !== 'Enter' && event.key !== ' ') return;
+		const card = (event.target as HTMLElement).closest<HTMLElement>('[data-card]');
+		if (!card || (event.target as HTMLElement).closest('select')) return;
+		event.preventDefault();
+		void openLead(card.dataset.card ?? '');
+	});
+
+	/* ------------------------------------------------------- Blocklist */
+
+	async function saveBlock(body: Record<string, unknown>): Promise<boolean> {
+		const payload = await getJson('/api/crm/blocks/', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(body),
+		});
+		if (payload?.ok) {
+			setStatus(`Blocked ${String(body.value)}. New submissions from it will be refused silently.`);
+			return true;
+		}
+		setStatus('That rule was not saved. IP, email and domain formats are checked.');
+		return false;
+	}
+
+	$<HTMLFormElement>('#crm-block-form')?.addEventListener('submit', async (event) => {
+		event.preventDefault();
+		const type = $<HTMLSelectElement>('#crm-block-type')?.value ?? 'ip';
+		const input = $<HTMLInputElement>('#crm-block-value');
+		const value = input?.value.trim() ?? '';
+		if (!value) return;
+		if (await saveBlock({ type, value })) {
+			if (input) input.value = '';
+			window.location.reload();
+		}
+	});
+
+	document.addEventListener('click', async (event) => {
+		const remove = (event.target as HTMLElement).closest<HTMLElement>('[data-block-remove]');
+		if (!remove) return;
+		const body = { type: remove.dataset.blockRemove, value: remove.dataset.blockValue };
+		const payload = await getJson('/api/crm/blocks/', {
+			method: 'DELETE',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(body),
+		});
+		if (payload?.ok) {
+			setStatus(`Removed the rule for ${String(body.value)}.`);
+			window.location.reload();
+		}
+	});
+
+	// One-click blocking from the lead dialog: the IP or the email's domain.
+	$<HTMLButtonElement>('#crm-dialog-block-ip')?.addEventListener('click', async () => {
+		const ip = String(currentLead?.ip ?? '');
+		if (!ip) return setStatus('This lead has no IP recorded.');
+		if (await saveBlock({ type: 'ip', value: ip, reason: 'from lead dialog' })) dialog?.close();
+	});
+
+	$<HTMLButtonElement>('#crm-dialog-block-domain')?.addEventListener('click', async () => {
+		const email = String(currentLead?.email ?? '');
+		const domain = email.slice(email.lastIndexOf('@') + 1).trim().toLowerCase();
+		if (!domain || !domain.includes('.')) return setStatus('This lead has no email domain.');
+		if (await saveBlock({ type: 'domain', value: domain, reason: 'from lead dialog' })) dialog?.close();
 	});
 
 	/* --------------------------------------------------------------- Start */

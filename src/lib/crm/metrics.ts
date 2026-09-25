@@ -5,7 +5,7 @@
  * Hermes payload and the reminder email all read the same numbers. Percentages
  * are ratios in 0…1; the client decides how to round them.
  */
-import { LEAD_STATUSES, OPEN_STATUSES, dayKey, type CrmLead, type CrmTask, type LeadStatus } from './schema';
+import { LEAD_STATUSES, OPEN_STATUSES, dayKey, normalizeStatus, type CrmLead, type CrmTask, type LeadStatus } from './schema';
 
 export interface CrmMetrics {
 	/** Counters. */
@@ -72,7 +72,10 @@ export function buildMetrics({
 	let responseSamples = 0;
 
 	for (const lead of leads) {
-		byStatus[lead.status] = (byStatus[lead.status] ?? 0) + 1;
+		// Pre-Kanban records may still carry `em_contato`; count them in the
+		// current funnel instead of creating a bucket with no column.
+		const status = normalizeStatus(lead.status);
+		byStatus[status] = (byStatus[status] ?? 0) + 1;
 		count(byService, lead.service || 'Unspecified');
 		count(byLocation, lead.location || 'Unspecified');
 		count(byForm, lead.form || 'contact');
@@ -81,12 +84,12 @@ export function buildMetrics({
 		if (now - lead.createdAt <= 30 * DAY) last30 += 1;
 		if (dayKey(lead.createdAt) === todayKey) today += 1;
 
-		if (OPEN_STATUSES.includes(lead.status)) {
+		if (OPEN_STATUSES.includes(status)) {
 			open += 1;
 			if (!lead.firstResponseAt) awaitingReply += 1;
 		} else {
 			closed += 1;
-			if (lead.status === 'fechado') won += 1;
+			if (status === 'fechado') won += 1;
 		}
 
 		if (lead.firstResponseAt && lead.firstResponseAt >= lead.createdAt) {

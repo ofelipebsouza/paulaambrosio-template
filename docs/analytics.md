@@ -111,9 +111,49 @@ Adding the packages and code does not prove that the dashboard features are enab
 3. Deploy the project and verify requests under the Vercel-managed Analytics and Speed Insights paths in the browser Network panel.
 4. Custom Events are subject to the limits and plan availability shown by the current Vercel dashboard; Vercel currently documents custom events for Pro and Enterprise plans.
 
+## Reconciliation — Analytics vs. the server ledger
+
+Vercel Analytics only ever sees what the browser reported. The CRM keeps its
+own **submission ledger** (one hash per day, incremented by the contact
+endpoint), which is the ground truth for what the server actually did. The
+*Submission ledger* panel on `/admin/` shows both sides' instructions together.
+
+How to compare (Vercel → Project → Analytics → Custom Events):
+
+| Ledger field | Compare with | Expected relationship |
+| --- | --- | --- |
+| `attempts` | `form_submit` | ≥ — the browser also counts submits that never reached the server (offline, aborted) |
+| `accepted` | `form_success` | ≤ — `form_success` also fires for the `mailto:` fallback (503) and for honeypot hits, which store no lead |
+| `honeypot` | — | absent from Analytics by construction: a bot rarely runs the tracking script |
+| `blocked` | — | absent: the blocked sender's browser is never told anything |
+| `rejected_validation` · `rejected_rate` · `turnstile` | `form_error` | approximately — `form_error` also fires on network failures the server never saw |
+| `smtp_failed` | `form_error` | equal when SMTP fails after a valid attempt |
+
+Known divergences, in both directions:
+
+1. **No JavaScript, no Analytics.** The form still posts natively; the ledger
+   counts it, Analytics does not.
+2. **Ad blockers.** A blocked `@vercel/analytics` script reports nothing while
+   the server keeps counting — `attempts` will exceed `form_submit`.
+3. **Honeypot 200.** The endpoint answers success to a bot and stores nothing;
+   if the bot does run the script, `form_success` exceeds `accepted`.
+4. **Plan limits.** Custom events are documented by Vercel for Pro/Enterprise;
+   on plans without them the platform shows pageviews only while the ledger
+   still counts every submission.
+5. **Environments.** Development mode and Preview traffic are separate from
+   Production in the dashboard; the ledger counts all of them — compare only
+   after filtering both sides to the same window and environment.
+
+Campaign attribution (UTM parameters) is read from the forms' hidden fields
+and stored on the lead — never attached to an Analytics event (see below).
+
 ## Future analytics API
 
 A future `/admin/analytics` or external dashboard can query aggregated data server-side. Any Vercel API token must remain in a server environment variable and must never be exposed as `PUBLIC_VERCEL_TOKEN` or sent to browser code.
+
+Until then the reconciliation above is manual by design: the ledger panel on
+`/admin/` provides the server-side numbers and this page the steps to place
+them next to the platform's.
 
 Potential future metrics:
 

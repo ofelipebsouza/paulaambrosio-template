@@ -1,0 +1,40 @@
+---
+/**
+ * Hidden campaign fields for the inquiry forms.
+ *
+ * The values are read from `location.search` once per page load and written
+ * into the inputs, so the CRM receives attribution with the lead. They are
+ * deliberately NOT part of any Analytics event: docs/analytics.md keeps
+ * campaign parameters out of the platform and in the form backend only.
+ *
+ * Without JavaScript the inputs stay empty and the submission is unaffected.
+ */
+const KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'] as const;
+---
+
+<div class="hidden" aria-hidden="true" data-utm-fields>
+	{KEYS.map((key) => <input type="hidden" name={key} value="" tabindex="-1" autocomplete="off" />)}
+</div>
+
+<script>
+	if (!(window as { __utmFieldsFilled?: boolean }).__utmFieldsFilled) {
+		(window as { __utmFieldsFilled?: boolean }).__utmFieldsFilled = true;
+
+		const params = new URLSearchParams(window.location.search);
+		const KNOWN = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
+
+		const fill = (): void => {
+			for (const key of KNOWN) {
+				const value = (params.get(key) ?? '').slice(0, 80);
+				if (!value) continue;
+				document.querySelectorAll<HTMLInputElement>(`input[name="${key}"]`).forEach((input) => {
+					input.value = value;
+				});
+			}
+		};
+
+		fill();
+		// Client-side navigations keep the SPA alive with the same DOM.
+		document.addEventListener('astro:page-load', fill);
+	}
+</script>

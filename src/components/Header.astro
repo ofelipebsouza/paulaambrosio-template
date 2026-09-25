@@ -2,6 +2,7 @@
 import { SITE, NAV_LEFT, NAV_RIGHT, NAV_LINKS, SOCIAL_LINKS } from '../config';
 import Logo from './ui/Logo.astro';
 import Turnstile from './ui/Turnstile.astro';
+import UtmFields from './UtmFields.astro';
 import { CONTACT_API_PATH, FIELD_LIMITS, HONEYPOT_FIELD } from '../lib/contact-form';
 
 // The compact inquiry form posts to the same server-side endpoint as the
@@ -296,6 +297,9 @@ const socialIconMap: Record<string, string> = {
 					<label for="inq-website">Website</label>
 					<input id="inq-website" name={HONEYPOT_FIELD} type="text" tabindex="-1" autocomplete="off" />
 				</div>
+
+				<!-- Campaign attribution, kept in the form backend — never in Analytics. -->
+				<UtmFields />
 
 				<Turnstile />
 				<p class="text-center text-xs italic leading-relaxed text-slate">

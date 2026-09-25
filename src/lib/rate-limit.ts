@@ -56,10 +56,25 @@ export function hashIdentifier(identifier: string): string {
 	return createHash('sha256').update(`${pepper}:${identifier}`).digest('hex').slice(0, 32);
 }
 
-export async function checkRateLimit(identifierHash: string): Promise<RateLimitResult> {
-	const { limit, windowSeconds } = rateLimitConfig();
+export interface RateLimitOptions {
+	/** Key namespace — keeps a second caller from consuming the contact quota. */
+	scope?: string;
+	/** Explicit quota for this caller (falls back to CONTACT_RATE_LIMIT). */
+	limit?: number;
+	/** Window in seconds for this caller (falls back to CONTACT_RATE_LIMIT_WINDOW). */
+	windowSeconds?: number;
+}
+
+export async function checkRateLimit(
+	identifierHash: string,
+	options: RateLimitOptions = {},
+): Promise<RateLimitResult> {
+	const config = rateLimitConfig();
+	const limit = Number.isFinite(options.limit) && (options.limit ?? 0) > 0 ? (options.limit as number) : config.limit;
+	const windowSeconds = options.windowSeconds && options.windowSeconds > 0 ? options.windowSeconds : config.windowSeconds;
 	const windowStart = Math.floor(Date.now() / 1000 / windowSeconds) * windowSeconds;
-	const key = `rl:contact:${identifierHash}:${windowStart}`;
+	const scope = options.scope ?? 'contact';
+	const key = `rl:${scope}:${identifierHash}:${windowStart}`;
 	const ttl = windowSeconds + 5;
 	const retryAfterSeconds = windowStart + windowSeconds - Math.floor(Date.now() / 1000);
 

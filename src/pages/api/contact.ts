@@ -2,8 +2,12 @@
  * POST /api/contact — server-side inquiry endpoint.
  *
  * Pipeline: body limits → parse → honeypot → sanitise → validate → optional
- * Turnstile → rate limit → CRM store → SMTP delivery (studio lead + visitor
- * confirmation).
+ * Turnstile → rate limit → blocklist → CRM store (with enrichment) → SMTP
+ * delivery (studio lead + visitor confirmation).
+ *
+ * Every outcome increments the daily submission ledger (`attempts`,
+ * `accepted`, `honeypot`, `blocked`, …) so the dashboard can reconcile what
+ * the server saw against what Vercel Analytics reports.
  *
  * Rules that must not be relaxed:
  *  - no credential or SMTP detail ever reaches the browser or an error message;
@@ -26,8 +30,9 @@ import {
 import { composeConfirmationEmail, composeLeadEmail, type ContactPayload } from '../../lib/contact-email';
 import { checkRateLimit, hashIdentifier } from '../../lib/rate-limit';
 import { buildLead, newId, type CrmLead } from '../../lib/crm/schema';
-import { insertLead, pushEvent, saveLead } from '../../lib/crm/store';
+import { bumpLedger, findBlock, countBlockHit, findLeadByEmail, insertLead, pushEvent, saveLead } from '../../lib/crm/store';
 import { emitJev, leadData, scheduleFollowUps } from '../../lib/crm/automation';
+import { buildEnrichment } from '../../lib/crm/enrichment';
 
 /** On-demand route: the rest of the site stays statically generated. */
 export const prerender = false;
@@ -248,13 +253,19 @@ export const ALL: APIRoute = async ({ request }) => {
 		}
 	} catch (error) {
 		log('warn', 'unparsable_body', { requestId, reason: error instanceof Error ? error.message : 'unknown' });
+		await bumpLedger('attempts');
 		return json({ ok: false, error: 'invalid_body' }, 400);
 	}
+
+	// The ledger counts every body that parsed, whatever happens next — the
+	// number the dashboard puts beside Vercel's `form_submit`.
+	await bumpLedger('attempts');
 
 	// 1. Honeypot: answer like a success and send nothing. The visitor never
 	//    learns the field existed.
 	if (typeof raw[HONEYPOT_FIELD] === 'string' && raw[HONEYPOT_FIELD].trim() !== '') {
 		log('warn', 'honeypot_triggered', { requestId });
+		await bumpLedger('honeypot');
 		return json({ ok: true }, 200);
 	}
 
@@ -262,6 +273,7 @@ export const ALL: APIRoute = async ({ request }) => {
 	const { payload, errors } = validate(raw);
 	if (Object.keys(errors).length > 0) {
 		log('info', 'validation_failed', { requestId, fields: Object.keys(errors) });
+		await bumpLedger('rejected_validation');
 		return json({ ok: false, error: 'validation_failed', errors }, 422);
 	}
 
@@ -287,36 +299,62 @@ export const ALL: APIRoute = async ({ request }) => {
 	if (import.meta.env.TURNSTILE_SECRET_KEY) {
 		const token = typeof raw[TURNSTILE_FIELD] === 'string' ? String(raw[TURNSTILE_FIELD]) : '';
 		if (!(await verifyTurnstile(token, ip, requestId))) {
+			await bumpLedger('turnstile');
 			return json({ ok: false, error: 'verification_failed' }, 403);
 		}
 	}
 
-	// 4. Rate limit by hashed visitor identifier.
+	// 4. Blocklist — a rule the team wrote on the Security panel. Answer exactly
+	//    like a success: a blocked sender must not learn that a rule exists. No
+	//    lead is written and no mail is sent; only the hit is counted.
+	const email = String(payload.email ?? '').toLowerCase().trim();
+	const blocked = await findBlock(ip ?? '', email).catch(() => null);
+	if (blocked) {
+		log('warn', 'blocked_submission', { requestId, rule: blocked.type });
+		await Promise.all([bumpLedger('blocked'), countBlockHit(blocked).catch(() => undefined)]);
+		return json({ ok: true }, 200);
+	}
+
+	// 5. Rate limit by hashed visitor identifier.
 	const rateLimit = await checkRateLimit(hashIdentifier(ip ?? 'unknown'));
 	if (!rateLimit.allowed) {
 		log('warn', 'rate_limited', { requestId, backend: rateLimit.backend, limit: rateLimit.limit });
+		await bumpLedger('rejected_rate');
 		return json({ ok: false, error: 'rate_limited' }, 429, { 'Retry-After': String(rateLimit.retryAfterSeconds) });
 	}
 
-	// 5. Store the lead before delivering it. The team's pipeline must survive
+	// 6. Store the lead before delivering it. The team's pipeline must survive
 	//    an SMTP outage, and the CRM write is best effort: a Redis hiccup never
 	//    changes the answer the visitor gets.
 	let crmLead: CrmLead | null = null;
 	try {
+		// Enrichment consults the email index: a repeat submission from the same
+		// address is flagged for review, never suppressed.
+		const repeat = Boolean(await findLeadByEmail(payload.email).catch(() => null));
 		crmLead = buildLead({
 			payload,
 			form: formId,
 			page,
 			id: newId(),
 			now: Date.now(),
+			context: buildEnrichment({ request, ip: ip ?? '', raw, repeatSubmitter: repeat }),
 		});
 		await insertLead(crmLead);
+		await bumpLedger('accepted');
 		await pushEvent(crmLead.id, {
 			ts: crmLead.createdAt,
 			type: 'created',
 			detail: `Received from ${page} (${formId})`,
 			actor: 'system',
 		});
+		if (crmLead.flags.length) {
+			await pushEvent(crmLead.id, {
+				ts: crmLead.createdAt,
+				type: 'created',
+				detail: `Flagged for review: ${crmLead.flags.join(', ')}`,
+				actor: 'system',
+			});
+		}
 		await scheduleFollowUps(crmLead, crmLead.createdAt);
 		await emitJev('lead.created', leadData(crmLead), crmLead.createdAt);
 	} catch (error) {
@@ -327,7 +365,7 @@ export const ALL: APIRoute = async ({ request }) => {
 		crmLead = null;
 	}
 
-	// 6. Deliver.
+	// 7. Deliver.
 	const { transporter, from, recipient, mode } = buildTransport(requestId);
 	if (!transporter) {
 		if (crmLead) {
@@ -361,6 +399,7 @@ export const ALL: APIRoute = async ({ request }) => {
 			code: (error as { code?: string })?.code ?? 'unknown',
 			reason: error instanceof Error ? error.message : 'unknown',
 		});
+		await bumpLedger('smtp_failed');
 		if (crmLead) {
 			crmLead.delivery = 'failed';
 			crmLead.updatedAt = Date.now();
