@@ -615,3 +615,38 @@ export async function getReport(): Promise<HermesReport | null> {
 	if (results) return parseJson<HermesReport>(results[0]);
 	return mem.report;
 }
+
+/** Purge all CRM data. Returns counts of leads and tasks cleared. */
+export async function purgeAll(): Promise<{ leads: number; tasks: number; cmds: number }> {
+	const leads = await allLeads();
+	const tasks = await listTasks();
+
+	const cmds: Cmd[] = [];
+
+	for (const lead of leads) {
+		cmds.push(['DEL', `crm:lead:${lead.id}`]);
+		cmds.push(['DEL', `crm:events:${lead.id}`]);
+	}
+	cmds.push(['DEL', 'crm:idx:time']);
+
+	for (const task of tasks) {
+		cmds.push(['DEL', `crm:task:${task.id}`]);
+	}
+	cmds.push(['DEL', 'crm:idx:tasks']);
+
+	cmds.push(['DEL', 'crm:report:last']);
+
+	// Execute in batches of 50
+	for (let i = 0; i < cmds.length; i += 50) {
+		await redis(cmds.slice(i, i + 50));
+	}
+
+	// Clear in-memory store
+	mem.leads.clear();
+	mem.emailIdx.clear();
+	mem.events.clear();
+	mem.tasks.clear();
+	mem.report = null;
+
+	return { leads: leads.length, tasks: tasks.length, cmds: cmds.length };
+}
