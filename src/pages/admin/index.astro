@@ -172,12 +172,12 @@ const kpis = [
 			</p>
 		</div>
 
-		<div class="flex flex-wrap items-center gap-3">
-			<div class="flex border border-sand bg-white" role="group" aria-label="Pipeline view">
+		<div class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-3">
+			<div class="col-span-2 flex sm:col-span-1" role="group" aria-label="Pipeline view">
 				<button
 					type="button"
 					id="crm-view-board"
-					class="eyebrow px-3 py-2 text-ink bg-bone"
+					class="eyebrow min-h-11 flex-1 px-3 py-2 text-ink bg-bone lg:min-h-0 sm:flex-none"
 					aria-pressed="true"
 				>
 					Board
@@ -185,7 +185,7 @@ const kpis = [
 				<button
 					type="button"
 					id="crm-view-table"
-					class="eyebrow px-3 py-2 text-slate hover:text-ink"
+					class="eyebrow min-h-11 flex-1 px-3 py-2 text-slate hover:text-ink lg:min-h-0 sm:flex-none"
 					aria-pressed="false"
 				>
 					Table
@@ -193,29 +193,29 @@ const kpis = [
 			</div>
 			<span
 				class:list={[
-					'eyebrow border px-3 py-2',
+					'eyebrow flex min-h-11 items-center justify-center border px-3 py-2 lg:min-h-0',
 					storage.backend === 'upstash' ? 'border-sand bg-white text-stone' : 'border-coffee/40 bg-white text-coffee',
 				]}
 				title={storage.backend === 'upstash' ? 'Leads are stored in Upstash Redis' : 'In-process storage only'}
 			>
 				{storage.backend === 'upstash' ? 'Storage · Redis' : 'Storage · in memory'}
 			</span>
-			<button id="crm-remind" type="button" class="eyebrow border border-sand bg-white px-3 py-2 text-slate transition-colors hover:border-brass hover:text-ink">
+			<button id="crm-remind" type="button" class="eyebrow min-h-11 border border-sand bg-white px-3 py-2 text-slate transition-colors hover:border-brass hover:text-ink lg:min-h-0">
 				Send reminders
 			</button>
-			<a href="/api/crm/export/?format=csv" class="eyebrow border border-sand bg-white px-3 py-2 text-slate transition-colors hover:border-brass hover:text-ink">
+			<a href="/api/crm/export/?format=csv" class="eyebrow flex min-h-11 items-center justify-center border border-sand bg-white px-3 py-2 text-slate transition-colors hover:border-brass hover:text-ink lg:min-h-0">
 				Export CSV
 			</a>
-			<button id="crm-refresh" type="button" class="btn-primary">Refresh</button>
+			<button id="crm-refresh" type="button" class="btn-primary min-h-11 lg:min-h-0">Refresh</button>
 		</div>
 	</div>
 
 	<!-- KPI strip ------------------------------------------------------------ -->
-	<section aria-label="Key metrics" class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+	<section aria-label="Key metrics" class="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-6">
 		{kpis.map((kpi) => (
-			<div class="border border-sand/70 bg-white p-5">
+			<div class="border border-sand/70 bg-white p-4 sm:p-5">
 				<p class="eyebrow text-stone">{kpi.label}</p>
-				<p class="mt-3 font-display text-4xl" data-kpi={kpi.key}>{kpi.value}</p>
+				<p class="mt-3 font-display text-3xl sm:text-4xl" data-kpi={kpi.key}>{kpi.value}</p>
 				<p class="mt-1 text-xs text-mist" data-kpi-note={kpi.key}>{kpi.note}</p>
 			</div>
 		))}
@@ -223,7 +223,7 @@ const kpis = [
 
 	<!-- Chart + funnel ------------------------------------------------------- -->
 	<section class="mt-8 grid items-start gap-6 lg:grid-cols-3">
-		<div class="border border-sand/70 bg-white p-6 lg:col-span-2">
+		<div class="min-w-0 border border-sand/70 bg-white p-6 lg:col-span-2">
 			<div class="flex items-baseline justify-between gap-4">
 				<p class="eyebrow text-stone">Arrivals · last 30 days</p>
 				<p class="text-xs text-mist">peak {chartMax} / day</p>
@@ -243,7 +243,7 @@ const kpis = [
 			</div>
 		</div>
 
-		<div class="border border-sand/70 bg-white p-6">
+		<div class="min-w-0 border border-sand/70 bg-white p-6">
 			<p class="eyebrow text-stone">Pipeline by status</p>
 			<ul class="mt-6 space-y-4" id="crm-funnel">
 				{LEAD_STATUSES.map((status) => {
@@ -269,7 +269,7 @@ const kpis = [
 
 	<!-- Hermes + queue ------------------------------------------------------- -->
 	<section class="mt-6 grid gap-6 lg:grid-cols-2">
-		<div class="border border-sand/70 bg-white p-6">
+		<div class="min-w-0 border border-sand/70 bg-white p-6">
 			<div class="flex items-baseline justify-between gap-4">
 				<p class="eyebrow text-stone">Hermes · live report</p>
 				<p class="text-xs text-mist" id="crm-report-time" data-generated-at={report?.generatedAt ?? 0}>
@@ -313,7 +313,7 @@ const kpis = [
 			</div>
 		</div>
 
-		<div class="border border-sand/70 bg-white p-6">
+		<div class="min-w-0 border border-sand/70 bg-white p-6">
 			<div class="flex items-baseline justify-between gap-4">
 				<p class="eyebrow text-stone">Follow-up queue</p>
 				<p class="text-xs text-mist"><span id="crm-queue-overdue">{metrics.tasksOverdue}</span> late</p>
@@ -332,10 +332,10 @@ const kpis = [
 							</p>
 						</div>
 						<div class="flex shrink-0 gap-2">
-							<button type="button" class="eyebrow border border-sand px-2 py-1 text-slate transition-colors hover:border-brass hover:text-ink" data-task-open={task.leadId}>
+							<button type="button" class="eyebrow min-h-11 border border-sand px-3 text-slate transition-colors hover:border-brass hover:text-ink lg:min-h-0 sm:px-2" data-task-open={task.leadId}>
 								Open
 							</button>
-							<button type="button" class="eyebrow border border-sand px-2 py-1 text-slate transition-colors hover:border-brass hover:text-ink" data-task-done={task.id}>
+							<button type="button" class="eyebrow min-h-11 border border-sand px-3 text-slate transition-colors hover:border-brass hover:text-ink lg:min-h-0 sm:px-2" data-task-done={task.id}>
 								Done
 							</button>
 						</div>
@@ -348,13 +348,15 @@ const kpis = [
 	<!-- Board ---------------------------------------------------------------- -->
 	<section id="crm-board" class="mt-6" aria-label="Pipeline board">
 		<div class="flex items-baseline justify-between gap-4 border-b border-sand/60 pb-4">
-			<p class="eyebrow text-stone">Board · drag a card to move it, or use its menu</p>
+			<p class="eyebrow text-stone">
+				Board · <span class="hidden sm:inline">drag a card to move it, or use its menu</span><span class="sm:hidden">swipe · use a card&rsquo;s menu to move</span>
+			</p>
 			<p class="text-xs text-mist"><span id="crm-board-open">{metrics.open}</span> open</p>
 		</div>
 
-		<div class="mt-5 flex gap-4 overflow-x-auto pb-4" id="crm-columns">
+		<div class="mt-5 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-4 overscroll-x-contain sm:gap-4 lg:snap-none" id="crm-columns">
 			{boardColumns.map((column) => (
-				<div class="flex w-64 shrink-0 flex-col" data-column={column.status}>
+				<div class="flex w-[82vw] max-w-xs shrink-0 snap-center flex-col sm:w-64 sm:max-w-none" data-column={column.status}>
 					<div class="flex items-center justify-between border border-sand/70 bg-white px-4 py-3">
 						<span class="flex items-center gap-2">
 							<span class={`h-2 w-2 ${column.color}`} aria-hidden="true"></span>
@@ -365,7 +367,7 @@ const kpis = [
 					<div class="mt-3 flex min-h-24 flex-col gap-3" data-dropzone={column.status}>
 						{column.items.map((lead) => (
 							<article
-								class="cursor-grab border border-sand/70 bg-white p-4 transition-colors hover:border-brass active:cursor-grabbing"
+								class="relative cursor-grab border border-sand/70 bg-white p-4 transition-colors hover:border-brass active:cursor-grabbing"
 								data-card={lead.id}
 								data-card-status={normalizeStatus(lead.status)}
 								draggable="true"
@@ -383,7 +385,7 @@ const kpis = [
 									<select
 										id={`move-${lead.id}`}
 										data-card-move={lead.id}
-										class="border border-sand bg-bone px-1.5 py-1 text-[11px] focus:border-brass focus:outline-none"
+										class="min-h-11 border border-sand bg-bone px-1.5 py-1 text-[11px] focus:border-brass focus:outline-none lg:min-h-0"
 									>
 										{LEAD_STATUSES.map((value) => (
 											<option value={value} selected={value === normalizeStatus(lead.status)}>
@@ -395,7 +397,7 @@ const kpis = [
 								{normalizeStatus(lead.status) === 'atendimento_ia' && (
 									<button
 										type="button"
-										class="eyebrow mt-3 w-full border border-sand px-2 py-1.5 text-slate transition-colors hover:border-brass hover:text-ink"
+										class="eyebrow mt-3 min-h-11 w-full border border-sand px-2 py-1.5 text-slate transition-colors hover:border-brass hover:text-ink lg:min-h-0"
 										data-transfer-human={lead.id}
 									>
 										Transfer to human
@@ -413,11 +415,11 @@ const kpis = [
 			))}
 		</div>
 
-		<div class="mt-4 flex flex-wrap gap-3 border-t border-sand/60 pt-4" id="crm-closed-tabs">
+		<div class="mt-4 flex flex-wrap gap-2 border-t border-sand/60 pt-4 sm:gap-3" id="crm-closed-tabs">
 			{closedTabs.map((tab) => (
 				<button
 					type="button"
-					class="eyebrow border border-sand bg-white px-3 py-2 text-slate transition-colors hover:border-brass hover:text-ink"
+					class="eyebrow min-h-11 border border-sand bg-white px-3 py-2 text-slate transition-colors hover:border-brass hover:text-ink lg:min-h-0"
 					data-closed-tab={tab.status}
 					aria-expanded="false"
 				>
@@ -430,7 +432,7 @@ const kpis = [
 
 	<!-- Leads ---------------------------------------------------------------- -->
 	<section id="crm-leads-section" class="mt-6 border border-sand/70 bg-white hidden">
-		<div class="flex flex-col gap-4 border-b border-sand/60 p-6 lg:flex-row lg:items-center lg:justify-between">
+		<div class="flex flex-col gap-4 border-b border-sand/60 p-5 sm:p-6 lg:flex-row lg:items-center lg:justify-between">
 			<div>
 				<p class="eyebrow text-stone">Leads</p>
 				<p class="mt-2 text-sm text-slate"><span id="crm-lead-count">{metrics.total}</span> in the pipeline</p>
@@ -455,7 +457,7 @@ const kpis = [
 			</div>
 		</div>
 
-		<div class="overflow-x-auto">
+		<div class="hidden overflow-x-auto lg:block">
 			<table class="w-full min-w-[720px] text-left text-sm">
 				<thead>
 					<tr class="border-b border-sand/60">
@@ -511,7 +513,50 @@ const kpis = [
 			</table>
 		</div>
 
-		<p class="border-t border-sand/60 px-6 py-4 text-xs text-mist" id="crm-leads-foot">
+		<!-- Mobile: the same rows as cards; the table above takes over at lg. -->
+		<div class="divide-y divide-sand/50 lg:hidden" id="crm-leads-cards">
+			{recent.length === 0 && (
+				<p class="px-5 py-10 text-center text-sm text-mist">
+					No leads yet. The first inquiry will appear here as soon as it arrives.
+				</p>
+			)}
+			{recent.map((lead: CrmLead) => (
+				<div
+					class="cursor-pointer p-5 transition-colors hover:bg-bone focus-visible:bg-bone"
+					data-lead-row={lead.id}
+					tabindex="0"
+					aria-label={`Open ${lead.name}`}
+				>
+					<div class="flex items-start justify-between gap-3">
+						<div class="min-w-0">
+							<p class="truncate text-sm font-medium text-ink">{lead.name}</p>
+							<p class="truncate text-xs text-mist">{lead.email}</p>
+						</div>
+						<span class="shrink-0 text-[10px] uppercase tracking-wider text-mist">{relative(lead.createdAt)}</span>
+					</div>
+					<p class="mt-1 truncate text-xs text-slate">
+						{[lead.service, lead.location].filter(Boolean).join(' · ') || '—'}
+					</p>
+					<div class="mt-3 flex items-center justify-between gap-3">
+						<label class="sr-only" for={`m-status-${lead.id}`}>Status for {lead.name}</label>
+						<select
+							id={`m-status-${lead.id}`}
+							data-lead-status={lead.id}
+							class="min-h-11 border border-sand bg-white px-3 py-2 text-xs focus:border-brass focus:outline-none"
+						>
+							{STATUS_OPTIONS.map((option) => (
+								<option value={option.value} selected={option.value === lead.status}>{option.label}</option>
+							))}
+						</select>
+						<span class="shrink-0 text-xs text-mist">
+							reply {lead.firstResponseAt ? relative(lead.firstResponseAt) : '—'}
+						</span>
+					</div>
+				</div>
+			))}
+		</div>
+
+		<p class="border-t border-sand/60 px-5 py-4 text-xs text-mist sm:px-6" id="crm-leads-foot">
 			Showing the {recent.length} most recent of {metrics.total}.
 		</p>
 	</section>
@@ -519,15 +564,15 @@ const kpis = [
 	<!-- Lead detail ---------------------------------------------------------- -->
 	<dialog
 		id="crm-lead-dialog"
-		class="fixed inset-0 m-auto max-h-[85vh] w-full max-w-2xl border border-sand bg-white p-0 shadow-2xl backdrop:bg-ink/40"
+		class="fixed inset-0 m-auto max-h-[85dvh] w-[calc(100%-1.5rem)] max-w-2xl border border-sand bg-white p-0 shadow-2xl backdrop:bg-ink/40 sm:w-[calc(100%-3rem)]"
 	>
-		<div class="max-h-[85vh] overflow-y-auto p-6 lg:p-8">
+		<div class="max-h-[85dvh] overflow-y-auto overscroll-contain p-5 sm:p-6 lg:p-8">
 			<div class="flex items-start justify-between gap-4">
 				<div>
 					<p class="eyebrow text-stone">Lead</p>
 					<h2 class="mt-2 font-display text-3xl" id="crm-dialog-name">—</h2>
 				</div>
-				<button type="button" class="eyebrow text-slate hover:text-ink" id="crm-dialog-close">Close</button>
+				<button type="button" class="eyebrow -mr-2 flex min-h-11 items-center px-2 text-slate hover:text-ink" id="crm-dialog-close">Close</button>
 			</div>
 
 			<dl class="mt-6 grid gap-4 sm:grid-cols-2" id="crm-dialog-meta"></dl>
@@ -544,7 +589,7 @@ const kpis = [
 			</div>
 
 			<div class="mt-6 flex flex-wrap gap-3">
-				<select id="crm-dialog-status" class="border border-sand bg-white px-3 py-2 text-sm focus:border-brass focus:outline-none" aria-label="Change status">
+				<select id="crm-dialog-status" class="min-h-11 border border-sand bg-white px-3 py-2 text-sm focus:border-brass focus:outline-none" aria-label="Change status">
 					{STATUS_OPTIONS.map((option) => <option value={option.value}>{option.label}</option>)}
 				</select>
 				<button type="button" id="crm-dialog-responded" class="btn-secondary">Mark as answered</button>
@@ -573,7 +618,7 @@ const kpis = [
 
 	<!-- Submission ledger ---------------------------------------------------- -->
 	<section class="mt-6 grid gap-6 lg:grid-cols-2">
-		<div class="border border-sand/70 bg-white p-6">
+		<div class="min-w-0 border border-sand/70 bg-white p-6">
 			<div class="flex items-baseline justify-between gap-4">
 				<p class="eyebrow text-stone">Submission ledger · 14 days</p>
 				<p class="text-xs text-mist">what the server did</p>
@@ -625,7 +670,7 @@ const kpis = [
 			</div>
 		</div>
 
-		<div class="border border-sand/70 bg-white p-6">
+		<div class="min-w-0 border border-sand/70 bg-white p-6">
 			<div class="flex items-baseline justify-between gap-4">
 				<p class="eyebrow text-stone">Security · blocklist</p>
 				<p class="text-xs text-mist"><span id="crm-block-count">{blocks.length}</span> rules</p>
@@ -635,9 +680,9 @@ const kpis = [
 				Rules are exact matches — add one from any lead's dialog.
 			</p>
 
-			<form id="crm-block-form" class="mt-5 flex flex-wrap gap-2">
+			<form id="crm-block-form" class="mt-5 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
 				<label class="sr-only" for="crm-block-type">Rule type</label>
-				<select id="crm-block-type" class="border border-sand bg-white px-3 py-2 text-sm focus:border-brass focus:outline-none">
+				<select id="crm-block-type" class="min-h-11 border border-sand bg-white px-3 py-2 text-sm focus:border-brass focus:outline-none sm:w-auto">
 					<option value="ip">IP</option>
 					<option value="email">Email</option>
 					<option value="domain">Domain</option>
@@ -647,9 +692,9 @@ const kpis = [
 					id="crm-block-value"
 					type="text"
 					placeholder="203.0.113.9 · name@host · host.com"
-					class="min-w-40 flex-1 border border-sand bg-white px-3 py-2 text-sm placeholder:text-mist focus:border-brass focus:outline-none"
+					class="min-h-11 w-full min-w-0 flex-1 border border-sand bg-white px-3 py-2 text-sm placeholder:text-mist focus:border-brass focus:outline-none sm:w-40"
 				/>
-				<button type="submit" class="btn-primary">Block</button>
+				<button type="submit" class="btn-primary min-h-11 lg:min-h-0">Block</button>
 			</form>
 
 			<ul class="mt-5 space-y-2" id="crm-block-list">
@@ -664,8 +709,8 @@ const kpis = [
 						</div>
 						<button
 							type="button"
-							class="eyebrow shrink-0 border border-sand px-2 py-1 text-slate transition-colors hover:border-brass hover:text-ink"
-							data-block-remove={rule.type}
+						class="eyebrow min-h-11 shrink-0 border border-sand px-3 text-slate transition-colors hover:border-brass hover:text-ink lg:min-h-0 sm:px-2"
+						data-block-remove={rule.type}
 							data-block-value={rule.value}
 						>
 							Remove
@@ -917,7 +962,7 @@ const kpis = [
 						status === 'atendimento_ia'
 							? `<button type="button" class="eyebrow mt-3 w-full border border-sand px-2 py-1.5 text-slate transition-colors hover:border-brass hover:text-ink" data-transfer-human="${id}">Transfer to human</button>`
 							: '';
-					return `<article class="cursor-grab border border-sand/70 bg-white p-4 transition-colors hover:border-brass active:cursor-grabbing" data-card="${id}" data-card-status="${status}" draggable="true" tabindex="0" aria-label="${esc(lead.name)} — ${esc(STATUS_LABELS[status])}">
+					return `<article class="relative cursor-grab border border-sand/70 bg-white p-4 transition-colors hover:border-brass active:cursor-grabbing" data-card="${id}" data-card-status="${status}" draggable="true" tabindex="0" aria-label="${esc(lead.name)} — ${esc(STATUS_LABELS[status])}">
 						<div class="flex items-start justify-between gap-2">
 							<p class="text-sm font-medium text-ink">${esc(lead.name)}</p>
 							${country ? `<span class="text-xs text-mist">${country}</span>` : ''}
@@ -926,7 +971,7 @@ const kpis = [
 						<div class="mt-3 flex items-center justify-between gap-2">
 							<span class="text-[10px] uppercase tracking-wider text-mist">${esc(relative(Number(lead.createdAt)))}</span>
 							<label class="sr-only" for="move-${id}">Move ${esc(lead.name)}</label>
-							<select id="move-${id}" data-card-move="${id}" class="border border-sand bg-bone px-1.5 py-1 text-[11px] focus:border-brass focus:outline-none">${options}</select>
+							<select id="move-${id}" data-card-move="${id}" class="min-h-11 border border-sand bg-bone px-1.5 py-1 text-[11px] focus:border-brass focus:outline-none lg:min-h-0">${options}</select>
 						</div>
 						${transfer}
 					</article>`;
@@ -994,39 +1039,73 @@ const kpis = [
 
 	function renderLeads(): void {
 		const body = $('crm-leads');
+		const cardsHost = $('crm-leads-cards');
 		const foot = $('crm-leads-foot');
-		if (!body) return;
+		if (!body && !cardsHost) return;
 
-		if (!leads.length) {
-			body.innerHTML = `<tr><td colspan="7" class="px-6 py-10 text-center text-sm text-mist">No leads match this filter.</td></tr>`;
-		} else {
-			body.innerHTML = leads
-				.slice(0, 100)
-				.map((lead) => {
-					const status = normalize(lead.status);
-					const options = (Object.entries(STATUS_LABELS) as [LeadStatusValue, string][])
-						.map(
-							([value, label]) =>
-								`<option value="${value}"${value === status ? ' selected' : ''}>${esc(label)}</option>`,
-						)
-						.join('');
-					const first = lead.firstResponseAt ? relative(Number(lead.firstResponseAt)) : '—';
-					return `<tr class="cursor-pointer transition-colors hover:bg-bone" data-lead-row="${esc(lead.id)}">
-						<td class="whitespace-nowrap px-6 py-4 text-slate">${esc(fmtDate(Number(lead.createdAt)))}</td>
-						<td class="px-6 py-4">
-							<p class="text-graphite">${esc(lead.name)}</p>
-							<p class="text-xs text-mist">${esc(lead.email)}</p>
-						</td>
-						<td class="px-6 py-4 text-slate">${esc(lead.service || '—')}</td>
-						<td class="px-6 py-4 text-slate">${esc(lead.location || '—')}</td>
-						<td class="px-6 py-4">
-							<select data-lead-status="${esc(lead.id)}" class="border border-sand bg-white px-2 py-1.5 text-xs focus:border-brass focus:outline-none" aria-label="Status for ${esc(lead.name)}">${options}</select>
-						</td>
-						<td class="px-6 py-4 text-xs text-mist">${lead.form === 'project_inquiry' ? 'Modal' : 'Contact page'}</td>
-						<td class="whitespace-nowrap px-6 py-4 text-slate">${esc(first)}</td>
-					</tr>`;
-				})
+		const visible = leads.slice(0, 100);
+		const options = (status: string): string =>
+			(Object.entries(STATUS_LABELS) as [LeadStatusValue, string][])
+				.map(
+					([value, label]) =>
+						`<option value="${value}"${value === status ? ' selected' : ''}>${esc(label)}</option>`,
+				)
 				.join('');
+
+		if (body) {
+			if (!visible.length) {
+				body.innerHTML = `<tr><td colspan="7" class="px-6 py-10 text-center text-sm text-mist">No leads match this filter.</td></tr>`;
+			} else {
+				body.innerHTML = visible
+					.map((lead) => {
+						const status = normalize(lead.status);
+						const first = lead.firstResponseAt ? relative(Number(lead.firstResponseAt)) : '—';
+						return `<tr class="cursor-pointer transition-colors hover:bg-bone" data-lead-row="${esc(lead.id)}">
+							<td class="whitespace-nowrap px-6 py-4 text-slate">${esc(fmtDate(Number(lead.createdAt)))}</td>
+							<td class="px-6 py-4">
+								<p class="text-graphite">${esc(lead.name)}</p>
+								<p class="text-xs text-mist">${esc(lead.email)}</p>
+							</td>
+							<td class="px-6 py-4 text-slate">${esc(lead.service || '—')}</td>
+							<td class="px-6 py-4 text-slate">${esc(lead.location || '—')}</td>
+							<td class="px-6 py-4">
+								<select data-lead-status="${esc(lead.id)}" class="border border-sand bg-white px-2 py-1.5 text-xs focus:border-brass focus:outline-none" aria-label="Status for ${esc(lead.name)}">${options(status)}</select>
+							</td>
+							<td class="px-6 py-4 text-xs text-mist">${lead.form === 'project_inquiry' ? 'Modal' : 'Contact page'}</td>
+							<td class="whitespace-nowrap px-6 py-4 text-slate">${esc(first)}</td>
+						</tr>`;
+					})
+					.join('');
+			}
+		}
+
+		if (cardsHost) {
+			if (!visible.length) {
+				cardsHost.innerHTML = `<p class="px-5 py-10 text-center text-sm text-mist">No leads match this filter.</p>`;
+			} else {
+				cardsHost.innerHTML = visible
+					.map((lead) => {
+						const status = normalize(lead.status);
+						const meta = [lead.service, lead.location].filter(Boolean).join(' · ') || '—';
+						const reply = lead.firstResponseAt ? relative(Number(lead.firstResponseAt)) : '—';
+						return `<div class="cursor-pointer p-5 transition-colors hover:bg-bone focus-visible:bg-bone" data-lead-row="${esc(lead.id)}" tabindex="0" aria-label="Open ${esc(lead.name)}">
+							<div class="flex items-start justify-between gap-3">
+								<div class="min-w-0">
+									<p class="truncate text-sm font-medium text-ink">${esc(lead.name)}</p>
+									<p class="truncate text-xs text-mist">${esc(lead.email)}</p>
+								</div>
+								<span class="shrink-0 text-[10px] uppercase tracking-wider text-mist">${esc(relative(Number(lead.createdAt)))}</span>
+							</div>
+							<p class="mt-1 truncate text-xs text-slate">${esc(meta)}</p>
+							<div class="mt-3 flex items-center justify-between gap-3">
+								<label class="sr-only" for="m-status-${esc(lead.id)}">Status for ${esc(lead.name)}</label>
+								<select id="m-status-${esc(lead.id)}" data-lead-status="${esc(lead.id)}" class="min-h-11 border border-sand bg-white px-3 py-2 text-xs focus:border-brass focus:outline-none">${options(status)}</select>
+								<span class="shrink-0 text-xs text-mist">reply ${esc(reply)}</span>
+							</div>
+						</div>`;
+					})
+					.join('');
+			}
 		}
 
 		if (foot) foot.textContent = `Showing ${Math.min(leads.length, 100)} of ${leads.length} matching leads.`;
@@ -1057,8 +1136,8 @@ const kpis = [
 						<p class="truncate text-sm text-graphite">${esc(task.title)}</p>							<p class="mt-1 text-xs ${late ? 'text-coffee' : 'text-mist'}">${late ? `late ${Math.max(1, Math.round((now - due) / 3_600_000))}h` : esc(relative(due))}</p>
 					</div>
 					<div class="flex shrink-0 gap-2">
-						<button type="button" class="eyebrow border border-sand px-2 py-1 text-slate transition-colors hover:border-brass hover:text-ink" data-task-open="${esc(task.leadId)}">Open</button>
-						<button type="button" class="eyebrow border border-sand px-2 py-1 text-slate transition-colors hover:border-brass hover:text-ink" data-task-done="${esc(task.id)}">Done</button>
+						<button type="button" class="eyebrow min-h-11 border border-sand px-3 text-slate transition-colors hover:border-brass hover:text-ink lg:min-h-0 sm:px-2" data-task-open="${esc(task.leadId)}">Open</button>
+						<button type="button" class="eyebrow min-h-11 border border-sand px-3 text-slate transition-colors hover:border-brass hover:text-ink lg:min-h-0 sm:px-2" data-task-done="${esc(task.id)}">Done</button>
 					</div>
 				</li>`;
 			})

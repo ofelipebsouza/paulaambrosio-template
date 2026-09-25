@@ -54,7 +54,7 @@ const titleTemplate = `${title} · Studio CRM`;
 		<header class="sticky top-0 z-40 border-b border-sand/60 bg-bone/95 backdrop-blur-sm">
 			<div class="container-editorial">
 				<div class="flex h-16 items-center justify-between gap-4 lg:h-20">
-					<a href="/admin/" class="flex items-center gap-4" aria-label="Studio CRM home">
+					<a href="/admin/" class="flex min-h-11 items-center gap-4" aria-label="Studio CRM home">
 						<Logo variant="dark" class="h-7 w-auto lg:h-8" loading="eager" alt={SITE.name} />
 						<span class="eyebrow hidden text-stone sm:block">Studio CRM</span>
 					</a>
@@ -65,7 +65,7 @@ const titleTemplate = `${title} · Studio CRM`;
 							<button
 								id="crm-logout"
 								type="button"
-								class="eyebrow text-slate transition-colors duration-300 hover:text-ink"
+								class="eyebrow -mr-2 flex min-h-11 items-center px-2 text-slate transition-colors duration-300 hover:text-ink"
 							>
 								Sign out
 							</button>
@@ -75,7 +75,7 @@ const titleTemplate = `${title} · Studio CRM`;
 			</div>
 		</header>
 
-		<main id="crm-main" class="container-editorial py-10 lg:py-14">
+		<main id="crm-main" class="container-editorial py-8 sm:py-10 lg:py-14">
 			<slot />
 		</main>
 
