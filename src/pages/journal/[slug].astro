@@ -1,4 +1,10 @@
 ---
+/**
+ * /journal/[slug]/ — Single Journal article page.
+ *
+ * Rendered on-demand (SSR) so articles created via Admin or Hermes
+ * are visible immediately or upon scheduled release time.
+ */
 import { getCollection, render } from 'astro:content';
 import { Image } from 'astro:assets';
 import Layout from '../../layouts/Layout.astro';
@@ -7,33 +13,97 @@ import CtaBanner from '../../components/ui/CtaBanner.astro';
 import { articleSchema, webPageSchema, schemaScript } from '../../lib/seo';
 import { brandedOg } from '../../lib/og';
 import type { BreadcrumbEntry } from '../../lib/seo';
-import { serviceUrl, locationUrl } from '../../config';
+import { getJournalPost, incrementPostViews } from '../../lib/journal/store';
+import { estimateReadingTime } from '../../lib/journal/schema';
+import { readSession } from '../../lib/crm/auth';
 
-export async function getStaticPaths() {
-	const posts = (await getCollection('journal')).filter((p) => !p.data.draft);
-	return posts.map((post) => ({
-		params: { slug: post.id },
-		props: { post },
-	}));
+export const prerender = false;
+
+const { slug } = Astro.params;
+if (!slug) return Astro.redirect('/journal/');
+
+// 1. Check static markdown collections first
+const staticPosts = await getCollection('journal');
+const staticPost = staticPosts.find((p) => p.id === slug && !p.data.draft);
+
+let title = '';
+let excerpt = '';
+let category = '';
+let author = 'Paula Ambrosio';
+let publishedDate = new Date();
+let updatedDate: Date | undefined;
+let featuredImage: any = null;
+let imageAlt = '';
+let renderedContentHtml = '';
+let readingTime = 3;
+let isDynamic = false;
+let seoTitle: string | undefined;
+let seoDescription: string | undefined;
+
+let StaticContent: any = null;
+
+if (staticPost) {
+	const rendered = await render(staticPost);
+	StaticContent = rendered.Content;
+	title = staticPost.data.title;
+	excerpt = staticPost.data.excerpt;
+	category = staticPost.data.category;
+	author = staticPost.data.author;
+	publishedDate = staticPost.data.date;
+	updatedDate = staticPost.data.updatedDate;
+	featuredImage = staticPost.data.featuredImage;
+	imageAlt = staticPost.data.imageAlt ?? staticPost.data.title;
+	seoTitle = staticPost.data.seoTitle;
+	seoDescription = staticPost.data.seoDescription;
+	const rawContent = staticPost.body ?? '';
+	const wordCount = rawContent.split(/\s+/).filter(Boolean).length;
+	readingTime = Math.max(1, Math.ceil(wordCount / 200));
+} else {
+	// 2. Check dynamic Redis store
+	const dynamicPost = await getJournalPost(slug);
+	if (!dynamicPost) {
+		return Astro.rewrite('/404');
+	}
+
+	// Check publication status: scheduled or draft require active session
+	const isStaff = Boolean(readSession(Astro.request));
+	const isDue = dynamicPost.status === 'published' || (dynamicPost.status === 'scheduled' && (dynamicPost.scheduledFor ?? 0) <= Date.now());
+
+	if (!isDue && !isStaff) {
+		return Astro.rewrite('/404');
+	}
+
+	title = dynamicPost.title;
+	excerpt = dynamicPost.excerpt;
+	category = dynamicPost.category;
+	author = dynamicPost.author;
+	publishedDate = new Date(dynamicPost.publishedAt);
+	updatedDate = new Date(dynamicPost.updatedAt);
+	featuredImage = dynamicPost.featuredImage;
+	imageAlt = dynamicPost.imageAlt || dynamicPost.title;
+	seoTitle = dynamicPost.seoTitle;
+	seoDescription = dynamicPost.seoDescription;
+	readingTime = estimateReadingTime(dynamicPost.content);
+	isDynamic = true;
+
+	// Simple paragraphs / markdown line breaks rendering
+	const paragraphs = dynamicPost.content
+		.split(/\n\n+/)
+		.map((p) => `<p class="mb-6 leading-relaxed">${p.replace(/\n/g, '<br />')}</p>`)
+		.join('');
+	renderedContentHtml = paragraphs;
+
+	// Count view in background
+	void incrementPostViews(slug);
 }
 
-const { post } = Astro.props;
-const { Content } = await render(post);
-const ogImage = brandedOg('journal', post.id);
-
+const ogImage = brandedOg('journal', slug);
 const breadcrumbs: BreadcrumbEntry[] = [
 	{ name: 'Journal', url: '/journal' },
-	{ name: post.data.title, url: `/journal/${post.id}` },
+	{ name: title, url: `/journal/${slug}` },
 ];
 
-// Estimate reading time from rendered content (rough: 200 words/min)
-const rawContent = post.body ?? '';
-const wordCount = rawContent.split(/\s+/).filter(Boolean).length;
-const readingTime = Math.max(1, Math.ceil(wordCount / 200));
-const formatRelatedLabel = (value: string | undefined) =>
-	value?.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()) ?? '';
-
-const formattedDate = post.data.date.toLocaleDateString('en-US', {
+const formattedDate = publishedDate.toLocaleDateString('en-US', {
 	month: 'short',
 	day: 'numeric',
 	year: 'numeric',
@@ -41,135 +111,74 @@ const formattedDate = post.data.date.toLocaleDateString('en-US', {
 ---
 
 <Layout
-	title={post.data.seoTitle ?? post.data.title}
-	description={post.data.seoDescription ?? post.data.excerpt}
-	canonical={`/journal/${post.id}`}
+	title={seoTitle ?? title}
+	description={seoDescription ?? excerpt}
+	canonical={`/journal/${slug}`}
 	ogType="article"
 	ogImage={ogImage}
-	ogImageAlt={post.data.imageAlt}
+	ogImageAlt={imageAlt}
 >
 	<Fragment slot="head" set:html={schemaScript(articleSchema({
 		image: ogImage,
-		path: `/journal/${post.id}`,
-		title: post.data.title,
-		description: post.data.seoDescription ?? post.data.excerpt,
-		datePublished: post.data.date,
-		dateModified: post.data.updatedDate,
-		author: post.data.author,
+		path: `/journal/${slug}`,
+		title,
+		description: seoDescription ?? excerpt,
+		datePublished: publishedDate,
+		dateModified: updatedDate,
+		author,
 	}))} />
 	<Fragment slot="head" set:html={schemaScript(webPageSchema({
-		path: `/journal/${post.id}`,
-		title: post.data.title,
-		description: post.data.seoDescription ?? post.data.excerpt,
+		path: `/journal/${slug}`,
+		title: `${title} | Paula Ambrosio Interiors`,
+		description: seoDescription ?? excerpt,
 		breadcrumbs,
 	}))} />
 
-	<article>
-		<!-- Article Header -->
-		<header class="container-editorial pt-16 lg:pt-24">
-			<Breadcrumbs items={breadcrumbs} />
+	<article class="container-editorial pt-16 pb-20 lg:pt-24">
+		<Breadcrumbs items={breadcrumbs} />
 
-			<!-- Category badge -->
-			<div class="mt-10 flex items-center gap-3">
-				<span class="eyebrow text-stone">{post.data.category}</span>
-			</div>
-
-			<!-- Title -->
-			<h1 class="font-display mt-5 max-w-4xl text-3xl leading-tight lg:text-5xl lg:leading-tight">
-				{post.data.title}
-			</h1>
-
-			<!-- Guarantees a valid h1→h2→h3 outline even when an article opens
-			     with an h3 subheading (sr-only — no visual change). -->
-			<h2 class="sr-only">In this article</h2>
-
-			<!-- Excerpt -->
-			{post.data.excerpt && (
-				<p class="mt-6 max-w-2xl text-lg leading-relaxed text-slate">
-					{post.data.excerpt}
-				</p>
-			)}
-
-			<!-- Article meta: author · date · reading time -->
-			<div class="mt-8 flex flex-wrap items-center gap-x-4 gap-y-3 border-t border-b border-sand/60 py-5 text-sm">
-				<!-- Author -->
-				<div class="flex items-center gap-2.5">						<div class="flex h-9 w-9 items-center justify-center rounded-full bg-coffee/10 text-xs font-bold uppercase tracking-wide text-coffee-deep">
-						{post.data.author.split(' ').map((n: string) => n[0]).join('')}
-					</div>
-					<div>
-						<p class="font-medium text-ink text-[0.8rem] leading-tight">{post.data.author}</p>
-						<p class="text-[0.65rem] uppercase tracking-widest text-stone">Author</p>
-					</div>
-				</div>
-
-				<!-- Separator -->
-				<span class="hidden sm:block h-5 w-px bg-sand/80"></span>
-
-				<!-- Date -->
-				<div class="flex items-center gap-1.5 text-graphite">
-					<svg viewBox="0 0 20 20" class="h-4 w-4 text-stone" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-						<rect x="3" y="4" width="14" height="14" rx="2"></rect>
-						<path d="M3 8h14M7 2v4M13 2v4"></path>
-					</svg>
-					<time datetime={post.data.date.toISOString()} class="text-[0.8rem]">
-						{formattedDate}
-					</time>
-				</div>
-
-				<!-- Separator -->
-				<span class="hidden sm:block h-5 w-px bg-sand/80"></span>
-
-				<!-- Reading time -->
-				<div class="flex items-center gap-1.5 text-graphite">
-					<svg viewBox="0 0 20 20" class="h-4 w-4 text-stone" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-						<circle cx="10" cy="10" r="8"></circle>
-						<path d="M10 6v4l3 2"></path>
-					</svg>
-					<span class="text-[0.8rem]">{readingTime} min read</span>
-				</div>
+		<header class="mt-10 max-w-3xl">
+			<p class="eyebrow text-stone">{category}</p>
+			<h1 class="font-display mt-4 text-display leading-tight">{title}</h1>
+			<p class="mt-6 text-lg leading-relaxed text-slate">{excerpt}</p>
+			<div class="mt-8 flex flex-wrap items-center gap-6 border-y border-sand py-4 text-xs uppercase tracking-widest text-mist">
+				<span>{author}</span>
+				<span aria-hidden="true">&middot;</span>
+				<time datetime={publishedDate.toISOString()}>{formattedDate}</time>
+				<span aria-hidden="true">&middot;</span>
+				<span>{readingTime} min read</span>
 			</div>
 		</header>
 
-		<!-- Hero Image -->
-		<div class="container-editorial mt-10">
-			<div class="overflow-hidden rounded-sm">
-				<Image
-					src={post.data.featuredImage}
-					alt={post.data.imageAlt ?? post.data.title}
-					widths={[768, 1200, 1600]}
-					sizes="(min-width: 80rem) 80rem, 100vw"
+		<div class="my-14 overflow-hidden bg-sand">
+			{typeof featuredImage === 'string' ? (
+				<img
+					src={featuredImage}
+					alt={imageAlt}
 					loading="eager"
-					quality={70}
 					decoding="async"
-					class="aspect-[16/9] w-full object-cover transition-transform duration-700 hover:scale-[1.02]"
+					class="aspect-[16/9] w-full object-cover"
 				/>
-			</div>
-			{post.data.imageAlt && (
-				<p class="mt-3 text-center text-xs text-stone italic">{post.data.imageAlt}</p>
+			) : (
+				<Image
+					src={featuredImage}
+					alt={imageAlt}
+					widths={[800, 1400]}
+					sizes="(min-width: 1024px) 75vw, 100vw"
+					loading="eager"
+					decoding="async"
+					class="aspect-[16/9] w-full object-cover"
+				/>
 			)}
 		</div>
 
-		<!-- Article Body -->
-		<div class="prose-editorial container-editorial max-w-3xl py-12 lg:py-16">
-			<Content />
+		<div class="prose-editorial mx-auto max-w-3xl text-graphite">
+			{isDynamic ? (
+				<div set:html={renderedContentHtml} />
+			) : (
+				StaticContent && <StaticContent />
+			)}
 		</div>
-
-		<!-- Continue Exploring -->
-		{(post.data.relatedProjects?.length || post.data.relatedServices?.length) && (
-			<aside class="container-editorial max-w-3xl pb-16">
-				<div class="border-t border-sand pt-8 text-sm">
-					<p class="eyebrow text-stone">Continue exploring</p>
-					<ul class="mt-4 space-y-2 text-graphite">
-						{post.data.relatedServices?.filter(Boolean).map((s) => (
-							<li><a class="underline decoration-brass/60 underline-offset-4" href={serviceUrl(s)}>{formatRelatedLabel(s)}</a></li>
-						))}
-						{post.data.relatedProjects?.filter(Boolean).map((p) => (
-							<li><a class="underline decoration-brass/60 underline-offset-4" href={`/projects/${p}/`}>{formatRelatedLabel(p)}</a></li>
-						))}
-					</ul>
-				</div>
-			</aside>
-		)}
 	</article>
 
 	<CtaBanner />

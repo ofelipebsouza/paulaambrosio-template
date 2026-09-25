@@ -36,7 +36,21 @@ import SpeedInsights from '@vercel/speed-insights/astro';
 				project: value(element, 'data-analytics-project'),
 				faq: value(element, 'data-analytics-faq'),
 			}));
+
+			// Internal analytics recording
+			fetch('/api/analytics/collect/', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ page: page(), event: knownEvent }),
+			}).catch(() => {});
 		};
+
+		// Track page view internally
+		fetch('/api/analytics/collect/', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ page: page(), referrer: document.referrer || undefined }),
+		}).catch(() => {});
 
 		document.addEventListener('click', (event) => {
 			if (!(event.target instanceof Element)) return;
@@ -48,10 +62,22 @@ import SpeedInsights from '@vercel/speed-insights/astro';
 			const href = link.getAttribute('href') ?? '';
 			const linkMetadata = metadata(link);
 
-			if (href.startsWith('tel:')) trackEvent(ANALYTICS_EVENTS.PHONE_CLICK, linkMetadata);
-			if (href.startsWith('mailto:')) trackEvent(ANALYTICS_EVENTS.EMAIL_CLICK, linkMetadata);
-			if (/whatsapp|wa\.me/i.test(href)) trackEvent(ANALYTICS_EVENTS.WHATSAPP_CLICK, linkMetadata);
-			if (/instagram\.com/i.test(href)) trackEvent(ANALYTICS_EVENTS.INSTAGRAM_CLICK, linkMetadata);
+			if (href.startsWith('tel:')) {
+				trackEvent(ANALYTICS_EVENTS.PHONE_CLICK, linkMetadata);
+				fetch('/api/analytics/collect/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ page: page(), event: 'phone_click' }) }).catch(() => {});
+			}
+			if (href.startsWith('mailto:')) {
+				trackEvent(ANALYTICS_EVENTS.EMAIL_CLICK, linkMetadata);
+				fetch('/api/analytics/collect/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ page: page(), event: 'email_click' }) }).catch(() => {});
+			}
+			if (/whatsapp|wa\.me/i.test(href)) {
+				trackEvent(ANALYTICS_EVENTS.WHATSAPP_CLICK, linkMetadata);
+				fetch('/api/analytics/collect/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ page: page(), event: 'whatsapp_click' }) }).catch(() => {});
+			}
+			if (/instagram\.com/i.test(href)) {
+				trackEvent(ANALYTICS_EVENTS.INSTAGRAM_CLICK, linkMetadata);
+				fetch('/api/analytics/collect/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ page: page(), event: 'instagram_click' }) }).catch(() => {});
+			}
 		});
 
 		document.addEventListener('toggle', (event) => {

@@ -54,10 +54,19 @@ const titleTemplate = `${title} · Studio CRM`;
 		<header class="sticky top-0 z-40 border-b border-sand/60 bg-bone/95 backdrop-blur-sm">
 			<div class="container-editorial">
 				<div class="flex h-16 items-center justify-between gap-4 lg:h-20">
-					<a href="/admin/" class="flex min-h-11 items-center gap-4" aria-label="Studio CRM home">
-						<Logo variant="dark" class="h-7 w-auto lg:h-8" loading="eager" alt={SITE.name} />
-						<span class="eyebrow hidden text-stone sm:block">Studio CRM</span>
-					</a>
+					<div class="flex items-center gap-6">
+						<a href="/admin/" class="flex min-h-11 items-center gap-4" aria-label="Studio CRM home">
+							<Logo variant="dark" class="h-7 w-auto lg:h-8" loading="eager" alt={SITE.name} />
+							<span class="eyebrow hidden text-stone sm:block">Studio CRM</span>
+						</a>
+
+						<nav class="hidden md:flex items-center gap-6 border-l border-sand/60 pl-6 text-xs uppercase tracking-widest font-semibold" aria-label="Admin Navigation">
+							<a href="/admin/" class="text-ink hover:text-stone transition-colors">Pipeline</a>
+							<a href="/admin/#tab-journal" id="nav-tab-journal" class="text-slate hover:text-ink transition-colors">Journal CMS</a>
+							<a href="/admin/#tab-analytics" id="nav-tab-analytics" class="text-slate hover:text-ink transition-colors">Analytics</a>
+							<a href="/journal/" target="_blank" class="text-mist hover:text-stone transition-colors flex items-center gap-1">Live Site &nearr;</a>
+						</nav>
+					</div>
 
 					<div class="flex items-center gap-4 lg:gap-6">
 						<slot name="actions" />

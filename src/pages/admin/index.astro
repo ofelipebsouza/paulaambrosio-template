@@ -161,6 +161,33 @@ const kpis = [
 ---
 
 <AdminLayout title="Pipeline">
+	<!-- Section Switcher Tabs -->
+	<div class="flex items-center gap-2 sm:gap-4 border-b border-sand pb-4 mb-6 overflow-x-auto scrollbar-none">
+		<button
+			type="button"
+			id="tab-btn-crm"
+			class="eyebrow shrink-0 px-3 sm:px-4 py-2 border-b-2 border-stone text-ink font-semibold"
+		>
+			Pipeline CRM
+		</button>
+		<button
+			type="button"
+			id="tab-btn-journal"
+			class="eyebrow shrink-0 px-3 sm:px-4 py-2 border-b-2 border-transparent text-slate hover:text-ink"
+		>
+			Journal CMS
+		</button>
+		<button
+			type="button"
+			id="tab-btn-analytics"
+			class="eyebrow shrink-0 px-3 sm:px-4 py-2 border-b-2 border-transparent text-slate hover:text-ink"
+		>
+			Studio Analytics
+		</button>
+	</div>
+
+	<!-- WRAPPER: CRM Tab -->
+	<div id="section-crm" class="space-y-6">
 	<!-- Page head ------------------------------------------------------------ -->
 	<div class="flex flex-col gap-6 border-b border-sand/60 pb-8 lg:flex-row lg:items-end lg:justify-between">
 		<div>
@@ -721,6 +748,173 @@ const kpis = [
 			</ul>
 		</div>
 	</section>
+	</div> <!-- END WRAPPER: CRM Tab -->
+
+	<!-- WRAPPER: Journal CMS Tab ---------------------------------------------- -->
+	<div id="section-journal" class="hidden space-y-8">
+		<div class="flex flex-col gap-6 border-b border-sand/60 pb-8 sm:flex-row sm:items-end sm:justify-between">
+			<div>
+				<p class="eyebrow text-stone">Studio Journal</p>
+				<h2 class="mt-3 font-display text-4xl lg:text-5xl">Content & Articles</h2>
+				<p class="mt-4 max-w-xl text-sm leading-relaxed text-slate">
+					Publish instantly or schedule automated articles. Create manually or let the Hermes Agent deliver copy.
+				</p>
+			</div>
+			<button type="button" id="journal-btn-new" class="btn-primary min-h-11">
+				+ New Article
+			</button>
+		</div>
+
+		<!-- Journal Editor Modal/Drawer (hidden by default) -->
+		<div id="journal-editor" class="hidden border border-sand/70 bg-white p-6 sm:p-8">
+			<div class="flex items-center justify-between border-b border-sand/60 pb-4">
+				<h3 class="font-display text-2xl" id="journal-editor-title">New Journal Article</h3>
+				<button type="button" id="journal-editor-close" class="eyebrow text-slate hover:text-ink">Close &times;</button>
+			</div>
+			<form id="journal-form" class="mt-6 space-y-6">
+				<input type="hidden" id="post-id" />
+				<div class="grid gap-6 sm:grid-cols-2">
+					<div>
+						<label for="post-title" class="eyebrow text-slate">Article Title *</label>
+						<input type="text" id="post-title" required placeholder="e.g. Modern Coastal Textures in Miami" class="mt-2 w-full border border-sand bg-white px-4 py-2.5 text-sm focus:border-brass focus:outline-none" />
+					</div>
+					<div>
+						<label for="post-category" class="eyebrow text-slate">Category</label>
+						<select id="post-category" class="mt-2 w-full border border-sand bg-white px-4 py-2.5 text-sm focus:border-brass focus:outline-none">
+							<option value="Trends">Trends</option>
+							<option value="Living">Living</option>
+							<option value="Architecture">Architecture</option>
+							<option value="Design">Design</option>
+							<option value="Materials">Materials</option>
+							<option value="News">News</option>
+						</select>
+					</div>
+				</div>
+
+				<div class="grid gap-6 sm:grid-cols-2">
+					<div>
+						<label for="post-image" class="eyebrow text-slate">Cover Image URL *</label>
+						<input type="text" id="post-image" placeholder="https://... or /images/hero-1.webp" class="mt-2 w-full border border-sand bg-white px-4 py-2.5 text-sm focus:border-brass focus:outline-none" />
+					</div>
+					<div>
+						<label for="post-image-alt" class="eyebrow text-slate">Image Alt Description</label>
+						<input type="text" id="post-image-alt" placeholder="Description for accessibility & SEO" class="mt-2 w-full border border-sand bg-white px-4 py-2.5 text-sm focus:border-brass focus:outline-none" />
+					</div>
+				</div>
+
+				<div>
+					<label for="post-excerpt" class="eyebrow text-slate">Summary / Excerpt (Lead)</label>
+					<textarea id="post-excerpt" rows="2" placeholder="Short preview text for grid and search engines..." class="mt-2 w-full border border-sand bg-white px-4 py-2 text-sm focus:border-brass focus:outline-none"></textarea>
+				</div>
+
+				<div>
+					<label for="post-content" class="eyebrow text-slate">Article Content (Markdown / Copy) *</label>
+					<textarea id="post-content" rows="10" required placeholder="Write the article copy here. Blank lines create paragraphs..." class="mt-2 w-full border border-sand bg-white p-4 font-mono text-sm focus:border-brass focus:outline-none"></textarea>
+				</div>
+
+				<div class="grid gap-6 sm:grid-cols-3 border-t border-sand/60 pt-6">
+					<div>
+						<label for="post-status" class="eyebrow text-slate">Status</label>
+						<select id="post-status" class="mt-2 w-full border border-sand bg-white px-4 py-2.5 text-sm focus:border-brass focus:outline-none">
+							<option value="draft">Draft (Rascunho)</option>
+							<option value="scheduled">Scheduled (Agendado)</option>
+							<option value="published">Published (Publicado Agora)</option>
+						</select>
+					</div>
+					<div id="post-schedule-wrap" class="hidden">
+						<label for="post-schedule-date" class="eyebrow text-slate">Publish Date & Time</label>
+						<input type="datetime-local" id="post-schedule-date" class="mt-2 w-full border border-sand bg-white px-4 py-2.5 text-sm focus:border-brass focus:outline-none" />
+					</div>
+					<div>
+						<label for="post-author" class="eyebrow text-slate">Author</label>
+						<input type="text" id="post-author" value="Paula Ambrosio" class="mt-2 w-full border border-sand bg-white px-4 py-2.5 text-sm focus:border-brass focus:outline-none" />
+					</div>
+				</div>
+
+				<div class="flex items-center justify-end gap-3 pt-4 border-t border-sand/60">
+					<button type="button" id="journal-editor-cancel" class="eyebrow px-4 py-2 text-slate hover:text-ink">Cancel</button>
+					<button type="submit" id="journal-editor-save" class="btn-primary min-h-11">Save Article</button>
+				</div>
+			</form>
+		</div>
+
+		<!-- Posts List Grid -->
+		<div id="journal-posts-container" class="space-y-4">
+			<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-sand pb-3">
+				<p class="eyebrow text-stone">All Articles (<span id="journal-count">0</span>)</p>
+				<div class="flex flex-wrap gap-2">
+					<button type="button" class="eyebrow text-xs border border-sand bg-white px-3 py-1.5 journal-filter-status is-active" data-status="all">All</button>
+					<button type="button" class="eyebrow text-xs border border-sand bg-white px-3 py-1.5 journal-filter-status" data-status="published">Published</button>
+					<button type="button" class="eyebrow text-xs border border-sand bg-white px-3 py-1.5 journal-filter-status" data-status="scheduled">Scheduled</button>
+					<button type="button" class="eyebrow text-xs border border-sand bg-white px-3 py-1.5 journal-filter-status" data-status="draft">Drafts</button>
+				</div>
+			</div>
+			<div id="journal-posts-list" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+				<p class="text-sm text-mist col-span-3 py-8 text-center">Loading articles...</p>
+			</div>
+		</div>
+	</div>
+
+	<!-- WRAPPER: Studio Analytics Tab ----------------------------------------- -->
+	<div id="section-analytics" class="hidden space-y-8">
+		<div class="flex flex-col gap-6 border-b border-sand/60 pb-8 sm:flex-row sm:items-end sm:justify-between">
+			<div>
+				<p class="eyebrow text-stone">Studio Analytics</p>
+				<h2 class="mt-3 font-display text-4xl lg:text-5xl">Audience & Performance</h2>
+				<p class="mt-4 max-w-xl text-sm leading-relaxed text-slate">
+					Direct real-time metrics tracked on Redis: traffic, top visited pages, and inquiry conversions.
+				</p>
+			</div>
+			<button type="button" id="analytics-refresh-btn" class="btn-primary min-h-11">
+				Refresh Metrics
+			</button>
+		</div>
+
+		<!-- Analytics KPI Strip -->
+		<section aria-label="Analytics key metrics" class="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+			<div class="border border-sand/70 bg-white p-4 sm:p-5">
+				<p class="eyebrow text-stone">Page Views · 30 Days</p>
+				<p class="mt-3 font-display text-3xl sm:text-4xl" id="analytics-views-30d">—</p>
+				<p class="mt-1 text-xs text-mist">total interactions</p>
+			</div>
+			<div class="border border-sand/70 bg-white p-4 sm:p-5">
+				<p class="eyebrow text-stone">Page Views · Today</p>
+				<p class="mt-3 font-display text-3xl sm:text-4xl" id="analytics-views-today">—</p>
+				<p class="mt-1 text-xs text-mist">since midnight</p>
+			</div>
+			<div class="border border-sand/70 bg-white p-4 sm:p-5">
+				<p class="eyebrow text-stone">WhatsApp Clicks</p>
+				<p class="mt-3 font-display text-3xl sm:text-4xl" id="analytics-clicks-whatsapp">—</p>
+				<p class="mt-1 text-xs text-mist">direct conversations</p>
+			</div>
+			<div class="border border-sand/70 bg-white p-4 sm:p-5">
+				<p class="eyebrow text-stone">Phone & Email Clicks</p>
+				<p class="mt-3 font-display text-3xl sm:text-4xl" id="analytics-clicks-contact">—</p>
+				<p class="mt-1 text-xs text-mist">direct inquiries</p>
+			</div>
+		</section>
+
+		<!-- Analytics Breakdown Grid -->
+		<div class="grid gap-6 lg:grid-cols-2">
+			<!-- Top Pages -->
+			<div class="border border-sand/70 bg-white p-6">
+				<p class="eyebrow text-stone">Top Visited Pages</p>
+				<p class="text-xs text-mist mt-1">Ranking of the most explored portfolio and journal pages</p>
+				<ul id="analytics-top-pages" class="mt-5 divide-y divide-sand/40">
+					<li class="py-3 text-sm text-mist">Loading top pages...</li>
+				</ul>
+			</div>
+
+			<!-- Traffic Sources / Referrers -->
+			<div class="border border-sand/70 bg-white p-6">
+				<p class="eyebrow text-stone">Traffic Sources / Referrers</p>
+				<p class="text-xs text-mist mt-1">Where visitors discover the studio (Instagram, Search, etc.)</p>
+				<ul id="analytics-top-referrers" class="mt-5 divide-y divide-sand/40">
+					<li class="py-3 text-sm text-mist">Loading referrers...</li>
+				</ul>
+			</div>
+		</div>
+	</div>
 
 	<p class="mt-6 text-xs text-mist" id="crm-status-line" role="status" aria-live="polite">
 		Last updated just now · refreshing every 30 s.
@@ -1623,6 +1817,307 @@ const kpis = [
 		if (!domain || !domain.includes('.')) return setStatus('This lead has no email domain.');
 		if (await saveBlock({ type: 'domain', value: domain, reason: 'from lead dialog' })) dialog?.close();
 	});
+
+	/* --------------------------------------------------- Admin Tabs Logic */
+
+	const tabBtnCrm = $<HTMLButtonElement>('#tab-btn-crm');
+	const tabBtnJournal = $<HTMLButtonElement>('#tab-btn-journal');
+	const tabBtnAnalytics = $<HTMLButtonElement>('#tab-btn-analytics');
+
+	const sectionCrm = $<HTMLElement>('#section-crm');
+	const sectionJournal = $<HTMLElement>('#section-journal');
+	const sectionAnalytics = $<HTMLElement>('#section-analytics');
+
+	function activateTab(tab: 'crm' | 'journal' | 'analytics') {
+		const btns = [tabBtnCrm, tabBtnJournal, tabBtnAnalytics];
+		btns.forEach((b) => {
+			b?.classList.remove('border-stone', 'text-ink', 'font-semibold');
+			b?.classList.add('border-transparent', 'text-slate');
+		});
+
+		sectionCrm?.classList.add('hidden');
+		sectionJournal?.classList.add('hidden');
+		sectionAnalytics?.classList.add('hidden');
+
+		if (tab === 'crm') {
+			tabBtnCrm?.classList.add('border-stone', 'text-ink', 'font-semibold');
+			tabBtnCrm?.classList.remove('border-transparent', 'text-slate');
+			sectionCrm?.classList.remove('hidden');
+		} else if (tab === 'journal') {
+			tabBtnJournal?.classList.add('border-stone', 'text-ink', 'font-semibold');
+			tabBtnJournal?.classList.remove('border-transparent', 'text-slate');
+			sectionJournal?.classList.remove('hidden');
+			void loadJournalPosts();
+		} else if (tab === 'analytics') {
+			tabBtnAnalytics?.classList.add('border-stone', 'text-ink', 'font-semibold');
+			tabBtnAnalytics?.classList.remove('border-transparent', 'text-slate');
+			sectionAnalytics?.classList.remove('hidden');
+			void loadAnalytics();
+		}
+	}
+
+	tabBtnCrm?.addEventListener('click', () => activateTab('crm'));
+	tabBtnJournal?.addEventListener('click', () => activateTab('journal'));
+	tabBtnAnalytics?.addEventListener('click', () => activateTab('analytics'));
+
+	document.getElementById('nav-tab-journal')?.addEventListener('click', (e) => {
+		e.preventDefault();
+		activateTab('journal');
+	});
+	document.getElementById('nav-tab-analytics')?.addEventListener('click', (e) => {
+		e.preventDefault();
+		activateTab('analytics');
+	});
+
+	if (window.location.hash === '#tab-journal') activateTab('journal');
+	if (window.location.hash === '#tab-analytics') activateTab('analytics');
+
+	/* ------------------------------------------------ Journal CMS Logic */
+
+	const journalEditor = $<HTMLElement>('#journal-editor');
+	const journalForm = $<HTMLFormElement>('#journal-form');
+	const postStatusSelect = $<HTMLSelectElement>('#post-status');
+	const scheduleWrap = $<HTMLElement>('#post-schedule-wrap');
+
+	postStatusSelect?.addEventListener('change', () => {
+		if (postStatusSelect.value === 'scheduled') {
+			scheduleWrap?.classList.remove('hidden');
+		} else {
+			scheduleWrap?.classList.add('hidden');
+		}
+	});
+
+	$<HTMLButtonElement>('#journal-btn-new')?.addEventListener('click', () => {
+		journalForm?.reset();
+		$<HTMLInputElement>('#post-id')!.value = '';
+		$<HTMLElement>('#journal-editor-title')!.textContent = 'New Journal Article';
+		scheduleWrap?.classList.add('hidden');
+		journalEditor?.classList.remove('hidden');
+	});
+
+	$<HTMLButtonElement>('#journal-editor-close')?.addEventListener('click', () => {
+		journalEditor?.classList.add('hidden');
+	});
+	$<HTMLButtonElement>('#journal-editor-cancel')?.addEventListener('click', () => {
+		journalEditor?.classList.add('hidden');
+	});
+
+	let currentJournalFilter = 'all';
+	document.querySelectorAll('.journal-filter-status').forEach((btn) => {
+		btn.addEventListener('click', () => {
+			document.querySelectorAll('.journal-filter-status').forEach((b) => b.classList.remove('is-active', 'border-stone', 'font-semibold'));
+			btn.classList.add('is-active', 'border-stone', 'font-semibold');
+			currentJournalFilter = (btn as HTMLElement).dataset.status || 'all';
+			void loadJournalPosts();
+		});
+	});
+
+	async function loadJournalPosts() {
+		const list = $<HTMLElement>('#journal-posts-list');
+		const countEl = $<HTMLElement>('#journal-count');
+		if (!list) return;
+
+		const res = await getJson(`/api/crm/journal/?status=${encodeURIComponent(currentJournalFilter)}`);
+		const posts = (res?.posts as Array<Record<string, unknown>>) || [];
+		if (countEl) countEl.textContent = String(posts.length);
+
+		if (!posts.length) {
+			list.innerHTML = `<p class="text-sm text-mist col-span-3 py-8 text-center border border-dashed border-sand">No articles found in this category.</p>`;
+			return;
+		}
+
+		list.innerHTML = posts
+			.map((p) => {
+				const id = String(p.id);
+				const title = String(p.title);
+				const category = String(p.category || 'Trends');
+				const status = String(p.status || 'draft');
+				const views = Number(p.views || 0);
+				const img = String(p.featuredImage || '/images/hero-1.webp');
+				const source = String(p.source || 'manual');
+
+				let badgeColor = 'bg-mist text-ink';
+				if (status === 'published') badgeColor = 'bg-stone text-bone';
+				if (status === 'scheduled') badgeColor = 'bg-brass text-ink';
+
+				return `
+					<article class="border border-sand/70 bg-white p-4 flex flex-col justify-between" data-journal-id="${esc(id)}">
+						<div>
+							<div class="aspect-[16/9] w-full overflow-hidden bg-sand mb-3">
+								<img src="${esc(img)}" alt="${esc(title)}" class="w-full h-full object-cover" />
+							</div>
+							<div class="flex items-center justify-between gap-2 mb-2">
+								<span class="eyebrow text-xs text-stone">${esc(category)}</span>
+								<span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 ${badgeColor}">${esc(status)}</span>
+							</div>
+							<h4 class="font-display text-lg text-ink font-medium leading-snug line-clamp-2">${esc(title)}</h4>
+							<p class="text-xs text-slate mt-2 line-clamp-2">${esc(String(p.excerpt || ''))}</p>
+						</div>
+
+						<div class="mt-4 pt-3 border-t border-sand/50 flex items-center justify-between text-xs text-mist">
+							<span>${views} views ${source === 'hermes' ? '&middot; Hermes' : ''}</span>
+							<div class="flex gap-2">
+								<a href="/journal/${esc(id)}/" target="_blank" class="hover:text-ink">View &nearr;</a>
+								<button type="button" class="hover:text-ink journal-edit-btn" data-id="${esc(id)}">Edit</button>
+								<button type="button" class="hover:text-coffee journal-del-btn" data-id="${esc(id)}">Delete</button>
+							</div>
+						</div>
+					</article>
+				`;
+			})
+			.join('');
+
+		// Bind edit and delete
+		list.querySelectorAll<HTMLButtonElement>('.journal-edit-btn').forEach((b) => {
+			b.addEventListener('click', async () => {
+				const id = b.dataset.id;
+				if (!id) return;
+				const postRes = await getJson(`/api/crm/journal/${encodeURIComponent(id)}/`);
+				if (!postRes?.post) return;
+				const p = postRes.post as Record<string, unknown>;
+
+				$<HTMLInputElement>('#post-id')!.value = String(p.id);
+				$<HTMLInputElement>('#post-title')!.value = String(p.title);
+				$<HTMLSelectElement>('#post-category')!.value = String(p.category || 'Trends');
+				$<HTMLInputElement>('#post-image')!.value = String(p.featuredImage || '');
+				$<HTMLInputElement>('#post-image-alt')!.value = String(p.imageAlt || '');
+				$<HTMLTextAreaElement>('#post-excerpt')!.value = String(p.excerpt || '');
+				$<HTMLTextAreaElement>('#post-content')!.value = String(p.content || '');
+				$<HTMLSelectElement>('#post-status')!.value = String(p.status || 'draft');
+				$<HTMLInputElement>('#post-author')!.value = String(p.author || 'Paula Ambrosio');
+
+				if (p.status === 'scheduled') {
+					scheduleWrap?.classList.remove('hidden');
+					if (p.scheduledFor) {
+						const d = new Date(Number(p.scheduledFor));
+						$<HTMLInputElement>('#post-schedule-date')!.value = d.toISOString().slice(0, 16);
+					}
+				} else {
+					scheduleWrap?.classList.add('hidden');
+				}
+
+				$<HTMLElement>('#journal-editor-title')!.textContent = 'Edit Journal Article';
+				journalEditor?.classList.remove('hidden');
+				journalEditor?.scrollIntoView({ behavior: 'smooth' });
+			});
+		});
+
+		list.querySelectorAll<HTMLButtonElement>('.journal-del-btn').forEach((b) => {
+			b.addEventListener('click', async () => {
+				const id = b.dataset.id;
+				if (!id || !confirm('Are you sure you want to delete this article?')) return;
+				await getJson(`/api/crm/journal/${encodeURIComponent(id)}/`, { method: 'DELETE' });
+				void loadJournalPosts();
+			});
+		});
+	}
+
+	journalForm?.addEventListener('submit', async (e) => {
+		e.preventDefault();
+		const id = $<HTMLInputElement>('#post-id')?.value.trim();
+		const title = $<HTMLInputElement>('#post-title')?.value.trim();
+		const category = $<HTMLSelectElement>('#post-category')?.value;
+		const featuredImage = $<HTMLInputElement>('#post-image')?.value.trim();
+		const imageAlt = $<HTMLInputElement>('#post-image-alt')?.value.trim();
+		const excerpt = $<HTMLTextAreaElement>('#post-excerpt')?.value.trim();
+		const content = $<HTMLTextAreaElement>('#post-content')?.value.trim();
+		const status = $<HTMLSelectElement>('#post-status')?.value;
+		const author = $<HTMLInputElement>('#post-author')?.value.trim();
+		const scheduleVal = $<HTMLInputElement>('#post-schedule-date')?.value;
+		const scheduledFor = scheduleVal ? new Date(scheduleVal).getTime() : undefined;
+
+		const payload: Record<string, unknown> = {
+			title,
+			category,
+			featuredImage,
+			imageAlt,
+			excerpt,
+			content,
+			status,
+			author,
+			scheduledFor,
+		};
+
+		if (id) {
+			// Update
+			await getJson(`/api/crm/journal/${encodeURIComponent(id)}/`, {
+				method: 'PATCH',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(payload),
+			});
+		} else {
+			// Create
+			await getJson('/api/crm/journal/', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(payload),
+			});
+		}
+
+		journalEditor?.classList.add('hidden');
+		void loadJournalPosts();
+	});
+
+	/* ---------------------------------------------- Studio Analytics Logic */
+
+	$<HTMLButtonElement>('#analytics-refresh-btn')?.addEventListener('click', () => void loadAnalytics());
+
+	async function loadAnalytics() {
+		const res = await getJson('/api/crm/analytics/');
+		if (!res?.summary) return;
+		const s = res.summary as Record<string, unknown>;
+
+		const views30d = $<HTMLElement>('#analytics-views-30d');
+		const viewsToday = $<HTMLElement>('#analytics-views-today');
+		const clicksWa = $<HTMLElement>('#analytics-clicks-whatsapp');
+		const clicksContact = $<HTMLElement>('#analytics-clicks-contact');
+
+		if (views30d) views30d.textContent = String(s.viewsLast30Days ?? 0);
+		if (viewsToday) viewsToday.textContent = String(s.viewsToday ?? 0);
+
+		const events = (s.topEvents as Record<string, number>) || {};
+		if (clicksWa) clicksWa.textContent = String(events['whatsapp_click'] ?? 0);
+		const otherClicks = (events['phone_click'] ?? 0) + (events['email_click'] ?? 0);
+		if (clicksContact) clicksContact.textContent = String(otherClicks);
+
+		// Top pages
+		const pagesEl = $<HTMLElement>('#analytics-top-pages');
+		const pages = (s.topPages as Array<{ page: string; views: number }>) || [];
+		if (pagesEl) {
+			if (!pages.length) {
+				pagesEl.innerHTML = `<li class="py-3 text-sm text-mist">No pageviews recorded yet.</li>`;
+			} else {
+				pagesEl.innerHTML = pages
+					.map(
+						(p) =>
+							`<li class="py-2.5 flex items-center justify-between text-sm">
+								<span class="font-mono text-graphite truncate pr-4">${esc(p.page)}</span>
+								<span class="font-semibold text-stone">${p.views}</span>
+							</li>`,
+					)
+					.join('');
+			}
+		}
+
+		// Referrers
+		const refsEl = $<HTMLElement>('#analytics-top-referrers');
+		const referrers = (s.topReferrers as Array<{ referrer: string; count: number }>) || [];
+		if (refsEl) {
+			if (!referrers.length) {
+				refsEl.innerHTML = `<li class="py-3 text-sm text-mist">Direct traffic / No external referrers yet.</li>`;
+			} else {
+				refsEl.innerHTML = referrers
+					.map(
+						(r) =>
+							`<li class="py-2.5 flex items-center justify-between text-sm">
+								<span class="text-graphite truncate pr-4">${esc(r.referrer)}</span>
+								<span class="font-semibold text-stone">${r.count}</span>
+							</li>`,
+					)
+					.join('');
+			}
+		}
+	}
 
 	/* --------------------------------------------------------------- Start */
 

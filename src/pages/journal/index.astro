@@ -1,20 +1,72 @@
 ---
+/**
+ * /journal/ — Design Journal listing.
+ *
+ * Merges markdown collection articles with dynamic articles stored in Upstash Redis.
+ */
 import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
 import Layout from '../../layouts/Layout.astro';
 import CtaBanner from '../../components/ui/CtaBanner.astro';
 import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
-import { webPageSchema, breadcrumbSchema, schemaScript } from '../../lib/seo';
+import { webPageSchema, schemaScript } from '../../lib/seo';
 import type { BreadcrumbEntry } from '../../lib/seo';
+import { listJournalPosts } from '../../lib/journal/store';
 
-const posts = (await getCollection('journal'))
+export const prerender = false;
+
+// 1. Static markdown posts
+const staticPosts = (await getCollection('journal'))
 	.filter((p) => !p.data.draft)
-	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+	.map((p) => ({
+		id: p.id,
+		title: p.data.title,
+		excerpt: p.data.excerpt,
+		category: p.data.category,
+		date: p.data.date,
+		featuredImage: p.data.featuredImage,
+		imageAlt: p.data.imageAlt ?? p.data.title,
+		isDynamic: false,
+	}));
 
+// 2. Dynamic published posts from Redis
+let dynamicPosts: Array<{
+	id: string;
+	title: string;
+	excerpt: string;
+	category: string;
+	date: Date;
+	featuredImage: string;
+	imageAlt: string;
+	isDynamic: true;
+}> = [];
+
+try {
+	const redisPosts = await listJournalPosts({ status: 'published', limit: 50 });
+	dynamicPosts = redisPosts.map((p) => ({
+		id: p.id,
+		title: p.title,
+		excerpt: p.excerpt,
+		category: p.category,
+		date: new Date(p.publishedAt),
+		featuredImage: p.featuredImage,
+		imageAlt: p.imageAlt || p.title,
+		isDynamic: true as const,
+	}));
+} catch {
+	// Fallback to static if redis read fails
+}
+
+// Combine and deduplicate by id
+const allMap = new Map<string, (typeof staticPosts)[0] | (typeof dynamicPosts)[0]>();
+for (const post of staticPosts) allMap.set(post.id, post);
+for (const post of dynamicPosts) allMap.set(post.id, post);
+
+const posts = [...allMap.values()].sort((a, b) => b.date.valueOf() - a.date.valueOf());
 const [featured, ...rest] = posts;
 
 const breadcrumbs: BreadcrumbEntry[] = [{ name: 'Journal', url: '/journal' }];
-const categories = ['All', ...new Set(posts.map((post) => post.data.category))];
+const categories = ['All', ...new Set(posts.map((post) => post.category))];
 ---
 
 <Layout
@@ -39,25 +91,35 @@ const categories = ['All', ...new Set(posts.map((post) => post.data.category))];
 		<section class="container-editorial pb-20">
 			<article class="grid items-center gap-10 lg:grid-cols-2">
 				<a href={`/journal/${featured.id}/`} class="block overflow-hidden bg-sand">
-					<Image
-						src={featured.data.featuredImage}
-						alt={featured.data.imageAlt ?? featured.data.title}
-						widths={[600, 1000]}
-						sizes="(min-width: 1024px) 50vw, 100vw"
-						loading="eager"
-						decoding="async"
-						class="aspect-[3/2] w-full object-cover"
-					/>
+					{typeof featured.featuredImage === 'string' ? (
+						<img
+							src={featured.featuredImage}
+							alt={featured.imageAlt}
+							loading="eager"
+							decoding="async"
+							class="aspect-[3/2] w-full object-cover"
+						/>
+					) : (
+						<Image
+							src={featured.featuredImage}
+							alt={featured.imageAlt}
+							widths={[600, 1000]}
+							sizes="(min-width: 1024px) 50vw, 100vw"
+							loading="eager"
+							decoding="async"
+							class="aspect-[3/2] w-full object-cover"
+						/>
+					)}
 				</a>
 				<div>
-					<p class="eyebrow text-stone">{featured.data.category}</p>
+					<p class="eyebrow text-stone">{featured.category}</p>
 					<h2 class="font-display mt-4 text-3xl leading-tight lg:text-4xl">
-						<a href={`/journal/${featured.id}/`} class="hover:text-stone">{featured.data.title}</a>
+						<a href={`/journal/${featured.id}/`} class="hover:text-stone">{featured.title}</a>
 					</h2>
-					<p class="mt-5 max-w-lg leading-relaxed text-slate">{featured.data.excerpt}</p>
+					<p class="mt-5 max-w-lg leading-relaxed text-slate">{featured.excerpt}</p>
 					<p class="mt-6 text-xs uppercase tracking-widest text-mist">
-						<time datetime={featured.data.date.toISOString()}>
-							{featured.data.date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+						<time datetime={featured.date.toISOString()}>
+							{featured.date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
 						</time>
 					</p>
 				</div>
@@ -74,24 +136,34 @@ const categories = ['All', ...new Set(posts.map((post) => post.data.category))];
 		</div>
 		<div id="journal-grid" class="grid gap-x-8 gap-y-14 border-t border-sand pt-14 md:grid-cols-2 lg:grid-cols-3">
 			{rest.map((post) => (
-				<article class="group" data-category={post.data.category}>
+				<article class="group" data-category={post.category}>
 					<a href={`/journal/${post.id}/`} class="block overflow-hidden bg-sand">
-						<Image
-							src={post.data.featuredImage}
-							alt={post.data.imageAlt ?? post.data.title}
-							widths={[400, 800]}
-							sizes="(min-width: 768px) 33vw, 100vw"
-							loading="lazy"
-							quality={55}
-							decoding="async"
-							class="aspect-[3/2] w-full object-cover transition-transform duration-700 ease-editorial group-hover:scale-[1.03]"
-						/>
+						{typeof post.featuredImage === 'string' ? (
+							<img
+								src={post.featuredImage}
+								alt={post.imageAlt}
+								loading="lazy"
+								decoding="async"
+								class="aspect-[3/2] w-full object-cover transition-transform duration-700 ease-editorial group-hover:scale-[1.03]"
+							/>
+						) : (
+							<Image
+								src={post.featuredImage}
+								alt={post.imageAlt}
+								widths={[400, 800]}
+								sizes="(min-width: 768px) 33vw, 100vw"
+								loading="lazy"
+								quality={55}
+								decoding="async"
+								class="aspect-[3/2] w-full object-cover transition-transform duration-700 ease-editorial group-hover:scale-[1.03]"
+							/>
+						)}
 					</a>
-					<p class="eyebrow mt-5 text-stone">{post.data.category}</p>
+					<p class="eyebrow mt-5 text-stone">{post.category}</p>
 					<h3 class="font-display mt-2 text-2xl leading-snug">
-						<a href={`/journal/${post.id}/`} class="hover:text-stone">{post.data.title}</a>
+						<a href={`/journal/${post.id}/`} class="hover:text-stone">{post.title}</a>
 					</h3>
-					<p class="mt-3 text-sm text-slate">{post.data.excerpt}</p>
+					<p class="mt-3 text-sm text-slate">{post.excerpt}</p>
 				</article>
 			))}
 		</div>

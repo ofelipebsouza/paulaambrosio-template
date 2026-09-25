@@ -16,6 +16,7 @@ import { crmJson, leadRef, log } from '../../../../lib/crm/http';
 import { composeFollowUpReminder } from '../../../../lib/crm/reminder-email';
 import { sendStudioMail } from '../../../../lib/crm/mailer';
 import { listTasks, saveTask, storeStatus } from '../../../../lib/crm/store';
+import { publishDuePosts } from '../../../../lib/journal/store';
 
 export const prerender = false;
 
@@ -34,13 +35,14 @@ export const ALL: APIRoute = async ({ request }) => {
 	}
 
 	const now = Date.now();
+	const publishedPosts = await publishDuePosts().catch(() => 0);
 	const tasks = await listTasks();
 	const due = tasks.filter(
 		(task) => task.state === 'open' && task.dueAt <= now && (!task.remindedAt || now - task.remindedAt >= REMINDER_COOLDOWN_MS),
 	);
 
 	if (!due.length) {
-		return crmJson({ ok: true, overdue: 0, reminded: 0, storage: storeStatus() });
+		return crmJson({ ok: true, overdue: 0, reminded: 0, publishedPosts, storage: storeStatus() });
 	}
 
 	const outcome = await sendStudioMail(composeFollowUpReminder(due, now));
@@ -80,6 +82,7 @@ export const ALL: APIRoute = async ({ request }) => {
 		ok: true,
 		overdue: due.length,
 		reminded,
+		publishedPosts,
 		mail: outcome.mode,
 		mailSent: outcome.sent,
 		storage: storeStatus(),
