@@ -48,6 +48,30 @@ const projectsCollection = defineCollection({
 		}),
 });
 
+const spacesCollection = defineCollection({
+	loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/spaces' }),
+	schema: ({ image }) =>
+		z.object({
+			title: z.string(),
+			draft: z.boolean().default(false),
+			intro: z.string().min(1),
+			heroImage: image(),
+			heroAlt: z.string().optional(),
+			// Editorial mix: photos curated by hand from several projects' galleries.
+			// `project` is the source project id and renders as a credit link back to it.
+			gallery: z
+				.array(
+					z.object({
+						image: image(),
+						alt: z.string().min(1),
+						project: z.string().optional(),
+					}),
+				)
+				.default([]),
+			...seoFields,
+		}),
+});
+
 const journalCollection = defineCollection({
 	loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/journal' }),
 	schema: ({ image }) =>
@@ -103,6 +127,7 @@ const locationsCollection = defineCollection({
 
 export const collections = {
 	projects: projectsCollection,
+	spaces: spacesCollection,
 	journal: journalCollection,
 	services: servicesCollection,
 	locations: locationsCollection,
