@@ -1,0 +1,147 @@
+---
+import { getCollection, render } from 'astro:content';
+import type { ImageMetadata } from 'astro';
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import CtaBanner from '../../components/ui/CtaBanner.astro';
+import ProjectLightbox from '../../components/projects/ProjectLightbox.astro';
+import SpaceGallery from '../../components/spaces/SpaceGallery.astro';
+import { webPageSchema, schemaScript } from '../../lib/seo';
+import type { BreadcrumbEntry } from '../../lib/seo';
+import { spaceUrl } from '../../config';
+import { brandedOg } from '../../lib/og';
+
+export async function getStaticPaths() {
+	const spaces = (await getCollection('spaces')).filter((s) => !s.data.draft);
+	return spaces.map((space) => ({
+		params: { slug: space.id },
+		props: { space },
+	}));
+}
+
+const { space } = Astro.props;
+const { Content } = await render(space);
+
+// Gallery photos are curated mixes: each entry credits the project it came from.
+const gallery = space.data.gallery;
+const full = gallery.map((item: { image: ImageMetadata }) => item.image.src);
+const heroSource = space.data.heroImage.src;
+const heroAlt = space.data.heroAlt ?? space.data.title;
+
+const projects = await getCollection('projects');
+const projectTitles = Object.fromEntries(projects.map((p) => [p.id, p.data.title]));
+
+const ogImage = brandedOg('space', space.id);
+
+const breadcrumbs: BreadcrumbEntry[] = [
+	{ name: 'Spaces', url: '/spaces' },
+	{ name: space.data.title, url: spaceUrl(space.id) },
+];
+
+const otherSpaces = (await getCollection('spaces')).filter((s) => !s.data.draft && s.id !== space.id);
+---
+
+<Layout
+	title={`${space.data.title} Design Ideas | Paula Ambrosio Interiors`}
+	description={space.data.seoDescription ?? space.data.intro}
+	canonical={spaceUrl(space.id)}
+	ogImage={ogImage}
+	ogImageAlt={heroAlt}
+>
+	<Fragment slot="head" set:html={schemaScript(webPageSchema({
+		path: spaceUrl(space.id),
+		title: `${space.data.title} | Paula Ambrosio Interiors`,
+		description: space.data.seoDescription ?? space.data.intro,
+		breadcrumbs,
+	}))} />
+
+	<article>
+		<!-- Space hero: cover image, matching the project page language -->
+		<section class="relative flex min-h-[70vh] items-end bg-ink overflow-hidden">
+			<img
+				src={heroSource}
+				alt={heroAlt}
+				width="1920"
+				height="1280"
+				loading="eager"
+				decoding="async"
+				fetchpriority="high"
+				class="absolute inset-0 h-full w-full object-cover opacity-90"
+			/>
+			<div class="absolute inset-0 bg-gradient-to-t from-ink/40 via-transparent to-transparent" aria-hidden="true"></div>
+			<div class="relative container-editorial pb-14 pt-40 text-bone z-10">
+				<Breadcrumbs items={breadcrumbs} tone="light" />
+				<h1 class="font-display mt-8 max-w-3xl text-4xl lg:text-6xl">{space.data.title}</h1>
+				<p class="mt-4 max-w-2xl text-lg text-bone/80">Curated from our projects | Paula Ambrosio Interiors</p>
+			</div>
+		</section>
+
+		<!-- Intro + case notes -->
+		<section class="container-editorial grid gap-14 py-20 lg:grid-cols-12 lg:py-28">
+			<div class="lg:col-span-4">
+				<p class="eyebrow text-stone">The Space</p>
+				<p class="mt-4 text-lg leading-relaxed text-graphite">{space.data.intro}</p>
+				<div class="mt-10">
+					<p class="eyebrow text-stone">Explore</p>
+					<ul class="mt-4 space-y-2 text-sm text-graphite">
+						<li class="border-b border-sand pb-2"><a href="/projects/" class="hover:text-ink">All Projects</a></li>
+						<li class="border-b border-sand pb-2"><a href="/spaces/" class="hover:text-ink">All Spaces</a></li>
+					</ul>
+				</div>
+			</div>
+			<div class="prose-editorial lg:col-span-7 lg:col-start-6">
+				<Content />
+			</div>
+		</section>
+
+		<!-- Curated gallery mix, each photo credited to its source project -->
+		{gallery.length > 0 && (
+			<SpaceGallery items={gallery} projectTitles={projectTitles} />
+		)}
+
+		{gallery.length > 0 && <ProjectLightbox title={space.data.title} full={full} />}
+
+		<!-- Other spaces -->
+		{otherSpaces.length > 0 && (
+			<section class="bg-linen py-20 lg:py-24">
+				<div class="container-editorial">
+					<div class="mb-12">
+						<p class="eyebrow text-stone">Continue exploring</p>
+						<h2 class="font-display mt-4 text-4xl">More spaces</h2>
+					</div>
+					<div class="grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
+						{otherSpaces.map((other) => (
+							<a href={spaceUrl(other.id)} class="group block">
+								<div class="overflow-hidden">
+									<img
+										src={other.data.heroImage.src}
+										alt={other.data.heroAlt ?? other.data.title}
+										width="1000"
+										height="750"
+										loading="lazy"
+										decoding="async"
+										class="aspect-[4/3] w-full object-cover motion-safe:transition-transform motion-safe:duration-700 group-hover:scale-[1.03]"
+									/>
+								</div>
+								<h3 class="font-display mt-4 text-xl">{other.data.title}</h3>
+								<span class="eyebrow mt-2 inline-block text-stone underline decoration-brass/60 underline-offset-4 transition-colors group-hover:text-ink">
+									Explore <span aria-hidden="true">↗</span>
+								</span>
+							</a>
+						))}
+					</div>
+				</div>
+			</section>
+		)}
+	</article>
+
+	<CtaBanner
+		title="Discuss a Similar Project"
+		body="Tell us about your residence or property. We will schedule a confidential discovery session with our design team."
+		primaryLabel="Start Your Project"
+		primaryAnalyticsEvent="cta_start_project"
+		analyticsLocation="final_cta"
+		secondaryLabel="View More Projects"
+		secondaryHref="/projects/"
+	/>
+</Layout>

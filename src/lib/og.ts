@@ -11,7 +11,7 @@
 export const OG_WIDTH = 1200;
 export const OG_HEIGHT = 630;
 
-export type OgKind = 'project' | 'service' | 'location' | 'journal' | 'home';
+export type OgKind = 'project' | 'service' | 'location' | 'journal' | 'home' | 'space';
 
 /** Ivory brand banner with the official logo — used by pages without a photo. */
 export const OG_BANNER = '/og/brand-banner.jpg';

@@ -8,6 +8,7 @@ const projects = (await getCollection('projects')).filter((p) => !p.data.draft);
 const services = (await getCollection('services')).filter((s) => !s.data.draft);
 const locations = (await getCollection('locations')).filter((l) => !l.data.draft);
 const journal = (await getCollection('journal')).filter((j) => !j.data.draft);
+const spaces = (await getCollection('spaces')).filter((s) => !s.data.draft);
 
 const section = 'eyebrow text-stone';
 const link = 'block py-1.5 text-graphite hover:text-ink';
@@ -69,6 +70,16 @@ const link = 'block py-1.5 text-graphite hover:text-ink';
 				<li><a href="/projects/" class={link}>All Projects</a></li>
 				{projects.map((p) => (
 					<li><a href={`/projects/${p.id}/`} class={link}>{p.data.title}</a></li>
+				))}
+			</ul>
+		</section>
+
+		<section class="mt-10">
+			<h2 class={section}>Spaces</h2>
+			<ul class="mt-3 border-t border-sand text-sm">
+				<li><a href="/spaces/" class={link}>All Spaces</a></li>
+				{spaces.map((s) => (
+					<li><a href={`/spaces/${s.id}/`} class={link}>{s.data.title}</a></li>
 				))}
 			</ul>
 		</section>

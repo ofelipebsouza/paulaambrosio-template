@@ -16,8 +16,14 @@ const normalize = (value: string) => value.replace(/\/+$/, '') || '/';
 const path = normalize(Astro.url.pathname);
 const isActive = (href: string) => {
 	const target = normalize(href);
+	// The Projects group also owns the /spaces/ section (dropdown children).
+	if (target === '/projects') {
+		return path === target || path.startsWith('/projects/') || path === '/spaces' || path.startsWith('/spaces/');
+	}
 	return target === '/' ? path === '/' : path === target || path.startsWith(`${target}/`);
 };
+// Dropdown children are leaf pages — only the exact route is "current".
+const isChildActive = (href: string) => normalize(href) === path;
 
 const socialIconMap: Record<string, string> = {
 	Instagram: 'ph ph-instagram-logo',
@@ -57,7 +63,7 @@ const socialIconMap: Record<string, string> = {
 										<ul class="space-y-0.5">
 											{link.children.map((child) => (
 												<li>
-													<a href={child.href} class="dropdown-link" aria-current={isActive(child.href) ? 'page' : undefined}>
+													<a href={child.href} class="dropdown-link" aria-current={isChildActive(child.href) ? 'page' : undefined}>
 														{child.label}
 													</a>
 												</li>
@@ -128,7 +134,7 @@ const socialIconMap: Record<string, string> = {
 										<ul class="space-y-0.5">
 											{link.children.map((child) => (
 												<li>
-													<a href={child.href} class="dropdown-link" aria-current={isActive(child.href) ? 'page' : undefined}>
+													<a href={child.href} class="dropdown-link" aria-current={isChildActive(child.href) ? 'page' : undefined}>
 														{child.label}
 													</a>
 												</li>

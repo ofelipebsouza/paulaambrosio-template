@@ -7,6 +7,7 @@ import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
 import { webPageSchema, breadcrumbSchema, schemaScript } from '../../lib/seo';
 import type { BreadcrumbEntry } from '../../lib/seo';
 
+const spaces = (await getCollection('spaces')).filter((s) => !s.data.draft);
 const projects = (await getCollection('projects'))
 	.filter((p) => !p.data.draft)
 	.sort(
@@ -55,6 +56,13 @@ const tabs = [
 			{tabs.map((tab, index) => (
 				<button type="button" class:list={['project-filter eyebrow border-b border-transparent pb-1 text-slate transition-colors hover:text-ink', index === 0 && 'is-active border-stone text-ink']} data-filter={tab.types ? tab.types.join(',') : 'All'} aria-pressed={index === 0 ? 'true' : 'false'}>{tab.label}</button>
 			))}
+		</div>
+		<div class="mb-12 flex flex-wrap items-center gap-x-8 gap-y-3 border-b border-sand pb-5" aria-label="Browse projects by room">
+			<p class="eyebrow mr-2 text-stone">View by Space</p>
+			{spaces.map((space) => (
+				<a href={`/spaces/${space.id}/`} class="eyebrow text-slate transition-colors hover:text-ink">{space.data.title}</a>
+			))}
+			<a href="/spaces/" class="eyebrow text-slate underline decoration-brass/60 underline-offset-4 transition-colors hover:text-ink">All Spaces</a>
 		</div>
 		<div id="project-grid">
 			<ProjectGrid projects={projects} columns={3} />

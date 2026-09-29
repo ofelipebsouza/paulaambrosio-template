@@ -43,6 +43,7 @@ export const locationUrl = (id: string): string =>
 			? '/interior-designer-sunny-isles/'
 			: `/interior-designer-${id}/`;
 export const projectUrl = (id: string): string => `/projects/${id}/`;
+export const spaceUrl = (id: string): string => `/spaces/${id}/`;
 
 export const FOOTER_LOCATIONS = [
 	{ label: 'Miami', href: locationUrl('miami') },
@@ -73,7 +74,18 @@ export const NAV_LEFT = [
 			{ label: 'Hospitality Interior Design', href: serviceUrl('hospitality-interior-design-miami') },
 		],
 	},
-	{ label: 'Projects', href: '/projects/' },
+	{
+		label: 'Projects',
+		href: '/projects/',
+		children: [
+			{ label: 'All Projects', href: '/projects/' },
+			{ label: 'Laundry Room', href: spaceUrl('laundry-room') },
+			{ label: 'Closet', href: spaceUrl('closet') },
+			{ label: 'Living Room', href: spaceUrl('living-room') },
+			{ label: 'Home Theater', href: spaceUrl('home-theater') },
+			{ label: 'Game Room', href: spaceUrl('game-room') },
+		],
+	},
 ] as const;
 
 export const NAV_RIGHT = [

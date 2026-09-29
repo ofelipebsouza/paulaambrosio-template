@@ -17,6 +17,7 @@ export async function getStaticPaths() {
 	const services = await getCollection('services');
 	const locations = await getCollection('locations');
 	const journal = (await getCollection('journal')).filter((p) => !p.data.draft);
+	const spaces = (await getCollection('spaces')).filter((s) => !s.data.draft);
 
 	const photos: { id: string; img: ImageMetadata }[] = [
 		// Home hero mirrors `src/pages/index.astro`: first non-draft project cover.
@@ -25,6 +26,7 @@ export async function getStaticPaths() {
 		...services.map((s) => ({ id: ogAssetId('service', s.id), img: s.data.featuredImage })),
 		...locations.map((l) => ({ id: ogAssetId('location', l.id), img: l.data.featuredImage })),
 		...journal.map((p) => ({ id: ogAssetId('journal', p.id), img: p.data.featuredImage })),
+		...spaces.map((s) => ({ id: ogAssetId('space', s.id), img: s.data.heroImage })),
 	];
 
 	return [

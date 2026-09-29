@@ -1,0 +1,64 @@
+---
+import type { ImageMetadata } from 'astro';
+import { projectUrl } from '../../config';
+
+interface GalleryItem {
+	image: ImageMetadata;
+	alt: string;
+	/** Source project id — rendered as a credit link back to the project page. */
+	project?: string;
+}
+
+interface Props {
+	items: GalleryItem[];
+	/** Project id → display title, for the credit captions. */
+	projectTitles: Record<string, string>;
+}
+
+const { items, projectTitles } = Astro.props;
+const full = items.map((item) => item.image.src);
+---
+
+<section class="container-editorial pb-20" aria-label="Space gallery">
+	<div class="columns-1 gap-6 sm:columns-2" style="column-fill: balance;">
+		{items.map((item, i) => (
+			<figure class="mb-8 break-inside-avoid">
+				<button
+					type="button"
+					class="group relative block w-full cursor-zoom-in overflow-hidden"
+					data-lightbox-trigger
+					data-full={full[i]}
+					aria-label={`Open image ${i + 1} of ${items.length} fullscreen`}
+				>
+					<img
+						src={item.image.src}
+						alt={item.alt}
+						width="1000"
+						height="750"
+						loading="lazy"
+						decoding="async"
+						class="w-full object-cover motion-safe:transition-transform motion-safe:duration-700 group-hover:scale-[1.03]"
+					/>
+					<span
+						class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100"
+						aria-hidden="true"
+					>
+						<svg class="absolute right-4 top-4 h-9 w-9 text-bone drop-shadow-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 3H3v6M15 3h6v6M9 21H3v-6M15 21h6v-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+					</span>
+				</button>
+				{item.project && projectTitles[item.project] && (
+					<figcaption class="mt-3">
+						<a
+							href={projectUrl(item.project)}
+							class="eyebrow text-stone underline decoration-brass/60 underline-offset-4 transition-colors hover:text-ink"
+							data-analytics-event="cta_view_project"
+							data-analytics-location="space_gallery"
+						>
+							From {projectTitles[item.project]} <span aria-hidden="true">↗</span>
+						</a>
+					</figcaption>
+				)}
+			</figure>
+		))}
+	</div>
+</section>
