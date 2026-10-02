@@ -132,7 +132,83 @@ export interface LeadUtm {
 }
 
 /** Heuristics that mark a lead for review without ever discarding it. */
-export type LeadFlag = 'disposable_email' | 'repeat_submitter' | 'missing_ua' | 'automation_ua';
+export type LeadFlag = 'disposable_email' | 'repeat_submitter' | 'missing_ua' | 'automation_ua' | 'jev_spam';
+
+/* -------------------------------------------------------------------------- */
+/* JEV scoring                                                                */
+/* -------------------------------------------------------------------------- */
+
+/** How hot JEV thinks the inquiry is, in the studio's own pipeline wording. */
+export type JevTemperature = 'hot' | 'warm' | 'cold' | 'spam';
+
+export type JevProjectType = 'residential' | 'hospitality' | 'commercial' | 'vendor_press' | 'other';
+
+export type JevBudgetFit = 'high' | 'medium' | 'low' | 'unknown';
+
+export type JevSentiment = 'positive' | 'neutral' | 'negative';
+
+/**
+ * The scoring snapshot stored on the lead. Everything is already normalised to
+ * the shapes the dashboard renders (scores in 0…1), so no caller ever has to
+ * know how JEV answers a `score` question.
+ *
+ * Optional on `CrmLead`: records written before scoring existed simply do not
+ * carry it, and the dashboard shows them as unclassified.
+ */
+export interface LeadJev {
+	/** 0…1 probability that this is a real, funded interior design project. */
+	score: number;
+	temperature: JevTemperature;
+	projectType: JevProjectType;
+	budgetFit: JevBudgetFit;
+	/** 0…1 — 0 browsing, 1 has a date to hit. */
+	urgency: number;
+	sentiment: JevSentiment;
+	/** Model the answer came from, e.g. `jev-1.13.0`. */
+	model: string;
+	/** Round trip in milliseconds, for the panel's "still live?" note. */
+	latencyMs: number;
+	/** Epoch ms when the score was taken. */
+	at: number;
+}
+
+const JEV_TEMPERATURES: readonly JevTemperature[] = ['hot', 'warm', 'cold', 'spam'];
+const JEV_PROJECT_TYPES: readonly JevProjectType[] = ['residential', 'hospitality', 'commercial', 'vendor_press', 'other'];
+const JEV_BUDGET_FITS: readonly JevBudgetFit[] = ['high', 'medium', 'low', 'unknown'];
+const JEV_SENTIMENTS: readonly JevSentiment[] = ['positive', 'neutral', 'negative'];
+
+export function isJevTemperature(value: unknown): value is JevTemperature {
+	return typeof value === 'string' && (JEV_TEMPERATURES as readonly string[]).includes(value);
+}
+
+/** Temperature JEV omitted or mislabelled: fall back to the score itself. */
+export function temperatureFromScore(score: number): JevTemperature {
+	if (score >= 0.7) return 'hot';
+	if (score >= 0.4) return 'warm';
+	return 'cold';
+}
+
+/** Narrows an unknown JEV answer to a known union member. */
+export function oneOf<T extends string>(value: unknown, allowed: readonly T[], fallback: T): T {
+	return typeof value === 'string' && (allowed as readonly string[]).includes(value) ? (value as T) : fallback;
+}
+
+/** JEV answers arrive as unknown JSON: these three never throw. */
+export function jevProjectType(value: unknown): JevProjectType {
+	return oneOf(value, JEV_PROJECT_TYPES, 'other');
+}
+
+export function jevBudgetFit(value: unknown): JevBudgetFit {
+	return oneOf(value, JEV_BUDGET_FITS, 'unknown');
+}
+
+export function jevSentiment(value: unknown): JevSentiment {
+	return oneOf(value, JEV_SENTIMENTS, 'neutral');
+}
+
+export function jevTemperature(value: unknown): JevTemperature {
+	return oneOf(value, JEV_TEMPERATURES, 'warm');
+}
 
 export interface CrmLead {
 	id: string;
@@ -171,6 +247,13 @@ export interface CrmLead {
 	utm: LeadUtm;
 	/** Review markers: stored and displayed, never a reason to drop the lead. */
 	flags: LeadFlag[];
+
+	/**
+	 * JEV scoring snapshot. Absent on records written before scoring existed
+	 * and on leads classified while JEV was unreachable — the dashboard counts
+	 * both as "not scored" rather than treating them as cold.
+	 */
+	jev?: LeadJev | null;
 
 	status: LeadStatus;
 	assignedTo: string;

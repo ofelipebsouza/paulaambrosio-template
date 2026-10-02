@@ -142,6 +142,9 @@ export function leadData(lead: CrmLead, extra: Record<string, unknown> = {}): Re
 		page: lead.page,
 		status: lead.status,
 		createdAt: lead.createdAt,
+		// Present only once JEV has scored the lead — receivers treat a gap as
+		// "not scored yet", never as "cold".
+		jev: lead.jev ?? null,
 		...extra,
 	};
 }

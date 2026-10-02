@@ -131,12 +131,35 @@ function relative(ts: number): string {
 }
 
 const kpis = [
-	{ key: 'last30', label: 'Leads · 30 days', value: String(metrics.last30), note: `${metrics.total} all time` },
+	{
+		key: 'last30',
+		label: 'Leads · 30 days',
+		value: String(metrics.last30),
+		note: `${metrics.total} all time · ${metrics.today} today`,
+	},
+	{
+		key: 'growth',
+		label: 'Growth · 30 days',
+		value: metrics.growth30 === null ? '—' : `${metrics.growth30 >= 0 ? '+' : ''}${Math.round(metrics.growth30 * 100)}%`,
+		note: metrics.growth30 === null ? 'no previous window yet' : 'against the previous 30 days',
+	},
+	{
+		key: 'jevHot',
+		label: 'JEV · hot now',
+		value: String(metrics.jev.hotOpen),
+		note: `${metrics.jev.scored} scored · ${metrics.jev.unclassified} waiting`,
+	},
+	{
+		key: 'jevScore',
+		label: 'JEV · avg score',
+		value: metrics.jev.avgScore === null ? '—' : `${Math.round(metrics.jev.avgScore * 100)}`,
+		note: `${Math.round((metrics.jev.avgUrgency ?? 0) * 100)}% avg urgency`,
+	},
 	{
 		key: 'awaitingReply',
 		label: 'Awaiting reply',
 		value: String(metrics.awaitingReply),
-		note: `${metrics.open} in pipeline`,
+		note: `${metrics.open} in pipeline · ${metrics.avgOpenAgeHours === null ? '—' : `${Math.round(metrics.avgOpenAgeHours)}h avg age`}`,
 	},
 	{
 		key: 'responseHours',
@@ -150,7 +173,6 @@ const kpis = [
 		value: `${Math.round(metrics.conversionRate * 100)}%`,
 		note: 'of closed leads',
 	},
-	{ key: 'today', label: 'New today', value: String(metrics.today), note: 'since midnight (UTC)' },
 	{
 		key: 'overdue',
 		label: 'Follow-ups late',
@@ -158,6 +180,73 @@ const kpis = [
 		note: `${metrics.tasksOpen} open tasks`,
 	},
 ];
+
+/* JEV panel — the same numbers the poll keeps honest, painted for the first
+   paint so the section is never an empty shell waiting on JavaScript. */
+const TEMPERATURES = ['hot', 'warm', 'cold', 'spam'] as const;
+const TEMPERATURE_LABELS: Record<(typeof TEMPERATURES)[number], string> = {
+	hot: 'Hot',
+	warm: 'Warm',
+	cold: 'Cold',
+	spam: 'Spam',
+};
+const TEMPERATURE_COLORS: Record<(typeof TEMPERATURES)[number], string> = {
+	hot: 'bg-coffee',
+	warm: 'bg-brass',
+	cold: 'bg-slate',
+	spam: 'bg-mist',
+};
+const scored = Math.max(1, metrics.jev.scored);
+const temperatureRows = TEMPERATURES.map((temperature) => ({
+	temperature,
+	label: TEMPERATURE_LABELS[temperature],
+	color: TEMPERATURE_COLORS[temperature],
+	count: metrics.jev.byTemperature[temperature],
+	share: metrics.jev.byTemperature[temperature] / scored,
+}));
+
+/** The leads worth calling today: hot, still open, strongest score first. */
+const hotLeads = leads
+	.filter(
+		(lead) =>
+			lead.jev &&
+			lead.jev.temperature === 'hot' &&
+			OPEN_STATUSES.includes(normalizeStatus(lead.status)),
+	)
+	.sort((a, b) => (b.jev?.score ?? 0) - (a.jev?.score ?? 0))
+	.slice(0, 5);
+
+const conversionRows = (bucket: Record<string, { won: number; closed: number; rate: number }>, limit: number) =>
+	Object.entries(bucket)
+		.filter(([, entry]) => entry.closed > 0)
+		.slice(0, limit)
+		.map(([label, entry]) => ({ label, won: entry.won, closed: entry.closed, rate: entry.rate }));
+
+const topServices = conversionRows(metrics.convByService, 5);
+const topBudgets = conversionRows(metrics.convByBudget, 4);
+const responseTotal = Math.max(
+	1,
+	metrics.responseBuckets.within1h +
+		metrics.responseBuckets.within6h +
+		metrics.responseBuckets.within24h +
+		metrics.responseBuckets.later +
+		metrics.responseBuckets.unanswered,
+);
+const responseRows = [
+	{ label: 'Within 1 h', count: metrics.responseBuckets.within1h, tone: 'bg-coffee' },
+	{ label: '1–6 h', count: metrics.responseBuckets.within6h, tone: 'bg-brass' },
+	{ label: '6–24 h', count: metrics.responseBuckets.within24h, tone: 'bg-slate' },
+	{ label: 'Over 24 h', count: metrics.responseBuckets.later, tone: 'bg-mist' },
+	{ label: 'Not answered', count: metrics.responseBuckets.unanswered, tone: 'bg-sand' },
+].map((row) => ({ ...row, share: row.count / responseTotal }));
+
+/** Text tone for a temperature, so the table reads at a glance. */
+function jevTone(temperature: string | undefined): string {
+	if (temperature === 'hot') return 'text-coffee';
+	if (temperature === 'warm') return 'text-stone';
+	if (temperature === 'spam') return 'text-mist';
+	return 'text-slate';
+}
 ---
 
 <AdminLayout title="Pipeline">
@@ -238,7 +327,7 @@ const kpis = [
 	</div>
 
 	<!-- KPI strip ------------------------------------------------------------ -->
-	<section aria-label="Key metrics" class="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-6">
+	<section aria-label="Key metrics" class="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
 		{kpis.map((kpi) => (
 			<div class="border border-sand/70 bg-white p-4 sm:p-5">
 				<p class="eyebrow text-stone">{kpi.label}</p>
@@ -247,6 +336,11 @@ const kpis = [
 			</div>
 		))}
 	</section>
+
+	<div class="mt-10 flex items-center gap-4">
+		<p class="eyebrow text-stone shrink-0">Flow</p>
+		<span class="h-px flex-1 bg-sand/60" aria-hidden="true"></span>
+	</div>
 
 	<!-- Chart + funnel ------------------------------------------------------- -->
 	<section class="mt-8 grid items-start gap-6 lg:grid-cols-3">
@@ -293,6 +387,185 @@ const kpis = [
 			</p>
 		</div>
 	</section>
+
+	<div class="mt-10 flex items-center gap-4">
+		<p class="eyebrow text-stone shrink-0">Scoring</p>
+		<span class="h-px flex-1 bg-sand/60" aria-hidden="true"></span>
+	</div>
+
+	<!-- Signal · JEV -------------------------------------------------------- -->
+	<section class="mt-6 grid gap-6 lg:grid-cols-3" aria-label="JEV scoring">
+		<div class="min-w-0 border border-sand/70 bg-white p-6 lg:col-span-2">
+			<div class="flex flex-wrap items-baseline justify-between gap-4">
+				<p class="eyebrow text-stone">Signal · JEV scoring</p>
+				<div class="flex flex-wrap items-center gap-3">
+					<p class="text-xs text-mist" id="crm-jev-coverage">
+						{metrics.jev.scored} of {metrics.total} scored
+					</p>
+					<button
+						type="button"
+						id="crm-jev-run"
+						class="eyebrow min-h-11 border border-sand bg-white px-3 py-2 text-slate transition-colors hover:border-brass hover:text-ink lg:min-h-0"
+					>
+						Score with JEV
+					</button>
+				</div>
+			</div>
+
+			<p class="mt-4 max-w-2xl text-sm leading-relaxed text-slate">
+				Every inquiry is scored when it lands: how real the project is, how hot it is, what kind of
+				project it is, and whether the stated budget fits the scope.
+			</p>
+
+			<div class="mt-6 grid gap-8 sm:grid-cols-2">
+				<div class="min-w-0">
+					<p class="eyebrow text-stone">Temperature</p>
+					<ul class="mt-4 space-y-4" id="crm-jev-temperatures">
+						{temperatureRows.map((row) => (
+							<li>
+								<div class="flex items-baseline justify-between gap-3">
+									<span class="eyebrow text-slate">{row.label}</span>
+									<span class="font-display text-2xl">{row.count}</span>
+								</div>
+								<div class="mt-2 h-1.5 w-full bg-sand/30">
+									<div class={`h-full ${row.color}`} style={`width:${Math.round(row.share * 100)}%`} />
+								</div>
+							</li>
+						))}
+					</ul>
+					<p class="mt-5 border-t border-sand/60 pt-4 text-xs leading-relaxed text-mist" id="crm-jev-note">
+						{metrics.jev.avgScore === null
+							? 'Nothing scored yet. Run the backfill to classify the existing pipeline.'
+							: `Avg score ${Math.round(metrics.jev.avgScore * 100)} · urgency ${Math.round((metrics.jev.avgUrgency ?? 0) * 100)}% · ${metrics.jev.unclassified} still waiting`}
+					</p>
+				</div>
+
+				<div class="min-w-0">
+					<p class="eyebrow text-stone">Hot and still open</p>
+					<ul class="mt-4 space-y-1" id="crm-jev-hot">
+						{hotLeads.length === 0 && (
+							<li class="py-5 text-sm leading-relaxed text-mist">
+								No open lead is scored as hot. The backfill will tell you when one arrives.
+							</li>
+						)}
+						{hotLeads.map((lead) => (
+							<li
+								class="flex cursor-pointer items-center justify-between gap-3 border-b border-sand/50 py-2.5 transition-colors last:border-0 hover:bg-bone focus-visible:bg-bone"
+								data-lead-row={lead.id}
+								tabindex="0"
+								aria-label={`Open ${lead.name}`}
+							>
+								<div class="min-w-0">
+									<p class="truncate text-sm text-graphite">{lead.name}</p>
+									<p class="truncate text-xs text-mist">
+										{[lead.service, lead.location].filter(Boolean).join(' · ') || '—'} · {relative(lead.createdAt)}
+									</p>
+								</div>
+								<span class="shrink-0 font-display text-xl text-coffee">
+									{Math.round((lead.jev?.score ?? 0) * 100)}
+								</span>
+							</li>
+						))}
+					</ul>
+				</div>
+			</div>
+		</div>
+
+		<div class="min-w-0 border border-sand/70 bg-white p-6">
+			<p class="eyebrow text-stone">What converts</p>
+			<p class="mt-3 text-xs leading-relaxed text-mist">Won against closed, all time.</p>
+			{topServices.length === 0 ? (
+				<p class="mt-5 text-sm leading-relaxed text-mist">
+					Nothing has closed yet, so there is no win rate to read. The moment a lead is marked Won
+					or Lost this fills itself in.
+				</p>
+			) : (
+				<ul class="mt-5 space-y-4" id="crm-conv-services">
+					{topServices.map((row) => (
+						<li>
+							<div class="flex items-baseline justify-between gap-3">
+								<span class="truncate text-sm text-graphite">{row.label}</span>
+								<span class="shrink-0 text-xs text-mist">
+									{row.won}/{row.closed} · {Math.round(row.rate * 100)}%
+								</span>
+							</div>
+							<div class="mt-2 h-1.5 w-full bg-sand/30">
+								<div class="h-full bg-ink" style={`width:${Math.round(row.rate * 100)}%`} />
+							</div>
+						</li>
+					))}
+				</ul>
+			)}
+		</div>
+	</section>
+
+	<div class="mt-10 flex items-center gap-4">
+		<p class="eyebrow text-stone shrink-0">Insight</p>
+		<span class="h-px flex-1 bg-sand/60" aria-hidden="true"></span>
+	</div>
+
+	<!-- Insights ------------------------------------------------------------ -->
+	<section class="mt-6 grid gap-6 lg:grid-cols-3" aria-label="Insights">
+		<div class="min-w-0 border border-sand/70 bg-white p-6">
+			<p class="eyebrow text-stone">Budgets that close</p>
+			{topBudgets.length === 0 ? (
+				<p class="mt-5 text-sm leading-relaxed text-mist">No closed lead yet.</p>
+			) : (
+				<ul class="mt-5 space-y-4" id="crm-conv-budgets">
+					{topBudgets.map((row) => (
+						<li class="flex items-baseline justify-between gap-3 border-b border-sand/50 pb-3 last:border-0 last:pb-0">
+							<span class="truncate text-sm text-graphite">{row.label}</span>
+							<span class="shrink-0 text-xs text-mist">
+								{row.won}/{row.closed} · {Math.round(row.rate * 100)}%
+							</span>
+						</li>
+					))}
+				</ul>
+			)}
+		</div>
+
+		<div class="min-w-0 border border-sand/70 bg-white p-6">
+			<div class="flex items-baseline justify-between gap-4">
+				<p class="eyebrow text-stone">Where leads come from</p>
+				<p class="text-xs text-mist">all time</p>
+			</div>
+			<ul class="mt-5 space-y-3" id="crm-by-source">
+				{Object.entries(metrics.bySource)
+					.slice(0, 6)
+					.map(([source, count]) => (
+						<li class="flex items-baseline justify-between gap-3">
+							<span class="truncate text-sm text-graphite">{source}</span>
+							<span class="shrink-0 font-display text-lg">{count}</span>
+						</li>
+					))}
+			</ul>
+		</div>
+
+		<div class="min-w-0 border border-sand/70 bg-white p-6">
+			<div class="flex items-baseline justify-between gap-4">
+				<p class="eyebrow text-stone">First response time</p>
+				<p class="text-xs text-mist">last 30 days</p>
+			</div>
+			<ul class="mt-5 space-y-3" id="crm-response-buckets">
+				{responseRows.map((row) => (
+					<li>
+						<div class="flex items-baseline justify-between gap-3">
+							<span class="eyebrow text-slate">{row.label}</span>
+							<span class="font-display text-lg">{row.count}</span>
+						</div>
+						<div class="mt-1.5 h-1.5 w-full bg-sand/30">
+							<div class={`h-full ${row.tone}`} style={`width:${Math.round(row.share * 100)}%`} />
+						</div>
+					</li>
+				))}
+			</ul>
+		</div>
+	</section>
+
+	<div class="mt-10 flex items-center gap-4">
+		<p class="eyebrow text-stone shrink-0">Operations</p>
+		<span class="h-px flex-1 bg-sand/60" aria-hidden="true"></span>
+	</div>
 
 	<!-- Hermes + queue ------------------------------------------------------- -->
 	<section class="mt-6 grid gap-6 lg:grid-cols-2">
@@ -371,6 +644,11 @@ const kpis = [
 			</ul>
 		</div>
 	</section>
+
+	<div class="mt-10 flex items-center gap-4">
+		<p class="eyebrow text-stone shrink-0">Pipeline</p>
+		<span class="h-px flex-1 bg-sand/60" aria-hidden="true"></span>
+	</div>
 
 	<!-- Board ---------------------------------------------------------------- -->
 	<section id="crm-board" class="mt-6" aria-label="Pipeline board">
@@ -494,12 +772,13 @@ const kpis = [
 						<th class="eyebrow px-6 py-4 text-slate">Location</th>
 						<th class="eyebrow px-6 py-4 text-slate">Status</th>
 						<th class="eyebrow px-6 py-4 text-slate">Source</th>
+						<th class="eyebrow px-6 py-4 text-slate">JEV</th>
 						<th class="eyebrow px-6 py-4 text-slate">First reply</th>
 					</tr>
 				</thead>
 				<tbody id="crm-leads" class="divide-y divide-sand/50">
 					{recent.length === 0 && (
-						<tr><td colspan="7" class="px-6 py-10 text-center text-sm text-mist">
+						<tr><td colspan="8" class="px-6 py-10 text-center text-sm text-mist">
 							No leads yet. The first inquiry will appear here as soon as it arrives.
 						</td></tr>
 					)}
@@ -530,6 +809,15 @@ const kpis = [
 							</td>
 							<td class="px-6 py-4 text-xs text-mist">
 								{lead.form === 'project_inquiry' ? 'Modal' : 'Contact page'}
+							</td>
+							<td class="whitespace-nowrap px-6 py-4 text-xs">
+								{lead.jev ? (
+									<span class={jevTone(lead.jev.temperature)}>
+										{Math.round(lead.jev.score * 100)} · {lead.jev.temperature}
+									</span>
+								) : (
+									<span class="text-mist">not scored</span>
+								)}
 							</td>
 							<td class="whitespace-nowrap px-6 py-4 text-slate">
 								{lead.firstResponseAt ? relative(lead.firstResponseAt) : '—'}
@@ -611,6 +899,16 @@ const kpis = [
 			</div>
 
 			<div class="mt-6 border-t border-sand/60 pt-5">
+				<div class="flex items-baseline justify-between gap-4">
+					<p class="eyebrow text-stone">JEV score</p>
+					<button type="button" id="crm-dialog-jev-run" class="eyebrow text-slate transition-colors hover:text-ink">
+						Reclassify
+					</button>
+				</div>
+				<dl class="mt-3 grid gap-4 sm:grid-cols-2" id="crm-dialog-jev"></dl>
+			</div>
+
+			<div class="mt-6 border-t border-sand/60 pt-5">
 				<p class="eyebrow text-stone">Message</p>
 				<p class="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-graphite" id="crm-dialog-message"></p>
 			</div>
@@ -642,6 +940,11 @@ const kpis = [
 			</div>
 		</div>
 	</dialog>
+
+	<div class="mt-10 flex items-center gap-4">
+		<p class="eyebrow text-stone shrink-0">Activity & security</p>
+		<span class="h-px flex-1 bg-sand/60" aria-hidden="true"></span>
+	</div>
 
 	<!-- Submission ledger ---------------------------------------------------- -->
 	<section class="mt-6 grid gap-6 lg:grid-cols-2">
@@ -987,6 +1290,22 @@ const kpis = [
 		return diff > 0 ? `${days}d ago` : `in ${days}d`;
 	};
 
+	/** Table cell for a lead's JEV verdict; a gap means "not scored", not "cold". */
+	const jevCell = (lead: Record<string, unknown>): string => {
+		const jev = lead.jev as { score?: number; temperature?: string } | null | undefined;
+		if (!jev || typeof jev.score !== 'number') return '<span class="text-mist">not scored</span>';
+		const temperature = String(jev.temperature ?? '');
+		const tone =
+			temperature === 'hot'
+				? 'text-coffee'
+				: temperature === 'warm'
+					? 'text-stone'
+					: temperature === 'spam'
+						? 'text-mist'
+						: 'text-slate';
+		return `<span class="${tone}">${Math.round(jev.score * 100)} · ${esc(temperature)}</span>`;
+	};
+
 	const $ = <T extends HTMLElement>(selector: string): T | null => document.querySelector<T>(selector);
 	const statusLine = $<HTMLElement>('#crm-status-line');
 	const setStatus = (message: string): void => {
@@ -1025,7 +1344,9 @@ const kpis = [
 		]);
 
 		if (metricsRes?.metrics) {
-			renderMetrics(metricsRes.metrics as Record<string, unknown>, metricsRes.storage as { backend?: string });
+			const metricsPayload = metricsRes.metrics as Record<string, unknown>;
+			renderMetrics(metricsPayload, metricsRes.storage as { backend?: string });
+			renderJev(metricsPayload);
 			if (Array.isArray(metricsRes.ledger)) {
 				renderLedger(metricsRes.ledger as Array<Record<string, unknown>>);
 			}
@@ -1044,9 +1365,32 @@ const kpis = [
 
 	function renderMetrics(metrics: Record<string, unknown>, storage?: { backend?: string }): void {
 		const answered = Number(metrics.answeredWithin24h ?? 0);
+		const jev = (metrics.jev ?? {}) as Record<string, unknown>;
+		const avgScore = jev.avgScore === null || jev.avgScore === undefined ? null : Number(jev.avgScore);
+		const avgUrgency = Number(jev.avgUrgency ?? 0);
+		const growth = metrics.growth30 === null || metrics.growth30 === undefined ? null : Number(metrics.growth30);
+		const openAge =
+			metrics.avgOpenAgeHours === null || metrics.avgOpenAgeHours === undefined
+				? '—'
+				: `${Math.round(Number(metrics.avgOpenAgeHours))}h avg age`;
 		const values: Record<string, { value: string; note: string }> = {
-			last30: { value: String(metrics.last30 ?? 0), note: `${metrics.total ?? 0} all time` },
-			awaitingReply: { value: String(metrics.awaitingReply ?? 0), note: `${metrics.open ?? 0} in pipeline` },
+			last30: {
+				value: String(metrics.last30 ?? 0),
+				note: `${metrics.total ?? 0} all time · ${metrics.today ?? 0} today`,
+			},
+			growth: {
+				value: growth === null ? '—' : `${growth >= 0 ? '+' : ''}${Math.round(growth * 100)}%`,
+				note: growth === null ? 'no previous window yet' : 'against the previous 30 days',
+			},
+			jevHot: {
+				value: String(Number(jev.hotOpen ?? 0)),
+				note: `${Number(jev.scored ?? 0)} scored · ${Number(jev.unclassified ?? 0)} waiting`,
+			},
+			jevScore: {
+				value: avgScore === null ? '—' : `${Math.round(avgScore * 100)}`,
+				note: `${Math.round(avgUrgency * 100)}% avg urgency`,
+			},
+			awaitingReply: { value: String(metrics.awaitingReply ?? 0), note: `${metrics.open ?? 0} in pipeline · ${openAge}` },
 			responseHours: {
 				value: metrics.avgFirstResponseHours === null || metrics.avgFirstResponseHours === undefined
 					? '—'
@@ -1054,7 +1398,6 @@ const kpis = [
 				note: `${Math.round(answered * 100)}% answered in 24 h`,
 			},
 			conversion: { value: `${Math.round(Number(metrics.conversionRate ?? 0) * 100)}%`, note: 'of closed leads' },
-			today: { value: String(metrics.today ?? 0), note: 'since midnight (UTC)' },
 			overdue: { value: String(metrics.tasksOverdue ?? 0), note: `${metrics.tasksOpen ?? 0} open tasks` },
 		};
 
@@ -1070,6 +1413,83 @@ const kpis = [
 
 		renderChart((metrics.daily ?? {}) as Record<string, number>);
 		renderFunnel((metrics.byStatus ?? {}) as Record<string, number>);
+	}
+
+	/** Repaints the JEV panel: coverage, temperature bars and the hot shortlist. */
+	function renderJev(metrics: Record<string, unknown>): void {
+		const jev = (metrics.jev ?? {}) as Record<string, unknown>;
+		const scoredCount = Number(jev.scored ?? 0);
+		const unclassified = Number(jev.unclassified ?? 0);
+		const total = Number(metrics.total ?? leads.length);
+		const avgScore = jev.avgScore === null || jev.avgScore === undefined ? null : Number(jev.avgScore);
+		const avgUrgency = Number(jev.avgUrgency ?? 0);
+
+		const coverage = $('#crm-jev-coverage');
+		if (coverage) coverage.textContent = `${scoredCount} of ${total} scored`;
+
+		const note = $('#crm-jev-note');
+		if (note) {
+			note.textContent =
+				avgScore === null
+					? 'Nothing scored yet. Run the backfill to classify the existing pipeline.'
+					: `Avg score ${Math.round(avgScore * 100)} · urgency ${Math.round(avgUrgency * 100)}% · ${unclassified} still waiting`;
+		}
+
+		const temperatures = $('#crm-jev-temperatures');
+		if (temperatures) {
+			const counts = (jev.byTemperature ?? {}) as Record<string, number>;
+			const rows: Array<[string, string, string]> = [
+				['hot', 'Hot', 'bg-coffee'],
+				['warm', 'Warm', 'bg-brass'],
+				['cold', 'Cold', 'bg-slate'],
+				['spam', 'Spam', 'bg-mist'],
+			];
+			const denominator = Math.max(1, scoredCount);
+			temperatures.innerHTML = rows
+				.map(([key, label, color]) => {
+					const count = Number(counts[key] ?? 0);
+					const share = Math.round((count / denominator) * 100);
+					return `<li>
+						<div class="flex items-baseline justify-between gap-3">
+							<span class="eyebrow text-slate">${label}</span>
+							<span class="font-display text-2xl">${count}</span>
+						</div>
+						<div class="mt-2 h-1.5 w-full bg-sand/30">
+							<div class="h-full ${color}" style="width:${share}%"></div>
+						</div>
+					</li>`;
+				})
+				.join('');
+		}
+
+		const hotList = $('#crm-jev-hot');
+		if (hotList) {
+			const hot = leads
+				.map((lead) => ({ lead, jev: lead.jev as { score?: number; temperature?: string } | null | undefined }))
+				.filter(
+					(entry) =>
+						entry.jev &&
+						entry.jev.temperature === 'hot' &&
+						!['fechado', 'perdido'].includes(normalize(entry.lead.status)),
+				)
+				.sort((a, b) => Number(b.jev?.score ?? 0) - Number(a.jev?.score ?? 0))
+				.slice(0, 5);
+
+			hotList.innerHTML = hot.length
+				? hot
+						.map(({ lead, jev: verdict }) => {
+							const meta = [lead.service, lead.location].filter(Boolean).join(' · ') || '—';
+							return `<li class="flex cursor-pointer items-center justify-between gap-3 border-b border-sand/50 py-2.5 transition-colors last:border-0 hover:bg-bone focus-visible:bg-bone" data-lead-row="${esc(lead.id)}" tabindex="0" aria-label="Open ${esc(String(lead.name))}">
+								<div class="min-w-0">
+									<p class="truncate text-sm text-graphite">${esc(String(lead.name))}</p>
+									<p class="truncate text-xs text-mist">${esc(meta)} · ${esc(relative(Number(lead.createdAt)))}</p>
+								</div>
+								<span class="shrink-0 font-display text-xl text-coffee">${Math.round(Number(verdict?.score ?? 0) * 100)}</span>
+							</li>`;
+						})
+						.join('')
+				: '<li class="py-5 text-sm leading-relaxed text-mist">No open lead is scored as hot. The backfill will tell you when one arrives.</li>';
+		}
 	}
 
 	function renderChart(daily: Record<string, number>): void {
@@ -1248,7 +1668,7 @@ const kpis = [
 
 		if (body) {
 			if (!visible.length) {
-				body.innerHTML = `<tr><td colspan="7" class="px-6 py-10 text-center text-sm text-mist">No leads match this filter.</td></tr>`;
+				body.innerHTML = `<tr><td colspan="8" class="px-6 py-10 text-center text-sm text-mist">No leads match this filter.</td></tr>`;
 			} else {
 				body.innerHTML = visible
 					.map((lead) => {
@@ -1266,6 +1686,7 @@ const kpis = [
 								<select data-lead-status="${esc(lead.id)}" class="border border-sand bg-white px-2 py-1.5 text-xs focus:border-brass focus:outline-none" aria-label="Status for ${esc(lead.name)}">${options(status)}</select>
 							</td>
 							<td class="px-6 py-4 text-xs text-mist">${lead.form === 'project_inquiry' ? 'Modal' : 'Contact page'}</td>
+							<td class="whitespace-nowrap px-6 py-4 text-xs">${jevCell(lead)}</td>
 							<td class="whitespace-nowrap px-6 py-4 text-slate">${esc(first)}</td>
 						</tr>`;
 					})
@@ -1453,6 +1874,38 @@ const kpis = [
 				: '<span class="text-xs text-mist">No review flags.</span>';
 		}
 
+		/* JEV — the verdict, when it was taken, and the button that re-runs it. */
+		const jevBlock = $('#crm-dialog-jev');
+		if (jevBlock) {
+			const jev = lead.jev as {
+				score?: number;
+				temperature?: string;
+				projectType?: string;
+				budgetFit?: string;
+				urgency?: number;
+				sentiment?: string;
+				at?: number;
+			} | null;
+			const rows: Array<[string, string]> =
+				jev && typeof jev.score === 'number'
+					? [
+							['Score', `${Math.round(jev.score * 100)} / 100`],
+							['Temperature', String(jev.temperature ?? '—')],
+							['Project', String(jev.projectType ?? '—')],
+							['Budget fit', String(jev.budgetFit ?? '—')],
+							['Urgency', `${Math.round((jev.urgency ?? 0) * 100)}%`],
+							['Sentiment', String(jev.sentiment ?? '—')],
+							['Scored', jev.at ? relative(Number(jev.at)) : '—'],
+						]
+					: [['Score', 'Not scored yet — run Reclassify']];
+			jevBlock.innerHTML = rows
+				.map(
+					([label, value]) =>
+						`<div><dt class="eyebrow text-stone">${esc(label)}</dt><dd class="mt-1.5 text-sm text-graphite">${esc(value)}</dd></div>`,
+				)
+				.join('');
+		}
+
 		const status = $<HTMLSelectElement>('#crm-dialog-status');
 		if (status) status.value = String(lead.status ?? 'novo');
 
@@ -1548,6 +2001,60 @@ const kpis = [
 			await refresh();
 		} else {
 			setStatus('Reminders could not be sent (check CRON_SECRET).');
+		}
+	});
+
+	/* JEV ----------------------------------------------------------------- */
+
+	/** POST helper: the two JEV actions share the same envelope. */
+	async function askJev(body: Record<string, unknown>): Promise<Record<string, unknown> | null> {
+		return getJson('/api/crm/jev/', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(body),
+		});
+	}
+
+	const jevRunButton = $<HTMLButtonElement>('#crm-jev-run');
+	jevRunButton?.addEventListener('click', async () => {
+		const label = jevRunButton.textContent ?? '';
+		jevRunButton.disabled = true;
+		jevRunButton.textContent = 'Scoring…';
+		setStatus('Asking JEV to score the pipeline…');
+
+		const result = await askJev({ action: 'backfill' });
+
+		jevRunButton.disabled = false;
+		jevRunButton.textContent = label;
+		if (result?.ok) {
+			setStatus(
+				`JEV: ${Number(result.scored ?? 0)} scored, ${Number(result.failed ?? 0)} failed, ${Number(result.remaining ?? 0)} still waiting.`,
+			);
+		} else if (result?.error === 'jev_not_configured') {
+			setStatus('JEV is not configured. Set TYPESAFE_API_KEY in the project environment.');
+		} else {
+			setStatus('JEV could not be reached. The pipeline is unchanged.');
+		}
+		await refresh();
+	});
+
+	const jevReclassifyButton = $<HTMLButtonElement>('#crm-dialog-jev-run');
+	jevReclassifyButton?.addEventListener('click', async () => {
+		if (!currentLeadId) return;
+		jevReclassifyButton.disabled = true;
+		jevReclassifyButton.textContent = 'Scoring…';
+		setStatus('Rescoring this lead…');
+
+		const result = await askJev({ action: 'classify', id: currentLeadId });
+
+		jevReclassifyButton.disabled = false;
+		jevReclassifyButton.textContent = 'Reclassify';
+		if (result?.ok) {
+			setStatus('JEV rescored this lead.');
+			await openLead(currentLeadId);
+			await refresh();
+		} else {
+			setStatus('JEV could not be reached for this lead.');
 		}
 	});
 

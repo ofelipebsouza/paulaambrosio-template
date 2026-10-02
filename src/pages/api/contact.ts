@@ -32,6 +32,7 @@ import { checkRateLimit, hashIdentifier } from '../../lib/rate-limit';
 import { buildLead, newId, type CrmLead } from '../../lib/crm/schema';
 import { bumpLedger, findBlock, countBlockHit, findLeadByEmail, insertLead, pushEvent, saveLead } from '../../lib/crm/store';
 import { emitJev, leadData, scheduleFollowUps } from '../../lib/crm/automation';
+import { scoreNewLead } from '../../lib/crm/jev';
 import { buildEnrichment } from '../../lib/crm/enrichment';
 
 /** On-demand route: the rest of the site stays statically generated. */
@@ -356,6 +357,10 @@ export const ALL: APIRoute = async ({ request }) => {
 			});
 		}
 		await scheduleFollowUps(crmLead, crmLead.createdAt);
+		// Score it before the webhook fires, so the payload carries the verdict.
+		// Best effort with a 4 s budget: a slow classifier never delays the
+		// visitor's confirmation and never costs us the lead.
+		await scoreNewLead(crmLead);
 		await emitJev('lead.created', leadData(crmLead), crmLead.createdAt);
 	} catch (error) {
 		log('warn', 'crm_store_failed', {
