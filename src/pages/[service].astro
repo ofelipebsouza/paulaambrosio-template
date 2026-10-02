@@ -1,11 +1,14 @@
 ---
 import { getCollection, render } from 'astro:content';
 import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
 import Layout from '../layouts/Layout.astro';
 import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
 import CtaBanner from '../components/ui/CtaBanner.astro';
 import FAQ from '../components/ui/FAQ.astro';
 import ProjectGrid from '../components/projects/FeaturedProjectGrid.astro';
+import ProjectLightbox from '../components/projects/ProjectLightbox.astro';
+import SpaceGallery from '../components/spaces/SpaceGallery.astro';
 import { webPageSchema, serviceSchema, faqSchema, schemaScript } from '../lib/seo';
 import { brandedOg } from '../lib/og';
 import type { BreadcrumbEntry } from '../lib/seo';
@@ -29,6 +32,11 @@ const allProjects = (await getCollection('projects')).filter((p) => !p.data.draf
 const featured = allProjects
 	.filter((p) => p.data.relatedServices?.includes(service.id))
 	.slice(0, 3);
+
+// Optional curated gallery: photos mixed from several projects, each credited.
+const gallery = service.data.gallery ?? [];
+const full = gallery.map((item: { image: ImageMetadata }) => item.image.src);
+const projectTitles = Object.fromEntries(allProjects.map((p) => [p.id, p.data.title]));
 
 const faqs = service.data.faqs ?? [];
 const path = `/${service.id}`;
@@ -97,6 +105,18 @@ const ctas = service.data.ctas;
 				<Content />
 			</div>
 		</section>
+
+		{gallery.length > 0 && (
+			<SpaceGallery
+				items={gallery}
+				projectTitles={projectTitles}
+				label={`${service.data.title} gallery`}
+				eyebrow="Selected work"
+				heading="Rooms delivered by this service"
+			/>
+		)}
+
+		{gallery.length > 0 && <ProjectLightbox title={service.data.title} full={full} />}
 
 		{featured.length > 0 && (
 			<section class="bg-linen py-20 lg:py-24">

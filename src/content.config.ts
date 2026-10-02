@@ -103,6 +103,17 @@ const servicesCollection = defineCollection({
 			heroSubheadline: z.string().optional(),
 			featuredImage: image(),
 			imageAlt: z.string().optional(),
+			// Editorial mix: photos curated by hand from several projects' galleries.
+			// `project` is the source project id and renders as a credit link back to it.
+			gallery: z
+				.array(
+					z.object({
+						image: image(),
+						alt: z.string().min(1),
+						project: z.string().optional(),
+					}),
+				)
+				.default([]),
 			faqs: faqSchema.default([]),
 			ctas: ctaSchema,
 			...seoFields,

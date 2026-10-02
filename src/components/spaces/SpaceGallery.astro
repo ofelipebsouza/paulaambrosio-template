@@ -13,13 +13,30 @@ interface Props {
 	items: GalleryItem[];
 	/** Project id → display title, for the credit captions. */
 	projectTitles: Record<string, string>;
+	/** Section aria-label — defaults to the spaces wording. */
+	label?: string;
+	/** Optional heading rendered above the columns. */
+	eyebrow?: string;
+	heading?: string;
 }
 
-const { items, projectTitles } = Astro.props;
+const {
+	items,
+	projectTitles,
+	label = 'Space gallery',
+	eyebrow,
+	heading,
+} = Astro.props;
 const full = items.map((item) => item.image.src);
 ---
 
-<section class="container-editorial pb-20" aria-label="Space gallery">
+<section class="container-editorial pb-20" aria-label={label}>
+	{(eyebrow || heading) && (
+		<div class="mb-10">
+			{eyebrow && <p class="eyebrow text-stone">{eyebrow}</p>}
+			{heading && <h2 class="font-display mt-4 text-4xl">{heading}</h2>}
+		</div>
+	)}
 	<div class="columns-1 gap-6 sm:columns-2" style="column-fill: balance;">
 		{items.map((item, i) => (
 			<figure class="mb-8 break-inside-avoid">

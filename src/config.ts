@@ -69,6 +69,7 @@ export const NAV_LEFT = [
 		children: [
 			{ label: 'All Services', href: '/services/' },
 			{ label: 'Design Consultation', href: serviceUrl('design-consultation-miami') },
+			{ label: 'Design Express', href: serviceUrl('design-express-miami') },
 			{ label: 'Turnkey Interior Design', href: serviceUrl('turnkey-interior-design-miami') },
 			{ label: 'Luxury Residential Design', href: serviceUrl('luxury-residential-interior-design-miami') },
 			{ label: 'Hospitality Interior Design', href: serviceUrl('hospitality-interior-design-miami') },
