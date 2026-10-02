@@ -14,13 +14,13 @@ const breadcrumbs: BreadcrumbEntry[] = [{ name: 'Spaces', url: '/spaces' }];
 
 <Layout
 	title="Spaces | Room-by-Room Interior Design | Paula Ambrosio Interiors"
-	description="Explore our interiors room by room — closets, living rooms, home theaters, game rooms and laundry rooms — an editorial mix of photography curated from Paula Ambrosio Interiors projects across Miami and South Florida."
+	description="Explore our interiors room by room: closets, living rooms, home theaters, game rooms and laundry rooms, photographed in completed Paula Ambrosio Interiors projects across Miami and South Florida."
 	canonical="/spaces"
 >
 	<Fragment slot="head" set:html={schemaScript(webPageSchema({
 		path: '/spaces',
 		title: 'Spaces | Paula Ambrosio Interiors',
-		description: 'Room-by-room interior design inspiration curated from our projects across Miami and South Florida.',
+		description: 'Room-by-room interior design inspiration from our projects across Miami and South Florida.',
 		breadcrumbs,
 	}))} />
 
@@ -29,7 +29,7 @@ const breadcrumbs: BreadcrumbEntry[] = [{ name: 'Spaces', url: '/spaces' }];
 		<p class="eyebrow mt-10 text-stone">By Space</p>
 		<h1 class="font-display mt-4 max-w-2xl text-display">One room at a time.</h1>
 		<p class="mt-6 max-w-xl text-lede text-slate">
-			An editorial mix of rooms drawn from across our portfolio — each photograph belongs to a
+			Rooms drawn from across our portfolio. Each photograph belongs to a
 			completed project, credited and linked below. Browse by the space you are dreaming about.
 		</p>
 	</section>
