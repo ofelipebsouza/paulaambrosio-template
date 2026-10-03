@@ -85,16 +85,16 @@ function questions(): Record<string, unknown> {
 		score: {
 			type: 'noul',
 			instructions:
-				'Probabilidade de ser um projeto real de design de interiores de luxo, com orcamento que comporta o escopo. 1.0 = projeto confirmado, 0.0 = nao e projeto de cliente',
+				'Probabilidade de a mensagem ser um pedido genuino de trabalho de design de interiores de um cliente potencial. Falta de informacao nao penaliza: orcamento, prazo, servico ou localizacao ausentes valem como neutros, nao negativos. Nota baixa so quando nao e cliente (fornecedor, vendedor, pedido de emprego, spam, teste, mensagem sem pedido de servico). 1.0 = cliente real querendo contratar, 0.0 = nao e cliente',
 		},
 		temperature: {
 			type: 'choice',
 			instructions: 'Quente do esse lead',
 			criteria: {
-				hot: 'Pedindo proposta ou consulta, tem prazo e orcamento',
-				warm: 'Interessado, mas ainda pesquisando ou comparando',
-				cold: 'Duvida geral, sem intencao de contratar agora',
-				spam: 'Vendedor, bot, fornecedor ou mensagem sem valor comercial',
+				hot: 'Cliente pedindo proposta, consulta ou para falar ja, quer contratar ou comecar',
+				warm: 'Cliente real, mas ainda pesquisando ou sem pressa',
+				cold: 'Duvida geral de cliente, sem intencao de contratar agora',
+				spam: 'Vendedor, fornecedor, bot, pedido de emprego ou mensagem sem valor comercial',
 			},
 		},
 		project_type: {
