@@ -1,7 +1,11 @@
 import type { TrackingConfig } from './core';
-/** Empty/disabled until IDs AND a reviewed published GTM version are approved. */
-export const GOOGLE_TRACKING: TrackingConfig = {
- enabled: import.meta.env.PUBLIC_GOOGLE_TRACKING_ENABLED === 'true',
- containerId: String(import.meta.env.PUBLIC_GTM_CONTAINER_ID ?? '').trim(),
- reviewedVersion: String(import.meta.env.PUBLIC_GTM_REVIEWED_VERSION ?? '').trim(),
-};
+/** Reviewed bridge-only baseline. This reference does not pin the remote GTM version. */
+export function trackingConfig(enabled: string | undefined): TrackingConfig {
+ return {
+  enabled: enabled === undefined || enabled === 'true',
+  containerId: 'GTM-T36P2G6X',
+  reviewedVersion: '9',
+ };
+}
+/** Set PUBLIC_GOOGLE_TRACKING_ENABLED=false and rebuild to disable the loader. */
+export const GOOGLE_TRACKING = trackingConfig(import.meta.env.PUBLIC_GOOGLE_TRACKING_ENABLED);

@@ -14,6 +14,8 @@ function runtime() {
    if (document.getElementById('paula-google-container')) return;
    const script = document.createElement('script');
    script.id = 'paula-google-container'; script.async = true;
+   // Never include page paths, queries or fragments in the cross-origin loader referrer.
+   script.referrerPolicy = 'origin';
    script.src = `https://www.googletagmanager.com/gtm.js?id=${encodeURIComponent(id)}`;
    w.__paulaGtmReady = false;
    script.onload = () => { w.__paulaGtmReady = true; };

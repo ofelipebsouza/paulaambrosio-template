@@ -1,27 +1,22 @@
-# Google tracking preparation (disabled, not deployed)
+# Consent-gated Google loader
 
-This branch stacks on the independently tested CRM fix. It does not change the contact endpoint, persistence, response bodies, lead classifications, or anti-abuse behavior. No real container ID or environment value is enabled here.
+The release loads GTM-T36P2G6X only after an optional consent grant on www.paulaambrosio.com. Reviewed baseline version 9 contains only the active consent bridge; all eight measurement tags are paused. This is a staged loader release, not a claim that GA4/Ads measurement or accepted-lead conversions are active.
 
-## Release gates
+## Release and rollback controls
 
-1. Audit the published GTM version against the consent contract below. Remarketing must remain paused, automatic user-provided-data collection must remain disabled, and legacy Thanks/WhatsApp/base/linker behavior must be reviewed before activation. No container ID is configured by default.
-2. Remove/disable remarketing and obsolete Thanks triggers in the reviewed GTM release. Do not enable enhanced conversions, automatic user-provided-data collection, form listeners, email/phone extraction, Google Signals, or personalized ads.
-3. Verify GTM, GA4 property/web stream, Ads account/action IDs and Search Console ownership. Placeholders below are not guessed IDs.
-4. Review consent/privacy copy and consent-template configuration. This is technical preparation, not a legal-compliance determination.
-5. Release only after configuration and runtime verification pass. DNS, credential provisioning and GTM publishing are separate deployment operations.
-
-Configuration placeholders (all absent/disabled by default):
-- PUBLIC_GOOGLE_TRACKING_ENABLED=false
-- PUBLIC_GTM_CONTAINER_ID=<verified, audited GTM container>
-- PUBLIC_GTM_REVIEWED_VERSION=<positive reviewed published version number>
-- GA4 measurement ID: G-SQ8YH86GL9; stream 16056096020 (enhanced measurement off). Configure inside reviewed GTM only, never a separate gtag loader.
-- Google Ads form label: <new accepted-form action, not available yet>
-
-The reviewed-version value is an audit reference, **not version pinning**: a normal GTM loader serves the currently published version. Any future container publication needs the same review controls. Code also allows only the canonical production hosts; local/preview/admin/API locations remain disabled. There is no noscript iframe or second standalone gtag/GA4 loader.
+- The reviewed public container ID and baseline version are in src/lib/google-tracking/config.ts. They are not credentials.
+- PUBLIC_GOOGLE_TRACKING_ENABLED=false disables the loader and consent markup on the next build/deployment. Missing means this reviewed release is enabled; values other than the exact string true also disable it.
+- The former PUBLIC_GTM_CONTAINER_ID and PUBLIC_GTM_REVIEWED_VERSION placeholders are no longer used; container changes require a code review.
+- The reviewed-version value is an audit reference, **not version pinning**. Normal GTM serves the currently published version. Review every remote publication before it becomes live.
+- Roll back by disabling the loader and rebuilding, or by restoring reviewed bridge-only GTM version 9. Do not restore older versions that enable measurement tags. These rollback controls affect subsequent loads; already-open pages need reload/navigation to unload existing code.
+- Preview/local/apex/private routes remain runtime-disabled; the apex redirects to www. The consent markup is hidden until the canonical-host runtime gate passes. There is no noscript iframe or separate gtag loader.
+- Official Tag Assistant may test an unpublished GA4-only workspace on the staged canonical site. Keep Ads base, linker, WhatsApp, Thanks and remarketing paused; no live inquiries or Ads conversions during QA.
+- Before enabling any measurement tags, verify actual consent ordering, payloads, withdrawal, lack of duplicate tags and lack of form-field collection. Update the public privacy notice when the paused setup becomes active. Enhanced conversions, automatic user-provided-data collection, Google Signals and personalized ads remain off.
+- GA4 measurement ID G-SQ8YH86GL9, stream 16056096020; enhanced measurement off. Configure inside GTM only. No accepted-form action has been implemented.
 
 ## Consent contract
 
-Basic, opt-in loading: no GTM request before an explicit analytics and/or advertising measurement grant. Distinct unchecked choices, equally available rejection, persistent Privacy choices control. Store only a versioned preference and timestamp for 90 days; expiry/invalid storage means denied. Advertising personalization always remains denied. The 90-day interval and banner copy require policy review before release.
+Basic, opt-in loading: no GTM request before an explicit analytics and/or advertising measurement grant. Distinct unchecked choices, equally available rejection, persistent Privacy choices control. Store only a versioned preference and timestamp; consent is valid for 90 days. Expired/invalid preferences are treated as denied, not automatically erased from storage. Advertising personalization always remains denied. This describes implemented controls, not a legal-compliance determination.
 
 The first dataLayer message is `paula_consent_update`, carrying only:
 - paula_analytics_consent: granted/denied
@@ -74,6 +69,6 @@ Official references:
 - https://developers.google.com/data-manager/api/devguides/events/google-ads/online/send-events
 - https://developers.google.com/data-manager/api/devguides/quickstart/set-up-access
 
-## Search Console verification preparation
+## Search Console verification
 
-The prepared verification scope is the exact URL prefix https://www.paulaambrosio.com/. The public google-site-verification meta tag is included in the shared public-page head. This makes no DNS change and loads no script. Ownership is not verified until a deployment exposes it on the live homepage and Search Console verification succeeds.
+The verification scope is the exact URL prefix https://www.paulaambrosio.com/. The public google-site-verification meta tag is included in the shared public-page head. This makes no DNS change and loads no script. The meta must remain on the live homepage to maintain this verification method.
