@@ -37,12 +37,14 @@ export async function scheduleFollowUps(lead: CrmLead, now = Date.now()): Promis
 	const tasks: CrmTask[] = [
 		makeTask({
 			lead,
+			kind: 'first_contact',
 			title: `First contact — reply to ${lead.name}`,
 			dueAt: now + firstHours * 3_600_000,
 			now,
 		}),
 		makeTask({
 			lead,
+			kind: 'no_reply_reminder',
 			title: `Second attempt — ${lead.name} has not heard back`,
 			dueAt: now + secondHours * 3_600_000,
 			now,
@@ -53,13 +55,14 @@ export async function scheduleFollowUps(lead: CrmLead, now = Date.now()): Promis
 	return tasks;
 }
 
-function makeTask({ lead, title, dueAt, now }: { lead: CrmLead; title: string; dueAt: number; now: number }): CrmTask {
+function makeTask({ lead, kind, title, dueAt, now }: { lead: CrmLead; kind: CrmTask['kind']; title: string; dueAt: number; now: number }): CrmTask {
 	return {
 		id: newId(),
 		leadId: lead.id,
 		leadName: lead.name,
 		leadEmail: lead.email,
 		title,
+		kind,
 		dueAt,
 		state: 'open',
 		createdAt: now,

@@ -47,11 +47,8 @@ export function applyLeadPatch(lead: CrmLead, body: Record<string, unknown>, now
 			lead.status = next;
 			result.changed.push('status');
 			result.events.push({ type: 'status', detail: `Moved from ${result.previousStatus} to ${next}` });
-			// Any deliberate move means the studio has engaged with the lead.
-			if (!lead.firstResponseAt && lead.status !== 'novo') {
-				lead.firstResponseAt = now;
-				result.responded = true;
-			}
+			// A pipeline move is not evidence that a reply was sent.
+			// Only the explicit responded action starts the response clock.
 		}
 	}
 

@@ -21,6 +21,7 @@ import { emitJev, leadData } from '../../../lib/crm/automation';
 import { requireHermes, verifyBodySignature } from '../../../lib/crm/guard';
 import { crmJson, clientIp, json, log } from '../../../lib/crm/http';
 import { applyLeadPatch } from '../../../lib/crm/lead-actions';
+import { completeReplyTasks } from '../../../lib/crm/task-actions';
 import { isLeadStatus, normalizeStatus } from '../../../lib/crm/schema';
 import {
 	getLead,
@@ -129,11 +130,9 @@ export const ALL: APIRoute = async ({ request }) => {
 
 	// A first reply closes the follow-up queue, whoever sent it.
 	let closedTasks = 0;
-	if (lead.firstResponseAt) {
-		const tasks = (await listTasks()).filter((task) => task.leadId === lead.id && task.state === 'open');
+	if (result.responded) {
+		const tasks = completeReplyTasks(await listTasks(), lead.id, now);
 		for (const task of tasks) {
-			task.state = 'done';
-			task.completedAt = now;
 			closedTasks += 1;
 			await saveTask(task);
 		}
@@ -149,7 +148,8 @@ export const ALL: APIRoute = async ({ request }) => {
 
 	if (result.changed.includes('status')) {
 		await emitJev('lead.status_changed', leadData(lead, { previousStatus, by: 'hermes' }), now);
-	} else if (result.changed.includes('firstResponseAt')) {
+	}
+	if (result.responded) {
 		await emitJev('lead.responded', leadData(lead, { by: 'hermes' }), now);
 	}
 

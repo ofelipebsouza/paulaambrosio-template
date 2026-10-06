@@ -13,6 +13,7 @@ import { emitJev, leadData } from '../../../../lib/crm/automation';
 import { requireCrm } from '../../../../lib/crm/guard';
 import { crmJson, leadRef, log } from '../../../../lib/crm/http';
 import { applyLeadPatch } from '../../../../lib/crm/lead-actions';
+import { completeReplyTasks } from '../../../../lib/crm/task-actions';
 import { isLeadStatus } from '../../../../lib/crm/schema';
 import { listEvents, listTasks, getLead, pushEvent, saveLead, saveTask } from '../../../../lib/crm/store';
 
@@ -68,11 +69,9 @@ export const ALL: APIRoute = async ({ request, params }) => {
 
 	/* Follow-up tasks ----------------------------------------------------- */
 	let closedTasks = 0;
-	if (lead.firstResponseAt) {
-		const tasks = (await listTasks()).filter((task) => task.leadId === lead.id && task.state === 'open');
+	if (result.responded) {
+		const tasks = completeReplyTasks(await listTasks(), lead.id, now);
 		for (const task of tasks) {
-			task.state = 'done';
-			task.completedAt = now;
 			closedTasks += 1;
 			await saveTask(task);
 		}
@@ -89,7 +88,8 @@ export const ALL: APIRoute = async ({ request, params }) => {
 	/* JEV ----------------------------------------------------------------- */
 	if (result.changed.includes('status')) {
 		await emitJev('lead.status_changed', leadData(lead, { previousStatus: result.previousStatus }), now);
-	} else if (result.changed.includes('firstResponseAt')) {
+	}
+	if (result.responded) {
 		await emitJev('lead.responded', leadData(lead), now);
 	}
 

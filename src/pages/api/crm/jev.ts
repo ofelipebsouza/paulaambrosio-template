@@ -10,10 +10,10 @@
  * like every `/api/crm` route it never echoes a message body.
  */
 import type { APIRoute } from 'astro';
-import { classifyLead, jevConfigured } from '../../../lib/crm/jev';
+import { scoreLead, jevConfigured } from '../../../lib/crm/jev';
 import { requireCrm } from '../../../lib/crm/guard';
 import { crmJson, log } from '../../../lib/crm/http';
-import { allLeads, getLead, pushEvent, saveLead, storeStatus } from '../../../lib/crm/store';
+import { allLeads, getLead, storeStatus } from '../../../lib/crm/store';
 
 export const prerender = false;
 
@@ -70,19 +70,9 @@ export const ALL: APIRoute = async ({ request }) => {
 		const lead = await getLead(id);
 		if (!lead) return crmJson({ ok: false, error: 'not_found' }, 404);
 
-		const jev = await classifyLead(lead, { timeoutMs: BACKFILL_TIMEOUT_MS, now });
-		if (!jev) return crmJson({ ok: false, error: 'jev_unavailable' }, 502);
-
-		lead.jev = jev;
-		lead.updatedAt = now;
-		await saveLead(lead);
-		await pushEvent(lead.id, {
-			ts: now,
-			type: 'note',
-			detail: `JEV ${jev.temperature} · score ${Math.round(jev.score * 100)} · ${jev.projectType} · ${jev.budgetFit} budget`,
-			actor: 'jev',
-		});
-		return crmJson({ ok: true, id, jev });
+		const scored = await scoreLead(lead, { timeoutMs: BACKFILL_TIMEOUT_MS, now, force: true });
+		if (!scored) return crmJson({ ok: false, error: 'jev_unavailable' }, 502);
+		return crmJson({ ok: true, id, jev: lead.jev });
 	}
 
 	/* Everything that has no score yet. ------------------------------------ */
@@ -99,20 +89,11 @@ export const ALL: APIRoute = async ({ request }) => {
 		let scored = 0;
 		let failed = 0;
 		for (const lead of pending) {
-			const jev = await classifyLead(lead, { timeoutMs: BACKFILL_TIMEOUT_MS, now: Date.now() });
-			if (!jev) {
+			const classified = await scoreLead(lead, { timeoutMs: BACKFILL_TIMEOUT_MS, now: Date.now(), force });
+			if (!classified) {
 				failed += 1;
 				continue;
 			}
-			lead.jev = jev;
-			lead.updatedAt = Date.now();
-			await saveLead(lead);
-			await pushEvent(lead.id, {
-				ts: lead.updatedAt,
-				type: 'note',
-				detail: `JEV ${jev.temperature} · score ${Math.round(jev.score * 100)} · ${jev.projectType} · ${jev.budgetFit} budget`,
-				actor: 'jev',
-			});
 			scored += 1;
 		}
 

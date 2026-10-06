@@ -1,3 +1,5 @@
+import { redisHashCounts, redisPipelineResults } from '../redis-response';
+
 /**
  * Internal analytics store backed by Upstash Redis (with memory fallback).
  *
@@ -27,8 +29,7 @@ async function redis(cmds: Cmd[]): Promise<unknown[] | null> {
 			cache: 'no-store',
 		});
 		if (!response.ok) return null;
-		const rows = (await response.json()) as Array<{ result?: unknown; error?: string }>;
-		return rows.map((r) => r?.result ?? null);
+		return redisPipelineResults(await response.json(), cmds.length);
 	} catch {
 		return null;
 	}
@@ -145,6 +146,10 @@ export async function getAnalyticsSummary(days = 30): Promise<AnalyticsSummary> 
 	];
 
 	const res = await redis(cmds);
+	// An unavailable configured store is unknown, not a genuine zero.
+	if (!res && (import.meta.env.UPSTASH_REDIS_REST_URL || import.meta.env.UPSTASH_REDIS_REST_TOKEN)) {
+		throw new Error('analytics_unavailable');
+	}
 
 	let totalViews = 0;
 	let viewsToday = 0;
@@ -163,10 +168,7 @@ export async function getAnalyticsSummary(days = 30): Promise<AnalyticsSummary> 
 		}
 
 		// top events
-		const rawEvents = (res[2] && typeof res[2] === 'object' ? res[2] : {}) as Record<string, string>;
-		for (const [k, v] of Object.entries(rawEvents)) {
-			topEvents[k] = Number.parseInt(v, 10) || 0;
-		}
+		topEvents = redisHashCounts(res[2]);
 
 		// referrers
 		const rawRefs = (Array.isArray(res[3]) ? res[3] : []) as string[];

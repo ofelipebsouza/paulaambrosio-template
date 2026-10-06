@@ -284,6 +284,8 @@ export interface CrmTask {
 	leadName: string;
 	leadEmail: string;
 	title: string;
+	/** Only automatic unanswered-inquiry tasks close when a reply is recorded. */
+	kind?: 'first_contact' | 'no_reply_reminder' | 'manual';
 	/** Epoch ms — the moment the task becomes overdue. */
 	dueAt: number;
 	state: TaskState;

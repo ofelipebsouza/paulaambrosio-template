@@ -1,3 +1,4 @@
+import { trackGoogleEvent } from '../google-tracking/browser';
 import { track as vercelTrack } from '@vercel/analytics';
 import type { AnalyticsEvent, AnalyticsMetadata } from './events';
 
@@ -23,6 +24,8 @@ function sanitizeMetadata(metadata: AnalyticsMetadata = {}): AnalyticsMetadata {
 }
 
 export function trackEvent(event: AnalyticsEvent, metadata: AnalyticsMetadata = {}): void {
+	// Google receives only an allowlisted event name and public catalog context, never this metadata.
+	trackGoogleEvent(event);
 	try {
 		vercelTrack(event, sanitizeMetadata(metadata));
 	} catch {
