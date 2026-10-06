@@ -213,3 +213,10 @@ test('failed classification preserves score/flags and nonforced backfill skips s
  assert.deepEqual((await getLead(item.id))?.flags,['repeat_submitter','jev_spam']);
  assert.equal((await getLead(item.id))?.status,'novo');
 });
+
+test('dashboard guidance explains explicit reply recording, not an automatic status-move reply', async () => {
+ const {readFile} = await import('node:fs/promises');
+ const page = await readFile('src/pages/admin/index.astro', 'utf8');
+ assert.ok(page.includes('Use <em>Mark as answered</em> to record its first reply'));
+ assert.ok(!page.includes('Moving a lead out of <em>New</em> records its first response'));
+});
