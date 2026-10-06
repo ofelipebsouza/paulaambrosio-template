@@ -19,7 +19,8 @@
     "smtp:check": "node scripts/smtp-check.mjs",
     "dns:check": "node scripts/dns-check.mjs",
     "crm:test": "node scripts/crm-test.mjs",
-    "tracking:test": "node scripts/google-tracking-test.mjs"
+    "tracking:test": "node scripts/google-tracking-test.mjs",
+    "sitemap:test": "node --test scripts/sitemap-test.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^8.0.1",

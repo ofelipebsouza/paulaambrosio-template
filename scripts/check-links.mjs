@@ -18,6 +18,7 @@
  *  - pages without JSON-LD structured data;
  *  - pages that are not listed in the XML sitemap.
  */
+import { isPublicSitemapUrl, isNoindexSitemapEntry } from './sitemap-policy.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -61,11 +62,13 @@ const routes = new Set(htmlFiles.map(routeOf));
 /** Canonical origin, taken from the generated XML sitemap. */
 const sitemapPath = path.join(DIST, 'sitemap-0.xml');
 const sitemapLocs = new Set();
+const sitemapIssues = [];
 let sitemapOrigin = null;
 if (fs.existsSync(sitemapPath)) {
 	const xml = fs.readFileSync(sitemapPath, 'utf8');
 	for (const match of xml.matchAll(/<loc>([^<]+)<\/loc>/g)) {
 		sitemapLocs.add(match[1]);
+		if (!isPublicSitemapUrl(match[1])) sitemapIssues.push(`NON-PUBLIC SITEMAP URL  ${match[1]}`);
 		sitemapOrigin ??= new URL(match[1]).origin;
 	}
 }
@@ -153,7 +156,12 @@ for (const file of htmlFiles) {
 	}
 
 	if (!/<script type="application\/ld\+json">/.test(html)) noSchema.push(route);
-	if (sitemapLocs.size && canonical && !sitemapLocs.has(canonical)) notInSitemap.push(route);
+	const noindex = [...html.matchAll(/<meta\b[^>]*>/gi)].some(([tag]) =>
+		/\bname=["']robots["']/i.test(tag) && /\bcontent=["'][^"']*\bnoindex\b/i.test(tag));
+	if (sitemapOrigin && isNoindexSitemapEntry(`${sitemapOrigin}${route}`, noindex, sitemapLocs)) {
+		sitemapIssues.push(`NOINDEX SITEMAP URL  ${sitemapOrigin}${route}`);
+	}
+	if (sitemapLocs.size && canonical && !noindex && !sitemapLocs.has(canonical)) notInSitemap.push(route);
 }
 
 // 6. Every /api/ form action must be routed to a server function in the Vercel
@@ -205,6 +213,7 @@ console.log(`Canonical origin: ${sitemapOrigin ?? 'unknown'}`);
 console.log(`Sitemap URLs: ${sitemapLocs.size}`);
 
 errors.push(
+	...sitemapIssues,
 	...insecureForms.map((i) => `UNSAFE FORM ACTION  ${i}`),
 	...missingApiRoutes.map((i) => `MISSING API ROUTE  ${i}`),
 	...insecureRefs.map((i) => `NON-HTTPS REFERENCE  ${i}`),
@@ -214,6 +223,7 @@ errors.push(
 	...brokenLinks.map((i) => `BROKEN LINK  ${i}`),
 );
 
+report('Non-public or noindex sitemap URLs', sitemapIssues);
 report('Unsafe form actions', insecureForms);
 report('API routes referenced by forms but not built', missingApiRoutes);
 report('Non-https references', insecureRefs);
