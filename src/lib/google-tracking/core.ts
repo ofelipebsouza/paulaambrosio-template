@@ -11,7 +11,7 @@ export interface TrackingPort {
 }
 export const CONSENT_KEY = 'paula_optional_consent_v1';
 export const CONSENT_MAX_AGE = 90 * 86_400_000;
-const HOSTS = new Set(['www.paulaambrosio.com', 'paulaambrosio.com']);
+const HOSTS = new Set(['www.paulaambrosio.com']);
 const SERVICES: Record<string, string> = {
  '/design-consultation-miami/': 'design_consultation',
  '/design-express-miami/': 'design_express',

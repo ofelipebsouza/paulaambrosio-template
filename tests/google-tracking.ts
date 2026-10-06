@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { trackingConfig } from '../src/lib/google-tracking/config';
 import { CONSENT_MAX_AGE, configReady, createTracking, pageContext, parseConsent } from '../src/lib/google-tracking/core';
 const config = { enabled: true, containerId: 'GTM-TEST123', reviewedVersion: '1' };
 function fixture(overrides = {}) {
@@ -17,7 +18,7 @@ test('configuration disabled, placeholder, unaudited, preview and private routes
  const x=fixture(); for(const path of ['/admin/','/api/contact/','/style-guides-and-branding/']) {
   x.location.path=path;x.engine.consent({analytics:true,advertising:true});assert.equal(x.loads.length,0);
  }
- assert.equal(configReady(config,'preview.vercel.app'),false);assert.equal(configReady(config,'localhost'),false);
+ assert.equal(configReady(config,'preview.vercel.app'),false);assert.equal(configReady(config,'localhost'),false);assert.equal(configReady(config,'paulaambrosio.com'),false);
 });
 test('absent or rejected consent: no container and no preconsent replay',()=>{
  const x=fixture();assert.equal(x.engine.track('form_submit'),false);assert.equal(x.events.length,0);
@@ -94,7 +95,8 @@ function resetBrowser() {
 test('browser boundary loads once after saved consent and never installs standalone gtag',()=>{
  resetBrowser();browser.restoreConsent();assert.equal(injected.length,0);
  assert.equal(browser.saveConsent({analytics:true,advertising:false}),true);
- assert.equal(injected.length,1);assert.equal(injected[0].src,'https://www.googletagmanager.com/gtm.js?id=GTM-TEST123');
+ assert.equal(injected.length,1);assert.equal(injected[0].src,'https://www.googletagmanager.com/gtm.js?id=GTM-T36P2G6X');
+ assert.equal(injected[0].referrerPolicy,'origin');
  browser.saveConsent({analytics:true,advertising:false});assert.equal(injected.length,1);
  browser.trackGoogleEvent('form_success');assert.ok(!fakeWindow.dataLayer.some((e:any)=>e.event==='paula_form_success'));
 });
@@ -172,4 +174,10 @@ test('reviewed consent-template source sets defaults once and never grants perso
  assert.equal(updates[0].analytics_storage,'denied');assert.equal(updates[1].analytics_storage,'granted');
  assert.equal(updates[1].ad_storage,'denied');assert.equal(updates[2].ad_storage,'granted');
  assert.ok(updates.every(x=>x.ad_personalization==='denied'));
+});
+
+test('bridge-only release config and explicit kill switch are deterministic',()=>{
+ assert.deepEqual(trackingConfig(undefined),{enabled:true,containerId:'GTM-T36P2G6X',reviewedVersion:'9'});
+ assert.equal(trackingConfig('true').enabled,true);
+ for(const value of ['false','','TRUE','1']) assert.equal(trackingConfig(value).enabled,false);
 });
