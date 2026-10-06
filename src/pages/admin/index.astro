@@ -39,14 +39,17 @@ export const prerender = false;
 if (!readSession(Astro.request)) return Astro.redirect('/admin/login/');
 
 const now = Date.now();
-const [leads, tasks, daily, report, ledger, blocks] = await Promise.all([
+const [leads, tasks, dailyResult, report, ledgerResult, blocks] = await Promise.all([
 	allLeads(),
 	listTasks(),
-	dailyCounts(30),
+	dailyCounts(30).catch(() => null),
 	getReport(),
-	ledgerCounts(14),
+	ledgerCounts(14).catch(() => null),
 	listBlocks(),
 ]);
+const daily = dailyResult ?? {};
+const ledger = ledgerResult ?? [];
+const countersUnavailable = dailyResult === null || ledgerResult === null;
 const metrics = buildMetrics({ leads, tasks, daily, now });
 const storage = storeStatus();
 const answered24h = responseRate(leads, 24, now);
@@ -619,9 +622,10 @@ function jevTone(temperature: string | undefined): string {
 				<p class="text-xs text-mist"><span id="crm-queue-overdue">{metrics.tasksOverdue}</span> late</p>
 			</div>
 
+			<p class="mt-3 text-xs text-mist">Done completes a task. Open the lead and choose Mark as answered to record a reply.</p>
 			<ul class="mt-5 space-y-1" id="crm-queue">
 				{queue.length === 0 && (
-					<li class="py-6 text-sm text-mist">Nothing waiting. Every lead has been answered.</li>
+					<li class="py-6 text-sm text-mist">No open follow-up tasks. Reply status is tracked separately.</li>
 				)}
 				{queue.map((task: CrmTask) => (
 					<li class="flex items-start justify-between gap-4 border-b border-sand/50 py-3 last:border-0" data-task={task.id}>
@@ -946,6 +950,7 @@ function jevTone(temperature: string | undefined): string {
 		<span class="h-px flex-1 bg-sand/60" aria-hidden="true"></span>
 	</div>
 
+	{countersUnavailable && <p class="mt-6 border border-coffee/40 bg-white p-4 text-sm text-coffee" role="alert">Some daily counters are unavailable. Lead records are still shown; reload after storage recovers to restore the daily chart and submission ledger.</p>}
 	<!-- Submission ledger ---------------------------------------------------- -->
 	<section class="mt-6 grid gap-6 lg:grid-cols-2">
 		<div class="min-w-0 border border-sand/70 bg-white p-6">
@@ -988,12 +993,12 @@ function jevTone(temperature: string | undefined): string {
 					<tfoot>
 						<tr class="border-t border-sand/60 font-medium" id="crm-ledger-totals">
 							<td class="py-2 pr-3 text-slate">Total</td>
-							<td class="py-2 pr-3 text-ink">{ledgerTotals.attempts}</td>
-							<td class="py-2 pr-3 text-ink">{ledgerTotals.accepted}</td>
-							<td class="py-2 pr-3 text-slate">{ledgerTotals.rejected_validation}</td>
-							<td class="py-2 pr-3 text-slate">{ledgerTotals.rejected_rate}</td>
-							<td class="py-2 pr-3 text-slate">{ledgerTotals.honeypot}</td>
-							<td class="py-2 pr-3 text-ink">{ledgerTotals.blocked}</td>
+							<td class="py-2 pr-3 text-ink">{ledgerResult === null ? '—' : ledgerTotals.attempts}</td>
+							<td class="py-2 pr-3 text-ink">{ledgerResult === null ? '—' : ledgerTotals.accepted}</td>
+							<td class="py-2 pr-3 text-slate">{ledgerResult === null ? '—' : ledgerTotals.rejected_validation}</td>
+							<td class="py-2 pr-3 text-slate">{ledgerResult === null ? '—' : ledgerTotals.rejected_rate}</td>
+							<td class="py-2 pr-3 text-slate">{ledgerResult === null ? '—' : ledgerTotals.honeypot}</td>
+							<td class="py-2 pr-3 text-ink">{ledgerResult === null ? '—' : ledgerTotals.blocked}</td>
 						</tr>
 					</tfoot>
 				</table>
@@ -1173,27 +1178,29 @@ function jevTone(temperature: string | undefined): string {
 			</button>
 		</div>
 
+		<p id="analytics-status" class="text-sm text-stone" role="status" aria-live="polite"></p>
+
 		<!-- Analytics KPI Strip -->
 		<section aria-label="Analytics key metrics" class="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
 			<div class="border border-sand/70 bg-white p-4 sm:p-5">
 				<p class="eyebrow text-stone">Page Views · 30 Days</p>
 				<p class="mt-3 font-display text-3xl sm:text-4xl" id="analytics-views-30d">—</p>
-				<p class="mt-1 text-xs text-mist">total interactions</p>
+				<p class="mt-1 text-xs text-mist">pageviews, not unique visitors</p>
 			</div>
 			<div class="border border-sand/70 bg-white p-4 sm:p-5">
 				<p class="eyebrow text-stone">Page Views · Today</p>
 				<p class="mt-3 font-display text-3xl sm:text-4xl" id="analytics-views-today">—</p>
-				<p class="mt-1 text-xs text-mist">since midnight</p>
+				<p class="mt-1 text-xs text-mist">since midnight UTC</p>
 			</div>
 			<div class="border border-sand/70 bg-white p-4 sm:p-5">
 				<p class="eyebrow text-stone">WhatsApp Clicks</p>
 				<p class="mt-3 font-display text-3xl sm:text-4xl" id="analytics-clicks-whatsapp">—</p>
-				<p class="mt-1 text-xs text-mist">direct conversations</p>
+				<p class="mt-1 text-xs text-mist">all-time clicks, not confirmed conversations</p>
 			</div>
 			<div class="border border-sand/70 bg-white p-4 sm:p-5">
 				<p class="eyebrow text-stone">Phone & Email Clicks</p>
 				<p class="mt-3 font-display text-3xl sm:text-4xl" id="analytics-clicks-contact">—</p>
-				<p class="mt-1 text-xs text-mist">direct inquiries</p>
+				<p class="mt-1 text-xs text-mist">all-time clicks, not confirmed inquiries</p>
 			</div>
 		</section>
 
@@ -1358,7 +1365,10 @@ function jevTone(temperature: string | undefined): string {
 		}
 		if (tasksRes) renderQueue(tasksRes);
 		if (reportRes) renderReport(reportRes.report ?? null);
-		setStatus(`Last updated ${new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })} · refreshing every 30 s.`);
+		const complete = Boolean(metricsRes?.metrics && leadsRes?.leads && tasksRes?.tasks && reportRes?.ok);
+		setStatus(complete
+			? `Last updated ${new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })} · refreshing every 30 s.`
+			: 'Refresh incomplete. Some displayed values may be stale; retrying every 30 s.');
 	}
 
 	/* ----------------------------------------------------------- Rendering */
@@ -1737,7 +1747,7 @@ function jevTone(temperature: string | undefined): string {
 		if (!list) return;
 
 		if (!open.length) {
-			list.innerHTML = `<li class="py-6 text-sm text-mist">Nothing waiting. Every lead has been answered.</li>`;
+			list.innerHTML = `<li class="py-6 text-sm text-mist">No open follow-up tasks. Reply status is tracked separately.</li>`;
 			return;
 		}
 
@@ -2571,7 +2581,12 @@ function jevTone(temperature: string | undefined): string {
 
 	async function loadAnalytics() {
 		const res = await getJson('/api/crm/analytics/');
-		if (!res?.summary) return;
+		const analyticsStatus = $<HTMLElement>('#analytics-status');
+		if (!res?.summary) {
+			if (analyticsStatus) analyticsStatus.textContent = 'Metrics unavailable. Any displayed values are from the previous successful refresh.';
+			return;
+		}
+		if (analyticsStatus) analyticsStatus.textContent = 'Internal analytics · UTC · pageviews: 30 days; clicks, top pages and referrers: all time.';
 		const s = res.summary as Record<string, unknown>;
 
 		const views30d = $<HTMLElement>('#analytics-views-30d');

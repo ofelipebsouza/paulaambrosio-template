@@ -92,10 +92,12 @@ Won and Lost live outside the board as tabs. Records stored before the Kanban
 still carry `em_contato`; reads normalise it to `atendimento_humano`, so no
 migration is required.
 
-Moving a lead out of `novo` (or clicking *Mark as answered*) stamps
-`firstResponseAt`, closes that lead's open follow-up tasks, records a timeline
-event and fires `lead.status_changed` / `lead.responded` to JEV. A *Transfer
-to human* button on every `atendimento_ia` card does both in one click.
+Moving a lead changes only its pipeline status and emits `lead.status_changed`.
+Only the explicit *Mark as answered* action stamps `firstResponseAt` and emits
+`lead.responded`; closing a generic task is not evidence of a reply. A recorded
+reply completes only that lead's automatic initial-contact/reminder tasks,
+including legacy tasks with their exact generated titles, and preserves manual
+tasks. Existing response timestamps are not rewritten by this change.
 
 The board is plain HTML5 drag & drop (no library); each card also carries a
 `<select>` so the same move works with a keyboard or on touch. A drop is
@@ -248,6 +250,7 @@ automatically when `CRON_SECRET` is set) or a valid dashboard session.
 ## 9. Verification
 
 ```bash
+npm run crm:test        # offline synthetic CRM regression fixtures
 npm run lint            # tsc
 npm run build           # astro build + scripts/check-links.mjs
 npm run lead:test       # real inquiry → appears in /admin/
@@ -259,3 +262,13 @@ cookie answers 401; dragging a card moves it (and the select mirrors it);
 timeline entry; *Block IP* then resubmitting from that IP answers 200 and
 increments the ledger's `blocked`; `POST /api/crm/agent/` with a bad token
 answers 401; `POST /api/crm/report/` with a bad signature answers 401.
+
+### Counter decoding and reporting
+
+Raw Upstash REST HGETALL responses are alternating field/value arrays. CRM daily
+counters, submission ledger and internal analytics normalize these arrays (and
+object-shaped fixtures) before display; malformed counters are errors, not zeros.
+The analytics API returns 503 when its configured store is unavailable. The panel
+keeps old values with an explicit stale-data message. Internal pageviews cover
+30 UTC calendar days; click totals, top pages and referrers are all-time. These
+are separate from Vercel visitors and must not be compared without aligned scope.

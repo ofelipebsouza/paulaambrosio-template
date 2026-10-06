@@ -14,6 +14,10 @@ export const ALL: APIRoute = async ({ request }) => {
 	const denied = requireCrm(request);
 	if (denied) return denied;
 
-	const summary = await getAnalyticsSummary(30);
-	return crmJson({ ok: true, summary });
+	try {
+		const summary = await getAnalyticsSummary(30);
+		return crmJson({ ok: true, summary });
+	} catch {
+		return crmJson({ ok: false, error: 'analytics_unavailable' }, 503);
+	}
 };

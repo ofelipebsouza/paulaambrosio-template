@@ -2,15 +2,14 @@
  * GET  /api/crm/tasks/ — the follow-up queue, oldest deadline first.
  * PATCH /api/crm/tasks/ — { id, state: 'open' | 'done' | 'snoozed' }.
  *
- * Closing a task marks the lead answered only when it has never been answered:
- * the team's first reply is what the response-time KPI measures.
+ * Completing a task does not claim a reply was sent. Use the lead's explicit
+ * Mark as answered action to record first response and close its reminders.
  */
 import type { APIRoute } from 'astro';
-import { emitJev, leadData } from '../../../lib/crm/automation';
 import { requireCrm } from '../../../lib/crm/guard';
 import { crmJson, log } from '../../../lib/crm/http';
 import type { TaskState } from '../../../lib/crm/schema';
-import { getLead, listTasks, saveLead, saveTask, storeStatus } from '../../../lib/crm/store';
+import { listTasks, saveTask, storeStatus } from '../../../lib/crm/store';
 
 export const prerender = false;
 
@@ -53,18 +52,6 @@ export const ALL: APIRoute = async ({ request }) => {
 	task.completedAt = state === 'done' ? now : null;
 	await saveTask(task);
 
-	// Finishing the first-contact task is the team saying "we replied".
-	let lead = null;
-	if (state === 'done' && task.leadId) {
-		lead = await getLead(task.leadId);
-		if (lead && !lead.firstResponseAt) {
-			lead.firstResponseAt = now;
-			lead.updatedAt = now;
-			await saveLead(lead);
-			await emitJev('lead.responded', leadData(lead), now);
-		}
-	}
-
 	log('info', 'crm_task_updated', { state, closedBy: 'studio' });
-	return crmJson({ ok: true, task, lead });
+	return crmJson({ ok: true, task, lead: null });
 };

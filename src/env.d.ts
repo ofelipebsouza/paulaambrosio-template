@@ -8,6 +8,11 @@
  * Vercel project (Production, Preview and Development), never in the repository.
  */
 interface ImportMetaEnv {
+	/** Disabled until the container audit, consent template and release approval are complete. */
+	readonly PUBLIC_GOOGLE_TRACKING_ENABLED?: string;
+	readonly PUBLIC_GTM_CONTAINER_ID?: string;
+	/** Audit reference only: does not pin GTM live version. */
+	readonly PUBLIC_GTM_REVIEWED_VERSION?: string;
 	/** SMTP host. GoDaddy Professional Email (Titan): smtpout.secureserver.net */
 	readonly SMTP_HOST?: string;
 	/** 465 (TLS) for Titan, 587 (STARTTLS) for Microsoft 365. */

@@ -22,6 +22,7 @@
  *   crm:idx:block         ZSET  score = createdAt  member = `{type}:{value}`
  */
 import { createHash } from 'node:crypto';
+import { redisHashCounts, redisPipelineResults } from '../redis-response';
 import {
 	dayKey,
 	normalizeStatus,
@@ -86,16 +87,11 @@ async function redis(cmds: Cmd[]): Promise<unknown[] | null> {
 			noteFailure(`http_${response.status}`);
 			return null;
 		}
-		const rows = (await response.json()) as Array<{ result?: unknown; error?: string }>;
-		const failed = rows.find((row) => row?.error);
-		if (failed) {
-			noteFailure(String(failed.error));
-			return null;
-		}
+		const results = redisPipelineResults(await response.json(), cmds.length);
 		status.backend = 'upstash';
 		status.degraded = false;
 		status.lastError = null;
-		return rows.map((row) => row?.result ?? null);
+		return results;
 	} catch (error) {
 		noteFailure(error instanceof Error ? error.message : 'unknown');
 		return null;
@@ -346,6 +342,21 @@ export async function listEvents(leadId: string): Promise<CrmEvent[]> {
 	return mem.events.get(leadId) ?? [];
 }
 
+function readHashCounts(raw: unknown): Record<string, number> {
+	try {
+		return redisHashCounts(raw);
+	} catch {
+		noteFailure('invalid_redis_hash');
+		throw new Error('crm_counters_unavailable');
+	}
+}
+
+function requireCounterBackend(pipeline: unknown[] | null): void {
+	if (!pipeline && (import.meta.env.UPSTASH_REDIS_REST_URL || import.meta.env.UPSTASH_REDIS_REST_TOKEN)) {
+		throw new Error('crm_counters_unavailable');
+	}
+}
+
 /* -------------------------------------------------------------------------- */
 /* Daily counters                                                             */
 /* -------------------------------------------------------------------------- */
@@ -357,12 +368,13 @@ export async function dailyCounts(days = 30): Promise<Record<string, number>> {
 	for (let i = days - 1; i >= 0; i -= 1) keys.push(dayKey(now - i * 86_400_000));
 
 	const pipeline = await redis(keys.map((day) => ['HGETALL', `crm:metrics:${day}`]));
+	requireCounterBackend(pipeline);
 	if (pipeline) {
 		const out: Record<string, number> = {};
 		for (let i = 0; i < keys.length; i += 1) {
 			const raw = pipeline[i];
-			const counts = (raw && typeof raw === 'object' ? raw : {}) as Record<string, string>;
-			out[keys[i]] = Number.parseInt(counts.leads ?? '0', 10) || 0;
+			const counts = readHashCounts(raw);
+			out[keys[i]] = counts.leads ?? 0;
 		}
 		return out;
 	}
@@ -431,13 +443,14 @@ export async function ledgerCounts(days = 14): Promise<LedgerDay[]> {
 		Object.fromEntries(LEDGER_FIELDS.map((field) => [field, 0])) as Record<LedgerField, number>;
 
 	const pipeline = await redis(keys.map((day) => ['HGETALL', `crm:metrics:${day}`]));
+	requireCounterBackend(pipeline);
 	const out: LedgerDay[] = [];
 	for (let i = 0; i < keys.length; i += 1) {
 		const fields = empty();
 		if (pipeline) {
 			const raw = pipeline[i];
-			const counts = (raw && typeof raw === 'object' ? raw : {}) as Record<string, string>;
-			for (const field of LEDGER_FIELDS) fields[field] = Number.parseInt(counts[field] ?? '0', 10) || 0;
+			const counts = readHashCounts(raw);
+			for (const field of LEDGER_FIELDS) fields[field] = counts[field] ?? 0;
 		} else {
 			const bucket = mem.days.get(keys[i]) ?? {};
 			for (const field of LEDGER_FIELDS) fields[field] = bucket[field] ?? 0;
