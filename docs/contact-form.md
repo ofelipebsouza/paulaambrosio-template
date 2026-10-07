@@ -206,18 +206,20 @@ formulário sem `Origin` (403), rate limit excedido (429 + `Retry-After`),
 `GET` (405). No navegador: `Sending…` + botão desabilitado + `aria-busy`,
 double submit ignorado, sucesso limpa os campos, erro **preserva** os dados.
 
-## Fallback: o lead não se perde antes das credenciais existirem
+## Fallback: alternativa explícita quando o envio falha
 
 Enquanto `SMTP_USER`/`SMTP_PASSWORD` não estiverem cadastradas na Vercel, o
 endpoint responde **503 `delivery_unavailable`** (e registra `smtp_not_configured`
-no log). O cliente trata esse caso específico abrindo o aplicativo de e-mail do
-visitante com a mensagem já preenchida — exatamente o comportamento anterior a
-este endpoint. O evento `form_success` é disparado com `delivery: 'mailto'`, então
-os números ficam distinguíveis do caminho SMTP (`delivery: 'smtp'`, implícito).
+no log). Esse resultado e o **502 `delivery_failed`** preservam os campos e
+oferecem o link **Open email draft**. O aplicativo de e-mail só é aberto quando o
+visitante escolhe o link; a mensagem inclui os campos atuais e precisa ser enviada
+pelo próprio visitante. Preparar ou abrir esse rascunho não comprova entrega.
 
-Esse fallback só existe para o 503 de configuração ausente: falha real de SMTP
-(502) ou validação (422) continuam mostrando a mensagem de erro e **preservando**
-os campos preenchidos.
+Os dois resultados registram `form_error`, nunca `form_success`. Erros de
+validação (422), verificação (403), limite de tentativas (429) ou respostas de
+gateway sem o código de entrega esperado preservam os dados e mostram o erro,
+sem oferecer esse fallback. Uma nova tentativa limpa o aviso anterior e libera
+o botão ao terminar. `npm run contact:test` verifica esses fluxos sem rede real.
 
 ## Build e deploy
 
