@@ -4,50 +4,154 @@ const configured = GOOGLE_TRACKING.enabled && /^GTM-[A-Z0-9]{6,}$/.test(GOOGLE_T
 ---
 {configured && (
  <div id="paula-consent-root" hidden>
-  <button id="paula-consent-open" type="button" class="fixed bottom-3 left-3 z-40 border border-sand bg-white px-3 py-2 text-xs text-ink">Privacy choices</button>
-  <section id="paula-consent-panel" hidden aria-labelledby="paula-consent-title" class="fixed bottom-3 left-3 right-3 z-50 max-w-lg border border-sand bg-white p-5 shadow-lg">
-   <h2 id="paula-consent-title" class="font-display text-2xl text-ink">Your privacy choices</h2>
-   <p class="mt-2 text-sm text-slate">Optional Google tools help us understand website use and measure advertising. You can use our forms without allowing either. No contact-form details are sent to these tools. <a href="/privacy/" class="underline">Privacy policy</a></p>
-   <label class="mt-3 flex gap-2 text-sm"><input id="paula-consent-analytics" type="checkbox" /> Website analytics</label>
-   <label class="mt-2 flex gap-2 text-sm"><input id="paula-consent-ads" type="checkbox" /> Advertising measurement</label>
-   <p class="mt-2 text-xs text-slate">Personalized advertising stays off. You can change these choices at any time.</p>
-   <div class="mt-4 flex flex-wrap gap-2">
-    <button id="paula-consent-reject" type="button" class="btn-secondary">Reject optional</button>
-    <button id="paula-consent-save" type="button" class="btn-secondary">Save choices</button>
-    <button id="paula-consent-close" type="button" class="btn-secondary">Close</button>
-    <button id="paula-consent-accept" type="button" class="btn-secondary">Accept optional</button>
+  <button id="paula-consent-open" type="button" aria-expanded="false" aria-controls="paula-consent-panel" class="consent-open">Privacy choices</button>
+  <section id="paula-consent-panel" hidden aria-labelledby="paula-consent-title" class="consent-panel">
+   <h2 id="paula-consent-title" class="font-display">Your privacy choices</h2>
+   <p class="consent-copy">Choose whether to allow optional analytics and advertising tools. You can use our forms either way. <a href="/privacy/">Privacy policy</a></p>
+   <div id="paula-consent-summary" class="consent-actions consent-actions-summary">
+    <button id="paula-consent-reject" type="button" class="consent-action">Reject optional</button>
+    <button id="paula-consent-preferences" type="button" aria-expanded="false" aria-controls="paula-consent-preferences-panel" class="consent-action">Preferences</button>
+    <button id="paula-consent-accept" type="button" class="consent-action">Accept optional</button>
    </div>
-   <button id="paula-consent-reload" type="button" hidden class="mt-3 underline text-sm">Reload after finishing your form</button>
-   <p id="paula-consent-status" role="status" class="mt-2 text-xs text-slate"></p>
+   <div id="paula-consent-preferences-panel" hidden>
+    <label class="consent-option"><input id="paula-consent-analytics" type="checkbox" /> Website analytics</label>
+    <label class="consent-option"><input id="paula-consent-ads" type="checkbox" /> Advertising measurement</label>
+    <p class="consent-detail">Personalized advertising stays off. You can change these choices at any time.</p>
+    <div class="consent-actions">
+     <button id="paula-consent-save" type="button" class="consent-action">Save choices</button>
+     <button id="paula-consent-close" type="button" class="consent-action">Close</button>
+    </div>
+   </div>
+   <button id="paula-consent-reload" type="button" hidden class="consent-reload">Reload after finishing your form</button>
+   <p id="paula-consent-status" role="status" class="consent-detail consent-status"></p>
   </section>
  </div>
 )}
+<style>
+ #paula-consent-root [hidden] { display: none !important; }
+ .consent-open, .consent-panel {
+  --consent-left: max(12px, env(safe-area-inset-left));
+  --consent-right: max(12px, env(safe-area-inset-right));
+  --consent-bottom: max(12px, env(safe-area-inset-bottom));
+  position: fixed;
+  left: var(--consent-left);
+  bottom: var(--consent-bottom);
+  box-sizing: border-box;
+  border: 1px solid var(--color-sand, #ceb297);
+  background: var(--color-white, #fff);
+  color: var(--color-ink, #000);
+ }
+ .consent-open {
+  z-index: 40;
+  min-height: 44px;
+  max-width: calc(100vw - var(--consent-left) - var(--consent-right));
+  padding: 8px 12px;
+  font-size: 12px;
+ }
+ .consent-panel {
+  z-index: 50;
+  width: min(420px, calc(100vw - var(--consent-left) - var(--consent-right)));
+  max-height: calc(100vh - var(--consent-bottom) - max(12px, env(safe-area-inset-top)));
+  max-height: calc(100dvh - var(--consent-bottom) - max(12px, env(safe-area-inset-top)));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 16px;
+  border-radius: 4px;
+  box-shadow: 0 4px 20px rgb(0 0 0 / 8%);
+ }
+ .consent-panel h2 { margin: 0; font-size: 22px; line-height: 1.2; }
+ .consent-copy { margin: 8px 0 0; font-size: 13px; line-height: 1.5; color: var(--color-slate, #4f4540); }
+ .consent-copy a, .consent-reload { text-decoration: underline; text-underline-offset: 3px; }
+ .consent-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin-top: 12px; }
+ .consent-actions-summary { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+ .consent-action {
+  min-width: 0;
+  min-height: 44px;
+  padding: 8px 6px;
+  border: 1px solid var(--color-sand, #ceb297);
+  border-radius: 3px;
+  background: transparent;
+  color: inherit;
+  font-size: 12px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+ }
+ .consent-action:hover, .consent-open:hover { background: var(--color-bone, #f9f5f0); }
+ .consent-open, .consent-action, .consent-reload { cursor: pointer; }
+ .consent-option { display: flex; align-items: center; gap: 10px; min-height: 44px; font-size: 13px; line-height: 1.5; cursor: pointer; }
+ .consent-option:first-child { margin-top: 8px; }
+ .consent-option input { flex-shrink: 0; width: 18px; height: 18px; accent-color: var(--color-ink, #000); }
+ .consent-detail { margin: 8px 0 0; font-size: 12px; line-height: 1.5; color: var(--color-slate, #4f4540); }
+ .consent-reload { min-height: 44px; margin-top: 8px; padding: 8px 0; text-align: left; font-size: 13px; }
+ .consent-status:empty { display: none; }
+ #paula-consent-root :focus-visible { outline: 2px solid var(--color-ink, #000); outline-offset: 3px; }
+</style>
 <script>
  import { restoreConsent, savedConsent, saveConsent, reloadRecommended, trackingAvailable, trackGoogleEvent } from '../lib/google-tracking/browser';
  const root = document.querySelector<HTMLElement>('#paula-consent-root');
  if (root && trackingAvailable()) {
   root.hidden = false;
   const panel = document.querySelector<HTMLElement>('#paula-consent-panel')!;
+  const open = document.querySelector<HTMLButtonElement>('#paula-consent-open')!;
+  const summary = document.querySelector<HTMLElement>('#paula-consent-summary')!;
+  const preferences = document.querySelector<HTMLElement>('#paula-consent-preferences-panel')!;
+  const preferencesButton = document.querySelector<HTMLButtonElement>('#paula-consent-preferences')!;
   const analytics = document.querySelector<HTMLInputElement>('#paula-consent-analytics')!;
   const advertising = document.querySelector<HTMLInputElement>('#paula-consent-ads')!;
   const status = document.querySelector<HTMLElement>('#paula-consent-status')!;
-  const current = savedConsent();
-  if (current) { analytics.checked = current.analytics; advertising.checked = current.advertising; }
-  panel.hidden = Boolean(current);
+  const reload = document.querySelector<HTMLButtonElement>('#paula-consent-reload')!;
+  const readChoices = () => {
+   const choice = savedConsent();
+   analytics.checked = choice?.analytics ?? false;
+   advertising.checked = choice?.advertising ?? false;
+  };
+  const setPreferences = (expanded: boolean) => {
+   summary.hidden = expanded;
+   preferences.hidden = !expanded;
+   preferencesButton.setAttribute('aria-expanded', String(expanded));
+  };
+  const setPanel = (visible: boolean) => {
+   panel.hidden = !visible;
+   open.hidden = visible;
+   open.setAttribute('aria-expanded', String(visible));
+  };
+  const close = () => {
+   readChoices();
+   setPreferences(false);
+   setPanel(false);
+   open.focus();
+  };
+  const showPreferences = () => {
+   readChoices();
+   setPreferences(true);
+   setPanel(true);
+   analytics.focus();
+  };
+  readChoices();
+  setPanel(!savedConsent());
   restoreConsent();
   trackGoogleEvent('page_view');
-  document.querySelector('#paula-consent-open')?.addEventListener('click', () => { panel.hidden = false; analytics.focus(); });
+  open.addEventListener('click', showPreferences);
+  preferencesButton.addEventListener('click', showPreferences);
   const save = () => {
    const ok = saveConsent({ analytics: analytics.checked, advertising: advertising.checked });
-   if (ok && !reloadRecommended()) { trackGoogleEvent('page_view'); panel.hidden = true; document.querySelector<HTMLButtonElement>('#paula-consent-open')?.focus(); }
+   if (ok && !reloadRecommended()) {
+    trackGoogleEvent('page_view');
+    status.textContent = '';
+    reload.hidden = true;
+    close();
+   }
    else if (ok) {
     status.textContent = 'Reduced permissions saved. Site measurement events are paused. Reload when your form is finished to unload tools already loaded.';
-    document.querySelector<HTMLButtonElement>('#paula-consent-reload')!.hidden = false;
+    reload.hidden = false;
    }
    else status.textContent = 'These choices could not be saved. Site measurement events are paused, but tools already loaded may remain. Please check your browser storage settings before continuing.';
   };
-  document.querySelector('#paula-consent-reload')?.addEventListener('click', () => location.reload());
-  document.querySelector('#paula-consent-close')?.addEventListener('click', () => { panel.hidden = true; document.querySelector<HTMLButtonElement>('#paula-consent-open')?.focus(); });
+  reload.addEventListener('click', () => location.reload());
+  document.querySelector('#paula-consent-close')?.addEventListener('click', close);
+  panel.addEventListener('keydown', (event) => {
+   if (event.key === 'Escape') { event.preventDefault(); close(); }
+  });
   document.querySelector('#paula-consent-save')?.addEventListener('click', save);
   document.querySelector('#paula-consent-reject')?.addEventListener('click', () => { analytics.checked = false; advertising.checked = false; save(); });
   document.querySelector('#paula-consent-accept')?.addEventListener('click', () => { analytics.checked = true; advertising.checked = true; save(); });
