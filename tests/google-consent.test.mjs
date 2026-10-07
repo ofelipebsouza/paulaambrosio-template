@@ -81,7 +81,7 @@ test('preferences exposes separate opt-ins and updates disclosure state without 
  assert.equal(x.saves.length, 0);
 });
 
-test('accept and reject explicitly save both optional choices and return focus', () => {
+test('accept and reject close after saving and reopen with the saved choices', () => {
  for (const [action, allowed] of [['accept', true], ['reject', false]]) {
   const x = fixture();
   x.click(action);
@@ -90,7 +90,38 @@ test('accept and reject explicitly save both optional choices and return focus',
   assert.equal(x.get('open').hidden, false);
   assert.equal(x.get('open').getAttribute('aria-expanded'), 'false');
   assert.equal(x.document.activeElement, x.get('open'));
+  assert.equal(x.get('status').textContent, '');
+  assert.equal(x.get('reload').hidden, true);
+  assert.equal(x.reloadCalls(), 0);
+  x.click('open');
+  assert.equal(x.get('panel').hidden, false);
+  assert.equal(x.get('open').hidden, true);
+  assert.equal(x.get('open').getAttribute('aria-expanded'), 'true');
+  assert.equal(x.get('summary').hidden, true);
+  assert.equal(x.get('preferences-panel').hidden, false);
+  assert.equal(x.get('analytics').checked, allowed);
+  assert.equal(x.get('ads').checked, allowed);
+  assert.equal(x.document.activeElement, x.get('analytics'));
+  assert.equal(x.saves.length, 1, 'reopening must not save a new consent choice');
  }
+});
+
+test('the discreet privacy control preserves its name, target and equal summary actions', () => {
+ const x = fixture();
+ assert.equal(x.get('open').getAttribute('aria-label'), 'Privacy choices');
+ assert.equal(x.get('open').getAttribute('aria-controls'), 'paula-consent-panel');
+ assert.match(source, /<span class="consent-open-label">Privacy<\/span>/);
+ for (const name of ['reject', 'preferences', 'accept']) {
+  assert.equal(x.get(name).getAttribute('class'), 'consent-action', 'all choices share one visual treatment');
+  assert.equal(x.get(name).getAttribute('style'), undefined);
+ }
+ const styles = source.match(/<style>([\s\S]*?)<\/style>/)[1];
+ for (const name of ['consent-open', 'consent-action']) {
+  const rule = styles.match(new RegExp(`\\.${name}\\s*\\{([^}]+)\\}`))[1];
+  assert.match(rule, /min-height:\s*44px/, 'a smaller visual control keeps its full touch target');
+ }
+ assert.match(styles, /\.consent-actions-summary\s*\{\s*grid-template-columns:\s*repeat\(3,\s*minmax\(0,\s*1fr\)\)/);
+ assert.match(styles, /#paula-consent-root :focus-visible\s*\{[^}]*outline:\s*2px solid/);
 });
 
 test('save choices preserves independent analytics and advertising permissions', () => {

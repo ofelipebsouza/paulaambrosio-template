@@ -4,14 +4,14 @@ const configured = GOOGLE_TRACKING.enabled && /^GTM-[A-Z0-9]{6,}$/.test(GOOGLE_T
 ---
 {configured && (
  <div id="paula-consent-root" hidden>
-  <button id="paula-consent-open" type="button" aria-expanded="false" aria-controls="paula-consent-panel" class="consent-open">Privacy choices</button>
+  <button id="paula-consent-open" type="button" aria-label="Privacy choices" aria-expanded="false" aria-controls="paula-consent-panel" class="consent-open"><span class="consent-open-label">Privacy</span></button>
   <section id="paula-consent-panel" hidden aria-labelledby="paula-consent-title" class="consent-panel">
    <h2 id="paula-consent-title" class="font-display">Your privacy choices</h2>
-   <p class="consent-copy">Choose whether to allow optional analytics and advertising tools. You can use our forms either way. <a href="/privacy/">Privacy policy</a></p>
+   <p class="consent-copy">Optional analytics and ad measurement. Your choice. <a href="/privacy/">Privacy policy</a></p>
    <div id="paula-consent-summary" class="consent-actions consent-actions-summary">
-    <button id="paula-consent-reject" type="button" class="consent-action">Reject optional</button>
+    <button id="paula-consent-reject" type="button" class="consent-action">Reject</button>
     <button id="paula-consent-preferences" type="button" aria-expanded="false" aria-controls="paula-consent-preferences-panel" class="consent-action">Preferences</button>
-    <button id="paula-consent-accept" type="button" class="consent-action">Accept optional</button>
+    <button id="paula-consent-accept" type="button" class="consent-action">Accept</button>
    </div>
    <div id="paula-consent-preferences-panel" hidden>
     <label class="consent-option"><input id="paula-consent-analytics" type="checkbox" /> Website analytics</label>
@@ -37,32 +37,46 @@ const configured = GOOGLE_TRACKING.enabled && /^GTM-[A-Z0-9]{6,}$/.test(GOOGLE_T
   left: var(--consent-left);
   bottom: var(--consent-bottom);
   box-sizing: border-box;
-  border: 1px solid var(--color-sand, #ceb297);
-  background: var(--color-white, #fff);
   color: var(--color-ink, #000);
  }
  .consent-open {
   z-index: 40;
+  display: flex;
+  align-items: center;
+  min-width: 44px;
   min-height: 44px;
   max-width: calc(100vw - var(--consent-left) - var(--consent-right));
-  padding: 8px 12px;
+  padding: 0;
+  border: 0;
+  background: transparent;
   font-size: 12px;
+  line-height: 1.5;
+ }
+ .consent-open-label {
+  display: block;
+  padding: 4px 9px;
+  border: 1px solid var(--color-sand, #ceb297);
+  border-radius: 999px;
+  background: var(--color-white, #fff);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 4%);
  }
  .consent-panel {
   z-index: 50;
-  width: min(420px, calc(100vw - var(--consent-left) - var(--consent-right)));
+  width: min(360px, calc(100vw - var(--consent-left) - var(--consent-right)));
   max-height: calc(100vh - var(--consent-bottom) - max(12px, env(safe-area-inset-top)));
   max-height: calc(100dvh - var(--consent-bottom) - max(12px, env(safe-area-inset-top)));
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: 16px;
+  padding: 12px;
+  border: 1px solid var(--color-sand, #ceb297);
   border-radius: 4px;
-  box-shadow: 0 4px 20px rgb(0 0 0 / 8%);
+  background: var(--color-white, #fff);
+  box-shadow: 0 2px 12px rgb(0 0 0 / 6%);
  }
- .consent-panel h2 { margin: 0; font-size: 22px; line-height: 1.2; }
- .consent-copy { margin: 8px 0 0; font-size: 13px; line-height: 1.5; color: var(--color-slate, #4f4540); }
+ .consent-panel h2 { margin: 0; font-size: 18px; line-height: 1.2; }
+ .consent-copy { margin: 6px 0 0; font-size: 13px; line-height: 1.5; color: var(--color-slate, #4f4540); }
  .consent-copy a, .consent-reload { text-decoration: underline; text-underline-offset: 3px; }
- .consent-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin-top: 12px; }
+ .consent-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin-top: 10px; }
  .consent-actions-summary { grid-template-columns: repeat(3, minmax(0, 1fr)); }
  .consent-action {
   min-width: 0;
@@ -76,7 +90,7 @@ const configured = GOOGLE_TRACKING.enabled && /^GTM-[A-Z0-9]{6,}$/.test(GOOGLE_T
   line-height: 1.4;
   overflow-wrap: anywhere;
  }
- .consent-action:hover, .consent-open:hover { background: var(--color-bone, #f9f5f0); }
+ .consent-action:hover, .consent-open:hover .consent-open-label { background: var(--color-bone, #f9f5f0); }
  .consent-open, .consent-action, .consent-reload { cursor: pointer; }
  .consent-option { display: flex; align-items: center; gap: 10px; min-height: 44px; font-size: 13px; line-height: 1.5; cursor: pointer; }
  .consent-option:first-child { margin-top: 8px; }
