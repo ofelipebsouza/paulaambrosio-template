@@ -47,7 +47,7 @@ Nothing is tracked on the server: the API route never calls Analytics, so previe
 | `cta_contact` | Measures direct contact CTA engagement | `page`, `location` | Contact CTA, when present |
 | `form_start` | Measures first form interaction | `page`, `form` | First focus on an input/select/textarea |
 | `form_submit` | Measures a submission attempt (intent) | `page`, `form` | The form is submitted and the request is sent |
-| `form_success` | Measures the confirmed conversion | `page`, `form`, `service`, `property_type`, `delivery` | Server answers `200 { ok: true }` (SMTP) or hands the inquiry to the visitor's mail client because the transport is not configured yet (`delivery: 'mailto'`) |
+| `form_success` | Records a successful HTTP response; does not prove an accepted lead | `page`, `form`, `service`, `property_type` | Server answers `200 { ok: true }`; honeypot and blocked submissions also return this response. Email-draft fallbacks never emit this event. |
 | `form_error` | Measures a failed submission | `page`, `form` | Non-2xx response or network failure |
 | `phone_click` | Measures phone intent | `page`, `location` | Click on `tel:` |
 | `email_click` | Measures email intent | `page`, `location` | Click on `mailto:` |
@@ -75,7 +75,7 @@ Metadata is intentionally small and uses public stable identifiers such as route
 - Never send name, email, phone, address, message, project details, tokens, secrets or any field value to Analytics.
 - The central wrapper rejects private field names and non-scalar metadata.
 - Vercel Web Analytics is designed to use aggregated, anonymized data without third-party cookies. This implementation does not add cookies or a marketing tracker.
-- `form_success` is emitted only after the server confirms `200 { ok: true }`, i.e. the notification email was accepted by the SMTP server. A submission that fails validation, is rate limited or fails at SMTP emits `form_error` instead and shows a generic message to the visitor. The single exception is the `503 delivery_unavailable` answer (no SMTP credentials configured on the deployment yet): the inquiry is handed to the visitor's mail client instead of being lost, and the event is emitted with `delivery: 'mailto'` so the fallback path stays measurable.
+- `form_success` is emitted after a successful HTTP response, including the indistinguishable `200 { ok: true }` responses used for honeypot and blocked submissions. It is not proof of an accepted lead or email delivery. Validation, rate-limit and delivery failures emit `form_error`. The specific `502 delivery_failed` and `503 delivery_unavailable` responses preserve the fields and offer an explicit **Open email draft** link; preparing or opening that draft never emits `form_success`.
 - Vercel's own privacy and compliance documentation should be reviewed with the site's legal advisor for the applicable jurisdiction.
 
 ## Form behavior
@@ -123,7 +123,7 @@ How to compare (Vercel → Project → Analytics → Custom Events):
 | Ledger field | Compare with | Expected relationship |
 | --- | --- | --- |
 | `attempts` | `form_submit` | ≥ — the browser also counts submits that never reached the server (offline, aborted) |
-| `accepted` | `form_success` | ≤ — `form_success` also fires for the `mailto:` fallback (503) and for honeypot hits, which store no lead |
+| `accepted` | `form_success` | No fixed ordering: accepted leads can have SMTP failures and emit `form_error`; honeypot and blocked responses emit `form_success` without storing a lead. Email-draft fallbacks emit only `form_error`. |
 | `honeypot` | — | absent from Analytics by construction: a bot rarely runs the tracking script |
 | `blocked` | — | absent: the blocked sender's browser is never told anything |
 | `rejected_validation` · `rejected_rate` · `turnstile` | `form_error` | approximately — `form_error` also fires on network failures the server never saw |

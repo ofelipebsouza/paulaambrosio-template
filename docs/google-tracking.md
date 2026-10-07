@@ -42,7 +42,7 @@ Allowlisted events are prefixed paula_: page_view, CTA interactions, form_start/
 
 WhatsApp is intended as a **secondary click**, not proof of a conversation or lead. Keep Ads forwarding paused until its conversion action is verified as Secondary. It requires advertising consent and maps inside GTM to its verified WhatsApp action. A clicked WhatsApp event is not reused as form conversion. No WhatsApp link is added in this change.
 
-**Accepted-form emission is intentionally impossible in this preparation.** `form_success`, `accepted_form`, arbitrary event names and generic HTTP 200 are not forwarded. Current success-like honeypot/blocked responses and mailto fallback remain untouched. Do not map paula_form_submit to an Ads lead conversion.
+**Accepted-form emission is intentionally impossible in this preparation.** `form_success`, `accepted_form`, arbitrary event names and generic HTTP 200 are not forwarded. Success-like honeypot/blocked responses remain unchanged. Delivery failures offer an explicit email draft and emit `form_error`, never `form_success`. Do not map paula_form_submit to an Ads lead conversion.
 
 ## Accepted-form architecture decision still required
 

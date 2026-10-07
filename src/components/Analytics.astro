@@ -115,43 +115,51 @@ import SpeedInsights from '@vercel/speed-insights/astro';
 						'Thank you. Your project inquiry has been received. Our team will be in touch soon.';
 					status.className = 'analytics-form-status mt-3 text-sm text-coffee';
 				});
-				form.addEventListener('analytics-form-error', () => {
+				form.addEventListener('analytics-form-error', (event) => {
 					if (!status) return;
 					const email = form.dataset.contactEmail;
-					status.textContent = email
-						? `Something went wrong while sending your inquiry. Please try again or contact us directly at ${email}.`
-						: 'Something went wrong while sending your inquiry. Please try again.';
+					const mailFallback = (event as CustomEvent<{ mailFallback?: string | null }>).detail?.mailFallback;
+					if (mailFallback) {
+						status.textContent = "We couldn't send your inquiry by email. Your details are still here. Try again, or ";
+						const link = document.createElement('a');
+						link.href = mailFallback;
+						link.textContent = 'Open email draft';
+						link.className = 'underline underline-offset-4';
+						link.addEventListener('click', (click) => {
+							// Include any edits made after the failed attempt.
+							const currentDraft = mailFallbackHref(new FormData(form));
+							if (currentDraft) link.href = currentDraft;
+							else click.preventDefault();
+						});
+						status.append(link, ' and press Send in your email app.');
+					} else {
+						status.textContent = email
+							? `Something went wrong while sending your inquiry. Please try again or contact us directly at ${email}.`
+							: 'Something went wrong while sending your inquiry. Please try again.';
+					}
 					status.className = 'analytics-form-status mt-3 text-sm text-red-800';
 				});
 
 			const action = form.getAttribute('action') ?? '';
 			if (!action) return;
 
-			/**
-			 * Delivery fallback.
-			 *
-			 * The endpoint answers 503 `delivery_unavailable` only when the server has
-			 * no SMTP transport configured (Vercel environment variables not set yet).
-			 * Rather than losing the inquiry, hand it to the visitor's own mail client —
-			 * the same behaviour this site had before the endpoint existed. A real SMTP
-			 * or network failure never reaches this branch.
-			 */
-			const openMailFallback = (data: FormData): boolean => {
+			// A delivery failure offers an email draft the visitor can choose to open.
+			// Preparing the draft neither opens an app nor confirms delivery.
+			const mailFallbackHref = (data: FormData): string | null => {
 				const to = form.dataset.contactEmail;
-				if (!to) return false;
+				if (!to) return null;
 
 				const lines: string[] = [];
 				for (const spec of CONTACT_FIELDS) {
 					const value = String(data.get(spec.name) ?? '').trim();
 					if (value) lines.push(`${spec.label}: ${value}`);
 				}
-				if (String(data.get(HONEYPOT_FIELD) ?? '').trim()) return false;
+				if (String(data.get(HONEYPOT_FIELD) ?? '').trim()) return null;
 
 				const subject = `New Project Inquiry — ${String(data.get('name') ?? '').trim()}`;
-				window.location.href = `mailto:${to}?subject=${encodeURIComponent(
+				return `mailto:${to}?subject=${encodeURIComponent(
 					subject,
 				)}&body=${encodeURIComponent(lines.join('\n'))}`;
-				return true;
 			};
 
 			const submitButton = form.querySelector<HTMLButtonElement>('button[type="submit"]');
@@ -173,11 +181,13 @@ import SpeedInsights from '@vercel/speed-insights/astro';
 				const propertyType = String(data.get('propertyType') ?? '').trim();
 
 				setSending(true);
+				if (status) status.textContent = '';
 				trackEvent(ANALYTICS_EVENTS.FORM_SUBMIT, {
 					page: page(),
 					form: form.dataset.analyticsForm,
 				});
 
+				let mailFallback: string | null = null;
 				try {
 					const response = await fetch(action, {
 						method: form.method || 'POST',
@@ -185,22 +195,14 @@ import SpeedInsights from '@vercel/speed-insights/astro';
 						headers: { Accept: 'application/json' },
 					});
 
-					if (response.status === 503 && openMailFallback(data)) {
-						trackEvent(ANALYTICS_EVENTS.FORM_SUCCESS, {
-							page: page(),
-							form: form.dataset.analyticsForm,
-							service: service || undefined,
-							property_type: propertyType || undefined,
-							delivery: 'mailto',
-						});
-						form.dispatchEvent(
-							new CustomEvent('analytics-form-success', {
-								detail: {
-									message: `Opening your email app — send the message to reach us. You can also write to ${form.dataset.contactEmail}.`,
-								},
-							}),
-						);
-						return;
+					if (response.status === 502 || response.status === 503) {
+						const result = await response.json().catch(() => null) as { error?: string } | null;
+						if (
+							(response.status === 502 && result?.error === 'delivery_failed') ||
+							(response.status === 503 && result?.error === 'delivery_unavailable')
+						) {
+							mailFallback = mailFallbackHref(data);
+						}
 					}
 					if (!response.ok) throw new Error(`Form request failed with ${response.status}`);
 
@@ -218,7 +220,7 @@ import SpeedInsights from '@vercel/speed-insights/astro';
 						page: page(),
 						form: form.dataset.analyticsForm,
 					});
-					form.dispatchEvent(new CustomEvent('analytics-form-error'));
+					form.dispatchEvent(new CustomEvent('analytics-form-error', { detail: { mailFallback } }));
 				} finally {
 					setSending(false);
 				}
