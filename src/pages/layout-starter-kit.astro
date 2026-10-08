@@ -1,0 +1,10 @@
+---
+import head from '../data/landings/layout-starter-kit-head.html?raw';
+import body from '../data/landings/layout-starter-kit-body.html?raw';
+import GoogleConsent from '../components/GoogleConsent.astro';
+---
+<!doctype html>
+<html lang="pt-BR">
+  <head><Fragment set:html={head} /></head>
+  <body><Fragment set:html={body} /><GoogleConsent /></body>
+</html>
