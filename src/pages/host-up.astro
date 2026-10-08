@@ -2,9 +2,10 @@
 import head from '../data/landings/host-up-head.html?raw';
 import body from '../data/landings/host-up-body.html?raw';
 import GoogleConsent from '../components/GoogleConsent.astro';
+import OpenAIPixel from '../components/OpenAIPixel.astro';
 ---
 <!doctype html>
 <html lang="pt-BR">
-  <head><Fragment set:html={head} /></head>
+  <head><OpenAIPixel /><Fragment set:html={head} /></head>
   <body><Fragment set:html={body} /><GoogleConsent /></body>
 </html>

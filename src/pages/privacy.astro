@@ -23,7 +23,7 @@ const breadcrumbs: BreadcrumbEntry[] = [{ name: 'Privacy', url: '/privacy' }];
 		<Breadcrumbs items={breadcrumbs} />
 		<h1 class="font-display mt-10 text-4xl">Privacy Policy</h1>
 		<p class="mt-4 text-sm uppercase tracking-widest text-mist">
-			Last updated: <time datetime="2026-10-06">October 6, 2026</time>
+			Last updated: <time datetime="2026-10-08">October 8, 2026</time>
 		</p>
 
 		<div class="prose-editorial mt-12">
@@ -41,8 +41,8 @@ const breadcrumbs: BreadcrumbEntry[] = [{ name: 'Privacy', url: '/privacy' }];
 				third-party form service and not by your email client, and delivered as an email to
 				<a href="mailto:info@paulaambrosio.com">info@paulaambrosio.com</a>. If the inquiry reaches
 				us, you also receive a confirmation email at the address you provided. We keep your
-				message in our mailbox and in our project records; no copies are retained by any
-				advertising or tracking service.
+				message in our mailbox and in our project records. Our website does not manually send
+				inquiry messages to advertising services; the optional OpenAI Pixel behavior is described below.
 			</p>
 			<h2>How information is used</h2>
 			<p>
@@ -93,6 +93,30 @@ const breadcrumbs: BreadcrumbEntry[] = [{ name: 'Privacy', url: '/privacy' }];
 				and attempts to remove first-party Google measurement cookies. If tools have already loaded,
 				we offer a reload after you finish your form to unload them. Previously sent data is not undone
 				by changing your browser choices.
+			</p>
+			<h2>Optional OpenAI advertising measurement</h2>
+			<p>
+				If you allow Advertising measurement in Privacy choices, we load the OpenAI Pixel.
+				The request shares technical connection information, including your IP address and browser
+				information, with OpenAI. The Pixel may use first-party cookies and advertising click or
+				browser identifiers for attribution. Its __oppref cookie can last up to 30 days and its
+				__obref cookie up to 365 days, subject to your browser's restrictions.
+			</p>
+			<p>
+				We do not manually supply contact details, hashes of contact details, budgets or inquiry
+				messages to the Pixel. Depending on the Pixel's account settings, OpenAI's automatic advanced
+				matching may detect supported contact information entered on this site and hash it in your
+				browser for conversion matching. We have not verified that this automatic matching is disabled.
+				Hashing does not make this information anonymous. This site currently installs only the base
+				Pixel and does not send lead-created conversion events.
+			</p>
+			<p>
+				The Pixel is not loaded before advertising permission is granted. Withdrawing permission
+				instructs the Pixel to stop measurement and removes its first-party attribution cookies.
+				Reload after finishing your form to unload code already loaded; previously transmitted data
+				cannot be recalled by changing these choices. See
+				<a href="https://openai.com/policies/privacy-policy/">OpenAI's Privacy Policy</a> and
+				<a href="https://developers.openai.com/ads/measurement-pixel">OpenAI's Pixel documentation</a>.
 			</p>
 			<h2>Security</h2>
 			<p>
