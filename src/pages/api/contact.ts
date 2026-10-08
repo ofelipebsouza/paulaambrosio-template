@@ -18,7 +18,8 @@
  */
 import type { APIRoute } from 'astro';
 import nodemailer, { type Transporter } from 'nodemailer';
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
+import { isSubmissionId, type LeadAcceptance } from '../../lib/lead-acceptance';
 import {
 	CONTACT_FIELDS,
 	FIELD_LIMITS,
@@ -30,7 +31,7 @@ import {
 import { composeConfirmationEmail, composeLeadEmail, type ContactPayload } from '../../lib/contact-email';
 import { checkRateLimit, hashIdentifier } from '../../lib/rate-limit';
 import { buildLead, newId, type CrmLead } from '../../lib/crm/schema';
-import { bumpLedger, findBlock, countBlockHit, findLeadByEmail, insertLead, pushEvent, saveLead } from '../../lib/crm/store';
+import { bumpLedger, findBlock, countBlockHit, findLeadByEmail, insertLead, insertLeadWithReceipt, pushEvent, saveLead } from '../../lib/crm/store';
 import { emitJev, leadData, scheduleFollowUps } from '../../lib/crm/automation';
 import { scoreNewLead } from '../../lib/crm/jev';
 import { buildEnrichment } from '../../lib/crm/enrichment';
@@ -327,6 +328,14 @@ export const ALL: APIRoute = async ({ request }) => {
 	// 6. Store the lead before delivering it. The team's pipeline must survive
 	//    an SMTP outage, and the CRM write is best effort: a Redis hiccup never
 	//    changes the answer the visitor gets.
+	const submissionId = request.headers.get('X-Submission-Id');
+	if (submissionId !== null && !isSubmissionId(submissionId)) {
+		return json({ ok: false, error: 'invalid_submission_id' }, 400);
+	}
+	// The retry token is bound to the sanitized inquiry, not to a browser claim of success.
+	const fingerprint = createHash('sha256').update(JSON.stringify({ payload, formId })).digest('hex');
+	let leadAcceptance: LeadAcceptance | null = null;
+	const acceptanceData = () => leadAcceptance ? { leadAcceptance } : {};
 	let crmLead: CrmLead | null = null;
 	try {
 		// Enrichment consults the email index: a repeat submission from the same
@@ -340,7 +349,23 @@ export const ALL: APIRoute = async ({ request }) => {
 			now: Date.now(),
 			context: buildEnrichment({ request, ip: ip ?? '', raw, repeatSubmitter: repeat }),
 		});
-		await insertLead(crmLead);
+		if (submissionId) {
+			const inserted = await insertLeadWithReceipt(crmLead, submissionId, fingerprint);
+			if (inserted.status === 'conflict') return json({ ok: false, error: 'submission_conflict' }, 409);
+			if (inserted.status === 'unavailable') {
+				// An uncertain Redis result must not trigger another write through saveLead.
+				// Preserve the pre-existing email fallback, but never advertise acceptance.
+				crmLead = null;
+				throw new Error('durable_receipt_unavailable');
+			}
+			leadAcceptance = { version: 1, eventId: inserted.receipt.eventId };
+			if (inserted.status === 'replayed') {
+				return json({ ok: true, ...acceptanceData() }, 200);
+			}
+		} else {
+			// Older clients still deliver inquiries; no retry proof means no conversion receipt.
+			await insertLead(crmLead);
+		}
 		await bumpLedger('accepted');
 		await pushEvent(crmLead.id, {
 			ts: crmLead.createdAt,
@@ -377,7 +402,7 @@ export const ALL: APIRoute = async ({ request }) => {
 			crmLead.delivery = 'unavailable';
 			await saveLead(crmLead).catch(() => undefined);
 		}
-		return json({ ok: false, error: 'delivery_unavailable' }, 503);
+		return json({ ok: false, error: 'delivery_unavailable', ...acceptanceData() }, 503);
 	}
 
 	const lead = composeLeadEmail(payload, recipient);
@@ -416,7 +441,7 @@ export const ALL: APIRoute = async ({ request }) => {
 				actor: 'system',
 			}).catch(() => undefined);
 		}
-		return json({ ok: false, error: 'delivery_failed' }, 502);
+		return json({ ok: false, error: 'delivery_failed', ...acceptanceData() }, 502);
 	}
 
 	log('info', 'inquiry_delivered', {
@@ -445,5 +470,5 @@ export const ALL: APIRoute = async ({ request }) => {
 		});
 	}
 
-	return json({ ok: true }, 200);
+	return json({ ok: true, ...acceptanceData() }, 200);
 };

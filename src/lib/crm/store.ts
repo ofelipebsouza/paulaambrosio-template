@@ -7,8 +7,11 @@
  * degrades to an in-process store when the credentials are missing or the
  * backend errors, exactly like `src/lib/rate-limit.ts`, and reports which
  * backend answered so the dashboard never claims durability it does not have.
+ * `insertLeadWithReceipt` is stricter: only its atomic durable write/replay can
+ * return an accepted receipt; its memory fallback never does.
  *
  * Keys (all prefixed `crm:`):
+ *   crm:receipt:{uuid}    JSON receipt, seven-day idempotency window
  *   crm:lead:{id}         JSON document
  *   crm:idx:time          ZSET  score = createdAt  member = id
  *   crm:idx:email:{hmac}  STRING id (lookup without storing a raw address)
@@ -21,7 +24,7 @@
  *   crm:block:{type}:{v}   STRING JSON rule (ip / email / domain blocklist)
  *   crm:idx:block         ZSET  score = createdAt  member = `{type}:{value}`
  */
-import { createHash } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { redisHashCounts, redisPipelineResults } from '../redis-response';
 import {
 	dayKey,
@@ -32,6 +35,15 @@ import {
 	type HermesReport,
 	type LeadStatus,
 } from './schema';
+
+import {
+	INSERT_LEAD_WITH_RECEIPT_LUA,
+	RECEIPT_LEAD_ID_PATTERN,
+	RECEIPT_UUID_PATTERN,
+	type InsertLeadWithReceiptResult,
+} from './lead-receipt';
+
+export type { AcceptedLeadReceipt, InsertLeadWithReceiptResult } from './lead-receipt';
 
 type Cmd = (string | number)[];
 
@@ -210,6 +222,12 @@ export async function insertLead(lead: CrmLead): Promise<void> {
 	]);
 	if (results) return;
 
+	insertLeadInMemory(lead);
+}
+
+/** No Redis calls: safe even after an ambiguous response to a durable write. */
+function insertLeadInMemory(lead: CrmLead): void {
+	const day = dayKey(lead.createdAt);
 	mem.leads.set(lead.id, lead);
 	mem.timeIdx.set(lead.id, lead.createdAt);
 	mem.emailIdx.set(emailKey(lead.email), lead.id);
@@ -221,6 +239,69 @@ export async function insertLead(lead: CrmLead): Promise<void> {
 	bucket[formKey] = (bucket[formKey] ?? 0) + 1;
 	mem.days.set(day, bucket);
 	pruneMemory();
+}
+
+/**
+ * Atomically persists a lead, indexes/counters and an opaque conversion receipt.
+ * `fingerprint` must be a lowercase SHA-256 of the sanitized submission, never
+ * the user's raw idempotency key or PII. The receipt key lasts seven days.
+ *
+ * On unavailable, a local copy is retained but acceptance is NOT established.
+ * The caller must not attempt another durable insert or CRM automation:
+ * the remote script may have committed even if its HTTP response was lost.
+ * Retry the same submission UUID and fingerprint to recover its stable receipt.
+ * SMTP may separately remain available, without a receipt or an exactly-once
+ * delivery guarantee when a persistence response is lost.
+ */
+export async function insertLeadWithReceipt(
+	lead: CrmLead,
+	submissionId: string,
+	fingerprint: string,
+): Promise<InsertLeadWithReceiptResult> {
+	if (!RECEIPT_UUID_PATTERN.test(submissionId) || !/^[0-9a-f]{64}$/.test(fingerprint) ||
+		!RECEIPT_LEAD_ID_PATTERN.test(lead.id) || !Number.isSafeInteger(lead.createdAt) || lead.createdAt < 0 ||
+		!Number.isFinite(new Date(lead.createdAt).getTime())) {
+		return { status: 'unavailable' };
+	}
+
+	// Generated only on the server. The losing candidate in a race is discarded.
+	const eventId = randomUUID();
+	const command = (leadId: string, mode: 'create' | 'replay'): Cmd => [
+		'EVAL', INSERT_LEAD_WITH_RECEIPT_LUA, 5,
+		`crm:receipt:${submissionId.toLowerCase()}`,
+		`crm:lead:${leadId}`,
+		'crm:idx:time',
+		`crm:idx:email:${emailKey(lead.email)}`,
+		`crm:metrics:${dayKey(lead.createdAt)}`,
+		leadId, JSON.stringify(lead), lead.createdAt, eventId, fingerprint,
+		`service:${lead.service || 'Unspecified'}`, `form:${lead.form}`, mode,
+	];
+	let targetLeadId = lead.id;
+	let replayOnly = false;
+	let results = await redis([command(targetLeadId, 'create')]);
+	let result = results?.[0];
+	if (Array.isArray(result) && result.length === 2 && result[0] === 'lookup' &&
+		typeof result[1] === 'string' && RECEIPT_LEAD_ID_PATTERN.test(result[1])) {
+		targetLeadId = result[1];
+		replayOnly = true;
+		// Only this explicit read-only outcome permits a second request. Never
+		// retry a failed/uncertain write under another lead or event identifier.
+		results = await redis([command(targetLeadId, 'replay')]);
+		result = results?.[0];
+	}
+	if (Array.isArray(result) && result.length === 3 &&
+		(result[0] === 'created' || result[0] === 'replayed') &&
+		typeof result[1] === 'string' && RECEIPT_UUID_PATTERN.test(result[1]) &&
+		result[2] === targetLeadId &&
+		(result[0] !== 'created' || (!replayOnly && targetLeadId === lead.id && result[1] === eventId))) {
+		return { status: result[0], receipt: { eventId: result[1] }, leadId: targetLeadId };
+	}
+	if (Array.isArray(result) && result.length === 1 && result[0] === 'conflict') {
+		return { status: 'conflict' };
+	}
+	if (results) noteFailure('lead_receipt_unavailable');
+	insertLeadInMemory(lead);
+	return { status: 'unavailable' };
 }
 
 export async function getLead(id: string): Promise<CrmLead | null> {

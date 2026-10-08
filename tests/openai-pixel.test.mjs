@@ -22,7 +22,7 @@ async function compiledBridge(googleEnabled = 'true', pixelEnabled = 'true') {
  return result.outputFiles[0].text;
 }
 function fixture({ advertising = null, hostname = 'www.paulaambrosio.com', pathname = '/contact/',
- storageThrows = false, storageWriteThrows = false, foreign = false, source = code } = {}) {
+ storageThrows = false, storageWriteThrows = false, foreign = false, source = code, session = new Map() } = {}) {
  let now = 1802000000000;
  let raw = advertising === null ? null : JSON.stringify({ version: 1, at: now, analytics: true, advertising });
  const listeners = new Map(); const scripts = new Map(); const timers = new Map();
@@ -47,6 +47,7 @@ function fixture({ advertising = null, hostname = 'www.paulaambrosio.com', pathn
  vm.runInNewContext(source, { module, exports: module.exports, window, document,
   location: { hostname, pathname }, Date: { now: () => now },
   Event: class { constructor(type) { this.type = type; } }, queueMicrotask() {},
+  sessionStorage: { getItem: key => session.get(key) ?? null, setItem: (key, value) => session.set(key, value), removeItem: key => session.delete(key) },
   localStorage: {
    getItem() { if (storageThrows) throw Error('denied'); return raw; },
    setItem(key, value) { if (storageWriteThrows) throw Error('write denied'); raw = value; },
@@ -122,8 +123,8 @@ test('previews, private routes, kill switch and a foreign SDK do not initialize'
   const x = fixture({ advertising: true, ...options }); assert.equal(x.loads.length, 0);
  }
 });
-test('contact acceptance and CRM contracts are not wired to the Pixel', async () => {
- for (const path of ['../src/components/Analytics.astro', '../src/pages/api/contact.ts', '../src/lib/crm/store.ts']) {
+test('only the public form connects server receipts; CRM never sends Pixel events', async () => {
+ for (const path of ['../src/pages/api/contact.ts', '../src/lib/crm/store.ts']) {
   assert.doesNotMatch(await readFile(new URL(path, import.meta.url), 'utf8'), /openai-pixel|lead_created|\boaiq\b/);
  }
  const layout = await readFile(new URL('../src/layouts/Layout.astro', import.meta.url), 'utf8');
@@ -200,4 +201,76 @@ test('all three advertising landings include the same consent-gated base bootstr
   assert.match(source, /<head><OpenAIPixel \/>/);
   assert.match(source, /<GoogleConsent \/>/);
  }
+});
+
+
+const acceptance = { version: 1, eventId: '934b02bd-40fb-4ff1-836f-8f2f390c1077' };
+const measurements = x => x.vendorCalls.filter(([name]) => name === 'measure');
+test('accepted lead emits only minimal standard event, opaque ID and personalization opt-out', () => {
+ const x = fixture({ advertising: true }); x.sdkReady();
+ assert.equal(x.browser.measureAcceptedLead({ ...acceptance, email: 'private@example.test', message: 'secret', budget: 'private' }), true);
+ assert.deepEqual(JSON.parse(JSON.stringify(measurements(x))), [
+  ['measure', 'lead_created', { type: 'customer_action' }, { event_id: acceptance.eventId, opt_out: true }],
+ ]);
+ assert.equal(x.browser.measureAcceptedLead(acceptance), false);
+ assert.equal(measurements(x).length, 1);
+});
+test('HTTP success, generic form_success, malformed and absent receipts cannot measure', () => {
+ const x = fixture({ advertising: true }); x.sdkReady();
+ for (const value of [null, {}, {ok:true}, {event:'form_success'}, {eventId:acceptance.eventId},
+  {version:1,eventId:'private@example.test'}, {version:2,eventId:acceptance.eventId}]) {
+  assert.equal(x.browser.measureAcceptedLead(value), false);
+ }
+ assert.equal(measurements(x).length, 0);
+});
+test('absent and denied measurement consent neither sends nor replays later', () => {
+ for (const advertising of [null, false]) {
+  const x = fixture({ advertising });
+  assert.equal(x.browser.measureAcceptedLead(acceptance), false);
+  assert.equal(x.loads.length, 0);
+  x.setChoice(true); x.fire('paula:consent-change'); x.sdkReady();
+  assert.equal(measurements(x).length, 0);
+ }
+});
+test('receipt waits for the SDK once and is dropped if consent is revoked before load', () => {
+ const x = fixture({ advertising: true });
+ assert.equal(x.browser.measureAcceptedLead(acceptance), true);
+ assert.equal(x.browser.measureAcceptedLead(acceptance), false);
+ x.sdkReady(); assert.equal(measurements(x).length, 1);
+ const y = fixture({ advertising: true });
+ y.browser.measureAcceptedLead(acceptance);
+ const pendingScript = y.loads[0]; y.setChoice(false); y.fire('paula:consent-change');
+ // A removed script can still finish executing. Its late load callback must be harmless.
+ y.window.oaiq = (...args) => y.vendorCalls.push(args); pendingScript.onload();
+ assert.equal(measurements(y).length, 0);
+});
+test('consent is checked again when the receipt arrives, including expiry and storage failures', () => {
+ for (const mode of ['withdrawn', 'expired', 'unreadable', 'failed-save']) {
+  const x = fixture({ advertising: true }); x.sdkReady();
+  if (mode === 'withdrawn') x.setChoice(false);
+  if (mode === 'expired') x.expire();
+  if (mode === 'unreadable') x.setStorageFailure();
+  if (mode === 'failed-save') x.fire('paula:consent-denied');
+  assert.equal(x.browser.measureAcceptedLead(acceptance), false);
+  assert.equal(measurements(x).length, 0);
+ }
+});
+test('opaque session receipt IDs suppress replay after reload without storing form data', () => {
+ const session = new Map();
+ const x = fixture({ advertising: true, session }); x.sdkReady(); x.browser.measureAcceptedLead(acceptance);
+ assert.deepEqual(JSON.parse(session.get('paula_openai_measured_v1')), [acceptance.eventId]);
+ const y = fixture({ advertising: true, session }); y.sdkReady();
+ assert.equal(y.browser.measureAcceptedLead(acceptance), false);
+ assert.equal(measurements(y).length, 0);
+ y.setChoice(false); y.fire('paula:consent-change');
+ assert.equal(session.has('paula_openai_measured_v1'), false);
+});
+
+test('a denied fresh document clears opaque receipt history left by an earlier granted page', () => {
+ const session = new Map([['paula_openai_measured_v1', JSON.stringify([acceptance.eventId])]]);
+ const x = fixture({advertising:false,session});
+ assert.equal(session.size,0);
+ assert.equal(x.loads.length,0);
+ x.setChoice(true); x.fire('paula:consent-change');
+ assert.equal(x.loads.length,1,'initial denial must not latch a later voluntary grant');
 });
