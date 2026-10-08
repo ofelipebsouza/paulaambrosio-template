@@ -191,3 +191,13 @@ test('Pixel-only configuration retains consent UI availability and withdrawal re
   assert.equal(module.exports.configured, expected, `consent markup with Google=${googleEnabled}, Pixel=${pixelEnabled}`);
  }
 });
+
+
+test('all three advertising landings include the same consent-gated base bootstrap once', async () => {
+ for (const page of ['change-order', 'host-up', 'layout-starter-kit']) {
+  const source = await readFile(new URL(`../src/pages/${page}.astro`, import.meta.url), 'utf8');
+  assert.equal((source.match(/<OpenAIPixel\s*\/>/g) ?? []).length, 1);
+  assert.match(source, /<head><OpenAIPixel \/>/);
+  assert.match(source, /<GoogleConsent \/>/);
+ }
+});
