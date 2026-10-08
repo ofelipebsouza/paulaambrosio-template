@@ -1,7 +1,7 @@
 /** Public canonical pages only; excluding a URL here does not remove its page. */
 export const SITEMAP_ORIGIN = 'https://www.paulaambrosio.com';
 const PRIVATE_ROOTS = new Set(['admin', 'api', 'auth', 'login', 'logout', 'sign-in', 'sign-out']);
-const NOINDEX_PATHS = new Set(['/404', '/sitemap-pages', '/style-guides-and-branding']);
+const NOINDEX_PATHS = new Set(['/404', '/sitemap-pages', '/style-guides-and-branding', '/host-up', '/layout-starter-kit', '/change-order']);
 
 export function isPublicSitemapUrl(value) {
  try {

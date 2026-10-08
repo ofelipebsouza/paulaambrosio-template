@@ -31,3 +31,13 @@ test('checkout stays pending and discovery is restricted to biolinks', () => {
   for (const component of ['Header', 'Footer']) assert.ok(!read(`src/components/${component}.astro`).includes(`/${slug}/`));
  }
 });
+
+
+test('advertising product landings are noindex, follow and remain crawlable', () => {
+ for (const slug of ['host-up', 'layout-starter-kit', 'change-order']) {
+  const head = read(`src/data/landings/${slug}-head.html`);
+  assert.match(head, /<meta name="robots" content="noindex, follow">/);
+  assert.ok(!read('public/robots.txt').includes('Disallow: /' + slug));
+  assert.ok(read('src/pages/links.astro').includes(`href: '/${slug}/'`));
+ }
+});
