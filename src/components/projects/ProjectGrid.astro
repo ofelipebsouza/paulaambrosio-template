@@ -29,7 +29,7 @@ const { projects, columns = 3 } = Astro.props;
 			</a>
 			<div class="mt-5">
 				<p class="eyebrow text-stone">{project.data.projectType === 'Renders' ? 'Render' : project.data.location ?? project.data.projectType}</p>
-				<h3 class="font-display mt-2 text-2xl">
+				<h3 class="font-display mt-2 text-2xl uppercase">
 					<a
 						href={projectUrl(project.id)}
 						class="hover:text-stone"
