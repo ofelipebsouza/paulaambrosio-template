@@ -62,3 +62,16 @@ losing the optional add-on selection. It stores no language cookie or browser
 storage. The query is replaced, preserving the URL's other parameters and anchor.
 The canonical remains `/change-order/`; the selector needs JavaScript. No duplicate
 language content is inserted into the accessibility tree.
+
+
+## Search indexing policy
+
+The three advertising landings (`/host-up/`, `/layout-starter-kit/`, and
+`/change-order/`, including its language-query variants) emit `noindex, follow`
+in their HTML head and are excluded from the XML sitemap. They remain publicly
+accessible and linked from `/links/`. Do not disallow their crawling in robots.txt:
+crawlers must be able to fetch the page to see the noindex instruction.
+
+This is a configured indexing directive, not proof of immediate removal from
+search results. Search engines apply it after recrawling; no Search Console
+removal request or confirmation of prior indexing status was performed.

@@ -3,7 +3,7 @@ import test from 'node:test';
 import { isPublicSitemapUrl, isNoindexSitemapEntry, SITEMAP_ORIGIN } from './sitemap-policy.mjs';
 
 test('private API/admin/auth routes and noindex pages are excluded', () => {
- for (const path of ['/admin', '/admin/', '/admin/login/', '/admin/leads/123/', '/api/contact/', '/auth/callback/', '/login/', '/logout/', '/sign-in/', '/sign-out/', '/404/', '/sitemap-pages/', '/style-guides-and-branding/', '/%61dmin/']) {
+ for (const path of ['/admin', '/admin/', '/admin/login/', '/admin/leads/123/', '/api/contact/', '/auth/callback/', '/login/', '/logout/', '/sign-in/', '/sign-out/', '/404/', '/sitemap-pages/', '/style-guides-and-branding/', '/%61dmin/', '/host-up/', '/layout-starter-kit/', '/change-order/', '/change-order']) {
   assert.equal(isPublicSitemapUrl(SITEMAP_ORIGIN + path), false, path);
  }
 });
