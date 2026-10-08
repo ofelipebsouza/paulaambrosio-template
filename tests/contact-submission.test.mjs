@@ -63,6 +63,8 @@ function fixture(responses, { formId = 'contact', email = 'studio@example.test',
 	let navigations = 0;
 	const location = { pathname: '/contact/', set href(value) { navigations++; } };
 	const events = [];
+	const accepted = [];
+	let uuids = 0;
 	const requests = [];
 	class FormData {
 		constructor(form) { this.fields = new Map(form.fields); }
@@ -81,11 +83,11 @@ function fixture(responses, { formId = 'contact', email = 'studio@example.test',
 		return typeof result === 'function' ? result() : result;
 	};
 	vm.runInNewContext(code, {
-		document, window: { location }, fetch, FormData, CustomEvent, Element,
-		boundary: { CONTACT_FIELDS, HONEYPOT_FIELD, ANALYTICS_EVENTS, trackEvent: (event, data) => events.push({ event, data }) },
+		document, window: { location, crypto: { randomUUID: () => `934b02bd-40fb-4ff1-836f-${String(++uuids).padStart(12,'0')}` } }, fetch, FormData, CustomEvent, Element,
+		boundary: { CONTACT_FIELDS, HONEYPOT_FIELD, ANALYTICS_EVENTS, measureAcceptedLead: receipt => accepted.push(receipt), trackEvent: (event, data) => events.push({ event, data }) },
 	});
 	return {
-		form, button, status, events, requests,
+		form, button, status, events, requests, accepted,
 		submit: () => form.fire('submit', { preventDefault() {} }),
 		link: () => status.children.find(child => child?.tagName === 'A'),
 		resets: () => resets, navigations: () => navigations,
@@ -181,4 +183,26 @@ test('retry clears stale fallback, prevents duplicate submissions, and restores 
 	assertRestored(x);
 	assert.equal(x.resets(), 1);
 	assert.deepEqual(x.events.map(item => item.event), ['form_submit', 'form_error', 'form_submit', 'form_success']);
+});
+
+
+test('only server acceptance is forwarded, including accepted CRM writes followed by SMTP failure', async () => {
+ const receipt = {version:1,eventId:'934b02bd-40fb-4ff1-836f-8f2f390c1077'};
+ for (const status of [200,502,503]) {
+  const x = fixture([Response.json({ok:status===200,error:status===502?'delivery_failed':'delivery_unavailable',leadAcceptance:receipt},{status})]);
+  await x.submit();
+  assert.deepEqual(x.accepted, [receipt]);
+  if(status!==200) assertError(x);
+ }
+ for(const status of [200,403,422,429,500]) {
+  const x=fixture([response(status)]); await x.submit(); assert.equal(x.accepted.length,0);
+ }
+});
+test('a retried unchanged inquiry reuses its nonce while edited input gets a new nonce', async () => {
+ const x=fixture([new Error('lost response'),response(502,'delivery_failed'),response(502,'delivery_failed')]);
+ await x.submit(); await x.submit();
+ assert.equal(x.requests[0].headers['X-Submission-Id'],x.requests[1].headers['X-Submission-Id']);
+ x.form.fields.set('message','Changed inquiry'); await x.submit();
+ assert.notEqual(x.requests[1].headers['X-Submission-Id'],x.requests[2].headers['X-Submission-Id']);
+ assert.equal(x.accepted.length,0);
 });

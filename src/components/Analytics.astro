@@ -10,6 +10,7 @@ import SpeedInsights from '@vercel/speed-insights/astro';
 	import { trackEvent } from '../lib/analytics/track';
 	import { ANALYTICS_EVENTS } from '../lib/analytics/events';
 	import { CONTACT_FIELDS, HONEYPOT_FIELD } from '../lib/contact-form';
+	import { measureAcceptedLead } from '../lib/openai-pixel/browser';
 
 	const globalWindow = window as Window & { __paulaAnalyticsInitialized?: boolean };
 
@@ -171,6 +172,8 @@ import SpeedInsights from '@vercel/speed-insights/astro';
 				submitButton.textContent = sending ? 'Sending…' : submitLabel;
 			};
 
+			let retryId: string | undefined;
+			let retryPayload = '';
 			form.addEventListener('submit', async (event) => {
 				event.preventDefault();
 				if (submitButton?.disabled) return;
@@ -179,6 +182,12 @@ import SpeedInsights from '@vercel/speed-insights/astro';
 				const data = new FormData(form);
 				const service = String(data.get('service') ?? '').trim();
 				const propertyType = String(data.get('propertyType') ?? '').trim();
+				// Ephemeral form-local comparison only; no input values enter measurement.
+				const payloadSnapshot = JSON.stringify(CONTACT_FIELDS.map(field => String(data.get(field.name) ?? '')));
+				if (payloadSnapshot !== retryPayload) {
+					retryPayload = payloadSnapshot;
+					retryId = window.crypto?.randomUUID?.();
+				}
 
 				setSending(true);
 				if (status) status.textContent = '';
@@ -192,11 +201,15 @@ import SpeedInsights from '@vercel/speed-insights/astro';
 					const response = await fetch(action, {
 						method: form.method || 'POST',
 						body: data,
-						headers: { Accept: 'application/json' },
+						headers: { Accept: 'application/json', ...(retryId ? { 'X-Submission-Id': retryId } : {}) },
 					});
 
+					const result = await response.json().catch(() => null) as { error?: string; leadAcceptance?: unknown } | null;
+					// SMTP may fail after durable acceptance. Never infer a lead from status/ok.
+					if ([200, 502, 503].includes(response.status) && result?.leadAcceptance) {
+						measureAcceptedLead(result.leadAcceptance);
+					}
 					if (response.status === 502 || response.status === 503) {
-						const result = await response.json().catch(() => null) as { error?: string } | null;
 						if (
 							(response.status === 502 && result?.error === 'delivery_failed') ||
 							(response.status === 503 && result?.error === 'delivery_unavailable')
@@ -212,6 +225,8 @@ import SpeedInsights from '@vercel/speed-insights/astro';
 						service: service || undefined,
 						property_type: propertyType || undefined,
 					});
+					retryId = undefined;
+					retryPayload = '';
 					form.reset();
 					form.dispatchEvent(new CustomEvent('analytics-form-success'));
 				} catch {

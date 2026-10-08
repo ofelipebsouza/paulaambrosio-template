@@ -86,7 +86,7 @@ const breadcrumbs: BreadcrumbEntry[] = [{ name: 'Privacy', url: '/privacy' }];
 				See <a href="https://policies.google.com/privacy">Google's Privacy Policy</a> for how Google handles data.
 			</p>
 			<p>
-				We save only your optional-tool choices and their date in this browser. Your choices are
+				Our preference record saves your optional-tool choices and their date in this browser. Your choices are
 				valid for up to 90 days before we ask again.
 				You can reject or change them through Privacy choices without losing access to our forms.
 				Withdrawing permission immediately stops our site from sending further measurement events
@@ -107,12 +107,20 @@ const breadcrumbs: BreadcrumbEntry[] = [{ name: 'Privacy', url: '/privacy' }];
 				messages to the Pixel. Depending on the Pixel's account settings, OpenAI's automatic advanced
 				matching may detect supported contact information entered on this site and hash it in your
 				browser for conversion matching. We have not verified that this automatic matching is disabled.
-				Hashing does not make this information anonymous. This site currently installs only the base
-				Pixel and does not send lead-created conversion events.
+				Hashing does not make this information anonymous. With advertising measurement permission,
+				we send a lead-created event only after our server confirms that an inquiry passed its
+				acceptance checks and was saved in our persistent project records. The event contains an
+				opaque random identifier and the event type, not the inquiry fields. We opt these events
+				out of future user-level personalization. This records acceptance of an inquiry, not a
+				qualified opportunity, an email delivery or a sale.
 			</p>
 			<p>
+				To avoid counting the same accepted inquiry again, we retain up to 100 opaque event
+				identifiers in this browser tab's session storage while advertising measurement is allowed.
+				These identifiers contain no contact fields. Our server keeps a retry record for seven days
+				so an unchanged retry can reuse the same acceptance identifier.
 				The Pixel is not loaded before advertising permission is granted. Withdrawing permission
-				instructs the Pixel to stop measurement and removes its first-party attribution cookies.
+				instructs the Pixel to stop measurement and removes its first-party attribution cookies and our session event identifiers.
 				Reload after finishing your form to unload code already loaded; previously transmitted data
 				cannot be recalled by changing these choices. See
 				<a href="https://openai.com/policies/privacy-policy/">OpenAI's Privacy Policy</a> and
