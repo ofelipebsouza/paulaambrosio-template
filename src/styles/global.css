@@ -148,6 +148,12 @@
 	.btn-primary:hover { background: var(--color-button-hover); color: var(--color-white); }
 	.btn-primary:focus-visible { outline: 2px solid var(--color-coffee); outline-offset: 3px; }
 
+	/* Photo and dark heroes: the black button disappears against the image.
+	   Same shape, inverted to bone so it reads on any hero. */
+	.btn-primary.btn-on-dark { background: var(--color-bone); color: var(--color-ink); }
+	.btn-primary.btn-on-dark:hover { background: var(--color-brass); color: var(--color-ink); }
+	.btn-primary.btn-on-dark:focus-visible { outline-color: var(--color-bone); }
+
 	.btn-secondary {
 		display: inline-flex;
 		align-items: center;

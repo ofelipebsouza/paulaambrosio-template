@@ -20,6 +20,12 @@ const {
 } = Astro.props;
 // Compare on the normalised route (served URLs carry a trailing slash).
 const secondaryRoute = secondaryHref.replace(/\/+$/, '') || '/';
+
+// Content files declare targets like "/contact"; served URLs use "/contact/".
+// Without the slash every link costs a redirect (and the link check fails).
+const trailingSlash = (href: string) =>
+	/^\/(?!\/)/.test(href) && href !== '/' && !href.endsWith('/') ? `${href}/` : href;
+
 const secondaryAnalyticsEvent = secondaryRoute === '/services'
 	? 'cta_explore_services'
 	: secondaryRoute === '/contact'
@@ -49,7 +55,7 @@ const secondaryAnalyticsEvent = secondaryRoute === '/services'
 				data-analytics-location={analyticsLocation}
 			>{primaryLabel}</button>
 			<a
-				href={secondaryHref}
+				href={trailingSlash(secondaryHref)}
 				class="btn-secondary"
 				data-analytics-event={secondaryAnalyticsEvent}
 				data-analytics-location={analyticsLocation}

@@ -85,6 +85,15 @@ const ctas = service.data.ctas;
 				<Breadcrumbs items={breadcrumbs} tone="light" />
 				<h1 class="font-display mt-8 max-w-3xl text-4xl lg:text-6xl">{service.data.title}</h1>
 				{sub && <p class="mt-4 max-w-2xl text-lg leading-relaxed text-bone/80">{sub}</p>}
+				<div class="mt-8">
+					<button
+						type="button"
+						class="inquiry-open btn-primary btn-on-dark cursor-pointer"
+						data-analytics-event="cta_start_project"
+						data-analytics-location="hero"
+						data-analytics-service={service.id}
+					>{ctas?.primary ?? 'Start Your Project'}</button>
+				</div>
 			</div>
 		</section>
 
@@ -127,6 +136,16 @@ const ctas = service.data.ctas;
 					</div>
 					<ProjectGrid projects={featured} columns={3} />
 				</div>
+				<div class="container-editorial mt-16 text-center">
+					<p class="eyebrow text-stone mb-6">Ready to begin?</p>
+					<button
+						type="button"
+						class="inquiry-open btn-primary cursor-pointer"
+						data-analytics-event="cta_start_project"
+						data-analytics-location="after_projects"
+						data-analytics-service={service.id}
+					>{ctas?.primary ?? 'Start Your Project'}</button>
+				</div>
 			</section>
 		)}
 
@@ -146,7 +165,7 @@ const ctas = service.data.ctas;
 			primaryAnalyticsEvent={ctas?.primary?.toLowerCase().includes('turnkey') ? 'cta_turnkey' : 'cta_start_project'}
 			analyticsLocation="final_cta"
 			secondaryLabel={ctas?.secondary ?? 'Explore Our Work'}
-			secondaryHref="/projects/"
+			secondaryHref={ctas?.secondaryHref ?? '/projects/'}
 		/>
 	</article>
 </Layout>
