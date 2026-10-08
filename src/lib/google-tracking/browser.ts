@@ -1,3 +1,4 @@
+import { openAIPixelAvailable, openAIPixelNeedsReload } from '../openai-pixel/browser';
 import { GOOGLE_TRACKING } from './config';
 import { CONSENT_KEY, createTracking, parseConsent, type ConsentChoice, type SavedConsent } from './core';
 
@@ -28,10 +29,13 @@ function runtime() {
 export function savedConsent(): SavedConsent | null {
  try { return parseConsent(localStorage.getItem(CONSENT_KEY), Date.now()); } catch { return null; }
 }
-export function trackingAvailable(): boolean { return runtime()?.ready() ?? false; }
-export function reloadRecommended(): boolean { return runtime()?.needsReload() ?? false; }
+export function trackingAvailable(): boolean { return (runtime()?.ready() ?? false) || openAIPixelAvailable(); }
+export function reloadRecommended(): boolean { return (runtime()?.needsReload() ?? false) || openAIPixelNeedsReload(); }
 export function restoreConsent(): void {
  try { const choice = savedConsent(); if (choice) runtime()?.consent(choice); } catch { /* Form UX never depends on tracking. */ }
+}
+function notifyConsentChange(denied = false): void {
+ try { window.dispatchEvent(new Event(denied ? 'paula:consent-denied' : 'paula:consent-change')); } catch { /* Optional listeners must never change preference persistence. */ }
 }
 export function saveConsent(choice: ConsentChoice): boolean {
  try {
@@ -41,8 +45,10 @@ export function saveConsent(choice: ConsentChoice): boolean {
   // Never claim persistence succeeded. Remove an old grant if storage permits it.
   try { localStorage.removeItem(CONSENT_KEY); } catch { /* UI reports the failure. */ }
   try { if (runtime()?.consent({ analytics: false, advertising: false })) clearGoogleCookies(); } catch { /* fail closed */ }
+  notifyConsentChange(true);
   return false;
  }
+ notifyConsentChange();
  try {
   if (runtime()?.consent(choice)) clearGoogleCookies();
   return true;

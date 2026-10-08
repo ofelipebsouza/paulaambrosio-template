@@ -7,6 +7,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Analytics from '../components/Analytics.astro';
 import GoogleConsent from '../components/GoogleConsent.astro';
+import OpenAIPixel from '../components/OpenAIPixel.astro';
 
 export interface Props {
 	title: string;
@@ -38,6 +39,7 @@ const titleTemplate = title.includes(SITE.name) ? title : `${title} | ${SITE.nam
 <!doctype html>
 <html lang="en">
 	<head>
+		<OpenAIPixel />
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta name="generator" content={Astro.generator} />

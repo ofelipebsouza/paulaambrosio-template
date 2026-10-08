@@ -1,6 +1,7 @@
 ---
 import { GOOGLE_TRACKING } from '../lib/google-tracking/config';
-const configured = GOOGLE_TRACKING.enabled && /^GTM-[A-Z0-9]{6,}$/.test(GOOGLE_TRACKING.containerId) && /^[1-9]\d*$/.test(GOOGLE_TRACKING.reviewedVersion);
+import { OPENAI_PIXEL_ENABLED } from '../lib/openai-pixel/config';
+const configured = OPENAI_PIXEL_ENABLED || GOOGLE_TRACKING.enabled && /^GTM-[A-Z0-9]{6,}$/.test(GOOGLE_TRACKING.containerId) && /^[1-9]\d*$/.test(GOOGLE_TRACKING.reviewedVersion);
 ---
 {configured && (
  <div id="paula-consent-root" hidden>
