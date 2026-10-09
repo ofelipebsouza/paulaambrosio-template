@@ -46,6 +46,7 @@ const breadcrumbs: BreadcrumbEntry[] = [
 	{ name: service.data.title, url: path },
 ];
 const ctas = service.data.ctas;
+const isResidential = service.id === 'luxury-residential-interior-design-miami';
 ---
 
 <Layout
@@ -85,7 +86,7 @@ const ctas = service.data.ctas;
 				<Breadcrumbs items={breadcrumbs} tone="light" />
 				<h1 class="font-display mt-8 max-w-3xl text-4xl lg:text-6xl">{service.data.title}</h1>
 				{sub && <p class="mt-4 max-w-2xl text-lg leading-relaxed text-bone/80">{sub}</p>}
-				<div class="mt-8">
+				<div class:list={['mt-8', isResidential && 'flex flex-col items-start gap-4 sm:flex-row sm:flex-wrap sm:items-center']}>
 					<button
 						type="button"
 						class="inquiry-open btn-primary btn-on-dark cursor-pointer"
@@ -93,6 +94,12 @@ const ctas = service.data.ctas;
 						data-analytics-location="hero"
 						data-analytics-service={service.id}
 					>{ctas?.primary ?? 'Start Your Project'}</button>
+					{isResidential && (
+						<>
+							<a href="https://wa.me/17862085412" class="btn-primary btn-on-dark" data-analytics-location="residential_hero">WhatsApp</a>
+							<a href="sms:+17862085412" class="btn-primary btn-on-dark">Send SMS</a>
+						</>
+					)}
 				</div>
 			</div>
 		</section>
