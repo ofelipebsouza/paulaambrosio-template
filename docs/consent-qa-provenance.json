@@ -1,0 +1,12 @@
+{
+  "sourceCommit": "5b7d3ba0b6e10c7d61426cc843da0ce8ad16ebdc",
+  "fixtureSha256": "5020a159d15848f36eaf71337d00cad1323bf5570c17e09cee4722ae70dc9702",
+  "sources": {
+    "src/components/Analytics.astro": "e6444de2103ff07d9e4a50fb74d32e354aafc73621c6bbad549d9ac93e371777",
+    "src/components/GoogleConsent.astro": "f6a8d8ea7b06531edb39af4ece853ff5d92575562c27fee35b85b542ab3ee002",
+    "src/lib/google-tracking/core.ts": "65afbae660c1391805950e9cb6adf07921541c077af39d63403e2291d998f6ad",
+    "src/lib/google-tracking/browser.ts": "bb238d00eb0d6834ff845e168cd5afa2992340804fc5c93bf6812de51ca7a6b3",
+    "src/lib/google-tracking/config.ts": "0406ae03bdaa514f8289e29ee52d9fc96185bf125a6546cfdbcb3979cb270a0a",
+    "src/lib/analytics/track.ts": "f29abc5d1fbb8c7a7e057e99a6f10831512f0853f14d8dbf300d2e29879e55c1"
+  }
+}
