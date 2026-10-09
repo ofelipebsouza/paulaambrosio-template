@@ -86,7 +86,7 @@ const isResidential = service.id === 'luxury-residential-interior-design-miami';
 				<Breadcrumbs items={breadcrumbs} tone="light" />
 				<h1 class="font-display mt-8 max-w-3xl text-4xl lg:text-6xl">{service.data.title}</h1>
 				{sub && <p class="mt-4 max-w-2xl text-lg leading-relaxed text-bone/80">{sub}</p>}
-				<div class:list={['mt-8', isResidential && 'flex flex-col items-start gap-4 sm:flex-row sm:flex-wrap sm:items-center']}>
+				<div class="mt-8">
 					<button
 						type="button"
 						class="inquiry-open btn-primary btn-on-dark cursor-pointer"
@@ -94,12 +94,6 @@ const isResidential = service.id === 'luxury-residential-interior-design-miami';
 						data-analytics-location="hero"
 						data-analytics-service={service.id}
 					>{ctas?.primary ?? 'Start Your Project'}</button>
-					{isResidential && (
-						<>
-							<a href="https://wa.me/17862085412" class="btn-primary btn-on-dark" data-analytics-location="residential_hero">WhatsApp</a>
-							<a href="sms:+17862085412" class="btn-primary btn-on-dark">Send SMS</a>
-						</>
-					)}
 				</div>
 			</div>
 		</section>
@@ -174,5 +168,16 @@ const isResidential = service.id === 'luxury-residential-interior-design-miami';
 			secondaryLabel={ctas?.secondary ?? 'Explore Our Work'}
 			secondaryHref={ctas?.secondaryHref ?? '/projects/'}
 		/>
+		{isResidential && (
+			<aside class="bg-linen pb-12" aria-label="Message the studio">
+				<div class="container-editorial text-center">
+					<p class="text-sm text-slate">Prefer to send a message?</p>
+					<div class="mt-4 flex flex-wrap items-center justify-center gap-3">
+						<a href="https://wa.me/17862085412" class="btn-secondary min-h-11" data-analytics-location="residential_bottom">WhatsApp</a>
+						<a href="sms:+17862085412" class="btn-secondary min-h-11" data-analytics-location="residential_bottom">Send SMS</a>
+					</div>
+				</div>
+			</aside>
+		)}
 	</article>
 </Layout>
