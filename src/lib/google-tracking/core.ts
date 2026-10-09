@@ -21,7 +21,7 @@ const SERVICES: Record<string, string> = {
 };
 const EVENTS = new Set(['page_view', 'cta_start_project', 'cta_explore_services', 'cta_view_project',
  'cta_turnkey', 'cta_contact', 'form_start', 'form_submit', 'form_error', 'phone_click',
- 'email_click', 'whatsapp_click', 'instagram_click', 'portfolio_open', 'service_open', 'faq_open']);
+ 'email_click', 'whatsapp_click', 'sms_click', 'instagram_click', 'portfolio_open', 'service_open', 'faq_open']);
 
 export function parseConsent(raw: string | null, now: number): SavedConsent | null {
  try {

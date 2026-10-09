@@ -75,6 +75,10 @@ import SpeedInsights from '@vercel/speed-insights/astro';
 				trackEvent(ANALYTICS_EVENTS.WHATSAPP_CLICK, linkMetadata);
 				fetch('/api/analytics/collect/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ page: page(), event: 'whatsapp_click' }) }).catch(() => {});
 			}
+			if (href.startsWith('sms:')) {
+				trackEvent(ANALYTICS_EVENTS.SMS_CLICK, linkMetadata);
+				fetch('/api/analytics/collect/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ page: page(), event: 'sms_click' }) }).catch(() => {});
+			}
 			if (/instagram\.com/i.test(href)) {
 				trackEvent(ANALYTICS_EVENTS.INSTAGRAM_CLICK, linkMetadata);
 				fetch('/api/analytics/collect/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ page: page(), event: 'instagram_click' }) }).catch(() => {});

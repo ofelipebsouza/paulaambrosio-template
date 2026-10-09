@@ -3,7 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
 import { webPageSchema, schemaScript } from '../lib/seo';
 import type { BreadcrumbEntry } from '../lib/seo';
-import { SITE, SOCIAL_LINKS } from '../config';
+import { SITE, SOCIAL_LINKS, MESSAGING } from '../config';
 import Turnstile from '../components/ui/Turnstile.astro';
 import UtmFields from '../components/UtmFields.astro';
 import {
@@ -70,6 +70,12 @@ const maxLengthFor = (field: ContactFieldName) => FIELD_LIMITS[field];
 				<p><a href="tel:+17866589478" class="hover:text-stone">+1 (786) 658-9478</a></p>
 					<p><a href="tel:+17862085412" class="hover:text-stone">+1 (786) 208-5412</a></p>
 				</address>
+
+				<div class="mt-6 flex flex-wrap gap-3">
+					<a href={MESSAGING.whatsapp} class="btn-secondary" target="_blank" rel="noopener noreferrer">WhatsApp us</a>
+					<a href={MESSAGING.sms} class="btn-secondary">Send an SMS</a>
+				</div>
+
 				<div class="mt-8">
 					<p class="eyebrow text-stone">Follow Us</p>
 					<div class="mt-4 flex flex-wrap gap-3">

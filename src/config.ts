@@ -19,6 +19,18 @@ export const SITE = {
 	locale: 'en_US',
 } as const;
 
+/**
+ * Messaging links for the studio's second line. Derived from `SITE.phone2` so
+ * the digits exist in exactly one place: WhatsApp (`wa.me`) and SMS (`sms:`)
+ * always follow whatever number the config carries.
+ */
+const phone2Digits = SITE.phone2.replace(/\D/g, '');
+
+export const MESSAGING = {
+	whatsapp: `https://wa.me/${phone2Digits}`,
+	sms: `sms:+${phone2Digits}`,
+} as const;
+
 export const PERSON = {
 	name: 'Paula Ambrosio',
 	jobTitle: 'Principal Designer & Cofounder',

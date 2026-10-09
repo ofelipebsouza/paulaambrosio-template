@@ -5,7 +5,7 @@ import { getCollection } from 'astro:content';
 import paulaProfile from '../assets/paula-profile.webp';
 import { webPageSchema, schemaScript } from '../lib/seo';
 import type { BreadcrumbEntry } from '../lib/seo';
-import { SITE, SOCIAL_LINKS, projectUrl } from '../config';
+import { SITE, SOCIAL_LINKS, MESSAGING, projectUrl } from '../config';
 
 const breadcrumbs: BreadcrumbEntry[] = [{ name: 'Links', url: '/links' }];
 
@@ -249,6 +249,8 @@ const linkGroups: Array<{
 			<div class="grid gap-3 sm:grid-cols-2">
 				<a href={`tel:${SITE.phoneE164}`} class="btn-secondary block px-5 text-center">{SITE.phone}</a>
 				<a href={`mailto:${SITE.email}`} class="btn-secondary block px-5 text-center">{SITE.email}</a>
+				<a href={MESSAGING.whatsapp} class="btn-secondary block px-5 text-center" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+				<a href={MESSAGING.sms} class="btn-secondary block px-5 text-center">SMS</a>
 			</div>
 			<p class="mt-3 text-center text-xs text-slate">
 				<a href="tel:+17862085412" class="underline-offset-4 transition-colors hover:text-coffee hover:underline">{SITE.phone2}</a>
