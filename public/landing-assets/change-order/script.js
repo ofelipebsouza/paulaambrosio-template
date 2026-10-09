@@ -121,6 +121,41 @@ const englishCopy = {
  "Edições em português e inglês com política de alterações, formulário de solicitação, registro de mudanças, referência de custos de fornecedores e dez boas práticas. As duas edições são entregues em DOCX editável e PDF.": "Portuguese and English editions with a change order policy, request form, change log, vendor cost reference and ten best practices. Both editions come in editable DOCX and PDF.",
  "A página e os materiais estão disponíveis em português e inglês. Cada edição comercial inclui DOCX editável e PDF, com a identidade visual oficial do estúdio.": "The page and the materials are available in Portuguese and English. Each commercial edition includes editable DOCX and PDF with the studio’s official visual identity."
 };
+Object.assign(englishCopy, {
+ "Antes de fazer o extra,": "Before you do the extra work,",
+ "deixe o combinado <em>por escrito.</em>": "put the agreement <em>in writing.</em>",
+ "deixe o combinado": "put the agreement",
+ "por escrito.": "in writing.",
+ "Um pedido de mudança pode afetar o custo e o prazo do seu projeto. Tenha um processo claro para registrar o pedido, apresentar o impacto e obter a aprovação do cliente antes de executar.": "A change request can affect your project’s cost and schedule. Use a clear process to document the request, explain its impact, and get the client’s approval before work begins.",
+ "Cinco recursos práticos em PT + EN · DOCX editável + PDF": "Five practical resources in PT + EN · Editable DOCX + PDF",
+ "O projeto mudou.": "When the project changes,",
+ "O combinado precisa acompanhar.": "the agreement needs to keep up.",
+ "Quando aparece uma alteração de material ou um serviço que não estava previsto, a conversa precisa ir além do pedido. O cliente precisa entender o impacto, e a equipe precisa saber o que foi aprovado.": "A different material or an added task needs more than a quick conversation about the request. Your client needs to understand the impact, and your team needs to know what has been approved.",
+ "É esse passo entre o pedido e a execução que o Change Order System ajuda a organizar. Assim, você tem uma base para conversar sobre os extras enquanto ainda dá tempo de combinar o próximo passo.": "The Change Order System helps organize that step between the request and the work. It gives you a starting point for discussing extras while there’s still time to agree on what happens next.",
+ "Defina como as alterações serão solicitadas, avaliadas e aprovadas. Apresente esse processo ao cliente desde o início.": "Define how changes will be requested, reviewed, and approved. Introduce the process to your client at the start of the project.",
+ "Registre a mudança e seus impactos para apresentar ao cliente e documentar a aprovação antes da execução.": "Document the change and its impact so you can present it to the client and record approval before work begins.",
+ "Mantenha o histórico das mudanças e acompanhe as decisões sem depender de conversas espalhadas.": "Keep a history of changes and track decisions without relying on scattered conversations.",
+ "Use uma referência de apoio ao preparar o valor da alteração. Ajuste os valores à realidade do seu projeto.": "Use a supporting reference when preparing the price of a change. Adjust the figures to fit your project.",
+ "Consulte orientações para aplicar o processo de change orders no dia a dia.": "Practical guidance for making change orders part of your everyday workflow.",
+ "Prepare o combinado.": "Set expectations.",
+ "Personalize os modelos para a sua forma de trabalhar e apresente ao cliente como os pedidos de mudança serão tratados.": "Adapt the templates to the way you work, and explain to your client how change requests will be handled.",
+ "Apresente a alteração.": "Present the change.",
+ "Antes de executar, registre o que muda, o custo e o impacto no prazo. Converse com o cliente e documente a decisão.": "Before starting, document what changes, the cost, and the schedule impact. Discuss it with your client and record the decision.",
+ "Acompanhe o que foi aprovado.": "Track what was approved.",
+ "Atualize o registro de alterações e mantenha a documentação junto às informações do projeto.": "Update the change log and keep the documentation with your project records.",
+ "Designers de interiores, profissionais de execução de obras, arquitetos e engenheiros que lidam com mudanças de escopo e querem um processo mais organizado para registrá-las e aprová-las.": "Interior designers, contractors, architects, and engineers who handle scope changes and want a more organized process for documenting and approving them.",
+ "Leve esse cuidado para o seu próximo projeto: registre a mudança e converse sobre seus impactos antes de colocar a equipe em ação.": "Bring a clearer change process to your next project: document the change and discuss its impact before putting your team to work.",
+ "Use os modelos em conjunto com o seu contrato. O material não substitui orientação jurídica nem garante pagamento. A adequação dos documentos ao seu caso deve ser avaliada por um profissional habilitado.": "Use the templates alongside your contract. The material does not replace legal advice or guarantee payment. A qualified professional should review whether the documents are suitable for your circumstances.",
+ "MINHA HISTÓRIA": "MY STORY",
+ "Por que eu levo a aprovação de extras tão a sério": "Why I take change approvals so seriously",
+ "Em um projeto com prazo curto, trabalhei para uma pessoa com quem eu tinha uma amizade de 15 anos.": "I worked on a project with a short deadline for someone who had been my friend for 15 years.",
+ "Os pedidos de serviços extras vinham nas conversas. Eu executava e depois confirmava pelo WhatsApp. Havia confiança, mas eu não tinha ordens de alteração assinadas antes de começar.": "Requests for extra work came up in conversation. I carried out the work and followed up on WhatsApp. There was trust, but I hadn’t obtained signed change orders before starting.",
+ "Quando apresentei os US$ 30 mil em trabalho adicional, fui questionada sobre a aprovação assinada desses extras. Eu não tinha esse documento.": "When I presented the US$30,000 in additional work, I was asked for the signed approval for those extras. I didn’t have that document.",
+ "Esse valor segue sem pagamento, e a amizade também se perdeu.": "That amount remains unpaid, and the friendship ended too.",
+ "Eu compartilho essa história porque quero ajudar outros profissionais a terem esse cuidado antes de passar por uma situação parecida. A mudança precisa estar clara para todos: o que será feito, quanto vai custar, como afeta o prazo e quem aprovou.": "I’m sharing this because I want to help other professionals put a clearer process in place before they face a similar situation. Everyone needs to understand what will change, what it will cost, how it affects the schedule, and who has approved it.",
+ "Com o Change Order System, quero ajudar você a colocar esse processo em prática antes da execução.": "With the Change Order System, I want to help you put that process into practice before the work begins.",
+ "Paula Ambrosio, criadora do Change Order System": "Paula Ambrosio, creator of the Change Order System"
+});
 let language = new URL(window.location.href).searchParams.get('lang') === 'en' ? 'en' : 'pt';
 const translatedText = [];
 const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
