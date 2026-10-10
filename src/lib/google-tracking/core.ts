@@ -1,4 +1,5 @@
 /** Privacy-first transport boundary. Never accepts form metadata or contact values. */
+import { isLeadAcceptance } from '../lead-acceptance';
 export interface ConsentChoice { analytics: boolean; advertising: boolean; }
 export interface SavedConsent extends ConsentChoice { version: 1; at: number; }
 export interface TrackingConfig { enabled: boolean; containerId: string; reviewedVersion: string; }
@@ -54,6 +55,7 @@ export function createTracking(config: TrackingConfig, port: TrackingPort) {
  let revoked = false;
  let pageViewed = false;
  let initialized = false;
+ const accepted = new Set<string>();
  const active = () => configReady(config, port.hostname()) && !/^\/(admin|api|style-guides-and-branding)(\/|$)/.test(port.pathname());
  const consentEvent = () => ({
   event: 'paula_consent_update',
@@ -97,5 +99,13 @@ export function createTracking(config: TrackingConfig, port: TrackingPort) {
    port.push({ event: `paula_${event}`, ...pageContext(port.pathname()) });
    return true;
   },
+  /** Only an opaque receipt from durable server acceptance can produce a lead. */
+  acceptedLead(value: unknown): boolean {
+   if (!isLeadAcceptance(value) || !active() || revoked || !loaded || !choice.advertising || accepted.has(value.eventId)) return false;
+   port.push({ event: 'paula_lead_accepted', transaction_id: value.eventId, ...pageContext(port.pathname()) });
+   accepted.add(value.eventId);
+   return true;
+  },
  };
 }
+

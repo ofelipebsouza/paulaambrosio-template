@@ -23,7 +23,7 @@ const breadcrumbs: BreadcrumbEntry[] = [{ name: 'Privacy', url: '/privacy' }];
 		<Breadcrumbs items={breadcrumbs} />
 		<h1 class="font-display mt-10 text-4xl">Privacy Policy</h1>
 		<p class="mt-4 text-sm uppercase tracking-widest text-mist">
-			Last updated: <time datetime="2026-10-08">October 8, 2026</time>
+			Last updated: <time datetime="2026-10-10">October 10, 2026</time>
 		</p>
 
 		<div class="prose-editorial mt-12">
@@ -71,8 +71,8 @@ const breadcrumbs: BreadcrumbEntry[] = [{ name: 'Privacy', url: '/privacy' }];
 				advertising measurement. Both are off until you choose them. Google Tag Manager loads
 				only after you allow at least one category. Loading it sends Google a network request,
 				which includes technical connection information such as your IP address and browser information.
-				Google Analytics 4 runs only when you allow website analytics. Google Ads measurement,
-				remarketing and lead-conversion reporting remain paused.
+				Google Analytics 4 runs only when you allow website analytics. Google Ads measurement runs only when you allow advertising measurement.
+				Remarketing and personalized advertising remain disabled.
 			</p>
 			<p>
 				Analytics measures visits to public pages and selected interactions with our services and
@@ -83,6 +83,14 @@ const breadcrumbs: BreadcrumbEntry[] = [{ name: 'Privacy', url: '/privacy' }];
 				Google tools. Automatic collection of user-provided contact data, Google Signals, enhanced
 				conversions and personalized advertising are not enabled. An interaction or form attempt
 				is not recorded as proof of an accepted or qualified lead.
+				When advertising measurement is allowed, Google Ads receives an accepted-inquiry event only
+				after our server confirms that the inquiry passed its acceptance checks and was saved in
+				persistent project records. This event includes a random, opaque transaction identifier to
+				avoid duplicate counting, not contact fields. Google may use first-party attribution cookies,
+				advertising click identifiers and technical browser information to associate it with an ad.
+				Acceptance does not mean a qualified opportunity, an email delivery or a sale. We retain up
+				to 100 opaque Google event identifiers in this tab's session storage while advertising
+				measurement is allowed and remove them when it is withdrawn.
 				See <a href="https://policies.google.com/privacy">Google's Privacy Policy</a> for how Google handles data.
 			</p>
 			<p>
@@ -147,3 +155,4 @@ const breadcrumbs: BreadcrumbEntry[] = [{ name: 'Privacy', url: '/privacy' }];
 		</div>
 	</article>
 </Layout>
+

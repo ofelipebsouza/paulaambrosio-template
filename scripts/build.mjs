@@ -18,8 +18,13 @@ const preload = pathToFileURL(path.join(root, 'scripts', 'cp-sync-fallback.mjs')
 
 const run = (args) => spawnSync(process.execPath, args, { cwd: root, stdio: 'inherit', env: process.env });
 
+// Receipt-only conversion safety must pass in previews and production builds.
+const tracking = run(['--test', path.join('tests', 'google-accepted-lead.test.mjs')]);
+if (tracking.status !== 0) process.exit(tracking.status ?? 1);
+
 const build = run(['--import', preload, astroBin, 'build']);
 if (build.status !== 0) process.exit(build.status ?? 1);
 
 const guard = run([path.join('scripts', 'check-links.mjs')]);
 process.exit(guard.status ?? 1);
+

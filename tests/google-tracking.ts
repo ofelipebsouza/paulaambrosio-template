@@ -176,8 +176,9 @@ test('reviewed consent-template source sets defaults once and never grants perso
  assert.ok(updates.every(x=>x.ad_personalization==='denied'));
 });
 
-test('bridge-only release config and explicit kill switch are deterministic',()=>{
- assert.deepEqual(trackingConfig(undefined),{enabled:true,containerId:'GTM-T36P2G6X',reviewedVersion:'9'});
+test('reviewed release config and explicit kill switch are deterministic',()=>{
+ assert.deepEqual(trackingConfig(undefined),{enabled:true,containerId:'GTM-T36P2G6X',reviewedVersion:'11'});
  assert.equal(trackingConfig('true').enabled,true);
  for(const value of ['false','','TRUE','1']) assert.equal(trackingConfig(value).enabled,false);
 });
+
