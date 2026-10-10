@@ -42,6 +42,8 @@
 		{ "source": "/locations/interior-designer-boca-raton/", "destination": "/interior-designer-boca-raton/", "permanent": true },
 		{ "source": "/locations/interior-designer-palm-beach", "destination": "/interior-designer-palm-beach/", "permanent": true },
 		{ "source": "/locations/interior-designer-palm-beach/", "destination": "/interior-designer-palm-beach/", "permanent": true },
+		{ "source": "/commercial-hs", "destination": "/projects/commercial-hs/", "permanent": true },
+		{ "source": "/commercial-hs/", "destination": "/projects/commercial-hs/", "permanent": true },
 		{ "source": "/portfolio", "destination": "/projects/", "permanent": true },
 		{ "source": "/portfolio/", "destination": "/projects/", "permanent": true },
 		{ "source": "/portfolio/:slug", "destination": "/projects/:slug/", "permanent": true },
