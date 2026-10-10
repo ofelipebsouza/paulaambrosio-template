@@ -1,6 +1,6 @@
 # Consent-gated Google loader
 
-The release loads GTM-T36P2G6X only after an optional consent grant on www.paulaambrosio.com. The original reviewed baseline version 9 was bridge-only; version 10 enabled consent-gated GA4. The receipt-based Google Ads repair described below requires its separately reviewed GTM publication. The code reference does not pin the live GTM version.
+The release loads GTM-T36P2G6X only after an optional consent grant on www.paulaambrosio.com. The original reviewed baseline version 9 was bridge-only; version 10 enabled consent-gated GA4. GTM version 11 is the separately reviewed live receipt-based Google Ads repair. The code reference does not pin the live GTM version.
 
 ## Release and rollback controls
 
@@ -10,8 +10,8 @@ The release loads GTM-T36P2G6X only after an optional consent grant on www.paula
 - The reviewed-version value is an audit reference, **not version pinning**. Normal GTM serves the currently published version. Review every remote publication before it becomes live.
 - Roll back by disabling the loader and rebuilding, or by restoring reviewed bridge-only GTM version 9. Do not restore older versions that enable measurement tags. These rollback controls affect subsequent loads; already-open pages need reload/navigation to unload existing code.
 - Preview/local/apex/private routes remain runtime-disabled; the apex redirects to www. The consent markup is hidden until the canonical-host runtime gate passes. There is no noscript iframe or separate gtag loader.
-- Official Tag Assistant may test an unpublished GA4-only workspace on the staged canonical site. Keep Ads base, linker, WhatsApp, Thanks and remarketing paused; no live inquiries or Ads conversions during QA.
-- Before enabling any measurement tags, verify actual consent ordering, payloads, withdrawal, lack of duplicate tags and lack of form-field collection. Update the public privacy notice when the paused setup becomes active. Enhanced conversions, automatic user-provided-data collection, Google Signals and personalized ads remain off.
+- Version 11 enables the consent-gated Ads base, linker and receipt-only conversion. Keep WhatsApp, Thanks and remarketing paused; no live inquiries or Ads conversions during QA without explicit approval.
+- Every measurement publication must verify actual consent ordering, payloads, withdrawal, lack of duplicate tags and lack of form-field collection. The public privacy notice describes active GA4 and receipt-only Ads measurement. Enhanced conversions, automatic user-provided-data collection, Google Signals and personalized ads remain off.
 - GA4 measurement ID G-SQ8YH86GL9, stream 16056096020; enhanced measurement off. Configure inside GTM only. Accepted-inquiry reporting now uses the receipt-only event below; generic form success remains excluded.
 
 ## Consent contract
