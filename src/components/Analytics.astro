@@ -11,6 +11,7 @@ import SpeedInsights from '@vercel/speed-insights/astro';
 	import { ANALYTICS_EVENTS } from '../lib/analytics/events';
 	import { CONTACT_FIELDS, HONEYPOT_FIELD } from '../lib/contact-form';
 	import { measureAcceptedLead } from '../lib/openai-pixel/browser';
+	import { measureGoogleAcceptedLead } from '../lib/google-tracking/browser';
 
 	const globalWindow = window as Window & { __paulaAnalyticsInitialized?: boolean };
 
@@ -212,6 +213,7 @@ import SpeedInsights from '@vercel/speed-insights/astro';
 					// SMTP may fail after durable acceptance. Never infer a lead from status/ok.
 					if ([200, 502, 503].includes(response.status) && result?.leadAcceptance) {
 						measureAcceptedLead(result.leadAcceptance);
+						measureGoogleAcceptedLead(result.leadAcceptance);
 					}
 					if (response.status === 502 || response.status === 503) {
 						if (
@@ -251,3 +253,4 @@ import SpeedInsights from '@vercel/speed-insights/astro';
 		document.addEventListener('astro:page-load', () => submitForms());
 	}
 </script>
+

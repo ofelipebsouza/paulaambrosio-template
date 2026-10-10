@@ -1,8 +1,13 @@
 import { openAIPixelAvailable, openAIPixelNeedsReload } from '../openai-pixel/browser';
 import { GOOGLE_TRACKING } from './config';
+import { isLeadAcceptance, isSubmissionId } from '../lead-acceptance';
 import { CONSENT_KEY, createTracking, parseConsent, type ConsentChoice, type SavedConsent } from './core';
 
-type TrackingWindow = Window & { dataLayer?: Array<Record<string, unknown>>; __paulaGoogle?: ReturnType<typeof createTracking>; __paulaGtmReady?: boolean };
+type TrackingWindow = Window & { dataLayer?: Array<Record<string, unknown>>; __paulaGoogle?: ReturnType<typeof createTracking>; __paulaGtmReady?: boolean; __paulaGoogleConsentFailed?: boolean };
+const ACCEPTED_KEY = 'paula_google_measured_v1';
+function clearAcceptedHistory(): void {
+ try { sessionStorage.removeItem(ACCEPTED_KEY); } catch { /* Consent gates remain authoritative. */ }
+}
 function runtime() {
  if (typeof window === 'undefined') return null;
  const w = window as TrackingWindow;
@@ -32,17 +37,19 @@ export function savedConsent(): SavedConsent | null {
 export function trackingAvailable(): boolean { return (runtime()?.ready() ?? false) || openAIPixelAvailable(); }
 export function reloadRecommended(): boolean { return (runtime()?.needsReload() ?? false) || openAIPixelNeedsReload(); }
 export function restoreConsent(): void {
- try { const choice = savedConsent(); if (choice) runtime()?.consent(choice); } catch { /* Form UX never depends on tracking. */ }
+ try { const choice = savedConsent(); if (!choice?.advertising) clearAcceptedHistory(); if (choice) runtime()?.consent(choice); } catch { /* Form UX never depends on tracking. */ }
 }
 function notifyConsentChange(denied = false): void {
  try { window.dispatchEvent(new Event(denied ? 'paula:consent-denied' : 'paula:consent-change')); } catch { /* Optional listeners must never change preference persistence. */ }
 }
 export function saveConsent(choice: ConsentChoice): boolean {
+ if (!choice.advertising) clearAcceptedHistory();
  try {
   // Preferences only: never contact fields, ad identifiers, or event history.
   localStorage.setItem(CONSENT_KEY, JSON.stringify({ version: 1, at: Date.now(), ...choice }));
  } catch {
   // Never claim persistence succeeded. Remove an old grant if storage permits it.
+  (window as TrackingWindow).__paulaGoogleConsentFailed = true;
   try { localStorage.removeItem(CONSENT_KEY); } catch { /* UI reports the failure. */ }
   try { if (runtime()?.consent({ analytics: false, advertising: false })) clearGoogleCookies(); } catch { /* fail closed */ }
   notifyConsentChange(true);
@@ -58,6 +65,26 @@ export function saveConsent(choice: ConsentChoice): boolean {
  }
 }
 const sameTurnEvents = new Set<string>();
+/** Separate from generic form events; no contact fields or raw URLs are forwarded. */
+export function measureGoogleAcceptedLead(value: unknown): boolean {
+ try {
+  if (!isLeadAcceptance(value) || typeof window === 'undefined' || (window as TrackingWindow).__paulaGoogleConsentFailed) return false;
+  const choice = savedConsent();
+  const engine = runtime();
+  if (!choice?.advertising) clearAcceptedHistory();
+  if (engine?.consent(choice ?? { analytics: false, advertising: false })) clearGoogleCookies();
+  if (!choice?.advertising || !engine) return false;
+  const measured = new Set<string>();
+  try {
+   const stored: unknown = JSON.parse(sessionStorage.getItem(ACCEPTED_KEY) ?? '[]');
+   if (Array.isArray(stored)) for (const id of stored.slice(-100)) if (isSubmissionId(id)) measured.add(id);
+  } catch { /* In-document and Google transaction_id guards remain available. */ }
+  if (measured.has(value.eventId) || !engine.acceptedLead(value)) return false;
+  measured.add(value.eventId);
+  try { sessionStorage.setItem(ACCEPTED_KEY, JSON.stringify([...measured].slice(-100))); } catch { /* Keep runtime dedupe. */ }
+  return true;
+ } catch { return false; } // Optional measurement cannot interrupt accepted form UX.
+}
 export function trackGoogleEvent(event: string): void {
  try {
   const choice = savedConsent();
@@ -73,6 +100,7 @@ export function trackGoogleEvent(event: string): void {
 
 /** Clear only first-party Google measurement cookies when consent is withdrawn. */
 function clearGoogleCookies(): void {
+ clearAcceptedHistory();
  const w = window as TrackingWindow;
  if (!w.__paulaGtmReady) {
   // If consent is withdrawn while GTM is downloading, never replay old grants/events.
@@ -93,6 +121,7 @@ function clearGoogleCookies(): void {
 function reconcileConsent() {
  try {
   const choice = savedConsent() ?? { analytics: false, advertising: false };
+  if (!choice.advertising) clearAcceptedHistory();
   if (runtime()?.consent(choice)) clearGoogleCookies();
  } catch { /* No page business flow depends on storage synchronization. */ }
 }
@@ -102,3 +131,4 @@ if (typeof window !== 'undefined') {
  });
  window.addEventListener('pageshow', reconcileConsent);
 }
+

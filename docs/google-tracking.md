@@ -1,6 +1,6 @@
 # Consent-gated Google loader
 
-The release loads GTM-T36P2G6X only after an optional consent grant on www.paulaambrosio.com. Reviewed baseline version 9 contains only the active consent bridge; all eight measurement tags are paused. This is a staged loader release, not a claim that GA4/Ads measurement or accepted-lead conversions are active.
+The release loads GTM-T36P2G6X only after an optional consent grant on www.paulaambrosio.com. The original reviewed baseline version 9 was bridge-only; version 10 enabled consent-gated GA4. The receipt-based Google Ads repair described below requires its separately reviewed GTM publication. The code reference does not pin the live GTM version.
 
 ## Release and rollback controls
 
@@ -12,7 +12,7 @@ The release loads GTM-T36P2G6X only after an optional consent grant on www.paula
 - Preview/local/apex/private routes remain runtime-disabled; the apex redirects to www. The consent markup is hidden until the canonical-host runtime gate passes. There is no noscript iframe or separate gtag loader.
 - Official Tag Assistant may test an unpublished GA4-only workspace on the staged canonical site. Keep Ads base, linker, WhatsApp, Thanks and remarketing paused; no live inquiries or Ads conversions during QA.
 - Before enabling any measurement tags, verify actual consent ordering, payloads, withdrawal, lack of duplicate tags and lack of form-field collection. Update the public privacy notice when the paused setup becomes active. Enhanced conversions, automatic user-provided-data collection, Google Signals and personalized ads remain off.
-- GA4 measurement ID G-SQ8YH86GL9, stream 16056096020; enhanced measurement off. Configure inside GTM only. No accepted-form action has been implemented.
+- GA4 measurement ID G-SQ8YH86GL9, stream 16056096020; enhanced measurement off. Configure inside GTM only. Accepted-inquiry reporting now uses the receipt-only event below; generic form success remains excluded.
 
 ## Consent contract
 
@@ -34,7 +34,7 @@ Permission removal stops first-party event emission immediately, updates the con
 
 ## Events and service alignment
 
-Existing Vercel/internal analytics remain separate. Google receives no existing metadata object. New Google events receive only event name, page_section and service_key derived from fixed public route mappings. No raw URLs, query strings, hash, form values, link URLs, names, email, phone, budget, messages, client IDs, lead IDs or enhanced-conversion data are pushed by this module.
+Existing Vercel/internal analytics remain separate. Google receives no existing metadata object. New Google events receive only event name, page_section and service_key derived from fixed public route mappings. No raw URLs, query strings, hash, form values, link URLs, names, email, phone, budget, messages, client IDs, CRM lead IDs or enhanced-conversion data are pushed by this module. The dedicated accepted-inquiry event additionally carries only its opaque transaction_id.
 
 Public service taxonomy: design_consultation, design_express, turnkey_interiors, luxury_residential, hospitality_interiors. Unknown or visitor-controlled route strings become a coarse section and service_key=none.
 
@@ -42,20 +42,19 @@ Allowlisted events are prefixed paula_: page_view, CTA interactions, form_start/
 
 WhatsApp is intended as a **secondary click**, not proof of a conversation or lead. Keep Ads forwarding paused until its conversion action is verified as Secondary. It requires advertising consent and maps inside GTM to its verified WhatsApp action. A clicked WhatsApp event is not reused as form conversion. No WhatsApp link is added in this change.
 
-**Accepted-form emission is intentionally impossible in this preparation.** `form_success`, `accepted_form`, arbitrary event names and generic HTTP 200 are not forwarded. Success-like honeypot/blocked responses remain unchanged. Delivery failures offer an explicit email draft and emit `form_error`, never `form_success`. Do not map paula_form_submit to an Ads lead conversion.
+## Receipt-only accepted-inquiry conversion
 
-## Accepted-form architecture decision still required
+The obsolete URL conversion expected `/thanks`, which is absent from the current inline form flow. The manual action **PA | Lead Accepted | Receipt** uses `AW-11180985503/KVMACN2h-JcdEJ-ZwdMp`, count one, value 0, no enhanced conversions. The old `/thanks` action is secondary and its GTM tag stays paused.
 
-Browser receipt option: durable/idempotent acceptance + server-issued random conversion receipt enables transaction_id deduplication while preserving inline UX, but necessarily exposes a browser-visible distinction between accepted and suppressed inquiries. That weakens current deliberate anti-abuse indistinguishability and is not implemented in this branch.
+Only the HTTPS contact response's valid version-1 acceptance receipt can enter `measureGoogleAcceptedLead`. The server issues this random UUID only after durable acceptance. HTTP 200 alone, suppressed spam/honeypot responses, form attempts, generic form success, page views and memory-only persistence never prove acceptance. SMTP errors after durable acceptance may still carry a valid receipt; acceptance is not proof of email delivery, qualification or sale.
 
-Smallest server alternative: create an idempotent conversion outbox only for durable accepted inquiries, then asynchronously upload click-ID-only events to Google Data Manager API with a stable random transaction ID. Keep all public response shapes unchanged. Required new setup:
-- Explicit advertising consent and consented gclid/gbraid/wbraid capture, bounded retention, consent timestamp/version, withdrawal policy. No event when click ID or appropriate consent is absent.
-- Durable outbox and retry/dead-letter monitoring; never enqueue conversion from memory fallback or spam/honeypot/blocklist suppression. Model-suspected spam requires separately agreed accepted-vs-qualified semantics.
-- Verified 10-digit Ads customer ID and numeric WEBPAGE conversion-action ID (AW ID/event label alone are insufficient).
-- Google Cloud project with Data Manager API enabled; an Ads-authorized identity and scoped OAuth (`https://www.googleapis.com/auth/datamanager`) or approved service identity, with credentials stored server-side through secure setup. Provisioning this persistent access requires a separate security review and secure credential setup.
-- Event data sent: click identifier, random transaction ID, event timestamp, destination and consent; optionally an agreed value/currency. No names/emails/phones, contact fields or IP addresses. API documentation allows click identifiers instead of userData.
+With current advertising consent, the dedicated boundary emits `paula_lead_accepted` with `transaction_id`, `page_section` and `service_key`. It strips any extra receipt fields, rejects malformed receipts, and deduplicates both in the document and across reloads using at most 100 opaque session IDs. Google's transaction ID provides destination-side deduplication as well. No pre-consent receipt is stored for later replay. Withdrawal, expired/unreadable consent, failed preference persistence and a pending-container revocation stop emission. Initial denial clears old session receipt history.
 
-This alternative adds no tracking endpoint to reveal acceptance to the browser, but is more work and needs new account/access/data permissions. It has not been implemented.
+GTM configuration: initialize the Google tag `AW-11180985503` and conversion linker on `paula_consent_ready`, requiring granted advertising consent plus `ad_storage` and `ad_user_data`. Fire only the new Google Ads conversion tag on `paula_lead_accepted`; map its transaction ID to the `transaction_id` data-layer variable, and require the same consent checks. Keep personalization denied, automatic user-provided data collection and enhanced conversions off, and obsolete Thanks, WhatsApp and remarketing tags paused. Do not map the receipt event to a generic GA4 tag or map `paula_form_submit` to a conversion. There is no additional standalone gtag loader.
+
+OpenAI measurement remains independent and receives the same acceptance receipt through its existing separate boundary. No API, durable-store, SMTP or form UX change is needed for this repair.
+
+`tests/google-accepted-lead.test.mjs` is offline: it compiles the real browser boundary into a fake DOM/storage VM and never loads Google, creates a real inquiry or sends email. `scripts/build.mjs` runs this safety suite before Astro so both preview and production builds enforce it.
 
 ## Verification before release
 
@@ -72,3 +71,4 @@ Official references:
 ## Search Console verification
 
 The verification scope is the exact URL prefix https://www.paulaambrosio.com/. The public google-site-verification meta tag is included in the shared public-page head. This makes no DNS change and loads no script. The meta must remain on the live homepage to maintain this verification method.
+
