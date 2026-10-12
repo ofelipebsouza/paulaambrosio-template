@@ -26,9 +26,9 @@
 
 ## Selected Projects
 
-- [HOME DR — Coconut Grove, Miami](https://paulaambrosiointeriors.com/projects/home-dr): Custom architectural residence with lighting masterplan and custom fireplace.
-- [HOME FL — Star Island, Miami Beach](https://paulaambrosiointeriors.com/projects/home-fl): Waterfront custom estate with interior architecture and curated art.
-- [HOME IT — Williams Island, Aventura](https://paulaambrosiointeriors.com/projects/home-it): Family waterfront residence with bespoke children's suites.
+- [HOME DR — Boca Raton, Florida](https://paulaambrosiointeriors.com/projects/home-dr): Custom architectural residence with lighting masterplan and custom fireplace.
+- [HOME FL — Delray Beach, Florida](https://paulaambrosiointeriors.com/projects/home-fl): Waterfront custom estate with interior architecture and curated art.
+- [HOME IT — Coral Gables, Miami, Florida](https://paulaambrosiointeriors.com/projects/home-it): Family waterfront residence with bespoke children's suites.
 - [HOME KD — Pinecrest, Miami](https://paulaambrosiointeriors.com/projects/home-kd): Modern custom residence with custom millwork and curated lighting.
 - [HOME S — Brickell, Miami](https://paulaambrosiointeriors.com/projects/home-s): Brickell high-rise delivered entirely turnkey.
 - [All Projects](https://paulaambrosiointeriors.com/projects)
