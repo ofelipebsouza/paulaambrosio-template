@@ -217,6 +217,6 @@ test('failed classification preserves score/flags and nonforced backfill skips s
 test('dashboard guidance explains explicit reply recording, not an automatic status-move reply', async () => {
  const {readFile} = await import('node:fs/promises');
  const page = await readFile('src/pages/admin/index.astro', 'utf8');
- assert.ok(page.includes('Use <em>Mark as answered</em> to record its first reply'));
+ assert.ok(page.includes('Use <em>Marcar como respondido</em> para registrar o primeiro retorno'));
  assert.ok(!page.includes('Moving a lead out of <em>New</em> records its first response'));
 });

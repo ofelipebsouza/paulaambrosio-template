@@ -148,15 +148,15 @@ const kpis = [
 	},
 	{
 		key: 'jevHot',
-		label: 'JEV · hot now',
+		label: 'Triagem · revisar',
 		value: String(metrics.jev.hotOpen),
-		note: `${metrics.jev.scored} scored · ${metrics.jev.unclassified} waiting`,
+		note: `${metrics.jev.unclassified} ainda não analisados`,
 	},
 	{
 		key: 'jevScore',
-		label: 'JEV · avg score',
-		value: metrics.jev.avgScore === null ? '—' : `${Math.round(metrics.jev.avgScore * 100)}`,
-		note: `${Math.round((metrics.jev.avgUrgency ?? 0) * 100)}% avg urgency`,
+		label: 'Triagem · cobertura',
+		value: `${metrics.jev.scored}/${metrics.total}`,
+		note: 'contatos analisados · não é chance de fechar',
 	},
 	{
 		key: 'awaitingReply',
@@ -332,15 +332,15 @@ function jevTone(temperature: string | undefined): string {
 		<div class="border border-coffee/30 bg-[#fffaf6] p-5 lg:col-span-2">
 			<div class="flex items-baseline justify-between gap-4"><div><p class="eyebrow text-coffee">Para olhar agora</p><h2 id="crm-priority-title" class="mt-2 font-display text-2xl">Respostas e retornos</h2></div><span class="text-xs text-mist">Atualiza automaticamente</span></div>
 			<div class="mt-5 grid gap-3 sm:grid-cols-2">
-				<div class="border border-sand/70 bg-white p-4"><p class="eyebrow text-stone">Aguardando primeira resposta</p><p class="mt-2 font-display text-3xl" data-kpi="awaitingReply">{metrics.awaitingReply}</p><p class="mt-1 text-xs text-mist">Abra a mensagem e escolha “Marcar como respondido”.</p></div>
-				<div class="border border-sand/70 bg-white p-4"><p class="eyebrow text-coffee">Retornos atrasados</p><p class="mt-2 font-display text-3xl text-coffee" data-kpi="overdue">{metrics.tasksOverdue}</p><p class="mt-1 text-xs text-mist">São tarefas de acompanhamento, não mensagens enviadas.</p></div>
+				<div class="border border-sand/70 bg-white p-4"><p class="eyebrow text-stone">Aguardando primeira resposta</p><p class="mt-2 font-display text-3xl" data-kpi-all="awaitingReply">{metrics.awaitingReply}</p><p class="mt-1 text-xs text-mist">Abra a mensagem e escolha “Marcar como respondido”.</p></div>
+				<div class="border border-sand/70 bg-white p-4"><p class="eyebrow text-coffee">Retornos atrasados</p><p class="mt-2 font-display text-3xl text-coffee" data-kpi-all="overdue">{metrics.tasksOverdue}</p><p class="mt-1 text-xs text-mist">São tarefas de acompanhamento, não mensagens enviadas.</p></div>
 			</div>
 		</div>
 		<div class="border border-sand/70 bg-white p-5"><p class="eyebrow text-stone">Próximo passo</p><p class="mt-3 text-sm leading-relaxed text-graphite">Abra uma pessoa para ler a mensagem completa, responder pelo seu aplicativo de email e registrar o retorno aqui.</p><p class="mt-4 border-t border-sand/60 pt-4 text-xs leading-relaxed text-mist">Sugestões automáticas são apoio para confirmar com o cliente — nunca uma certeza sobre orçamento ou fechamento.</p></div>
 	</section>
 
 	<!-- KPI strip ------------------------------------------------------------ -->
-	<section aria-label="Key metrics" class="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+	<section id="crm-kpis" aria-label="Key metrics" class="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
 		{kpis.map((kpi) => (
 			<div class="border border-sand/70 bg-white p-4 sm:p-5">
 				<p class="eyebrow text-stone">{kpi.label}</p>
@@ -356,7 +356,7 @@ function jevTone(temperature: string | undefined): string {
 	</div>
 
 	<!-- Chart + funnel ------------------------------------------------------- -->
-	<section class="mt-8 grid items-start gap-6 lg:grid-cols-3">
+	<section id="crm-flow" class="mt-8 grid items-start gap-6 lg:grid-cols-3">
 		<div class="min-w-0 border border-sand/70 bg-white p-6 lg:col-span-2">
 			<div class="flex items-baseline justify-between gap-4">
 				<p class="eyebrow text-stone">Novos contatos · últimos 30 dias</p>
@@ -474,7 +474,7 @@ function jevTone(temperature: string | undefined): string {
 									</p>
 								</div>
 								<span class="shrink-0 font-display text-xl text-coffee">
-									{Math.round((lead.jev?.score ?? 0) * 100)}
+									{lead.jev?.temperature === 'hot' ? 'Revisar' : 'Acompanhar'}
 								</span>
 							</li>
 						))}
@@ -646,10 +646,10 @@ function jevTone(temperature: string | undefined): string {
 						</div>
 						<div class="flex shrink-0 gap-2">
 							<button type="button" class="eyebrow min-h-11 border border-sand px-3 text-slate transition-colors hover:border-brass hover:text-ink lg:min-h-0 sm:px-2" data-task-open={task.leadId}>
-								Open
+									Abrir
 							</button>
 							<button type="button" class="eyebrow min-h-11 border border-sand px-3 text-slate transition-colors hover:border-brass hover:text-ink lg:min-h-0 sm:px-2" data-task-done={task.id}>
-								Done
+									Concluir
 							</button>
 						</div>
 					</li>
@@ -826,7 +826,7 @@ function jevTone(temperature: string | undefined): string {
 							<td class="whitespace-nowrap px-6 py-4 text-xs">
 								{lead.jev ? (
 									<span class={jevTone(lead.jev.temperature)}>
-										{Math.round(lead.jev.score * 100)} · {lead.jev.temperature}
+										{lead.jev.temperature === 'hot' ? 'Revisar hoje' : 'Prioridade sugerida'}
 									</span>
 								) : (
 									<span class="text-mist">not scored</span>
@@ -913,7 +913,7 @@ function jevTone(temperature: string | undefined): string {
 
 			<div class="mt-6 border-t border-sand/60 pt-5">
 				<div class="flex items-baseline justify-between gap-4">
-					<p class="eyebrow text-stone">JEV score</p>
+					<p class="eyebrow text-stone">Sugestão de triagem</p>
 					<button type="button" id="crm-dialog-jev-run" class="eyebrow text-slate transition-colors hover:text-ink">
 						Reanalisar
 					</button>
@@ -1240,6 +1240,14 @@ function jevTone(temperature: string | undefined): string {
 	</p>
 </AdminLayout>
 
+<style>
+	/* Daily work comes before reporting: the board remains the second major stop. */
+	#section-crm { display: flex; flex-direction: column; }
+	#crm-board { order: 1; }
+	#crm-kpis { order: 2; }
+	#crm-flow { order: 3; }
+</style>
+
 <script>
 	type LeadStatusValue =
 		| 'novo'
@@ -1309,7 +1317,7 @@ function jevTone(temperature: string | undefined): string {
 	/** Table cell for a lead's JEV verdict; a gap means "not scored", not "cold". */
 	const jevCell = (lead: Record<string, unknown>): string => {
 		const jev = lead.jev as { score?: number; temperature?: string } | null | undefined;
-		if (!jev || typeof jev.score !== 'number') return '<span class="text-mist">not scored</span>';
+		if (!jev || typeof jev.score !== 'number') return '<span class="text-mist">Ainda não analisado</span>';
 		const temperature = String(jev.temperature ?? '');
 		const tone =
 			temperature === 'hot'
@@ -1319,7 +1327,7 @@ function jevTone(temperature: string | undefined): string {
 					: temperature === 'spam'
 						? 'text-mist'
 						: 'text-slate';
-		return `<span class="${tone}">${Math.round(jev.score * 100)} · ${esc(temperature)}</span>`;
+		return `<span class="${tone}">${temperature === 'hot' ? 'Revisar hoje' : 'Prioridade sugerida'}</span>`;
 	};
 
 	const $ = <T extends HTMLElement>(selector: string): T | null => document.querySelector<T>(selector);
@@ -1389,8 +1397,8 @@ function jevTone(temperature: string | undefined): string {
 	function renderMetrics(metrics: Record<string, unknown>, storage?: { backend?: string }): void {
 		const answered = Number(metrics.answeredWithin24h ?? 0);
 		const jev = (metrics.jev ?? {}) as Record<string, unknown>;
-		const avgScore = jev.avgScore === null || jev.avgScore === undefined ? null : Number(jev.avgScore);
-		const avgUrgency = Number(jev.avgUrgency ?? 0);
+		const scored = Number(jev.scored ?? 0);
+		const total = Number(metrics.total ?? 0);
 		const growth = metrics.growth30 === null || metrics.growth30 === undefined ? null : Number(metrics.growth30);
 		const openAge =
 			metrics.avgOpenAgeHours === null || metrics.avgOpenAgeHours === undefined
@@ -1407,11 +1415,11 @@ function jevTone(temperature: string | undefined): string {
 			},
 			jevHot: {
 				value: String(Number(jev.hotOpen ?? 0)),
-				note: `${Number(jev.scored ?? 0)} scored · ${Number(jev.unclassified ?? 0)} waiting`,
+				note: `${Number(jev.unclassified ?? 0)} ainda não analisados`,
 			},
 			jevScore: {
-				value: avgScore === null ? '—' : `${Math.round(avgScore * 100)}`,
-				note: `${Math.round(avgUrgency * 100)}% avg urgency`,
+				value: `${scored}/${total}`,
+				note: 'contatos analisados · não é chance de fechar',
 			},
 			awaitingReply: { value: String(metrics.awaitingReply ?? 0), note: `${metrics.open ?? 0} in pipeline · ${openAge}` },
 			responseHours: {
@@ -1427,6 +1435,7 @@ function jevTone(temperature: string | undefined): string {
 		for (const [key, entry] of Object.entries(values)) {
 			const el = document.querySelector<HTMLElement>(`[data-kpi="${key}"]`);
 			if (el) el.textContent = entry.value;
+			for (const duplicate of document.querySelectorAll<HTMLElement>(`[data-kpi-all="${key}"]`)) duplicate.textContent = entry.value;
 			const note = document.querySelector<HTMLElement>(`[data-kpi-note="${key}"]`);
 			if (note) note.textContent = entry.note;
 		}
@@ -1448,7 +1457,7 @@ function jevTone(temperature: string | undefined): string {
 		const avgUrgency = Number(jev.avgUrgency ?? 0);
 
 		const coverage = $('#crm-jev-coverage');
-		if (coverage) coverage.textContent = `${scoredCount} of ${total} scored`;
+		if (coverage) coverage.textContent = `${scoredCount} de ${total} analisados`;
 
 		const note = $('#crm-jev-note');
 		if (note) {
@@ -1582,7 +1591,7 @@ function jevTone(temperature: string | undefined): string {
 			if (counter) counter.textContent = String(items.length);
 
 			const cards = items
-				.slice(0, 20)
+				.slice(0, 100)
 				.map((lead) => {
 					const id = esc(lead.id);
 					const country = lead.geo && typeof lead.geo === 'object' && (lead.geo as { country?: string }).country
@@ -1914,15 +1923,13 @@ function jevTone(temperature: string | undefined): string {
 			const rows: Array<[string, string]> =
 				jev && typeof jev.score === 'number'
 					? [
-							['Score', `${Math.round(jev.score * 100)} / 100`],
-							['Temperature', String(jev.temperature ?? '—')],
-							['Project', String(jev.projectType ?? '—')],
-							['Budget fit', String(jev.budgetFit ?? '—')],
-							['Urgency', `${Math.round((jev.urgency ?? 0) * 100)}%`],
-							['Sentiment', String(jev.sentiment ?? '—')],
-							['Scored', jev.at ? relative(Number(jev.at)) : '—'],
+							['Leitura', jev.temperature === 'hot' ? 'Revisar hoje' : 'Acompanhar'],
+							['Projeto', String(jev.projectType ?? 'não informado')],
+							['Orçamento', jev.budgetFit === 'unknown' ? 'Ainda não informado' : 'Confirmar com o cliente'],
+							['Prazo', jev.urgency ? 'Há sinais de prazo' : 'Não informado'],
+							['Observação', 'Sugestão automática; confirme na conversa'],
 						]
-					: [['Score', 'Not scored yet — run Reclassify']];
+					: [['Leitura', 'Ainda não analisado — não significa prioridade baixa']];
 			jevBlock.innerHTML = rows
 				.map(
 					([label, value]) =>
@@ -1989,12 +1996,16 @@ function jevTone(temperature: string | undefined): string {
 	}
 
 	async function patchTask(id: string, state: string): Promise<void> {
-		await getJson('/api/crm/tasks/', {
+		const result = await getJson('/api/crm/tasks/', {
 			method: 'PATCH',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ id, state }),
 		});
-		actionFeedback = state === 'done' ? 'Retorno concluído e salvo.' : 'Tarefa atualizada.';
+		if (!result?.ok) {
+			setStatus('Não foi possível salvar a tarefa. Os dados exibidos podem estar antigos.');
+			return;
+		}
+		actionFeedback = state === 'done' ? 'Tarefa concluída e salva.' : 'Tarefa atualizada.';
 		await refresh();
 	}
 
@@ -2023,7 +2034,7 @@ function jevTone(temperature: string | undefined): string {
 		setStatus('Sending follow-up reminders…');
 		const result = await getJson('/api/crm/cron/followups/', { method: 'POST' });
 		if (result?.ok) {
-			setStatus(`Reminders: ${result.overdue ?? 0} overdue, ${result.reminded ?? 0} emailed.`);
+			actionFeedback = `Lembretes: ${result.overdue ?? 0} atrasados, ${result.reminded ?? 0} enviados.`;
 			await refresh();
 		} else {
 			setStatus('Reminders could not be sent (check CRON_SECRET).');
@@ -2045,21 +2056,20 @@ function jevTone(temperature: string | undefined): string {
 	jevRunButton?.addEventListener('click', async () => {
 		const label = jevRunButton.textContent ?? '';
 		jevRunButton.disabled = true;
-		jevRunButton.textContent = 'Scoring…';
-		setStatus('Asking JEV to score the pipeline…');
+		jevRunButton.textContent = 'Analisando…';
+		setStatus('Analisando contatos…');
 
 		const result = await askJev({ action: 'backfill' });
 
 		jevRunButton.disabled = false;
 		jevRunButton.textContent = label;
 		if (result?.ok) {
-			setStatus(
-				`JEV: ${Number(result.scored ?? 0)} scored, ${Number(result.failed ?? 0)} failed, ${Number(result.remaining ?? 0)} still waiting.`,
-			);
+			actionFeedback =
+					`Análise: ${Number(result.scored ?? 0)} concluídos, ${Number(result.failed ?? 0)} falharam, ${Number(result.remaining ?? 0)} aguardando.`;
 		} else if (result?.error === 'jev_not_configured') {
-			setStatus('JEV is not configured. Set TYPESAFE_API_KEY in the project environment.');
+			setStatus('A análise automática não está configurada neste ambiente.');
 		} else {
-			setStatus('JEV could not be reached. The pipeline is unchanged.');
+			setStatus('A análise não pôde ser concluída. A fila não foi alterada.');
 		}
 		await refresh();
 	});
@@ -2068,15 +2078,15 @@ function jevTone(temperature: string | undefined): string {
 	jevReclassifyButton?.addEventListener('click', async () => {
 		if (!currentLeadId) return;
 		jevReclassifyButton.disabled = true;
-		jevReclassifyButton.textContent = 'Scoring…';
-		setStatus('Rescoring this lead…');
+		jevReclassifyButton.textContent = 'Analisando…';
+		setStatus('Analisando este contato…');
 
 		const result = await askJev({ action: 'classify', id: currentLeadId });
 
 		jevReclassifyButton.disabled = false;
-		jevReclassifyButton.textContent = 'Reclassify';
+		jevReclassifyButton.textContent = 'Reanalisar';
 		if (result?.ok) {
-			setStatus('JEV rescored this lead.');
+			actionFeedback = 'Contato analisado.';
 			await openLead(currentLeadId);
 			await refresh();
 		} else {
