@@ -188,10 +188,10 @@ const kpis = [
    paint so the section is never an empty shell waiting on JavaScript. */
 const TEMPERATURES = ['hot', 'warm', 'cold', 'spam'] as const;
 const TEMPERATURE_LABELS: Record<(typeof TEMPERATURES)[number], string> = {
-	hot: 'Hot',
-	warm: 'Warm',
-	cold: 'Cold',
-	spam: 'Spam',
+	hot: 'Prioridade alta',
+	warm: 'Prioridade média',
+	cold: 'Prioridade baixa',
+	spam: 'Fornecedor, imprensa ou emprego',
 };
 const TEMPERATURE_COLORS: Record<(typeof TEMPERATURES)[number], string> = {
 	hot: 'bg-coffee',
@@ -830,7 +830,7 @@ function jevTone(temperature: string | undefined): string {
 										{lead.jev.temperature === 'hot' ? 'Revisar hoje' : lead.jev.temperature === 'warm' ? 'Revisar em breve' : lead.jev.temperature === 'spam' ? 'Separar para triagem' : 'Acompanhar'}
 									</span>
 								) : (
-									<span class="text-mist">not scored</span>
+					<span class="text-mist">Ainda não analisado</span>
 								)}
 							</td>
 							<td class="whitespace-nowrap px-6 py-4 text-slate">
@@ -1522,7 +1522,7 @@ function jevTone(temperature: string | undefined): string {
 									<p class="truncate text-sm text-graphite">${esc(String(lead.name))}</p>
 									<p class="truncate text-xs text-mist">${esc(meta)} · ${esc(relative(Number(lead.createdAt)))}</p>
 								</div>
-								<span class="shrink-0 font-display text-xl text-coffee">${Math.round(Number(verdict?.score ?? 0) * 100)}</span>
+								<span class="shrink-0 text-xs text-coffee">${verdict?.temperature === 'hot' ? 'Revisar hoje' : verdict?.temperature === 'warm' ? 'Revisar em breve' : verdict?.temperature === 'spam' ? 'Separar para triagem' : 'Acompanhar'}</span>
 							</li>`;
 						})
 						.join('')
@@ -1933,8 +1933,8 @@ function jevTone(temperature: string | undefined): string {
 			const rows: Array<[string, string]> =
 				jev && typeof jev.score === 'number'
 					? [
-							['Leitura', jev.temperature === 'hot' ? 'Revisar hoje' : 'Acompanhar'],
-							['Projeto', String(jev.projectType ?? 'não informado')],
+							['Leitura', jev.temperature === 'hot' ? 'Revisar hoje' : jev.temperature === 'warm' ? 'Revisar em breve' : jev.temperature === 'spam' ? 'Separar para triagem' : 'Acompanhar'],
+							['Tipo de projeto', jev.projectType === 'residential' ? 'Residencial' : jev.projectType === 'hospitality' ? 'Hospitalidade' : jev.projectType === 'commercial' ? 'Comercial' : jev.projectType === 'vendor_press' ? 'Fornecedor ou imprensa' : 'Outro ou não informado'],
 							['Orçamento original', String(lead.budget || 'Ainda não informado')],
 							['Leitura do orçamento', jev.budgetFit === 'unknown' ? 'Sem conclusão automática' : 'Confirme com o cliente'],
 							['Prazo', jev.urgency === 0 ? 'Baixo ou não confirmado' : 'Há sinais de prazo'],
