@@ -1786,7 +1786,7 @@ function jevTone(temperature: string | undefined): string {
 
 	function renderQueue(payload: Record<string, unknown>): void {
 		const list = $('#crm-queue');
-		const overdueEl = $('crm-queue-overdue');
+		const overdueEl = $('#crm-queue-overdue');
 		const tasks = (payload.tasks as Array<Record<string, unknown>>) ?? [];
 		const open = tasks.filter((task) => task.state === 'open').slice(0, 8);
 		const overdue = Number(payload.overdue ?? 0);
