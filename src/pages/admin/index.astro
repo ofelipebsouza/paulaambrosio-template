@@ -53,7 +53,7 @@ const countersUnavailable = dailyResult === null || ledgerResult === null;
 const metrics = buildMetrics({ leads, tasks, daily, now });
 const storage = storeStatus();
 const answered24h = responseRate(leads, 24, now);
-const recent = leads.slice(0, 25);
+const recent = leads.slice(0, 100);
 const queue = tasks.filter((task) => task.state === 'open').slice(0, 8);
 const chartMax = Math.max(1, ...Object.values(daily));
 const chartDays = Object.entries(daily);
@@ -75,14 +75,14 @@ const boardColumns = BOARD_STATUSES.map((status) => ({
 	status,
 	label: STATUS_LABELS[status],
 	color: STATUS_COLORS[status],
-	items: leads.filter((lead) => normalizeStatus(lead.status) === status).slice(0, 20),
+	items: leads.filter((lead) => normalizeStatus(lead.status) === status),
 }));
 
 const closedTabs = CLOSED_STATUSES.map((status) => ({
 	status,
 	label: STATUS_LABELS[status],
 	count: leads.filter((lead) => normalizeStatus(lead.status) === status).length,
-	items: leads.filter((lead) => normalizeStatus(lead.status) === status).slice(0, 30),
+	items: leads.filter((lead) => normalizeStatus(lead.status) === status),
 }));
 
 const ledgerTotals = ledger.reduce(
@@ -252,7 +252,7 @@ function jevTone(temperature: string | undefined): string {
 }
 ---
 
-<AdminLayout title="Pipeline">
+<AdminLayout title="Atendimento">
 	<!-- Section Switcher Tabs -->
 	<div class="flex items-center gap-2 sm:gap-4 border-b border-sand pb-4 mb-6 overflow-x-auto scrollbar-none">
 		<button
@@ -284,10 +284,9 @@ function jevTone(temperature: string | undefined): string {
 	<div class="flex flex-col gap-6 border-b border-sand/60 pb-8 lg:flex-row lg:items-end lg:justify-between">
 		<div>
 			<p class="eyebrow text-stone">Studio CRM</p>
-			<h1 class="mt-3 font-display text-4xl lg:text-5xl">Pipeline</h1>
+			<h1 class="mt-3 font-display text-4xl lg:text-5xl">Bom dia, Paula</h1>
 			<p class="mt-4 max-w-xl text-sm leading-relaxed text-slate">
-				Every inquiry that reaches the studio, in the order it arrived — with follow-ups, conversion and the
-				live Hermes report.
+				Veja primeiro o que precisa de uma resposta. Depois, acompanhe as próximas etapas de cada projeto.
 			</p>
 		</div>
 
@@ -299,7 +298,7 @@ function jevTone(temperature: string | undefined): string {
 					class="eyebrow min-h-11 flex-1 px-3 py-2 text-ink bg-bone lg:min-h-0 sm:flex-none"
 					aria-pressed="true"
 				>
-					Board
+					Etapas
 				</button>
 				<button
 					type="button"
@@ -307,7 +306,7 @@ function jevTone(temperature: string | undefined): string {
 					class="eyebrow min-h-11 flex-1 px-3 py-2 text-slate hover:text-ink lg:min-h-0 sm:flex-none"
 					aria-pressed="false"
 				>
-					Table
+					Lista
 				</button>
 			</div>
 			<span
@@ -320,14 +319,25 @@ function jevTone(temperature: string | undefined): string {
 				{storage.backend === 'upstash' ? 'Storage · Redis' : 'Storage · in memory'}
 			</span>
 			<button id="crm-remind" type="button" class="eyebrow min-h-11 border border-sand bg-white px-3 py-2 text-slate transition-colors hover:border-brass hover:text-ink lg:min-h-0">
-				Send reminders
+				Enviar lembretes
 			</button>
 			<a href="/api/crm/export/?format=csv" class="eyebrow flex min-h-11 items-center justify-center border border-sand bg-white px-3 py-2 text-slate transition-colors hover:border-brass hover:text-ink lg:min-h-0">
-				Export CSV
+				Exportar lista
 			</a>
-			<button id="crm-refresh" type="button" class="btn-primary min-h-11 lg:min-h-0">Refresh</button>
+			<button id="crm-refresh" type="button" class="btn-primary min-h-11 lg:min-h-0">Atualizar</button>
 		</div>
 	</div>
+
+	<section class="grid gap-4 lg:grid-cols-3" aria-labelledby="crm-priority-title">
+		<div class="border border-coffee/30 bg-[#fffaf6] p-5 lg:col-span-2">
+			<div class="flex items-baseline justify-between gap-4"><div><p class="eyebrow text-coffee">Para olhar agora</p><h2 id="crm-priority-title" class="mt-2 font-display text-2xl">Respostas e retornos</h2></div><span class="text-xs text-mist">Atualiza automaticamente</span></div>
+			<div class="mt-5 grid gap-3 sm:grid-cols-2">
+				<div class="border border-sand/70 bg-white p-4"><p class="eyebrow text-stone">Aguardando primeira resposta</p><p class="mt-2 font-display text-3xl" data-kpi="awaitingReply">{metrics.awaitingReply}</p><p class="mt-1 text-xs text-mist">Abra a mensagem e escolha “Marcar como respondido”.</p></div>
+				<div class="border border-sand/70 bg-white p-4"><p class="eyebrow text-coffee">Retornos atrasados</p><p class="mt-2 font-display text-3xl text-coffee" data-kpi="overdue">{metrics.tasksOverdue}</p><p class="mt-1 text-xs text-mist">São tarefas de acompanhamento, não mensagens enviadas.</p></div>
+			</div>
+		</div>
+		<div class="border border-sand/70 bg-white p-5"><p class="eyebrow text-stone">Próximo passo</p><p class="mt-3 text-sm leading-relaxed text-graphite">Abra uma pessoa para ler a mensagem completa, responder pelo seu aplicativo de email e registrar o retorno aqui.</p><p class="mt-4 border-t border-sand/60 pt-4 text-xs leading-relaxed text-mist">Sugestões automáticas são apoio para confirmar com o cliente — nunca uma certeza sobre orçamento ou fechamento.</p></div>
+	</section>
 
 	<!-- KPI strip ------------------------------------------------------------ -->
 	<section aria-label="Key metrics" class="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
@@ -400,7 +410,7 @@ function jevTone(temperature: string | undefined): string {
 	<section class="mt-6 grid gap-6 lg:grid-cols-3" aria-label="JEV scoring">
 		<div class="min-w-0 border border-sand/70 bg-white p-6 lg:col-span-2">
 			<div class="flex flex-wrap items-baseline justify-between gap-4">
-				<p class="eyebrow text-stone">Signal · JEV scoring</p>
+				<p class="eyebrow text-stone">Sugestão de triagem</p>
 				<div class="flex flex-wrap items-center gap-3">
 					<p class="text-xs text-mist" id="crm-jev-coverage">
 						{metrics.jev.scored} of {metrics.total} scored
@@ -410,19 +420,18 @@ function jevTone(temperature: string | undefined): string {
 						id="crm-jev-run"
 						class="eyebrow min-h-11 border border-sand bg-white px-3 py-2 text-slate transition-colors hover:border-brass hover:text-ink lg:min-h-0"
 					>
-						Score with JEV
+						Analisar contatos
 					</button>
 				</div>
 			</div>
 
 			<p class="mt-4 max-w-2xl text-sm leading-relaxed text-slate">
-				Every inquiry is scored when it lands: how real the project is, how hot it is, what kind of
-				project it is, and whether the stated budget fits the scope.
+				Esta é uma leitura automática para ajudar a priorizar a conversa. Ela estima sinais de um projeto de interiores; não prevê fechamento, confiança ou adequação financeira. Orçamento e prazo ausentes ficam sem conclusão.
 			</p>
 
 			<div class="mt-6 grid gap-8 sm:grid-cols-2">
 				<div class="min-w-0">
-					<p class="eyebrow text-stone">Temperature</p>
+						<p class="eyebrow text-stone">Prioridade sugerida</p>
 					<ul class="mt-4 space-y-4" id="crm-jev-temperatures">
 						{temperatureRows.map((row) => (
 							<li>
@@ -444,11 +453,11 @@ function jevTone(temperature: string | undefined): string {
 				</div>
 
 				<div class="min-w-0">
-					<p class="eyebrow text-stone">Hot and still open</p>
+						<p class="eyebrow text-stone">Contatos para revisar</p>
 					<ul class="mt-4 space-y-1" id="crm-jev-hot">
 						{hotLeads.length === 0 && (
 							<li class="py-5 text-sm leading-relaxed text-mist">
-								No open lead is scored as hot. The backfill will tell you when one arrives.
+								Nenhum contato foi sugerido para revisão ainda. Sem análise significa “ainda não analisado”, não “frio”.
 							</li>
 						)}
 						{hotLeads.map((lead) => (
@@ -475,7 +484,7 @@ function jevTone(temperature: string | undefined): string {
 		</div>
 
 		<div class="min-w-0 border border-sand/70 bg-white p-6">
-			<p class="eyebrow text-stone">What converts</p>
+				<p class="eyebrow text-stone">Histórico de resultados</p>
 			<p class="mt-3 text-xs leading-relaxed text-mist">Won against closed, all time.</p>
 			{topServices.length === 0 ? (
 				<p class="mt-5 text-sm leading-relaxed text-mist">
@@ -876,7 +885,7 @@ function jevTone(temperature: string | undefined): string {
 		</div>
 
 		<p class="border-t border-sand/60 px-5 py-4 text-xs text-mist sm:px-6" id="crm-leads-foot">
-			Showing the {recent.length} most recent of {metrics.total}.
+			{recent.length < metrics.total ? `Mostrando ${recent.length} dos ${metrics.total} contatos mais recentes.` : `Mostrando ${metrics.total} contato${metrics.total === 1 ? '' : 's'}.`}
 		</p>
 	</section>
 
@@ -1323,6 +1332,7 @@ function jevTone(temperature: string | undefined): string {
 	let filter = '';
 	let currentLeadId: string | null = null;
 	let leads: Array<Record<string, unknown>> = [];
+	let actionFeedback = '';
 	/** The record currently open in the dialog — used by the block buttons. */
 	let currentLead: Record<string, unknown> | null = null;
 
@@ -1353,7 +1363,6 @@ function jevTone(temperature: string | undefined): string {
 		if (metricsRes?.metrics) {
 			const metricsPayload = metricsRes.metrics as Record<string, unknown>;
 			renderMetrics(metricsPayload, metricsRes.storage as { backend?: string });
-			renderJev(metricsPayload);
 			if (Array.isArray(metricsRes.ledger)) {
 				renderLedger(metricsRes.ledger as Array<Record<string, unknown>>);
 			}
@@ -1362,13 +1371,17 @@ function jevTone(temperature: string | undefined): string {
 			leads = (leadsRes.leads as Array<Record<string, unknown>>) ?? [];
 			renderBoard();
 			renderLeads();
+			if (metricsRes?.metrics) renderJev(metricsRes.metrics as Record<string, unknown>);
 		}
 		if (tasksRes) renderQueue(tasksRes);
 		if (reportRes) renderReport(reportRes.report ?? null);
 		const complete = Boolean(metricsRes?.metrics && leadsRes?.leads && tasksRes?.tasks && reportRes?.ok);
-		setStatus(complete
-			? `Last updated ${new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })} · refreshing every 30 s.`
-			: 'Refresh incomplete. Some displayed values may be stale; retrying every 30 s.');
+		if (actionFeedback) {
+			setStatus(actionFeedback);
+			actionFeedback = '';
+		} else setStatus(complete
+			? `Atualizado às ${new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} · atualização automática a cada 30 s.`
+			: 'Atualização incompleta. Alguns dados podem estar antigos; tentando novamente.');
 	}
 
 	/* ----------------------------------------------------------- Rendering */
@@ -1733,7 +1746,9 @@ function jevTone(temperature: string | undefined): string {
 			}
 		}
 
-		if (foot) foot.textContent = `Showing ${Math.min(leads.length, 100)} of ${leads.length} matching leads.`;
+		if (foot) foot.textContent = leads.length > 100
+			? `Mostrando 100 de ${leads.length} contatos encontrados.`
+			: `Mostrando ${leads.length} contato${leads.length === 1 ? '' : 's'} encontrados.`;
 	}
 
 	function renderQueue(payload: Record<string, unknown>): void {
@@ -1979,6 +1994,7 @@ function jevTone(temperature: string | undefined): string {
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ id, state }),
 		});
+		actionFeedback = state === 'done' ? 'Retorno concluído e salvo.' : 'Tarefa atualizada.';
 		await refresh();
 	}
 
