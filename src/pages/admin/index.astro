@@ -351,7 +351,7 @@ function jevTone(temperature: string | undefined): string {
 	</section>
 
 	<div class="mt-10 flex items-center gap-4">
-		<p class="eyebrow text-stone shrink-0">Flow</p>
+		<p class="eyebrow text-stone shrink-0">Visão geral</p>
 		<span class="h-px flex-1 bg-sand/60" aria-hidden="true"></span>
 	</div>
 
@@ -359,7 +359,7 @@ function jevTone(temperature: string | undefined): string {
 	<section class="mt-8 grid items-start gap-6 lg:grid-cols-3">
 		<div class="min-w-0 border border-sand/70 bg-white p-6 lg:col-span-2">
 			<div class="flex items-baseline justify-between gap-4">
-				<p class="eyebrow text-stone">Arrivals · last 30 days</p>
+				<p class="eyebrow text-stone">Novos contatos · últimos 30 dias</p>
 				<p class="text-xs text-mist">peak {chartMax} / day</p>
 			</div>
 			<div class="mt-6" id="crm-chart">
@@ -378,7 +378,7 @@ function jevTone(temperature: string | undefined): string {
 		</div>
 
 		<div class="min-w-0 border border-sand/70 bg-white p-6">
-			<p class="eyebrow text-stone">Pipeline by status</p>
+			<p class="eyebrow text-stone">Projetos por etapa</p>
 			<ul class="mt-6 space-y-4" id="crm-funnel">
 				{LEAD_STATUSES.map((status) => {
 					const count = metrics.byStatus[status];
@@ -396,13 +396,13 @@ function jevTone(temperature: string | undefined): string {
 				})}
 			</ul>
 			<p class="mt-6 border-t border-sand/60 pt-4 text-xs leading-relaxed text-mist">
-				Moving a lead changes its stage only. Use <em>Mark as answered</em> to record its first reply and complete automatic initial-contact reminders.
+			Mover um contato altera apenas a etapa. Use <em>Marcar como respondido</em> para registrar o primeiro retorno e concluir os lembretes iniciais.
 			</p>
 		</div>
 	</section>
 
 	<div class="mt-10 flex items-center gap-4">
-		<p class="eyebrow text-stone shrink-0">Scoring</p>
+		<p class="eyebrow text-stone shrink-0">Triagem</p>
 		<span class="h-px flex-1 bg-sand/60" aria-hidden="true"></span>
 	</div>
 
@@ -447,8 +447,8 @@ function jevTone(temperature: string | undefined): string {
 					</ul>
 					<p class="mt-5 border-t border-sand/60 pt-4 text-xs leading-relaxed text-mist" id="crm-jev-note">
 						{metrics.jev.avgScore === null
-							? 'Nothing scored yet. Run the backfill to classify the existing pipeline.'
-							: `Avg score ${Math.round(metrics.jev.avgScore * 100)} · urgency ${Math.round((metrics.jev.avgUrgency ?? 0) * 100)}% · ${metrics.jev.unclassified} still waiting`}
+							? 'Nenhum contato analisado ainda. Execute a análise para revisar a fila existente.'
+							: `${metrics.jev.unclassified} contato(s) ainda aguardam análise`}
 					</p>
 				</div>
 
@@ -485,7 +485,7 @@ function jevTone(temperature: string | undefined): string {
 
 		<div class="min-w-0 border border-sand/70 bg-white p-6">
 				<p class="eyebrow text-stone">Histórico de resultados</p>
-			<p class="mt-3 text-xs leading-relaxed text-mist">Won against closed, all time.</p>
+			<p class="mt-3 text-xs leading-relaxed text-mist">Fechados em relação aos encerrados, no histórico.</p>
 			{topServices.length === 0 ? (
 				<p class="mt-5 text-sm leading-relaxed text-mist">
 					Nothing has closed yet, so there is no win rate to read. The moment a lead is marked Won
@@ -512,7 +512,7 @@ function jevTone(temperature: string | undefined): string {
 	</section>
 
 	<div class="mt-10 flex items-center gap-4">
-		<p class="eyebrow text-stone shrink-0">Insight</p>
+		<p class="eyebrow text-stone shrink-0">Histórico</p>
 		<span class="h-px flex-1 bg-sand/60" aria-hidden="true"></span>
 	</div>
 
@@ -575,7 +575,7 @@ function jevTone(temperature: string | undefined): string {
 	</section>
 
 	<div class="mt-10 flex items-center gap-4">
-		<p class="eyebrow text-stone shrink-0">Operations</p>
+		<p class="eyebrow text-stone shrink-0">Acompanhamento</p>
 		<span class="h-px flex-1 bg-sand/60" aria-hidden="true"></span>
 	</div>
 
@@ -631,7 +631,7 @@ function jevTone(temperature: string | undefined): string {
 				<p class="text-xs text-mist"><span id="crm-queue-overdue">{metrics.tasksOverdue}</span> late</p>
 			</div>
 
-			<p class="mt-3 text-xs text-mist">Done completes a task. Open the lead and choose Mark as answered to record a reply.</p>
+					<p class="mt-3 text-xs text-mist">Concluir encerra a tarefa. Abra o contato e escolha “Marcar como respondido” para registrar um retorno.</p>
 			<ul class="mt-5 space-y-1" id="crm-queue">
 				{queue.length === 0 && (
 					<li class="py-6 text-sm text-mist">No open follow-up tasks. Reply status is tracked separately.</li>
@@ -659,7 +659,7 @@ function jevTone(temperature: string | undefined): string {
 	</section>
 
 	<div class="mt-10 flex items-center gap-4">
-		<p class="eyebrow text-stone shrink-0">Pipeline</p>
+		<p class="eyebrow text-stone shrink-0">Etapas dos projetos</p>
 		<span class="h-px flex-1 bg-sand/60" aria-hidden="true"></span>
 	</div>
 
@@ -1252,14 +1252,14 @@ function jevTone(temperature: string | undefined): string {
 		| 'perdido';
 
 	const STATUS_LABELS: Record<LeadStatusValue, string> = {
-		novo: 'New',
-		atendimento_ia: 'AI handling',
-		atendimento_humano: 'Human handling',
-		reuniao_agendada: 'Meeting scheduled',
-		reuniao_realizada: 'Meeting held',
-		proposta: 'Proposal sent',
-		fechado: 'Won',
-		perdido: 'Lost',
+		novo: 'Novo contato',
+		atendimento_ia: 'Triagem inicial',
+		atendimento_humano: 'Atendimento Paula',
+		reuniao_agendada: 'Reunião agendada',
+		reuniao_realizada: 'Reunião realizada',
+		proposta: 'Proposta enviada',
+		fechado: 'Fechado',
+		perdido: 'Não avançou',
 	};
 
 	const BOARD_COLUMNS: LeadStatusValue[] = [
@@ -1454,17 +1454,17 @@ function jevTone(temperature: string | undefined): string {
 		if (note) {
 			note.textContent =
 				avgScore === null
-					? 'Nothing scored yet. Run the backfill to classify the existing pipeline.'
-					: `Avg score ${Math.round(avgScore * 100)} · urgency ${Math.round(avgUrgency * 100)}% · ${unclassified} still waiting`;
+							? 'Nenhum contato analisado ainda. Execute a análise para revisar a fila existente.'
+							: `${unclassified} contato(s) ainda aguardam análise`;
 		}
 
 		const temperatures = $('#crm-jev-temperatures');
 		if (temperatures) {
 			const counts = (jev.byTemperature ?? {}) as Record<string, number>;
 			const rows: Array<[string, string, string]> = [
-				['hot', 'Hot', 'bg-coffee'],
-				['warm', 'Warm', 'bg-brass'],
-				['cold', 'Cold', 'bg-slate'],
+				['hot', 'Prioridade alta', 'bg-coffee'],
+				['warm', 'Prioridade média', 'bg-brass'],
+				['cold', 'Prioridade baixa', 'bg-slate'],
 				['spam', 'Spam', 'bg-mist'],
 			];
 			const denominator = Math.max(1, scoredCount);
@@ -1511,7 +1511,7 @@ function jevTone(temperature: string | undefined): string {
 							</li>`;
 						})
 						.join('')
-				: '<li class="py-5 text-sm leading-relaxed text-mist">No open lead is scored as hot. The backfill will tell you when one arrives.</li>';
+				: '<li class="py-5 text-sm leading-relaxed text-mist">Nenhum contato foi sugerido para revisão ainda. Sem análise não significa prioridade baixa.</li>';
 		}
 	}
 
@@ -1691,7 +1691,7 @@ function jevTone(temperature: string | undefined): string {
 
 		if (body) {
 			if (!visible.length) {
-				body.innerHTML = `<tr><td colspan="8" class="px-6 py-10 text-center text-sm text-mist">No leads match this filter.</td></tr>`;
+				body.innerHTML = `<tr><td colspan="8" class="px-6 py-10 text-center text-sm text-mist">Nenhum contato encontrado com este filtro.</td></tr>`;
 			} else {
 				body.innerHTML = visible
 					.map((lead) => {
@@ -1719,7 +1719,7 @@ function jevTone(temperature: string | undefined): string {
 
 		if (cardsHost) {
 			if (!visible.length) {
-				cardsHost.innerHTML = `<p class="px-5 py-10 text-center text-sm text-mist">No leads match this filter.</p>`;
+				cardsHost.innerHTML = `<p class="px-5 py-10 text-center text-sm text-mist">Nenhum contato encontrado com este filtro.</p>`;
 			} else {
 				cardsHost.innerHTML = visible
 					.map((lead) => {
@@ -1776,8 +1776,8 @@ function jevTone(temperature: string | undefined): string {
 						<p class="truncate text-sm text-graphite">${esc(task.title)}</p>							<p class="mt-1 text-xs ${late ? 'text-coffee' : 'text-mist'}">${late ? `late ${Math.max(1, Math.round((now - due) / 3_600_000))}h` : esc(relative(due))}</p>
 					</div>
 					<div class="flex shrink-0 gap-2">
-						<button type="button" class="eyebrow min-h-11 border border-sand px-3 text-slate transition-colors hover:border-brass hover:text-ink lg:min-h-0 sm:px-2" data-task-open="${esc(task.leadId)}">Open</button>
-						<button type="button" class="eyebrow min-h-11 border border-sand px-3 text-slate transition-colors hover:border-brass hover:text-ink lg:min-h-0 sm:px-2" data-task-done="${esc(task.id)}">Done</button>
+						<button type="button" class="eyebrow min-h-11 border border-sand px-3 text-slate transition-colors hover:border-brass hover:text-ink lg:min-h-0 sm:px-2" data-task-open="${esc(task.leadId)}">Abrir</button>
+						<button type="button" class="eyebrow min-h-11 border border-sand px-3 text-slate transition-colors hover:border-brass hover:text-ink lg:min-h-0 sm:px-2" data-task-done="${esc(task.id)}">Concluir</button>
 					</div>
 				</li>`;
 			})

@@ -42,16 +42,16 @@ export const LEGACY_STATUS_ALIAS: Record<string, LeadStatus> = {
 	em_contato: 'atendimento_humano',
 };
 
-/** Human wording used by the dashboard (the site copy is English). */
+/** Human wording used by the internal dashboard. */
 export const STATUS_LABELS: Record<LeadStatus, string> = {
-	novo: 'New',
-	atendimento_ia: 'AI handling',
-	atendimento_humano: 'Human handling',
-	reuniao_agendada: 'Meeting scheduled',
-	reuniao_realizada: 'Meeting held',
-	proposta: 'Proposal sent',
-	fechado: 'Won',
-	perdido: 'Lost',
+	novo: 'Novo contato',
+	atendimento_ia: 'Triagem inicial',
+	atendimento_humano: 'Atendimento Paula',
+	reuniao_agendada: 'Reunião agendada',
+	reuniao_realizada: 'Reunião realizada',
+	proposta: 'Proposta enviada',
+	fechado: 'Fechado',
+	perdido: 'Não avançou',
 };
 
 /** Statuses still requiring a reply — drives the "awaiting answer" counter. */
