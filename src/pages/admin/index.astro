@@ -1264,11 +1264,6 @@ function jevTone(temperature: string | undefined): string {
 </AdminLayout>
 
 <script>
-	/* Keep the working path first in the DOM: diagnostics are secondary and collapsed. */
-	const diagnostics = document.querySelector<HTMLElement>('#crm-diagnostics');
-	const board = document.querySelector<HTMLElement>('#crm-board');
-	if (diagnostics && board) board.after(diagnostics);
-
 	type LeadStatusValue =
 		| 'novo'
 		| 'atendimento_ia'
