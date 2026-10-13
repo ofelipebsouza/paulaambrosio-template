@@ -1,4 +1,5 @@
 import { openAIPixelAvailable, openAIPixelNeedsReload } from '../openai-pixel/browser';
+import { metaPixelAvailable, metaPixelNeedsReload } from '../meta-pixel/browser';
 import { GOOGLE_TRACKING } from './config';
 import { isLeadAcceptance, isSubmissionId } from '../lead-acceptance';
 import { CONSENT_KEY, createTracking, parseConsent, type ConsentChoice, type SavedConsent } from './core';
@@ -34,8 +35,8 @@ function runtime() {
 export function savedConsent(): SavedConsent | null {
  try { return parseConsent(localStorage.getItem(CONSENT_KEY), Date.now()); } catch { return null; }
 }
-export function trackingAvailable(): boolean { return (runtime()?.ready() ?? false) || openAIPixelAvailable(); }
-export function reloadRecommended(): boolean { return (runtime()?.needsReload() ?? false) || openAIPixelNeedsReload(); }
+export function trackingAvailable(): boolean { return (runtime()?.ready() ?? false) || openAIPixelAvailable() || metaPixelAvailable(); }
+export function reloadRecommended(): boolean { return (runtime()?.needsReload() ?? false) || openAIPixelNeedsReload() || metaPixelNeedsReload(); }
 export function restoreConsent(): void {
  try { const choice = savedConsent(); if (!choice?.advertising) clearAcceptedHistory(); if (choice) runtime()?.consent(choice); } catch { /* Form UX never depends on tracking. */ }
 }

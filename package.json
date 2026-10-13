@@ -22,6 +22,7 @@
     "contact:test": "node --test tests/contact-submission.test.mjs",
     "privacy:test": "node --test tests/privacy-disclosure.test.mjs",
     "tracking:test": "node scripts/google-tracking-test.mjs",
+    "meta:test": "node --test tests/meta-pixel.test.mjs",
     "sitemap:test": "node --test scripts/sitemap-test.mjs"
   },
   "dependencies": {
