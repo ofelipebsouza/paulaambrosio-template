@@ -360,6 +360,31 @@ function jevTone(temperature: string | undefined): string {
 		))}
 	</section>
 
+	<section aria-label="Attention summary" class="mt-6 border border-coffee/30 bg-white p-5 sm:p-6">
+		<div class="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
+			<div>
+				<p class="eyebrow text-coffee">Attention now</p>
+				<h2 class="mt-2 font-display text-2xl">Start with the work that moves a lead forward.</h2>
+			</div>
+			<p class="max-w-xl text-sm leading-relaxed text-slate">
+				{metrics.tasksOverdue > 0
+					? `${metrics.tasksOverdue} follow-up${metrics.tasksOverdue === 1 ? '' : 's'} need${metrics.tasksOverdue === 1 ? 's' : ''} attention.`
+					: 'No follow-ups are late.'}
+				{' '}{metrics.awaitingReply} awaiting reply · {metrics.jev.hotOpen} hot open lead{metrics.jev.hotOpen === 1 ? '' : 's'}.
+			</p>
+		</div>
+	</section>
+
+	<!-- Secondary diagnostics stay available without pushing the working queue below the fold. -->
+	<details class="mt-8 group">
+		<summary class="flex cursor-pointer list-none items-center gap-4 border-y border-sand/60 py-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brass">
+			<span class="eyebrow text-stone">Reports & diagnostics</span>
+			<span class="h-px flex-1 bg-sand/60" aria-hidden="true"></span>
+			<span class="text-xs text-mist group-open:hidden">Show</span>
+			<span class="text-xs text-mist hidden group-open:inline">Hide</span>
+		</summary>
+		<div class="pt-2">
+
 	<div class="mt-10 flex items-center gap-4">
 		<p class="eyebrow text-stone shrink-0">Visão geral</p>
 		<span class="h-px flex-1 bg-sand/60" aria-hidden="true"></span>
@@ -583,6 +608,8 @@ function jevTone(temperature: string | undefined): string {
 			</ul>
 		</div>
 	</section>
+		</div>
+	</details>
 
 	<div class="mt-10 flex items-center gap-4">
 		<p class="eyebrow text-stone shrink-0">Acompanhamento</p>
