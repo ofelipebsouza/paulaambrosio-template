@@ -20,6 +20,7 @@
     "dns:check": "node scripts/dns-check.mjs",
     "crm:test": "node scripts/crm-test.mjs",
     "contact:test": "node --test tests/contact-submission.test.mjs",
+    "privacy:test": "node --test tests/privacy-disclosure.test.mjs",
     "tracking:test": "node scripts/google-tracking-test.mjs",
     "sitemap:test": "node --test scripts/sitemap-test.mjs"
   },
