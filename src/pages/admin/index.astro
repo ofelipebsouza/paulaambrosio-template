@@ -1350,7 +1350,7 @@ function jevTone(temperature: string | undefined): string {
 					: temperature === 'spam'
 						? 'text-mist'
 						: 'text-slate';
-		return `<span class="${tone}">${temperature === 'hot' ? 'Revisar hoje' : 'Prioridade sugerida'}</span>`;
+		return `<span class="${tone}">${esc(displayTemperature(temperature))}</span>`;
 	};
 
 	const $ = <T extends HTMLElement>(selector: string): T | null => document.querySelector<T>(selector);
