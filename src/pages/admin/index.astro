@@ -1845,7 +1845,10 @@ function jevTone(temperature: string | undefined): string {
 
 	async function openLead(id: string): Promise<void> {
 		const payload = await getJson(`/api/crm/leads/${encodeURIComponent(id)}/`);
-		if (!payload?.lead || !dialog) return;
+		if (!payload?.lead || !dialog) {
+			setStatus('Não foi possível abrir este contato. Tente atualizar a fila.');
+			return;
+		}
 
 		const lead = payload.lead as Record<string, unknown>;
 		currentLeadId = String(lead.id);
