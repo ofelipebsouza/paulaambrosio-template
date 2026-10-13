@@ -188,11 +188,21 @@ const kpis = [
    paint so the section is never an empty shell waiting on JavaScript. */
 const TEMPERATURES = ['hot', 'warm', 'cold', 'spam'] as const;
 const TEMPERATURE_LABELS: Record<(typeof TEMPERATURES)[number], string> = {
-	hot: 'Prioridade alta',
-	warm: 'Prioridade média',
-	cold: 'Prioridade baixa',
-	spam: 'Fornecedor, imprensa ou emprego',
+	hot: 'Interesse alto',
+	warm: 'Explorando opções',
+	cold: 'Interesse inicial',
+	spam: 'Possível contato não comercial',
 };
+
+function displayTemperature(value: string | undefined): string {
+	return TEMPERATURE_LABELS[value as (typeof TEMPERATURES)[number]] ?? 'Ainda não analisado';
+}
+function displayBudget(value: string | undefined): string {
+	return value === 'high' ? 'Acima de US$100 mil' : value === 'medium' ? 'US$30 mil a US$100 mil' : value === 'low' ? 'Abaixo de US$30 mil' : 'Não informado ou incerto';
+}
+function displayUrgency(value: number | undefined): string {
+	return value === 1 ? 'Prazo definido, confirmar' : value === 0.5 ? 'Possível início em até 6 meses' : 'Baixa ou não confirmada';
+}
 const TEMPERATURE_COLORS: Record<(typeof TEMPERATURES)[number], string> = {
 	hot: 'bg-coffee',
 	warm: 'bg-brass',
@@ -474,7 +484,7 @@ function jevTone(temperature: string | undefined): string {
 									</p>
 								</div>
 								<span class="shrink-0 font-display text-xl text-coffee">
-									{lead.jev?.temperature === 'hot' ? 'Revisar hoje' : lead.jev?.temperature === 'warm' ? 'Revisar em breve' : lead.jev?.temperature === 'spam' ? 'Separar para triagem' : 'Acompanhar'}
+									{displayTemperature(lead.jev?.temperature)}
 								</span>
 							</li>
 						))}
@@ -827,7 +837,7 @@ function jevTone(temperature: string | undefined): string {
 							<td class="whitespace-nowrap px-6 py-4 text-xs">
 								{lead.jev ? (
 									<span class={jevTone(lead.jev.temperature)}>
-										{lead.jev.temperature === 'hot' ? 'Revisar hoje' : lead.jev.temperature === 'warm' ? 'Revisar em breve' : lead.jev.temperature === 'spam' ? 'Separar para triagem' : 'Acompanhar'}
+										{displayTemperature(lead.jev.temperature)}
 									</span>
 								) : (
 					<span class="text-mist">Ainda não analisado</span>
@@ -1275,6 +1285,13 @@ function jevTone(temperature: string | undefined): string {
 		fechado: 'Fechado',
 		perdido: 'Não avançou',
 	};
+	const displayTemperature = (value: unknown): string => ({
+		hot: 'Interesse alto', warm: 'Explorando opções', cold: 'Interesse inicial', spam: 'Possível contato não comercial',
+	} as Record<string, string>)[String(value ?? '')] ?? 'Ainda não analisado';
+	const displayBudget = (value: unknown): string => ({
+		high: 'Acima de US$100 mil', medium: 'US$30 mil a US$100 mil', low: 'Abaixo de US$30 mil', unknown: 'Não informado ou incerto',
+	} as Record<string, string>)[String(value ?? 'unknown')] ?? 'Não informado ou incerto';
+	const displayUrgency = (value: unknown): string => Number(value) === 1 ? 'Prazo definido, confirmar' : Number(value) === 0.5 ? 'Possível início em até 6 meses' : 'Baixa ou não confirmada';
 
 	const BOARD_COLUMNS: LeadStatusValue[] = [
 		'novo',
@@ -1477,10 +1494,10 @@ function jevTone(temperature: string | undefined): string {
 		if (temperatures) {
 			const counts = (jev.byTemperature ?? {}) as Record<string, number>;
 			const rows: Array<[string, string, string]> = [
-				['hot', 'Prioridade alta', 'bg-coffee'],
-				['warm', 'Prioridade média', 'bg-brass'],
-				['cold', 'Prioridade baixa', 'bg-slate'],
-				['spam', 'Spam', 'bg-mist'],
+				['hot', 'Interesse alto', 'bg-coffee'],
+				['warm', 'Explorando opções', 'bg-brass'],
+				['cold', 'Interesse inicial', 'bg-slate'],
+				['spam', 'Possível contato não comercial', 'bg-mist'],
 			];
 			const denominator = Math.max(1, scoredCount);
 			temperatures.innerHTML = rows
@@ -1522,7 +1539,7 @@ function jevTone(temperature: string | undefined): string {
 									<p class="truncate text-sm text-graphite">${esc(String(lead.name))}</p>
 									<p class="truncate text-xs text-mist">${esc(meta)} · ${esc(relative(Number(lead.createdAt)))}</p>
 								</div>
-								<span class="shrink-0 text-xs text-coffee">${verdict?.temperature === 'hot' ? 'Revisar hoje' : verdict?.temperature === 'warm' ? 'Revisar em breve' : verdict?.temperature === 'spam' ? 'Separar para triagem' : 'Acompanhar'}</span>
+								<span class="shrink-0 text-xs text-coffee">${displayTemperature(verdict?.temperature)}</span>
 							</li>`;
 						})
 						.join('')
@@ -1933,11 +1950,11 @@ function jevTone(temperature: string | undefined): string {
 			const rows: Array<[string, string]> =
 				jev && typeof jev.score === 'number'
 					? [
-							['Leitura', jev.temperature === 'hot' ? 'Revisar hoje' : jev.temperature === 'warm' ? 'Revisar em breve' : jev.temperature === 'spam' ? 'Separar para triagem' : 'Acompanhar'],
+							['Leitura', displayTemperature(jev.temperature)],
 							['Tipo de projeto', jev.projectType === 'residential' ? 'Residencial' : jev.projectType === 'hospitality' ? 'Hospitalidade' : jev.projectType === 'commercial' ? 'Comercial' : jev.projectType === 'vendor_press' ? 'Fornecedor ou imprensa' : 'Outro ou não informado'],
-							['Orçamento original', String(lead.budget || 'Ainda não informado')],
-							['Leitura do orçamento', jev.budgetFit === 'unknown' ? 'Sem conclusão automática' : 'Confirme com o cliente'],
-							['Prazo', jev.urgency === 0 ? 'Baixo ou não confirmado' : 'Há sinais de prazo'],
+							['Orçamento original', String(lead.budget || 'Não informado')],
+							['Faixa indicada', displayBudget(jev.budgetFit)],
+							['Prazo sugerido', displayUrgency(jev.urgency)],
 							['Observação', 'Sugestão automática; confirme na conversa'],
 						]
 					: [['Leitura', 'Ainda não analisado — não significa prioridade baixa']];
