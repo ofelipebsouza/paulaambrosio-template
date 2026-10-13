@@ -5,7 +5,7 @@ const PIXEL_ID = '577841214418796';
 const SCRIPT_ID = 'paula-meta-pixel';
 const SDK_URL = 'https://connect.facebook.net/en_US/fbevents.js';
 type MetaQueue = ((...args: unknown[]) => void) & { queue?: unknown[][]; loaded?: boolean; version?: string; push?: MetaQueue; callMethod?: (...args: unknown[]) => void; __paulaOwned?: boolean };
-type MetaWindow = Window & { fbq?: MetaQueue; __paulaMetaPixel?: { needsReload: boolean } };
+type MetaWindow = Window & { fbq?: MetaQueue; _fbq?: MetaQueue; __paulaMetaPixel?: { needsReload: boolean } };
 
 export function metaPixelAvailable(): boolean {
  return META_PIXEL_ENABLED && typeof window !== 'undefined' && location.hostname === 'www.paulaambrosio.com' &&
@@ -40,7 +40,7 @@ export function installMetaPixel(): void {
   timer = setTimeout(reconcile, Math.min(2_147_000_000, consent.at + 90 * 86_400_000 - Date.now() + 1));
   if (initialized) return;
   if (revoked) return;
-  if (w.fbq || document.getElementById(SCRIPT_ID)) return;
+  if (w.fbq || w._fbq || document.getElementById(SCRIPT_ID)) return;
   initialized = true;
   const fbq: MetaQueue = (...args) => {
    if (fbq.callMethod) fbq.callMethod(...args);
@@ -49,6 +49,7 @@ export function installMetaPixel(): void {
   fbq.queue = [];
   fbq.loaded = true;
   fbq.version = '2.0';
+  fbq.push = fbq;
   fbq.__paulaOwned = true;
   fbq('consent', 'revoke');
   fbq('set', 'autoConfig', false, PIXEL_ID);
@@ -56,6 +57,7 @@ export function installMetaPixel(): void {
   fbq('consent', 'grant');
   if (!pageViewed) { fbq('track', 'PageView'); pageViewed = true; }
   w.fbq = fbq;
+  if (!w._fbq) w._fbq = fbq;
   const script = document.createElement('script');
   script.id = SCRIPT_ID;
   script.async = true;
