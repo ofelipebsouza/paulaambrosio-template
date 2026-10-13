@@ -360,23 +360,8 @@ function jevTone(temperature: string | undefined): string {
 		))}
 	</section>
 
-	<section aria-label="Attention summary" class="mt-6 border border-coffee/30 bg-white p-5 sm:p-6">
-		<div class="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
-			<div>
-				<p class="eyebrow text-coffee">Attention now</p>
-				<h2 class="mt-2 font-display text-2xl">Start with the work that moves a lead forward.</h2>
-			</div>
-			<p class="max-w-xl text-sm leading-relaxed text-slate">
-				{metrics.tasksOverdue > 0
-					? `${metrics.tasksOverdue} follow-up${metrics.tasksOverdue === 1 ? '' : 's'} need${metrics.tasksOverdue === 1 ? 's' : ''} attention.`
-					: 'No follow-ups are late.'}
-				{' '}{metrics.awaitingReply} awaiting reply · {metrics.jev.hotOpen} hot open lead{metrics.jev.hotOpen === 1 ? '' : 's'}.
-			</p>
-		</div>
-	</section>
-
 	<!-- Secondary diagnostics stay available without pushing the working queue below the fold. -->
-	<details class="mt-8 group">
+	<details id="crm-diagnostics" class="mt-8 group">
 		<summary class="flex cursor-pointer list-none items-center gap-4 border-y border-sand/60 py-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brass">
 			<span class="eyebrow text-stone">Reports & diagnostics</span>
 			<span class="h-px flex-1 bg-sand/60" aria-hidden="true"></span>
@@ -1278,20 +1263,12 @@ function jevTone(temperature: string | undefined): string {
 	</p>
 </AdminLayout>
 
-<style>
-	/* Daily work comes before reporting: the board remains the second major stop. */
-	#section-crm { display: flex; flex-direction: column; }
-	#section-crm.hidden { display: none; }
-	#section-crm > * { order: 10; }
-	#section-crm > :first-child { order: 0; }
-	#section-crm > :nth-child(2) { order: 1; }
-	#crm-board { order: 2; }
-	#crm-leads-section { order: 3; }
-	#crm-kpis { order: 4; }
-	#crm-flow { order: 5; }
-</style>
-
 <script>
+	/* Keep the working path first in the DOM: diagnostics are secondary and collapsed. */
+	const diagnostics = document.querySelector<HTMLElement>('#crm-diagnostics');
+	const board = document.querySelector<HTMLElement>('#crm-board');
+	if (diagnostics && board) board.after(diagnostics);
+
 	type LeadStatusValue =
 		| 'novo'
 		| 'atendimento_ia'
