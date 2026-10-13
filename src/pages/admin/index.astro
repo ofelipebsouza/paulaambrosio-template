@@ -267,14 +267,14 @@ function jevTone(temperature: string | undefined): string {
 			id="tab-btn-journal"
 			class="eyebrow shrink-0 px-3 sm:px-4 py-2 border-b-2 border-transparent text-slate hover:text-ink"
 		>
-			Journal CMS
+			Conteúdo
 		</button>
 		<button
 			type="button"
 			id="tab-btn-analytics"
 			class="eyebrow shrink-0 px-3 sm:px-4 py-2 border-b-2 border-transparent text-slate hover:text-ink"
 		>
-			Studio Analytics
+			Métricas do site
 		</button>
 	</div>
 
@@ -769,7 +769,7 @@ function jevTone(temperature: string | undefined): string {
 					id="crm-filter"
 					class="border border-sand bg-white px-4 py-2.5 text-sm focus:border-brass focus:outline-none"
 				>
-					<option value="">All statuses</option>
+					<option value="">Todas as etapas</option>
 					{STATUS_OPTIONS.map((option) => <option value={option.value}>{option.label}</option>)}
 				</select>
 			</div>
@@ -900,13 +900,13 @@ function jevTone(temperature: string | undefined): string {
 					<p class="eyebrow text-stone">Lead</p>
 					<h2 class="mt-2 font-display text-3xl" id="crm-dialog-name">—</h2>
 				</div>
-				<button type="button" class="eyebrow -mr-2 flex min-h-11 items-center px-2 text-slate hover:text-ink" id="crm-dialog-close">Close</button>
+				<button type="button" class="eyebrow -mr-2 flex min-h-11 items-center px-2 text-slate hover:text-ink" id="crm-dialog-close">Fechar</button>
 			</div>
 
 			<dl class="mt-6 grid gap-4 sm:grid-cols-2" id="crm-dialog-meta"></dl>
 
 			<div class="mt-6 border-t border-sand/60 pt-5">
-				<p class="eyebrow text-stone">Origin</p>
+				<p class="eyebrow text-stone">Origem</p>
 				<dl class="mt-3 grid gap-4 sm:grid-cols-2" id="crm-dialog-origin"></dl>
 				<div class="mt-4 flex flex-wrap gap-2" id="crm-dialog-flags"></div>
 			</div>
@@ -915,14 +915,14 @@ function jevTone(temperature: string | undefined): string {
 				<div class="flex items-baseline justify-between gap-4">
 					<p class="eyebrow text-stone">JEV score</p>
 					<button type="button" id="crm-dialog-jev-run" class="eyebrow text-slate transition-colors hover:text-ink">
-						Reclassify
+						Reanalisar
 					</button>
 				</div>
 				<dl class="mt-3 grid gap-4 sm:grid-cols-2" id="crm-dialog-jev"></dl>
 			</div>
 
 			<div class="mt-6 border-t border-sand/60 pt-5">
-				<p class="eyebrow text-stone">Message</p>
+				<p class="eyebrow text-stone">Mensagem</p>
 				<p class="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-graphite" id="crm-dialog-message"></p>
 			</div>
 
@@ -930,14 +930,14 @@ function jevTone(temperature: string | undefined): string {
 				<select id="crm-dialog-status" class="min-h-11 border border-sand bg-white px-3 py-2 text-sm focus:border-brass focus:outline-none" aria-label="Change status">
 					{STATUS_OPTIONS.map((option) => <option value={option.value}>{option.label}</option>)}
 				</select>
-				<button type="button" id="crm-dialog-responded" class="btn-secondary">Mark as answered</button>
-				<a id="crm-dialog-mail" href="#" class="btn-secondary">Reply by email</a>
-				<button type="button" id="crm-dialog-block-ip" class="btn-secondary">Block IP</button>
-				<button type="button" id="crm-dialog-block-domain" class="btn-secondary">Block domain</button>
+				<button type="button" id="crm-dialog-responded" class="btn-secondary">Marcar como respondido</button>
+				<a id="crm-dialog-mail" href="#" class="btn-secondary">Responder por email</a>
+				<button type="button" id="crm-dialog-block-ip" class="btn-secondary">Bloquear IP</button>
+				<button type="button" id="crm-dialog-block-domain" class="btn-secondary">Bloquear domínio</button>
 			</div>
 
 			<div class="mt-6 border-t border-sand/60 pt-5">
-				<p class="eyebrow text-stone">Notes</p>
+				<p class="eyebrow text-stone">Notas</p>
 				<form id="crm-note-form" class="mt-3 flex flex-col gap-3 sm:flex-row">
 					<label class="sr-only" for="crm-note">Add a note</label>
 					<input id="crm-note" type="text" maxlength="600" placeholder="What happened on this lead?"
@@ -948,7 +948,7 @@ function jevTone(temperature: string | undefined): string {
 			</div>
 
 			<div class="mt-6 border-t border-sand/60 pt-5">
-				<p class="eyebrow text-stone">Timeline</p>
+				<p class="eyebrow text-stone">Histórico</p>
 				<ol class="mt-3 space-y-2" id="crm-dialog-timeline"></ol>
 			</div>
 		</div>
