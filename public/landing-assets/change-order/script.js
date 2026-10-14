@@ -154,7 +154,7 @@ Object.assign(englishCopy, {
  "Esse valor segue sem pagamento, e a amizade também se perdeu.": "That amount remains unpaid, and the friendship ended too.",
  "Eu compartilho essa história porque quero ajudar outros profissionais a terem esse cuidado antes de passar por uma situação parecida. A mudança precisa estar clara para todos: o que será feito, quanto vai custar, como afeta o prazo e quem aprovou.": "I’m sharing this because I want to help other professionals put a clearer process in place before they face a similar situation. Everyone needs to understand what will change, what it will cost, how it affects the schedule, and who has approved it.",
  "Com o Change Order System, quero ajudar você a colocar esse processo em prática antes da execução.": "With the Change Order System, I want to help you put that process into practice before the work begins.",
- "Paula Ambrosio, criadora do Change Order System": "Paula Ambrosio, creator of the Change Order System"
+ "Paula Ambrosio e Amanda Ambrosio, fundadoras do estúdio": "Paula Ambrosio and Amanda Ambrosio, studio founders"
 });
 let language = new URL(window.location.href).searchParams.get('lang') === 'en' ? 'en' : 'pt';
 const translatedText = [];

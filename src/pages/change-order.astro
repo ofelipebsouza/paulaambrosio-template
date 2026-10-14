@@ -18,3 +18,11 @@ const afterOffer = correctedBody.slice(offerStart);
   <head><OpenAIPixel /><Fragment set:html={head} /></head>
   <body><Fragment set:html={beforeOffer} /><PaulaProjectGallery /><Fragment set:html={afterOffer} /><GoogleConsent /></body>
 </html>
+<style is:global>
+  @media (max-width: 700px) {
+    .paula-story .story-portrait img {
+      aspect-ratio: 2 / 3;
+      object-position: 50% top;
+    }
+  }
+</style>
