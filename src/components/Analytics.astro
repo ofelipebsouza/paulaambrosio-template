@@ -211,6 +211,7 @@ import SpeedInsights from '@vercel/speed-insights/astro';
 				}
 
 				setSending(true);
+				clearValidation();
 				if (status) status.textContent = '';
 				trackEvent(ANALYTICS_EVENTS.FORM_SUBMIT, {
 					page: page(),

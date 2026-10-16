@@ -6,6 +6,11 @@ import vm from 'node:vm';
 import { transform } from 'esbuild';
 
 const source = await readFile(new URL('../src/components/Analytics.astro', import.meta.url), 'utf8');
+const headerSource = await readFile(new URL('../src/components/Header.astro', import.meta.url), 'utf8');
+assert.match(headerSource, /<textarea[^>]+name="message"[\s\S]*required[\s\S]*aria-describedby="inq-message-error"/);
+assert.match(source, /invalidInputs = new Set/);
+assert.match(source, /aria-describedby.*errorId/);
+assert.match(source, /clearValidation\(\);\s*if \(status\) status\.textContent = ''/);
 const script = source.match(/<script>([\s\S]*?)<\/script>/)[1]
 	.replace(/import \{([^}]+)\} from '[^']+';/g, 'const {$1} = boundary;');
 const { code } = await transform(script, { loader: 'ts', target: 'es2022' });
