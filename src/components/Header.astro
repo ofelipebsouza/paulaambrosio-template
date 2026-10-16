@@ -294,8 +294,10 @@ const socialIconMap: Record<string, string> = {
 				<div>
 					<label for="inq-message" class="eyebrow text-slate">Tell us briefly about your project</label>
 					<textarea id="inq-message" name="message" rows="4" placeholder="Share a few details about your vision…"
+						required aria-describedby="inq-message-error"
 						maxlength={FIELD_LIMITS.message}
 						class="mt-2 w-full border border-sand bg-white px-4 py-3 text-sm placeholder:text-mist focus:border-brass focus:outline-none"></textarea>
+					<p id="inq-message-error" class="mt-1 text-sm text-red-700" aria-live="polite"></p>
 				</div>
 
 				<!-- Honeypot: hidden from visitors and assistive tech, irresistible to bots. -->

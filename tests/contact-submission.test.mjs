@@ -84,7 +84,7 @@ function fixture(responses, { formId = 'contact', email = 'studio@example.test',
 	};
 	vm.runInNewContext(code, {
 		document, window: { location, crypto: { randomUUID: () => `934b02bd-40fb-4ff1-836f-${String(++uuids).padStart(12,'0')}` } }, fetch, FormData, CustomEvent, Element,
-		boundary: { CONTACT_FIELDS, HONEYPOT_FIELD, ANALYTICS_EVENTS, measureAcceptedLead: receipt => accepted.push(receipt), trackEvent: (event, data) => events.push({ event, data }) },
+		boundary: { CONTACT_FIELDS, HONEYPOT_FIELD, ANALYTICS_EVENTS, measureAcceptedLead: receipt => accepted.push(receipt), measureGoogleAcceptedLead: () => true, trackEvent: (event, data) => events.push({ event, data }) },
 	});
 	return {
 		form, button, status, events, requests, accepted,

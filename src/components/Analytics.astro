@@ -209,7 +209,22 @@ import SpeedInsights from '@vercel/speed-insights/astro';
 						headers: { Accept: 'application/json', ...(retryId ? { 'X-Submission-Id': retryId } : {}) },
 					});
 
-					const result = await response.json().catch(() => null) as { error?: string; leadAcceptance?: unknown } | null;
+					const result = await response.json().catch(() => null) as { error?: string; errors?: Record<string, string>; leadAcceptance?: unknown } | null;
+					if (result?.errors && response.status === 422) {
+						const invalidFields = Object.entries(result.errors);
+						for (const [field, message] of invalidFields) {
+							const input = form.querySelector(`[name="${field}"]`);
+							input?.setAttribute('aria-invalid', 'true');
+							input?.setAttribute('aria-describedby', `${field}-error`);
+							const error = form.querySelector(`#${field}-error`);
+							if (error) error.textContent = message;
+						}
+						const firstInvalid = invalidFields[0]?.[0];
+						if (firstInvalid) {
+							const firstInput = form.querySelector(`[name="${firstInvalid}"]`);
+							if (typeof (firstInput as HTMLElement | null)?.focus === 'function') firstInput.focus();
+						}
+					}
 					// SMTP may fail after durable acceptance. Never infer a lead from status/ok.
 					if ([200, 502, 503].includes(response.status) && result?.leadAcceptance) {
 						measureAcceptedLead(result.leadAcceptance);
