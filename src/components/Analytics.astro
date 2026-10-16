@@ -113,7 +113,23 @@ import SpeedInsights from '@vercel/speed-insights/astro';
 				form.dataset.analyticsBound = 'true';
 
 				const status = form.querySelector<HTMLElement>('.analytics-form-status');
+				const invalidInputs = new Set<HTMLElement>();
+				const clearValidation = () => {
+					invalidInputs.forEach((field) => {
+						field.removeAttribute('aria-invalid');
+						const describedBy = field.getAttribute('aria-describedby')?.split(/\s+/).filter(Boolean) ?? [];
+						const ownError = describedBy.filter((id) => id.startsWith(`${form.dataset.analyticsForm ?? 'contact'}-error-`));
+						if (ownError.length) field.setAttribute('aria-describedby', describedBy.filter((id) => !ownError.includes(id)).join(' '));
+						ownError.forEach((id) => form.querySelector(`#${id}`)?.remove());
+					});
+					invalidInputs.clear();
+				};
+				form.addEventListener('input', (event) => {
+					const field = event.target as HTMLElement;
+					if (field?.getAttribute('aria-invalid') === 'true') clearValidation();
+				});
 				form.addEventListener('analytics-form-success', (event) => {
+					clearValidation();
 					if (!status) return;
 					const message = (event as CustomEvent<{ message?: string }>).detail?.message;
 					status.textContent =
@@ -214,10 +230,21 @@ import SpeedInsights from '@vercel/speed-insights/astro';
 						const invalidFields = Object.entries(result.errors);
 						if (status) status.textContent = invalidFields.map(([field, message]) => `${field}: ${message}`).join(' ');
 						for (const [field, message] of invalidFields) {
+							if (!CONTACT_FIELDS.some((spec) => spec.name === field)) continue;
 							const input = form.querySelector(`[name="${field}"]`);
 							input?.setAttribute('aria-invalid', 'true');
-							input?.setAttribute('aria-describedby', `${field}-error`);
-							const error = form.querySelector(`#${field}-error`);
+							if (input) invalidInputs.add(input as HTMLElement);
+							const errorId = `${form.dataset.analyticsForm ?? 'contact'}-error-${field}`;
+							let error = form.querySelector<HTMLElement>(`#${errorId}`);
+							if (!error) {
+								error = document.createElement('p');
+								error.id = errorId;
+								error.className = 'mt-1 text-sm text-red-700';
+								error.setAttribute('role', 'alert');
+								input?.parentElement?.append(error);
+							}
+							const describedBy = input?.getAttribute('aria-describedby')?.split(/\s+/).filter(Boolean) ?? [];
+							if (input && !describedBy.includes(errorId)) input.setAttribute('aria-describedby', [...describedBy, errorId].join(' '));
 							if (error) error.textContent = message;
 						}
 						const firstInvalid = invalidFields[0]?.[0];
