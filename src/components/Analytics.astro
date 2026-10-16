@@ -212,6 +212,7 @@ import SpeedInsights from '@vercel/speed-insights/astro';
 					const result = await response.json().catch(() => null) as { error?: string; errors?: Record<string, string>; leadAcceptance?: unknown } | null;
 					if (result?.errors && response.status === 422) {
 						const invalidFields = Object.entries(result.errors);
+						if (status) status.textContent = invalidFields.map(([field, message]) => `${field}: ${message}`).join(' ');
 						for (const [field, message] of invalidFields) {
 							const input = form.querySelector(`[name="${field}"]`);
 							input?.setAttribute('aria-invalid', 'true');
