@@ -113,22 +113,33 @@ import SpeedInsights from '@vercel/speed-insights/astro';
 				form.dataset.analyticsBound = 'true';
 
 				const status = form.querySelector<HTMLElement>('.analytics-form-status');
-				const invalidInputs = new Set<HTMLElement>();
+				const invalidInputs = new Map<HTMLElement, { error: HTMLElement; label: string; message: string }>();
+				const updateValidationSummary = () => {
+					if (!status) return;
+					status.textContent = [...invalidInputs.values()].map(({ label, message }) => `${label}: ${message}`).join(' ');
+					status.className = 'analytics-form-status mt-3 text-sm text-red-800';
+				};
 				const clearFieldValidation = (field: HTMLElement) => {
-						field.removeAttribute('aria-invalid');
-						const describedBy = field.getAttribute('aria-describedby')?.split(/\s+/).filter(Boolean) ?? [];
-						const ownError = describedBy.filter((id) => id.startsWith(`${form.dataset.analyticsForm ?? 'contact'}-error-`));
-						if (ownError.length) field.setAttribute('aria-describedby', describedBy.filter((id) => !ownError.includes(id)).join(' '));
-						ownError.forEach((id) => form.querySelector(`#${id}`)?.remove());
+					const validation = invalidInputs.get(field);
+					if (!validation) return;
+					field.removeAttribute('aria-invalid');
+					const describedBy = (field.getAttribute('aria-describedby')?.split(/\s+/).filter(Boolean) ?? [])
+						.filter((id) => id !== validation.error.id);
+					if (describedBy.length) field.setAttribute('aria-describedby', describedBy.join(' '));
+					else field.removeAttribute('aria-describedby');
+					validation.error.remove();
 					invalidInputs.delete(field);
 				};
 				const clearValidation = () => {
-					[...invalidInputs].forEach(clearFieldValidation);
+					[...invalidInputs.keys()].forEach(clearFieldValidation);
 				};
-				form.addEventListener('input', (event) => {
-					const field = event.target as HTMLElement;
-					if (field?.getAttribute('aria-invalid') === 'true') clearFieldValidation(field);
-				});
+				const clearEditedValidation = (event: Event) => {
+					if (!(event.target instanceof HTMLElement) || !invalidInputs.has(event.target)) return;
+					clearFieldValidation(event.target);
+					updateValidationSummary();
+				};
+				form.addEventListener('input', clearEditedValidation);
+				form.addEventListener('change', clearEditedValidation);
 				form.addEventListener('analytics-form-success', (event) => {
 					clearValidation();
 					if (!status) return;
@@ -228,33 +239,29 @@ import SpeedInsights from '@vercel/speed-insights/astro';
 						headers: { Accept: 'application/json', ...(retryId ? { 'X-Submission-Id': retryId } : {}) },
 					});
 
-					const result = await response.json().catch(() => null) as { error?: string; errors?: Record<string, string>; leadAcceptance?: unknown } | null;
-					if (result?.errors && response.status === 422) {
-						validationHandled = true;
-						const invalidFields = Object.entries(result.errors);
-						if (status) status.textContent = invalidFields.map(([field, message]) => `${field}: ${message}`).join(' ');
-						for (const [field, message] of invalidFields) {
-							if (!CONTACT_FIELDS.some((spec) => spec.name === field)) continue;
-							const input = form.querySelector(`[name="${field}"]`);
-							input?.setAttribute('aria-invalid', 'true');
-							if (input) invalidInputs.add(input as HTMLElement);
-							const errorId = `${form.dataset.analyticsForm ?? 'contact'}-error-${field}`;
-							let error = form.querySelector<HTMLElement>(`#${errorId}`);
-							if (!error) {
-								error = document.createElement('p');
-								error.id = errorId;
-								error.className = 'mt-1 text-sm text-red-700';
-								error.setAttribute('role', 'alert');
-								input?.parentElement?.append(error);
-							}
-							const describedBy = input?.getAttribute('aria-describedby')?.split(/\s+/).filter(Boolean) ?? [];
-							if (input && !describedBy.includes(errorId)) input.setAttribute('aria-describedby', [...describedBy, errorId].join(' '));
-							if (error) error.textContent = message;
+					const result = await response.json().catch(() => null) as { error?: string; errors?: unknown; leadAcceptance?: unknown } | null;
+					if (response.status === 422 && result?.errors && typeof result.errors === 'object' && !Array.isArray(result.errors)) {
+						// Use only known field names and nonempty strings, never response keys as selectors.
+						for (const spec of CONTACT_FIELDS) {
+							const message = Object.prototype.hasOwnProperty.call(result.errors, spec.name)
+								? (result.errors as Record<string, unknown>)[spec.name] : undefined;
+							if (typeof message !== 'string' || !message.trim()) continue;
+							const input = form.querySelector<HTMLElement>(`[name="${spec.name}"]`);
+							if (!input || !input.parentElement) continue;
+							const error = document.createElement('p');
+							error.id = `${form.dataset.analyticsForm ?? 'contact'}-error-${spec.name}`;
+							error.className = 'mt-1 text-sm text-red-700';
+							error.textContent = message.trim();
+							input.parentElement.append(error);
+							input.setAttribute('aria-invalid', 'true');
+							const describedBy = input.getAttribute('aria-describedby')?.split(/\s+/).filter(Boolean) ?? [];
+							input.setAttribute('aria-describedby', [...new Set([...describedBy, error.id])].join(' '));
+							invalidInputs.set(input, { error, label: spec.label, message: message.trim() });
 						}
-						const firstInvalid = invalidFields[0]?.[0];
-						if (firstInvalid) {
-							const firstInput = form.querySelector(`[name="${firstInvalid}"]`);
-							if (typeof (firstInput as HTMLElement | null)?.focus === 'function') firstInput.focus();
+						validationHandled = invalidInputs.size > 0;
+						if (validationHandled) {
+							updateValidationSummary();
+							invalidInputs.keys().next().value?.focus();
 						}
 					}
 					// SMTP may fail after durable acceptance. Never infer a lead from status/ok.
