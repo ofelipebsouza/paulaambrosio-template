@@ -114,19 +114,20 @@ import SpeedInsights from '@vercel/speed-insights/astro';
 
 				const status = form.querySelector<HTMLElement>('.analytics-form-status');
 				const invalidInputs = new Set<HTMLElement>();
-				const clearValidation = () => {
-					invalidInputs.forEach((field) => {
+				const clearFieldValidation = (field: HTMLElement) => {
 						field.removeAttribute('aria-invalid');
 						const describedBy = field.getAttribute('aria-describedby')?.split(/\s+/).filter(Boolean) ?? [];
 						const ownError = describedBy.filter((id) => id.startsWith(`${form.dataset.analyticsForm ?? 'contact'}-error-`));
 						if (ownError.length) field.setAttribute('aria-describedby', describedBy.filter((id) => !ownError.includes(id)).join(' '));
 						ownError.forEach((id) => form.querySelector(`#${id}`)?.remove());
-					});
-					invalidInputs.clear();
+					invalidInputs.delete(field);
+				};
+				const clearValidation = () => {
+					[...invalidInputs].forEach(clearFieldValidation);
 				};
 				form.addEventListener('input', (event) => {
 					const field = event.target as HTMLElement;
-					if (field?.getAttribute('aria-invalid') === 'true') clearValidation();
+					if (field?.getAttribute('aria-invalid') === 'true') clearFieldValidation(field);
 				});
 				form.addEventListener('analytics-form-success', (event) => {
 					clearValidation();
@@ -219,6 +220,7 @@ import SpeedInsights from '@vercel/speed-insights/astro';
 				});
 
 				let mailFallback: string | null = null;
+				let validationHandled = false;
 				try {
 					const response = await fetch(action, {
 						method: form.method || 'POST',
@@ -228,6 +230,7 @@ import SpeedInsights from '@vercel/speed-insights/astro';
 
 					const result = await response.json().catch(() => null) as { error?: string; errors?: Record<string, string>; leadAcceptance?: unknown } | null;
 					if (result?.errors && response.status === 422) {
+						validationHandled = true;
 						const invalidFields = Object.entries(result.errors);
 						if (status) status.textContent = invalidFields.map(([field, message]) => `${field}: ${message}`).join(' ');
 						for (const [field, message] of invalidFields) {
@@ -285,7 +288,7 @@ import SpeedInsights from '@vercel/speed-insights/astro';
 						page: page(),
 						form: form.dataset.analyticsForm,
 					});
-					form.dispatchEvent(new CustomEvent('analytics-form-error', { detail: { mailFallback } }));
+					if (!validationHandled) form.dispatchEvent(new CustomEvent('analytics-form-error', { detail: { mailFallback } }));
 				} finally {
 					setSending(false);
 				}
