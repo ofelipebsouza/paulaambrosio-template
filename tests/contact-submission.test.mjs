@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import vm from 'node:vm';
+import { JSDOM } from 'jsdom';
 import { transform } from 'esbuild';
 
 const source = await readFile(new URL('../src/components/Analytics.astro', import.meta.url), 'utf8');
@@ -18,78 +19,69 @@ async function sourceExports(path) {
 }
 const { CONTACT_FIELDS, HONEYPOT_FIELD } = await sourceExports('../src/lib/contact-form.ts');
 const { ANALYTICS_EVENTS } = await sourceExports('../src/lib/analytics/events.ts');
-
-class Element {
-	listeners = new Map();
-	attributes = new Map();
-	children = [];
-	set textContent(value) { this.children = [value]; }
-	get textContent() { return this.children.map(child => typeof child === 'string' ? child : child.textContent).join(''); }
-	setAttribute(name, value) { this.attributes.set(name, value); }
-	getAttribute(name) { return this.attributes.get(name) ?? null; }
-	addEventListener(name, listener) { this.listeners.set(name, listener); }
-	fire(name, event = {}) { return this.listeners.get(name)?.(event); }
-	dispatchEvent(event) { this.fire(event.type, event); }
-	append(...children) { this.children.push(...children); }
-}
-
 function fixture(responses, { formId = 'contact', email = 'studio@example.test', honeypot = '' } = {}) {
-	const button = new Element();
-	button.textContent = 'Submit Inquiry';
-	button.disabled = false;
-	const status = new Element();
-	const form = new Element();
-	form.dataset = { analyticsForm: formId, contactEmail: email };
-	form.method = 'post';
-	form.setAttribute('action', '/api/contact/');
-	form.fields = new Map([
+	const dom = new JSDOM('<!doctype html><form data-analytics-form="contact" action="/api/contact/" method="post"><button type="submit">Submit Inquiry</button><p class="analytics-form-status" role="status" aria-live="polite"></p></form>', { url: 'https://local.example.test/contact/', runScripts: 'outside-only' });
+	const { document, CustomEvent, Event } = dom.window;
+	const form = document.querySelector('form');
+	const button = form.querySelector('button');
+	const status = form.querySelector('.analytics-form-status');
+	form.dataset.analyticsForm = formId;
+	form.dataset.contactEmail = email;
+	const initialFields = new Map([
 		['name', 'Fixture & Visitor'], ['email', 'visitor@example.test'],
 		['message', 'First line\nSecond line & details'], ['service', 'Renovation'],
 		['propertyType', 'Primary Residence'], [HONEYPOT_FIELD, honeypot],
 		['cf-turnstile-response', 'private-fixture-token'], ['utm_source', 'private-fixture-source'],
 	]);
-	form.querySelector = selector => selector === '.analytics-form-status' ? status : button;
+	for (const [name, value] of initialFields) {
+		const wrapper = document.createElement('div');
+		const field = document.createElement(name === 'message' ? 'textarea' : name === 'service' ? 'select' : 'input');
+		field.name = name;
+		if (name === 'service') for (const optionValue of ['', 'Renovation']) {
+			const option = document.createElement('option'); option.value = optionValue; option.textContent = optionValue; field.append(option);
+		}
+		field.value = value;
+		wrapper.append(field); form.append(wrapper);
+	}
+	form.fields = {
+		get: name => form.elements.namedItem(name)?.value,
+		set: (name, value) => { form.elements.namedItem(name).value = value; },
+	};
 	let resets = 0;
-	form.reset = () => { resets++; for (const key of form.fields.keys()) form.fields.set(key, ''); };
-	const document = new Element();
-	document.referrer = '';
-	document.querySelectorAll = () => [form];
-	document.createElement = tag => {
-		assert.equal(tag, 'a');
-		const link = new Element();
-		link.tagName = 'A';
-		return link;
+	const reset = form.reset.bind(form);
+	form.reset = () => { resets++; reset(); };
+	const submitListeners = [];
+	const addEventListener = form.addEventListener.bind(form);
+	form.addEventListener = (name, listener, options) => {
+		if (name === 'submit') submitListeners.push(listener);
+		addEventListener(name, listener, options);
 	};
 	let navigations = 0;
-	const location = { pathname: '/contact/', set href(value) { navigations++; } };
-	const events = [];
-	const accepted = [];
+	const events = [], accepted = [], googleAccepted = [], requests = [];
 	let uuids = 0;
-	const requests = [];
-	class FormData {
-		constructor(form) { this.fields = new Map(form.fields); }
-		get(name) { return this.fields.get(name) ?? null; }
-	}
-	class CustomEvent {
-		constructor(type, { detail } = {}) { this.type = type; this.detail = detail; }
-	}
 	const fetch = async (url, init) => {
 		if (url === '/api/analytics/collect/') return Response.json({ ok: true });
 		assert.equal(url, '/api/contact/', 'Tests must never call a live service');
 		requests.push(init);
-		const result = responses.shift();
-		assert.ok(result, 'Unexpected extra request');
+		const result = responses.shift(); assert.ok(result, 'Unexpected extra request');
 		if (result instanceof Error) throw result;
 		return typeof result === 'function' ? result() : result;
 	};
-	vm.runInNewContext(code, {
-		document, window: { location, crypto: { randomUUID: () => `934b02bd-40fb-4ff1-836f-${String(++uuids).padStart(12,'0')}` } }, fetch, FormData, CustomEvent, Element,
-		boundary: { CONTACT_FIELDS, HONEYPOT_FIELD, ANALYTICS_EVENTS, measureAcceptedLead: receipt => accepted.push(receipt), trackEvent: (event, data) => events.push({ event, data }) },
+	Object.assign(dom.window, {
+		fetch,
+		boundary: { CONTACT_FIELDS, HONEYPOT_FIELD, ANALYTICS_EVENTS, measureAcceptedLead: receipt => accepted.push(receipt), measureGoogleAcceptedLead: receipt => googleAccepted.push(receipt), trackEvent: (event, data) => events.push({ event, data }) },
 	});
+	Object.defineProperty(dom.window.crypto, 'randomUUID', { value: () => `934b02bd-40fb-4ff1-836f-${String(++uuids).padStart(12,'0')}` });
+	dom.window.eval(code);
 	return {
-		form, button, status, events, requests, accepted,
-		submit: () => form.fire('submit', { preventDefault() {} }),
-		link: () => status.children.find(child => child?.tagName === 'A'),
+		form, button, status, events, requests, accepted, googleAccepted, document,
+		submit: () => Promise.all(submitListeners.map(listener => listener(new Event('submit', { cancelable: true })))),
+		edit: (name, value, type = 'input') => {
+			const field = form.elements.namedItem(name); field.value = value;
+			field.dispatchEvent(new Event(type, { bubbles: true }));
+		},
+		success: () => form.dispatchEvent(new CustomEvent('analytics-form-success')),
+		link: () => status.querySelector('a') ?? undefined,
 		resets: () => resets, navigations: () => navigations,
 	};
 }
@@ -104,7 +96,7 @@ function assertError(x) {
 	assert.equal(x.resets(), 0);
 	assert.equal(x.form.fields.get('email'), 'visitor@example.test');
 	assert.equal(x.navigations(), 0, 'A failure must never automatically open an email app');
-	assert.deepEqual(x.events.map(item => item.event), ['form_submit', 'form_error']);
+	assert.deepEqual(x.events.map(item => item.event).filter(event => event !== 'form_start'), ['form_submit', 'form_error']);
 }
 
 for (const [status, error] of [[502, 'delivery_failed'], [503, 'delivery_unavailable']]) {
@@ -123,7 +115,7 @@ for (const [status, error] of [[502, 'delivery_failed'], [503, 'delivery_unavail
 			assert.doesNotMatch(link.href, /private-fixture/);
 			assert.match(x.status.textContent, /press Send in your email app/);
 			x.form.fields.set('message', 'Updated after failure');
-			link.fire('click', { preventDefault() { assert.fail('Valid draft should open when clicked'); } });
+			link.dispatchEvent(new x.document.defaultView.Event('click', { cancelable: true }));
 			assert.match(new URL(link.href).searchParams.get('body'), /Updated after failure/);
 			assert.equal(x.events.filter(item => item.event === 'form_success').length, 0);
 		});
@@ -192,10 +184,12 @@ test('only server acceptance is forwarded, including accepted CRM writes followe
   const x = fixture([Response.json({ok:status===200,error:status===502?'delivery_failed':'delivery_unavailable',leadAcceptance:receipt},{status})]);
   await x.submit();
   assert.deepEqual(x.accepted, [receipt]);
+  assert.deepEqual(x.googleAccepted, [receipt]);
+  if(status===200) { assertRestored(x); assert.equal(x.resets(),1); assert.equal(x.form.fields.get('email'),''); assert.match(x.status.textContent,/has been received/); assert.deepEqual(x.events.map(item=>item.event),['form_submit','form_success']); }
   if(status!==200) assertError(x);
  }
  for(const status of [200,403,422,429,500]) {
-  const x=fixture([response(status)]); await x.submit(); assert.equal(x.accepted.length,0);
+  const x=fixture([response(status)]); await x.submit(); assert.equal(x.accepted.length,0); assert.equal(x.googleAccepted.length,0);
  }
 });
 test('a retried unchanged inquiry reuses its nonce while edited input gets a new nonce', async () => {
@@ -204,5 +198,72 @@ test('a retried unchanged inquiry reuses its nonce while edited input gets a new
  assert.equal(x.requests[0].headers['X-Submission-Id'],x.requests[1].headers['X-Submission-Id']);
  x.form.fields.set('message','Changed inquiry'); await x.submit();
  assert.notEqual(x.requests[1].headers['X-Submission-Id'],x.requests[2].headers['X-Submission-Id']);
- assert.equal(x.accepted.length,0);
+ assert.equal(x.accepted.length,0); assert.equal(x.googleAccepted.length,0);
+});
+
+for (const formId of ['contact', 'project_inquiry']) {
+ test(`${formId}: 422 normalizes known errors, preserves data, and focuses a real control`, async () => {
+  const x = fixture([Response.json({ errors: { 'unknown"]': 'Ignore me', message: '  Please describe the project.  ', email: { bad: true }, name: '' } }, { status: 422 })], { formId });
+  const field = x.form.elements.namedItem('message');
+  field.setAttribute('aria-describedby', 'existing-help');
+  await x.submit(); assertError(x);
+  assert.equal(x.document.activeElement, field);
+  assert.equal(field.getAttribute('aria-invalid'), 'true');
+  const id = `${formId}-error-message`;
+  assert.equal(field.getAttribute('aria-describedby'), `existing-help ${id}`);
+  assert.equal(x.document.getElementById(id).textContent, 'Please describe the project.');
+  assert.equal(x.status.textContent, 'Message: Please describe the project.');
+  assert.ok(x.status.classList.contains('text-red-800'));
+  assert.equal(x.form.querySelectorAll('[aria-invalid="true"]').length, 1);
+  assert.equal(x.form.fields.get('message'), 'First line\nSecond line & details');
+  assert.equal(x.accepted.length, 0); assert.equal(x.googleAccepted.length, 0);
+  x.edit('message', 'A revised description');
+  assert.equal(field.hasAttribute('aria-invalid'), false);
+  assert.equal(field.getAttribute('aria-describedby'), 'existing-help');
+  assert.equal(x.document.getElementById(id), null);
+  assert.equal(x.status.textContent, '');
+ });
+}
+
+test('editing one invalid field preserves the other error and updates the summary; change clears selects', async () => {
+ const x = fixture([Response.json({ errors: { message: 'Describe your project', service: 'Choose a service' } }, { status: 422 })]);
+ await x.submit();
+ x.edit('message', 'Edited');
+ assert.equal(x.status.textContent, 'Service: Choose a service');
+ assert.equal(x.form.elements.namedItem('service').getAttribute('aria-invalid'), 'true');
+ x.edit('service', 'Renovation', 'change');
+ assert.equal(x.status.textContent, '');
+ assert.equal(x.form.querySelectorAll('[aria-invalid]').length, 0);
+});
+
+test('retry clears inline errors and summary before request; success clears errors and uses success styling', async () => {
+ let resolve;
+ const pending = new Promise(done => { resolve = done; });
+ const x = fixture([Response.json({ errors: { message: 'Describe your project' } }, { status: 422 }), () => pending]);
+ await x.submit(); const retry = x.submit();
+ assert.equal(x.status.textContent, '');
+ assert.equal(x.form.querySelectorAll('[aria-invalid]').length, 0);
+ assert.equal(x.form.querySelectorAll('[id*="-error-"]').length, 0);
+ assert.equal(x.form.elements.namedItem('message').hasAttribute('aria-describedby'), false);
+ assert.equal(x.resets(), 0);
+ resolve(response(200)); await retry;
+ assert.equal(x.resets(), 1); assert.match(x.status.textContent, /has been received/);
+ assert.ok(x.status.classList.contains('text-coffee'));
+ assert.equal(x.status.classList.contains('text-red-800'), false);
+ const y = fixture([Response.json({ errors: { message: 'Describe your project' } }, { status: 422 })]);
+ await y.submit(); y.success();
+ assert.equal(y.form.querySelectorAll('[aria-invalid]').length, 0);
+ assert.equal(y.form.querySelectorAll('[id*="-error-"]').length, 0);
+ assert.match(y.status.textContent, /has been received/);
+});
+
+test('empty, unknown, missing-control and malformed 422 errors use generic visible fallback without throwing', async () => {
+ for (const errors of [{}, [], 'message', 1, null, { message: {} }, { message: [] }, { message: '  ' }, { unknown: 'Ignored' }, { location: 'No control exists in this fixture' }]) {
+  const x = fixture([Response.json({ errors }, { status: 422 })]);
+  await x.submit(); assertError(x);
+  assert.match(x.status.textContent, /Something went wrong/);
+  assert.ok(x.status.classList.contains('text-red-800'));
+  assert.equal(x.form.querySelectorAll('[aria-invalid]').length, 0);
+  assert.equal(x.link(), undefined);
+ }
 });
