@@ -5,10 +5,7 @@ import body from '../data/landings/change-order-body.html?raw';
 import GoogleConsent from '../components/GoogleConsent.astro';
 import OpenAIPixel from '../components/OpenAIPixel.astro';
 import paulaProfile from '../assets/paula-profile.webp';
-const correctedBody = body
-  .replace('/landing-assets/host-up/assets/paula.webp', paulaProfile.src)
-  .replace('width="1685" height="948"', 'width="1080" height="1619"')
-  .replace('alt="Paula Ambrosio, criadora do Change Order System"', 'alt="Paula Ambrosio e Amanda Ambrosio, fundadoras do estúdio"');
+const correctedBody = body.replace('__CHANGE_ORDER_STUDIO_PORTRAIT__', paulaProfile.src);
 const offerStart = correctedBody.indexOf('<section class="offer ');
 const beforeOffer = correctedBody.slice(0, offerStart);
 const afterOffer = correctedBody.slice(offerStart);
