@@ -4,12 +4,22 @@ import head from '../data/landings/change-order-head.html?raw';
 import body from '../data/landings/change-order-body.html?raw';
 import GoogleConsent from '../components/GoogleConsent.astro';
 import OpenAIPixel from '../components/OpenAIPixel.astro';
-const offerStart = body.indexOf('<section class="offer ');
-const beforeOffer = body.slice(0, offerStart);
-const afterOffer = body.slice(offerStart);
+import paulaProfile from '../assets/paula-profile.webp';
+const correctedBody = body.replace('__CHANGE_ORDER_STUDIO_PORTRAIT__', paulaProfile.src);
+const offerStart = correctedBody.indexOf('<section class="offer ');
+const beforeOffer = correctedBody.slice(0, offerStart);
+const afterOffer = correctedBody.slice(offerStart);
 ---
 <!doctype html>
 <html lang="pt-BR">
   <head><OpenAIPixel /><Fragment set:html={head} /></head>
   <body><Fragment set:html={beforeOffer} /><PaulaProjectGallery /><Fragment set:html={afterOffer} /><GoogleConsent /></body>
 </html>
+<style is:global>
+  @media (max-width: 700px) {
+    .paula-story .story-portrait img {
+      aspect-ratio: 2 / 3;
+      object-position: 50% top;
+    }
+  }
+</style>
