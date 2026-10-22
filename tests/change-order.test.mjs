@@ -45,7 +45,9 @@ test('change-order: official brand artwork and palette', () => {
 });
 
 test('change-order: complete English dictionary and language controls', () => {
- const dictionary = JSON.parse(script.match(/const englishCopy = (\{[\s\S]*?\});\nlet language/)[1]);
+ const dictionaryMatch = script.match(/const englishCopy = (\{[\s\S]*?\});\nObject\.assign/);
+ assert.ok(dictionaryMatch, 'English dictionary declaration is missing');
+ const dictionary = JSON.parse(dictionaryMatch[1]);
  assert.ok(Object.keys(dictionary).length > 115);
  for (const text of ['Conhecer o sistema', 'Fechar informações de lançamento', 'Total dos materiais', 'Em que idioma estão os materiais?', 'Idioma da página']) assert.ok(dictionary[text]);
  assert.match(body, /data-language="pt"/);

@@ -123,12 +123,12 @@ const englishCopy = {
  "A HISTÓRIA DA PAULA": "PAULA'S STORY",
  "Antes de executar,": "Before you begin,",
  "deixe claro o combinado.": "make the agreement clear.",
- "Antes de executar,<br><em>deixe claro o combinado.</em>": "Before you begin,<br><em>make the agreement clear.</em>",
  "Em pouco mais de 43 segundos, Paula compartilha a experiência que mudou a forma como documenta extras e aprovações em seus projetos.": "In just over 43 seconds, Paula shares the experience that changed how she documents extras and approvals in her projects.",
  "O vídeo tem legendas em inglês já incorporadas à imagem. A história completa e o contexto também estão disponíveis nesta página, mesmo sem reprodução.": "The video includes English captions burned into the image. The complete story and context are also available on this page without playback.",
  "Leia a história completa da Paula": "Read Paula's complete story",
- "Seu navegador não reproduz vídeo. Leia a ": "Your browser cannot play video. Read ",
- "história da Paula": "Paula's story"
+ "Seu navegador não reproduz vídeo. Leia a": "Your browser cannot play video. Read the",
+ "história da Paula": "Paula's story",
+ "abaixo.": "below."
 };
 Object.assign(englishCopy, {
  "Antes de fazer o extra,": "Before you do the extra work,",
