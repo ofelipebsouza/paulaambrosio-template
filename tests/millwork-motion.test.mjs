@@ -221,3 +221,14 @@ test('story markup reuses approved imagery with all text outside image frames', 
 	assert.match(page, /@media \(min-width: 1024px\) and \(prefers-reduced-motion: no-preference\)/);
 	assert.match(page, /position: sticky/);
 });
+
+
+test('material story shortcut belongs to the section navigation, not the hero CTAs', () => {
+	const page = readFileSync(new URL('../src/pages/millwork.astro', import.meta.url), 'utf8');
+	const sectionNav = page.match(/<nav class="millwork-section-nav[\s\S]*?<\/nav>/)?.[0];
+	const hero = page.match(/<section class="millwork-hero[\s\S]*?<\/section>/)?.[0];
+	assert.ok(sectionNav);
+	assert.ok(hero);
+	assert.match(sectionNav, /href="#millwork-material-story"/);
+	assert.doesNotMatch(hero, /href="#millwork-material-story"/);
+});
