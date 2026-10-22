@@ -51,7 +51,7 @@ test('language toggle translates the VSL and keeps the offer available', () => {
   assert.equal(window.document.documentElement.lang, 'en');
   assert.equal(window.document.querySelector('.paula-video-copy .eyebrow').textContent, "PAULA'S STORY");
   assert.match(window.document.querySelector('.paula-video-text-link').textContent, /Read Paula's complete story/);
-  assert.match(window.document.querySelector('video p').textContent, /Your browser cannot play video/);
+  assert.equal(window.document.querySelector('video p').textContent, "Your browser cannot play video. Read Paula's story below.");
   assert.equal(window.document.querySelector('video').getAttribute('aria-labelledby'), 'paula-video-title');
   assert.equal(window.document.querySelector('video').getAttribute('aria-describedby'), 'paula-video-note');
   assert.ok(window.document.querySelector('#oferta'), 'offer must remain accessible in English');
@@ -59,6 +59,6 @@ test('language toggle translates the VSL and keeps the offer available', () => {
   assert.equal(window.document.documentElement.lang, 'pt-BR');
   assert.equal(window.document.querySelector('.paula-video-copy .eyebrow').textContent, 'A HISTÓRIA DA PAULA');
   assert.match(window.document.querySelector('.paula-video-text-link').textContent, /Leia a história completa da Paula/);
-  assert.match(window.document.querySelector('video p').textContent, /Seu navegador não reproduz vídeo/);
+  assert.equal(window.document.querySelector('video p').textContent, 'Seu navegador não reproduz vídeo. Leia a história da Paula abaixo.');
   assert.ok(window.document.querySelector('#oferta'), 'offer must remain accessible in Portuguese');
 });
