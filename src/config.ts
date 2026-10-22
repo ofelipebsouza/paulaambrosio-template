@@ -80,6 +80,7 @@ export const NAV_LEFT = [
 		href: '/services/',
 		children: [
 			{ label: 'All Services', href: '/services/' },
+			{ label: 'Millwork', href: '/millwork/' },
 			{ label: 'Design Consultation', href: serviceUrl('design-consultation-miami') },
 			{ label: 'Design Express', href: serviceUrl('design-express-miami') },
 			{ label: 'Turnkey Interior Design', href: serviceUrl('turnkey-interior-design-miami') },
@@ -99,7 +100,6 @@ export const NAV_LEFT = [
 			{ label: 'Game Room', href: spaceUrl('game-room') },
 		],
 	},
-	{ label: 'Millwork', href: '/millwork/' },
 ] as const;
 
 export const NAV_RIGHT = [

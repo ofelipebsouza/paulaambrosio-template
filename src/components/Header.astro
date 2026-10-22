@@ -20,6 +20,9 @@ const isActive = (href: string) => {
 	if (target === '/projects') {
 		return path === target || path.startsWith('/projects/') || path === '/spaces' || path.startsWith('/spaces/');
 	}
+	if (target === '/services') {
+		return path === target || path.startsWith('/services/') || path === '/millwork';
+	}
 	return target === '/' ? path === '/' : path === target || path.startsWith(`${target}/`);
 };
 // Dropdown children are leaf pages — only the exact route is "current".
@@ -36,10 +39,10 @@ const socialIconMap: Record<string, string> = {
 
 <header class="fixed inset-x-0 top-0 z-50 border-b border-sand/60 bg-bone/95 backdrop-blur-sm">
 	<div class="container-editorial">
-		<div class="grid h-16 grid-cols-[1fr_minmax(220px,auto)_1fr] items-center gap-4 lg:h-20">
+		<div class="grid h-16 grid-cols-[minmax(0,1fr)_minmax(0,180px)_minmax(0,1fr)] items-center gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,240px)_minmax(0,1fr)] xl:h-20">
 
 			<!-- Desktop: left nav / Mobile: hamburger -->
-			<nav aria-label="Primary" class="hidden lg:block">
+			<nav aria-label="Primary" class="hidden xl:block">
 				<ul class="flex items-center justify-start gap-5 xl:gap-8">
 					{NAV_LEFT.map((link) => (
 						<li class="group relative">
@@ -89,7 +92,7 @@ const socialIconMap: Record<string, string> = {
 			</nav>
 
 			<!-- Mobile hamburger -->
-			<div class="lg:hidden">
+			<div class="xl:hidden">
 				<button
 					type="button"
 					class="menu-open flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-ink/15 transition-colors hover:border-ink/30"
@@ -106,11 +109,11 @@ const socialIconMap: Record<string, string> = {
 
 			<!-- Centered logo -->
 			<a href="/" class="justify-self-center" aria-label={`${SITE.name} Home`}>
-				<Logo variant="dark" class="h-6 w-auto lg:h-8" />
+				<Logo variant="dark" class="h-6 w-auto xl:h-8" />
 			</a>
 
 			<!-- Desktop: right nav / Mobile: inquiry shortcut -->
-			<nav aria-label="Secondary" class="hidden lg:block">
+			<nav aria-label="Secondary" class="hidden xl:block">
 				<ul class="flex items-center justify-end gap-5 xl:gap-8">
 					{NAV_RIGHT.map((link) => (
 						<li class="group relative">
@@ -162,7 +165,7 @@ const socialIconMap: Record<string, string> = {
 			<!-- Mobile: inquiry shortcut (paper plane → opens the form modal) -->
 			<button
 				type="button"
-				class="inquiry-open flex h-10 w-10 cursor-pointer items-center justify-center justify-self-end rounded-full border border-ink/15 transition-colors hover:border-ink/30 lg:hidden"
+				class="inquiry-open flex h-10 w-10 cursor-pointer items-center justify-center justify-self-end rounded-full border border-ink/15 transition-colors hover:border-ink/30 xl:hidden"
 				data-analytics-event="cta_start_project"
 				data-analytics-location="header"
 				aria-label="Open project inquiry form"
@@ -176,7 +179,7 @@ const socialIconMap: Record<string, string> = {
 		</div>
 	</div>
 </header><!-- Fullscreen navigation menu — native <dialog>: focus is trapped, Esc closes, a11y for free -->
-<dialog id="mobile-menu" class="menu-sheet m-0 h-dvh max-h-none w-screen max-w-none border-none bg-bone p-0 backdrop:bg-transparent lg:hidden">
+<dialog id="mobile-menu" class="menu-sheet m-0 h-dvh max-h-none w-screen max-w-none border-none bg-bone p-0 backdrop:bg-transparent xl:hidden">
 	<div class="flex h-full flex-col overflow-y-auto">
 		<div class="container-editorial">
 			<div class="grid h-16 grid-cols-[1fr_minmax(200px,auto)_1fr] items-center">
@@ -243,10 +246,10 @@ const socialIconMap: Record<string, string> = {
 <dialog id="inquiry-modal" class="inquiry-sheet m-0 h-dvh max-h-none w-screen max-w-none border-none bg-bone p-0 backdrop:bg-transparent">
 	<div class="h-full overflow-y-auto">
 		<div class="sticky top-0 z-10 border-b border-sand/60 bg-bone">
-			<div class="container-editorial">					<div class="grid h-16 grid-cols-[1fr_minmax(200px,auto)_1fr] items-center lg:h-20">
+			<div class="container-editorial">					<div class="grid h-16 grid-cols-[1fr_minmax(200px,auto)_1fr] items-center xl:h-20">
 						<span aria-hidden="true"></span>
 						<a href="/" class="justify-self-center" aria-label={`${SITE.name} Home`}>
-							<Logo variant="dark" class="max-h-7 w-auto lg:max-h-8" />
+							<Logo variant="dark" class="max-h-7 w-auto xl:max-h-8" />
 						</a>
 						<button type="button" class="inquiry-close flex h-10 w-10 cursor-pointer items-center justify-center justify-self-end rounded-full border border-ink/15 transition-colors hover:border-ink/30" aria-label="Close inquiry form">
 							<svg viewBox="0 0 20 20" class="h-5 w-5 text-ink" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
