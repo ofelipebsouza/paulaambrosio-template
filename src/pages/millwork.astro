@@ -133,44 +133,44 @@ const gallery: MillworkImage[] = [
 const conceptImages: ConceptImage[] = [
 	{
 		src: '/images/millwork-concepts/millwork-miami-interior-concept.webp',
-		alt: 'AI-generated interior concept with pale wood cabinetry, a darker illuminated display niche and natural stone in a sunlit living room',
+		alt: 'Interior concept with pale wood cabinetry, a darker illuminated display niche and natural stone in a sunlit living room',
 		label: 'Interior direction',
 		detail: 'A study in proportion, light and the calm rhythm of open and closed storage.',
 		libraryFileId: 'libfile_f4118010531c8191a7e1ca20873e4c92',
 	},
 	{
 		src: '/images/millwork-concepts/millwork-craft-workshop-concept.webp',
-		alt: 'AI-generated craft concept showing a craftsperson’s hands planing a wood board at a workbench',
+		alt: 'Craft concept showing a craftsperson’s hands planing a wood board at a workbench',
 		label: 'The craft',
 		detail: 'A conceptual close-up of hands, tools and the tactile character of working wood.',
 		libraryFileId: 'libfile_54910ea6811c8191af4b353f929f8177',
 	},
 	{
 		src: '/images/millwork-concepts/millwork-joinery-concept.webp',
-		alt: 'AI-generated joinery concept showing a close-up of a pale wood drawer corner with contrasting dovetail joints',
+		alt: 'Joinery concept showing a close-up of a pale wood drawer corner with contrasting dovetail joints',
 		label: 'Detail direction',
-		detail: 'Grain, precise joints and softly finished edges — the details you see and touch every day.',
+		detail: 'Wood grain, precise joints and smooth edges you can see and feel.',
 		libraryFileId: 'libfile_1ff4fcdcfbc081919455a99b91739f1e',
 	},
 	{
 		src: '/images/millwork-concepts/millwork-ribbed-panel-paula-inspired-concept.webp',
-		alt: 'AI-generated concept of honey-toned vertical wood fins turning around a corner in a bright neutral interior',
+		alt: 'Millwork concept of honey-toned vertical wood fins turning around a corner in a bright neutral interior',
 		label: 'Rhythm & texture',
 		detail: 'Warm vertical lines and quiet shadow gaps, informed by the material language of HOME KA.',
 		libraryFileId: 'libfile_e98ad2ed61588191810c6b6e8e400732',
 	},
 	{
 		src: '/images/millwork-concepts/millwork-honey-taupe-cabinet-paula-inspired-concept.webp',
-		alt: 'AI-generated concept of honey-toned wood cabinetry, illuminated display niches and taupe lower drawers',
+		alt: 'Millwork concept of honey-toned wood cabinetry, illuminated display niches and taupe lower drawers',
 		label: 'A considered palette',
 		detail: 'Honey-toned grain, soft taupe and illuminated niches, inspired by references from HOME IT and HOME KA.',
 		libraryFileId: 'libfile_9d5a6f0b0ea48191b28ec07473126854',
 	},
 	{
 		src: '/images/millwork-concepts/millwork-wood-finish-samples-paula-inspired-concept.webp',
-		alt: 'AI-generated material study of warm wood panels, vertical slats, a taupe finish and ribbed glass on pale stone',
+		alt: 'Conceptual material study of warm wood panels, vertical slats, a taupe finish and ribbed glass on pale stone',
 		label: 'Material conversation',
-		detail: 'An imagined palette of wood tones, satin finishes and ribbed glass — a starting point, not a product specification.',
+		detail: 'An imagined palette of wood, satin finishes and ribbed glass. For inspiration, not a product specification.',
 		libraryFileId: 'libfile_e9ec6d03e170819182cc37870707dee7',
 	},
 ];
@@ -182,7 +182,8 @@ const hero = conceptImages[0];
 const conceptSrcSet = (src: string) => `${src.replace('.webp', '-768.webp')} 768w, ${src} 1536w`;
 const full = gallery.map((item) => item.image.src);
 const projects = (await getCollection('projects')).filter((project) => !project.data.draft);
-const projectTitles = Object.fromEntries(projects.map((project) => [project.id, project.data.title]));
+// Adjust the display separator here without renaming projects elsewhere on the site.
+const projectTitles = Object.fromEntries(projects.map((project) => [project.id, project.data.title.replace(/\s*[–—]\s*/g, ', ')]));
 
 const faqs = [
 	{
@@ -252,15 +253,15 @@ const pagePath = '/millwork';
 					class="h-full w-full object-cover"
 				/>
 				<div class="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-bone via-bone/50 to-transparent lg:h-48" aria-hidden="true"></div>
-				<p class="absolute right-4 top-4 rounded-full bg-bone/90 px-3 py-2 text-[9px] font-semibold uppercase tracking-[0.13em] text-graphite sm:right-8 sm:top-6">AI concept · Interior direction</p>
+				<p class="absolute right-4 top-4 rounded-full bg-bone/90 px-3 py-2 text-[9px] font-semibold uppercase tracking-[0.13em] text-graphite sm:right-8 sm:top-6">Millwork concept · Interior direction</p>
 			</div>
 			<div class="container-editorial relative -mt-3 lg:-mt-8">
 				<p class="eyebrow text-stone">Custom millwork · Miami &amp; South Florida</p>
 				<h1 id="millwork-hero-title" class="font-display mx-auto mt-4 max-w-5xl text-5xl leading-[0.98] tracking-[-0.025em] text-ink sm:text-6xl lg:text-[5.75rem]">Custom millwork.<br /><span class="italic">Made to belong.</span></h1>
-				<p class="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-slate sm:text-lg">Cabinetry, wall panels and built-ins designed around your rooms — with material, light and every daily detail considered together.</p>
+				<p class="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-slate sm:text-lg">Cabinetry, wall panels and built-ins designed for your rooms, with materials, lighting and storage planned together.</p>
 				<div class="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-					<button type="button" class="inquiry-open btn-primary cursor-pointer" data-analytics-event="cta_start_project" data-analytics-location="millwork_hero">Discuss Your Project <span aria-hidden="true">→</span></button>
-					<a href="#millwork-work" class="btn-secondary">Explore selected work <span aria-hidden="true">↓</span></a>
+					<button type="button" class="inquiry-open btn-primary cursor-pointer" data-analytics-event="cta_start_project" data-analytics-location="millwork_hero">Discuss Your Project <svg viewBox="0 0 1024 1024" fill="currentColor" class="ml-1 inline-block h-4 w-4 shrink-0 align-middle" aria-hidden="true">{iconPaths('arrow-right').map((path) => <path d={path} />)}</svg></button>
+					<a href="#millwork-work" class="btn-secondary">Explore selected work <svg viewBox="0 0 1024 1024" fill="currentColor" class="ml-1 inline-block h-4 w-4 shrink-0 align-middle" aria-hidden="true">{iconPaths('arrow-down').map((path) => <path d={path} />)}</svg></a>
 				</div>
 				<p class="mt-5 text-xs text-stone">One built-in, a complete room, or a wider interior vision.</p>
 			</div>
@@ -273,7 +274,7 @@ const pagePath = '/millwork';
 					<a href="#millwork-work" class="transition-colors hover:text-coffee">Selected work</a>
 					<a href="#millwork-process" class="transition-colors hover:text-coffee">The process</a>
 				</div>
-				<button type="button" class="inquiry-open shrink-0 cursor-pointer border-l border-sand pl-5 text-[10px] font-semibold uppercase tracking-[0.12em] text-coffee sm:text-xs" data-analytics-event="cta_start_project" data-analytics-location="millwork_section_nav">Let’s talk <span aria-hidden="true">↗</span></button>
+				<button type="button" class="inquiry-open shrink-0 cursor-pointer border-l border-sand pl-5 text-[10px] font-semibold uppercase tracking-[0.12em] text-coffee sm:text-xs" data-analytics-event="cta_start_project" data-analytics-location="millwork_section_nav">Let’s talk <svg viewBox="0 0 1024 1024" fill="currentColor" class="ml-1 inline-block h-4 w-4 shrink-0 align-middle" aria-hidden="true">{iconPaths('arrow-up-right').map((path) => <path d={path} />)}</svg></button>
 			</div>
 		</nav>
 
@@ -285,11 +286,11 @@ const pagePath = '/millwork';
 				</div>
 				<div class="py-7 sm:px-8 sm:py-9 millwork-reveal">
 					<p class="eyebrow text-stone">02 · Hospitality</p>
-					<p class="mt-3 font-display text-2xl">Guest-facing details, resolved.</p>
+					<p class="mt-3 font-display text-2xl">Thoughtful details for your guests.</p>
 				</div>
 				<div class="py-7 sm:py-9 sm:pl-8 millwork-reveal">
 					<p class="eyebrow text-stone">03 · Commercial</p>
-					<p class="mt-3 font-display text-2xl">Joinery that carries the experience.</p>
+					<p class="mt-3 font-display text-2xl">Cabinetry designed for your business.</p>
 				</div>
 			</div>
 		</section>
@@ -305,7 +306,7 @@ const pagePath = '/millwork';
 					Custom millwork is more than cabinetry. It is the way a room holds what matters: books, art, media, glassware, clothing and the daily details of life. We design built-ins as part of the interior architecture, resolving proportion, material, lighting and storage together.
 				</p>
 				<p class="mt-7 text-lg leading-relaxed text-slate">
-					The starting point is always the room and the people who use it. From there, we shape a coherent language for the elements that need to be seen, concealed, lit or simply lived with.
+					We start with how you use the room, then plan what needs to be displayed, stored or lit.
 				</p>
 				<div class="mt-9 flex flex-wrap gap-x-8 gap-y-3 text-xs font-semibold uppercase tracking-[0.18em] text-stone">
 					<span>Proportion</span><span>Material</span><span>Storage</span><span>Light</span>
@@ -317,11 +318,11 @@ const pagePath = '/millwork';
 			<div class="container-editorial">
 				<div class="grid gap-10 lg:grid-cols-12 lg:items-end">
 					<div class="lg:col-span-6 millwork-reveal">
-						<p class="eyebrow text-stone">Inspiration / concept imagery</p>
+						<p class="eyebrow text-stone">Design inspiration</p>
 						<h2 id="millwork-inspiration" class="font-display mt-5 text-5xl leading-[0.98]">A starting point for the conversation.</h2>
 					</div>
 					<div class="lg:col-span-5 lg:col-start-8 millwork-reveal">
-						<p class="text-lg leading-relaxed text-slate">Six AI-generated studies explore material, light and joinery direction, including new palettes inspired by the studio’s documented work. They are not photographs of Paula Ambrosio projects, a Paula Ambrosio workshop or a representation of the studio team.</p>
+						<p class="text-lg leading-relaxed text-slate">Six millwork concepts explore materials, lighting and joinery, with palettes inspired by the studio’s documented work. These are design studies, separate from the completed projects shown below.</p>
 					</div>
 				</div>
 				<div class="mt-12 grid gap-x-5 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
@@ -331,7 +332,7 @@ const pagePath = '/millwork';
 								<img src={concept.src} alt={concept.alt} srcset={conceptSrcSet(concept.src)} sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw" width="1536" height="1024" loading="lazy" decoding="async" class="aspect-[3/2] h-auto w-full object-cover motion-safe:transition-transform motion-safe:duration-700 motion-safe:group-hover:scale-[1.03]" />
 							</div>
 							<figcaption class="border-x border-b border-sand p-5">
-								<p class="eyebrow text-stone">{concept.label} · AI concept</p>
+								<p class="eyebrow text-stone">{concept.label} · Millwork concept</p>
 								<p class="mt-3 text-sm leading-relaxed text-slate">{concept.detail}</p>
 							</figcaption>
 						</figure>
@@ -339,7 +340,7 @@ const pagePath = '/millwork';
 				</div>
 				<div class="mt-12 flex flex-col items-start justify-between gap-5 border-t border-sand pt-8 sm:flex-row sm:items-center millwork-reveal">
 					<p class="max-w-lg font-display text-2xl">A material, a room, an idea.<br />Let’s find the direction that feels like you.</p>
-					<button type="button" class="inquiry-open btn-primary cursor-pointer" data-analytics-event="cta_start_project" data-analytics-location="millwork_materials">Explore your possibilities <span aria-hidden="true">→</span></button>
+					<button type="button" class="inquiry-open btn-primary cursor-pointer" data-analytics-event="cta_start_project" data-analytics-location="millwork_materials">Explore your possibilities <svg viewBox="0 0 1024 1024" fill="currentColor" class="ml-1 inline-block h-4 w-4 shrink-0 align-middle" aria-hidden="true">{iconPaths('arrow-right').map((path) => <path d={path} />)}</svg></button>
 				</div>
 			</div>
 		</section>
@@ -349,7 +350,7 @@ const pagePath = '/millwork';
 				<div class="max-w-2xl millwork-reveal">
 					<p class="eyebrow text-stone">Applications</p>
 					<h2 id="millwork-applications" class="font-display mt-5 text-5xl leading-[0.98]">One design language, carried through the room.</h2>
-					<p class="mt-6 max-w-xl text-lede text-slate">The brief can be focused or expansive. The design work is in making every element feel like it belongs to the same architecture.</p>
+					<p class="mt-6 max-w-xl text-lede text-slate">Whether you need one built-in or a complete room, we design the pieces to work with the surrounding architecture.</p>
 				</div>
 				<div class="mt-14 grid gap-px bg-sand sm:grid-cols-2 lg:grid-cols-4">
 					{[
@@ -383,7 +384,7 @@ const pagePath = '/millwork';
 					<div class="py-5"><h3 class="flex items-center gap-3 font-display text-2xl"><svg viewBox="0 0 1024 1024" fill="currentColor" class="h-6 w-6 shrink-0 text-coffee" aria-hidden="true">{iconPaths('stack').map((path) => <path d={path} />)}</svg>Materials in conversation</h3><p class="mt-2 text-sm leading-relaxed text-slate">Wood, stone, metal, glass and light are considered as one palette rather than a series of late additions.</p></div>
 					<div class="py-5"><h3 class="flex items-center gap-3 font-display text-2xl"><svg viewBox="0 0 1024 1024" fill="currentColor" class="h-6 w-6 shrink-0 text-coffee" aria-hidden="true">{iconPaths('ruler').map((path) => <path d={path} />)}</svg>A brief that stays practical</h3><p class="mt-2 text-sm leading-relaxed text-slate">The finished element has to work every day: what it holds, how it opens and how it relates to circulation all matter.</p></div>
 				</div>
-				<button type="button" class="inquiry-open btn-primary mt-9 cursor-pointer" data-analytics-event="cta_start_project" data-analytics-location="millwork_benefits">Talk through your room <span aria-hidden="true">→</span></button>
+				<button type="button" class="inquiry-open btn-primary mt-9 cursor-pointer" data-analytics-event="cta_start_project" data-analytics-location="millwork_benefits">Talk through your room <svg viewBox="0 0 1024 1024" fill="currentColor" class="ml-1 inline-block h-4 w-4 shrink-0 align-middle" aria-hidden="true">{iconPaths('arrow-right').map((path) => <path d={path} />)}</svg></button>
 			</div>
 		</section>
 
@@ -410,7 +411,7 @@ const pagePath = '/millwork';
 								<img src={item.image.src} alt={item.alt} width={item.image.width} height={item.image.height} loading="lazy" decoding="async" class="h-auto w-full motion-safe:transition-transform motion-safe:duration-700 motion-safe:group-hover:scale-[1.03]" />
 								<span class="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100" aria-hidden="true"><span class="absolute bottom-4 left-4 text-xs uppercase tracking-[0.16em] text-bone">Open image</span></span>
 							</button>
-							<figcaption class="mt-3"><a href={projectUrl(item.project)} class="eyebrow text-bone/60 underline decoration-brass/60 underline-offset-4 transition-colors hover:text-bone" data-analytics-event="cta_view_project" data-analytics-location="millwork_gallery">From {projectTitles[item.project] ?? item.project} <span aria-hidden="true">↗</span></a></figcaption>
+							<figcaption class="mt-3"><a href={projectUrl(item.project)} class="eyebrow text-bone/60 underline decoration-brass/60 underline-offset-4 transition-colors hover:text-bone" data-analytics-event="cta_view_project" data-analytics-location="millwork_gallery">From {projectTitles[item.project] ?? item.project} <svg viewBox="0 0 1024 1024" fill="currentColor" class="ml-1 inline-block h-4 w-4 shrink-0 align-middle" aria-hidden="true">{iconPaths('arrow-up-right').map((path) => <path d={path} />)}</svg></a></figcaption>
 						</figure>
 					))}
 				</div>
@@ -428,10 +429,10 @@ const pagePath = '/millwork';
 				<div class="lg:col-span-6 lg:col-start-7">
 					<div class="divide-y divide-bone/20 border-y border-bone/20">
 						{[
-							{ number: '01', title: 'Discover', icon: 'chat-circle-text', body: 'We listen to the room, the property and the routines the joinery needs to support.' },
+							{ number: '01', title: 'Discover', icon: 'chat-circle-text', body: 'We talk through your space, your routines and what you need the cabinetry to do.' },
 							{ number: '02', title: 'Direct', icon: 'pencil-ruler', body: 'We shape a visual direction across proportion, material, hardware and light.' },
-							{ number: '03', title: 'Coordinate', icon: 'users-three', body: 'We bring the design information into the wider conversation with your project team.' },
-							{ number: '04', title: 'Refine', icon: 'check-circle', body: 'We stay close to the details that make the finished element feel specific to the room.' },
+							{ number: '03', title: 'Coordinate', icon: 'users-three', body: 'We coordinate the millwork design with the rest of your project team.' },
+							{ number: '04', title: 'Refine', icon: 'check-circle', body: 'We review the details so the millwork fits the room and the way you use it.' },
 						].map((step) => (
 							<div class="grid grid-cols-[3rem_1fr] gap-5 py-6 millwork-reveal">
 								<div class="text-brass"><svg viewBox="0 0 1024 1024" fill="currentColor" class="h-8 w-8" aria-hidden="true">{iconPaths(step.icon).map((path) => <path d={path} />)}</svg><span class="mt-2 block text-[10px] tracking-[0.18em]">{step.number}</span></div>
@@ -439,7 +440,7 @@ const pagePath = '/millwork';
 							</div>
 						))}
 					</div>
-					<button type="button" class="inquiry-open btn-primary btn-on-dark mt-9 cursor-pointer" data-analytics-event="cta_start_project" data-analytics-location="millwork_process">Start a conversation <span aria-hidden="true">→</span></button>
+					<button type="button" class="inquiry-open btn-primary btn-on-dark mt-9 cursor-pointer" data-analytics-event="cta_start_project" data-analytics-location="millwork_process">Start a conversation <svg viewBox="0 0 1024 1024" fill="currentColor" class="ml-1 inline-block h-4 w-4 shrink-0 align-middle" aria-hidden="true">{iconPaths('arrow-right').map((path) => <path d={path} />)}</svg></button>
 				</div>
 			</div>
 		</section>
@@ -466,25 +467,21 @@ const pagePath = '/millwork';
 </Layout>
 
 <style>
-	.millwork-scroll-progress { display: none; }
-	@supports (animation-timeline: scroll()) {
-		.millwork-scroll-progress {
-			display: block;
-			position: fixed;
-			top: 64px;
-			left: 0;
-			right: 0;
-			height: 2px;
-			z-index: 40;
-			pointer-events: none;
-			background: var(--color-coffee);
-			transform-origin: left;
-			animation: millwork-reading-progress linear;
-			animation-timeline: scroll(root block);
-		}
-		@keyframes millwork-reading-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-		@media (min-width: 1280px) { .millwork-scroll-progress { top: 80px; } }
+	.millwork-scroll-progress {
+		position: fixed;
+		top: 64px;
+		left: 0;
+		right: 0;
+		height: 2px;
+		z-index: 40;
+		pointer-events: none;
+		background: var(--color-coffee);
+		opacity: 0;
+		visibility: hidden;
+		transform: scaleX(0);
+		transform-origin: left;
 	}
+	@media (min-width: 1280px) { .millwork-scroll-progress { top: 80px; } }
 
 	.millwork-hero-media {
 		height: clamp(250px, 36vw, 590px);
@@ -505,47 +502,22 @@ const pagePath = '/millwork';
 		.millwork-hero-media img { object-position: 64% center; }
 	}
 
-	.millwork-reveal {
-		transition: opacity 700ms var(--ease-editorial), transform 700ms var(--ease-editorial);
-		transition-delay: var(--reveal-delay, 0ms);
-	}
-
-	.js .millwork-reveal:not(.is-visible) {
-		opacity: 0;
-		transform: translateY(18px);
-	}
-
-	.js .millwork-reveal.is-visible {
-		opacity: 1;
-		transform: translateY(0);
-	}
-
+	/* Visible by default, including when the enhancement bundle fails to load. */
 	@media (prefers-reduced-motion: reduce) {
-		.millwork-scroll-progress { display: none; animation: none; }
-		.js .millwork-reveal:not(.is-visible),
-		.js .millwork-reveal.is-visible {
-			opacity: 1;
-			transform: none;
-			transition: none;
+		.millwork-scroll-progress { display: none; }
+		.millwork-reveal,
+		.millwork-hero-media img {
+			opacity: 1 !important;
+			transform: none !important;
+			transition: none !important;
+			animation: none !important;
 		}
 	}
+
 </style>
 
 <script>
-	const revealItems = [...document.querySelectorAll<HTMLElement>('.millwork-reveal')];
-	const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-	if (reducedMotion || !('IntersectionObserver' in window)) {
-		for (const item of revealItems) item.classList.add('is-visible');
-	} else {
-		const observer = new IntersectionObserver((entries, currentObserver) => {
-			for (const entry of entries) {
-				if (!entry.isIntersecting) continue;
-				entry.target.classList.add('is-visible');
-				currentObserver.unobserve(entry.target);
-			}
-		}, { rootMargin: '0px 0px -10% 0px', threshold: 0.08 });
-
-		for (const item of revealItems) observer.observe(item);
-	}
+	import { initMillworkMotion } from '../lib/millwork-motion';
+	const page = document.querySelector<HTMLElement>('.millwork-page');
+	if (page) initMillworkMotion(page);
 </script>
