@@ -40,6 +40,41 @@ export function initMillworkMotion(root: HTMLElement, load = loadMotion): () => 
 			}, (context) => {
 				const desktop = Boolean(context.conditions?.desktop);
 				let active = true;
+				// One editorial sequence. CSS sticky follows normal document scrolling;
+				// the timeline only crossfades approved studies and fills the step rules.
+				const story = root.querySelector<HTMLElement>('.millwork-story');
+				const storySteps = story?.querySelector<HTMLElement>('.millwork-story-steps');
+				const frames = story ? [...story.querySelectorAll<HTMLElement>('.millwork-story-frame')] : [];
+				const fills = story ? [...story.querySelectorAll<HTMLElement>('.millwork-story-fill')] : [];
+				if (desktop && story && storySteps && frames.length === 3 && fills.length === 3) {
+					// Register the layout restoration before any animation can fail.
+					context.add(() => {
+						story.setAttribute('data-story-motion', '');
+						return () => story.removeAttribute('data-story-motion');
+					});
+					gsap.set(frames.slice(1), { opacity: 0 });
+					gsap.set(fills, { scaleX: 0 });
+					const narrative = gsap.timeline({
+						defaults: { ease: 'none' },
+						scrollTrigger: {
+							id: 'millwork-material-story', trigger: storySteps,
+							start: 'top 60%', end: 'bottom 60%', scrub: 0.45,
+							invalidateOnRefresh: true,
+						},
+					});
+					frames.forEach((frame, index) => {
+						narrative.to(fills[index], { scaleX: 1, duration: 1 }, index);
+						const image = frame.querySelector('img');
+						if (image) narrative.fromTo(image, { scale: 1.035 }, {
+							scale: 1, duration: 0.8, immediateRender: false,
+						}, Math.max(0, index - 0.16));
+						if (index > 0) {
+							narrative.to(frames[index - 1], { opacity: 0, duration: 0.32 }, index - 0.16);
+							narrative.to(frame, { opacity: 1, duration: 0.32 }, index - 0.16);
+						}
+					});
+				}
+
 				// Do not replay an entrance over content already in view or above it.
 				const upcoming = [...root.querySelectorAll<HTMLElement>('.millwork-reveal')]
 					.filter((item) => item.getBoundingClientRect().top >= view.innerHeight * 0.88);
