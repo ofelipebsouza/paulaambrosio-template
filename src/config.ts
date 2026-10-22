@@ -68,7 +68,7 @@ export const FOOTER_LOCATIONS = [
 ] as const;
 
 /**
- * Desktop navigation mirrors the reference layout: three links either side
+ * Desktop navigation mirrors the reference layout: links either side
  * of the centered wordmark. Items with `children` render a hover dropdown
  * (desktop) and an expandable group (mobile menu).
  */
@@ -99,6 +99,7 @@ export const NAV_LEFT = [
 			{ label: 'Game Room', href: spaceUrl('game-room') },
 		],
 	},
+	{ label: 'Millwork', href: '/millwork/' },
 ] as const;
 
 export const NAV_RIGHT = [
