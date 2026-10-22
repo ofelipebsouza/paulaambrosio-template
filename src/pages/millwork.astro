@@ -164,6 +164,12 @@ const conceptImages: ConceptImage[] = [
 // Render only the selected Phosphor paths as inline SVG; no extra icon font or browser JavaScript.
 const iconPaths = (name: string) => phosphorIcons.icons.find((icon) => icon.properties.name === name)?.icon.paths ?? [];
 
+const materialStory = [
+	{ image: conceptImages[2], title: 'Start with the grain.', body: 'Look closely at the grain, the edge and the join. These small decisions shape how a piece looks and feels.' },
+	{ image: conceptImages[5], title: 'Bring the finishes together.', body: 'Set wood beside a painted finish, glass or stone. Compare warmth, texture and contrast before choosing a direction.' },
+	{ image: conceptImages[0], title: 'See the whole room.', body: 'Pull back to consider proportion, storage and light. The details should belong to the room, not compete with it.' },
+];
+
 const hero = conceptImages[0];
 const conceptSrcSet = (src: string) => `${src.replace('.webp', '-768.webp')} 768w, ${src} 1536w`;
 const full = gallery.map((item) => item.image.src);
@@ -246,6 +252,7 @@ const pagePath = '/millwork';
 				<p class="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-slate sm:text-lg">Cabinetry, wall panels and built-ins designed for your rooms, with materials, lighting and storage planned together.</p>
 				<div class="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
 					<button type="button" class="inquiry-open btn-primary cursor-pointer" data-analytics-event="cta_start_project" data-analytics-location="millwork_hero">Discuss Your Project <svg viewBox="0 0 1024 1024" fill="currentColor" class="ml-1 inline-block h-4 w-4 shrink-0 align-middle" aria-hidden="true">{iconPaths('arrow-right').map((path) => <path d={path} />)}</svg></button>
+					<a href="#millwork-material-story" class="transition-colors hover:text-coffee">Material story</a>
 					<a href="#millwork-work" class="btn-secondary">Explore selected work <svg viewBox="0 0 1024 1024" fill="currentColor" class="ml-1 inline-block h-4 w-4 shrink-0 align-middle" aria-hidden="true">{iconPaths('arrow-down').map((path) => <path d={path} />)}</svg></a>
 				</div>
 				<p class="mt-5 text-xs text-stone">One built-in, a complete room, or a wider interior vision.</p>
@@ -369,6 +376,33 @@ const pagePath = '/millwork';
 			</div>
 		</section>
 
+		<section id="millwork-material-story" class="millwork-story border-t border-sand bg-linen py-20 lg:py-28" aria-labelledby="millwork-story-title">
+			<div class="container-editorial">
+				<div class="mb-12 grid gap-8 lg:grid-cols-12 lg:items-end millwork-reveal">
+					<div class="lg:col-span-7">
+						<p class="eyebrow text-stone">A closer look</p>
+						<h2 id="millwork-story-title" class="font-display mt-5 max-w-2xl text-5xl leading-[0.98]">From detail to<br /><span class="italic">the whole room.</span></h2>
+					</div>
+					<p class="max-w-md text-base leading-relaxed text-slate lg:col-span-4 lg:col-start-9">Three design studies explore grain, finishes and space. Follow the details to see how a material palette can come together.</p>
+				</div>
+				<div class="millwork-story-steps">
+					{materialStory.map((step, index) => (
+						<div class="millwork-story-step" style={`--story-row: ${index + 1}`}>
+							<figure class="millwork-story-frame">
+								<img src={step.image.src} srcset={conceptSrcSet(step.image.src)} sizes="(min-width: 1024px) 55vw, 100vw" alt={step.image.alt} width="1536" height="1024" loading="lazy" decoding="async" class="h-full w-full object-cover" />
+							</figure>
+							<div class="millwork-story-copy">
+								<p class="eyebrow text-coffee" aria-hidden="true">0{index + 1} / 03</p>
+								<h3 class="font-display mt-5 text-4xl leading-[1.05]">{step.title}</h3>
+								<p class="mt-5 max-w-sm text-base leading-relaxed text-slate">{step.body}</p>
+								<div class="millwork-story-progress mt-8" aria-hidden="true"><span class="millwork-story-fill"></span></div>
+							</div>
+						</div>
+					))}
+				</div>
+			</div>
+		</section>
+
 		<section id="millwork-work" class="border-y border-sand bg-graphite py-20 text-bone lg:py-28" aria-labelledby="millwork-work-title">
 			<div class="container-editorial">
 				<div class="mb-12 flex flex-wrap items-end justify-between gap-6 millwork-reveal">
@@ -483,11 +517,31 @@ const pagePath = '/millwork';
 		.millwork-hero-media img { object-position: 64% center; }
 	}
 
+	/* Static image/text pairs are the default for mobile, reduced motion and no JS. */
+	.millwork-story-steps { display: grid; gap: 3rem; }
+	.millwork-story-step { display: grid; gap: 1.75rem; min-width: 0; }
+	.millwork-story-frame { margin: 0; aspect-ratio: 3 / 2; overflow: hidden; background: var(--color-sand); }
+	.millwork-story-copy { min-width: 0; }
+	.millwork-story-progress { width: 4rem; height: 2px; background: var(--color-sand); }
+	.millwork-story-fill { display: block; width: 100%; height: 100%; background: var(--color-coffee); transform-origin: left; }
+	@media (min-width: 1024px) {
+		.millwork-story-step { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 4rem; align-items: center; }
+	}
+	@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+		.millwork-story[data-story-motion] .millwork-story-steps { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); column-gap: 4rem; row-gap: 0; align-items: start; }
+		.millwork-story[data-story-motion] .millwork-story-step { display: contents; }
+		.millwork-story[data-story-motion] .millwork-story-frame { grid-column: 1; grid-row: 1 / 4; position: sticky; top: 10rem; align-self: start; width: 100%; max-height: calc(100svh - 12rem); }
+		.millwork-story[data-story-motion] .millwork-story-copy { grid-column: 2; grid-row: var(--story-row); min-height: 54svh; display: flex; flex-direction: column; justify-content: center; padding-block: 2.5rem; }
+	}
+
 	/* Visible by default, including when the enhancement bundle fails to load. */
 	@media (prefers-reduced-motion: reduce) {
 		.millwork-scroll-progress { display: none; }
 		.millwork-reveal,
-		.millwork-hero-media img {
+		.millwork-hero-media img,
+		.millwork-story-frame,
+		.millwork-story-frame img,
+		.millwork-story-fill {
 			opacity: 1 !important;
 			transform: none !important;
 			transition: none !important;

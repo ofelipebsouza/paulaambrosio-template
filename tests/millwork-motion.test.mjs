@@ -6,7 +6,7 @@ import { initMillworkMotion } from '../src/lib/millwork-motion.ts';
 
 const settle = () => new Promise(setImmediate);
 
-function fixture({ reduced = false, desktop = true } = {}) {
+function fixture({ reduced = false, desktop = true, story = false } = {}) {
 	const dom = new JSDOM('<article><div class="millwork-scroll-progress"></div><div class="millwork-hero-media"><img alt="Concept"></div><div class="millwork-reveal">Upcoming content</div><div class="millwork-reveal">Already visible</div></article>');
 	const { window } = dom;
 	const preference = new window.EventTarget();
@@ -14,11 +14,13 @@ function fixture({ reduced = false, desktop = true } = {}) {
 	window.matchMedia = (query) => query === '(prefers-reduced-motion: reduce)'
 		? preference : { matches: desktop };
 	const root = window.document.querySelector('article');
+	if (story) root.insertAdjacentHTML('beforeend', '<section class="millwork-story"><div class="millwork-story-steps">' + Array.from({ length: 3 }, (_, i) => `<div class="millwork-story-step"><figure class="millwork-story-frame"><img alt="Study ${i + 1}"></figure><div class="millwork-story-copy"><h3>Step ${i + 1}</h3><span class="millwork-story-fill"></span></div></div>`).join('') + '</div></section>');
 	root.querySelectorAll('.millwork-reveal').forEach((item, index) => {
 		item.getBoundingClientRect = () => ({ top: index === 0 ? 1200 : 100 });
 	});
-	const calls = { loaded: 0, registered: 0, reverted: 0, tweens: [], batches: [] };
+	const calls = { loaded: 0, registered: 0, reverted: 0, tweens: [], batches: [], timelines: [] };
 	let disposeContext;
+	const contextCleanups = [];
 	const gsap = {
 		registerPlugin() { calls.registered++; },
 		matchMedia() {
@@ -28,11 +30,20 @@ function fixture({ reduced = false, desktop = true } = {}) {
 					assert.equal(scope, root);
 					disposeContext = callback({
 						conditions: { desktop, mobile: !desktop },
-						add: (fn) => fn(),
+						add: (fn) => { const cleanup = fn(); if (typeof cleanup === 'function') contextCleanups.push(cleanup); },
 					});
 				},
-				revert() { calls.reverted++; disposeContext?.(); },
+				revert() { calls.reverted++; disposeContext?.(); contextCleanups.forEach((fn) => fn()); },
 			};
+		},
+		timeline(options) {
+			const record = { options, tweens: [] };
+			calls.timelines.push(record);
+			const timeline = {
+				to(target, to, at) { record.tweens.push({ target, to, at }); return timeline; },
+				fromTo(target, from, to, at) { record.tweens.push({ target, from, to, at }); return timeline; },
+			};
+			return timeline;
 		},
 		set() {},
 		fromTo(target, from, to) { calls.tweens.push({ target, from, to }); },
@@ -155,4 +166,58 @@ test('hero and inspiration images have no visible badges or captions', () => {
 	assert.match(conceptCards, /data-library-file-id=\{concept\.libraryFileId\}/);
 	assert.match(page, /Design inspiration/);
 	assert.match(page, /separate from the completed projects shown below/);
+});
+
+
+test('desktop story scrubs three studies in normal flow and fully restores its layout', async () => {
+	const f = fixture({ story: true });
+	const cleanup = initMillworkMotion(f.root, f.load);
+	await settle();
+	const story = f.root.querySelector('.millwork-story');
+	assert.ok(story.hasAttribute('data-story-motion'));
+	assert.equal(f.calls.timelines.length, 1);
+	const narrative = f.calls.timelines[0];
+	assert.equal(narrative.options.scrollTrigger.trigger, story.querySelector('.millwork-story-steps'));
+	assert.equal(narrative.options.scrollTrigger.scrub, 0.45);
+	assert.equal(narrative.options.scrollTrigger.pin, undefined);
+	assert.equal(narrative.options.scrollTrigger.snap, undefined);
+	assert.deepEqual(narrative.tweens.filter((t) => t.to.scaleX === 1).map((t) => t.at), [0, 1, 2]);
+	assert.equal(narrative.tweens.filter((t) => t.to.opacity === 1).length, 2);
+	assert.equal(narrative.tweens.filter((t) => t.from?.scale === 1.035).length, 3);
+	cleanup();
+	assert.equal(story.hasAttribute('data-story-motion'), false);
+});
+
+test('mobile and initial reduced motion keep the story as static image/text pairs', async () => {
+	for (const options of [{ desktop: false }, { reduced: true }]) {
+		const f = fixture({ ...options, story: true });
+		const original = f.root.querySelector('.millwork-story').outerHTML;
+		const cleanup = initMillworkMotion(f.root, f.load);
+		await settle();
+		assert.equal(f.calls.timelines.length, 0);
+		assert.equal(f.root.querySelector('.millwork-story').outerHTML, original);
+		cleanup();
+	}
+});
+
+test('story setup failure restores the static layout instead of hiding the studies', async () => {
+	const f = fixture({ story: true });
+	f.libraries.gsap.timeline = () => { throw new Error('simulated timeline failure'); };
+	const cleanup = initMillworkMotion(f.root, f.load);
+	await settle();
+	assert.equal(f.root.querySelector('.millwork-story').hasAttribute('data-story-motion'), false);
+	assert.equal(f.calls.reverted, 1);
+	cleanup();
+});
+
+test('story markup reuses approved imagery with all text outside image frames', () => {
+	const page = readFileSync(new URL('../src/pages/millwork.astro', import.meta.url), 'utf8');
+	assert.equal((page.match(/id="millwork-material-story"/g) || []).length, 1);
+	const frames = page.match(/<figure class="millwork-story-frame">[\s\S]*?<\/figure>/)?.[0];
+	assert.ok(frames);
+	assert.doesNotMatch(frames, /<(?:p|span|figcaption)\b/);
+	assert.match(frames, /alt=\{step.image.alt\}/);
+	assert.match(page, /Three design studies explore grain, finishes and space/);
+	assert.match(page, /@media \(min-width: 1024px\) and \(prefers-reduced-motion: no-preference\)/);
+	assert.match(page, /position: sticky/);
 });
