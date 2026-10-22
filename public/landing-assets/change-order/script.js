@@ -119,7 +119,13 @@ const englishCopy = {
  "Português + inglês · DOCX editável e PDF": "Portuguese + English · Editable DOCX and PDF",
  "Dois guias · DOCX + PDF em PT e EN": "Two guides · DOCX + PDF in PT and EN",
  "Edições em português e inglês com política de alterações, formulário de solicitação, registro de mudanças, referência de custos de fornecedores e dez boas práticas. As duas edições são entregues em DOCX editável e PDF.": "Portuguese and English editions with a change order policy, request form, change log, vendor cost reference and ten best practices. Both editions come in editable DOCX and PDF.",
- "A página e os materiais estão disponíveis em português e inglês. Cada edição comercial inclui DOCX editável e PDF, com a identidade visual oficial do estúdio.": "The page and the materials are available in Portuguese and English. Each commercial edition includes editable DOCX and PDF with the studio’s official visual identity."
+ "A página e os materiais estão disponíveis em português e inglês. Cada edição comercial inclui DOCX editável e PDF, com a identidade visual oficial do estúdio.": "The page and the materials are available in Portuguese and English. Each commercial edition includes editable DOCX and PDF with the studio’s official visual identity.",
+ "A HISTÓRIA DA PAULA": "PAULA'S STORY",
+ "Antes de executar,": "Before you begin,",
+ "deixe claro o combinado.": "make the agreement clear.",
+ "Antes de executar,<br><em>deixe claro o combinado.</em>": "Before you begin,<br><em>make the agreement clear.</em>",
+ "Em pouco mais de 43 segundos, Paula compartilha a experiência que mudou a forma como documenta extras e aprovações em seus projetos.": "In just over 43 seconds, Paula shares the experience that changed how she documents extras and approvals in her projects.",
+ "O vídeo tem legendas em inglês já incorporadas à imagem. A história completa e o contexto também estão disponíveis nesta página, mesmo sem reprodução.": "The video includes English captions burned into the image. The complete story and context are also available on this page without playback."
 };
 Object.assign(englishCopy, {
  "Antes de fazer o extra,": "Before you do the extra work,",
