@@ -142,3 +142,17 @@ test('page has a visible no-JS fallback and keeps concepts distinct and technica
 	const motion = readFileSync(new URL('../src/lib/millwork-motion.ts', import.meta.url), 'utf8');
 	assert.doesNotMatch(motion, /(?:ScrollSmoother|normalizeScroll|preventDefault|pin:\s*true)/);
 });
+
+test('hero and inspiration images have no visible badges or captions', () => {
+	const page = readFileSync(new URL('../src/pages/millwork.astro', import.meta.url), 'utf8');
+	const heroMedia = page.match(/<div class="millwork-hero-media[\s\S]*?<\/div>\s*<\/div>/)?.[0];
+	const conceptCards = page.match(/\{conceptImages\.map\([\s\S]*?\)\)\}/)?.[0];
+	assert.ok(heroMedia);
+	assert.ok(conceptCards);
+	assert.doesNotMatch(heroMedia, /<(?:p|span|figcaption)\b/);
+	assert.doesNotMatch(conceptCards, /<(?:p|span|figcaption)\b|concept\.(?:label|detail)/);
+	assert.match(conceptCards, /alt=\{concept\.alt\}/);
+	assert.match(conceptCards, /data-library-file-id=\{concept\.libraryFileId\}/);
+	assert.match(page, /Design inspiration/);
+	assert.match(page, /separate from the completed projects shown below/);
+});
