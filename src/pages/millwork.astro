@@ -36,8 +36,6 @@ interface MillworkImage {
 interface ConceptImage {
 	src: string;
 	alt: string;
-	label: string;
-	detail: string;
 	libraryFileId: string;
 }
 
@@ -126,7 +124,7 @@ const gallery: MillworkImage[] = [
 
 /**
  * Concept references are intentionally not part of the real-project gallery.
- * The files are generated visual studies and are labelled as such in the UI.
+ * The files are generated visual studies, distinguished by the section context.
  * Library IDs are retained here so a later asset replacement can keep the
  * content model stable without ever presenting the references as built work.
  */
@@ -134,43 +132,31 @@ const conceptImages: ConceptImage[] = [
 	{
 		src: '/images/millwork-concepts/millwork-miami-interior-concept.webp',
 		alt: 'Interior concept with pale wood cabinetry, a darker illuminated display niche and natural stone in a sunlit living room',
-		label: 'Interior direction',
-		detail: 'A study in proportion, light and the calm rhythm of open and closed storage.',
 		libraryFileId: 'libfile_f4118010531c8191a7e1ca20873e4c92',
 	},
 	{
 		src: '/images/millwork-concepts/millwork-craft-workshop-concept.webp',
 		alt: 'Craft concept showing a craftsperson’s hands planing a wood board at a workbench',
-		label: 'The craft',
-		detail: 'A conceptual close-up of hands, tools and the tactile character of working wood.',
 		libraryFileId: 'libfile_54910ea6811c8191af4b353f929f8177',
 	},
 	{
 		src: '/images/millwork-concepts/millwork-joinery-concept.webp',
 		alt: 'Joinery concept showing a close-up of a pale wood drawer corner with contrasting dovetail joints',
-		label: 'Detail direction',
-		detail: 'Wood grain, precise joints and smooth edges you can see and feel.',
 		libraryFileId: 'libfile_1ff4fcdcfbc081919455a99b91739f1e',
 	},
 	{
 		src: '/images/millwork-concepts/millwork-ribbed-panel-paula-inspired-concept.webp',
 		alt: 'Millwork concept of honey-toned vertical wood fins turning around a corner in a bright neutral interior',
-		label: 'Rhythm & texture',
-		detail: 'Warm vertical lines and quiet shadow gaps, informed by the material language of HOME KA.',
 		libraryFileId: 'libfile_e98ad2ed61588191810c6b6e8e400732',
 	},
 	{
 		src: '/images/millwork-concepts/millwork-honey-taupe-cabinet-paula-inspired-concept.webp',
 		alt: 'Millwork concept of honey-toned wood cabinetry, illuminated display niches and taupe lower drawers',
-		label: 'A considered palette',
-		detail: 'Honey-toned grain, soft taupe and illuminated niches, inspired by references from HOME IT and HOME KA.',
 		libraryFileId: 'libfile_9d5a6f0b0ea48191b28ec07473126854',
 	},
 	{
 		src: '/images/millwork-concepts/millwork-wood-finish-samples-paula-inspired-concept.webp',
 		alt: 'Conceptual material study of warm wood panels, vertical slats, a taupe finish and ribbed glass on pale stone',
-		label: 'Material conversation',
-		detail: 'An imagined palette of wood, satin finishes and ribbed glass. For inspiration, not a product specification.',
 		libraryFileId: 'libfile_e9ec6d03e170819182cc37870707dee7',
 	},
 ];
@@ -253,7 +239,6 @@ const pagePath = '/millwork';
 					class="h-full w-full object-cover"
 				/>
 				<div class="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-bone via-bone/50 to-transparent lg:h-48" aria-hidden="true"></div>
-				<p class="absolute right-4 top-4 rounded-full bg-bone/90 px-3 py-2 text-[9px] font-semibold uppercase tracking-[0.13em] text-graphite sm:right-8 sm:top-6">Millwork concept · Interior direction</p>
 			</div>
 			<div class="container-editorial relative -mt-3 lg:-mt-8">
 				<p class="eyebrow text-stone">Custom millwork · Miami &amp; South Florida</p>
@@ -331,10 +316,6 @@ const pagePath = '/millwork';
 							<div class="overflow-hidden bg-stone/10">
 								<img src={concept.src} alt={concept.alt} srcset={conceptSrcSet(concept.src)} sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw" width="1536" height="1024" loading="lazy" decoding="async" class="aspect-[3/2] h-auto w-full object-cover motion-safe:transition-transform motion-safe:duration-700 motion-safe:group-hover:scale-[1.03]" />
 							</div>
-							<figcaption class="border-x border-b border-sand p-5">
-								<p class="eyebrow text-stone">{concept.label} · Millwork concept</p>
-								<p class="mt-3 text-sm leading-relaxed text-slate">{concept.detail}</p>
-							</figcaption>
 						</figure>
 					))}
 				</div>
