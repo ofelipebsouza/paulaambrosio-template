@@ -1,0 +1,237 @@
+---
+import type { ImageMetadata } from 'astro';
+import Layout from '../layouts/Layout.astro';
+import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
+import CtaBanner from '../components/ui/CtaBanner.astro';
+import ProjectLightbox from '../components/projects/ProjectLightbox.astro';
+import { getCollection } from 'astro:content';
+import { projectUrl } from '../config';
+import { serviceSchema, webPageSchema, schemaScript } from '../lib/seo';
+import type { BreadcrumbEntry } from '../lib/seo';
+
+import homeTr09 from '../assets/projects/home-tr/web/09.webp';
+import homeTr25 from '../assets/projects/home-tr/web/25.webp';
+import homeIt01 from '../assets/projects/home-it/web/01.webp';
+import homeIt07 from '../assets/projects/home-it/web/07.webp';
+import homeDr03 from '../assets/projects/home-dr/web/03.webp';
+import homeDr15 from '../assets/projects/home-dr/web/15.webp';
+import homeKa01 from '../assets/projects/home-ka/web/01.webp';
+import commercialHs02 from '../assets/projects/commercial-hs/web/02.webp';
+import commercialG305 from '../assets/projects/home-g3/web/05.webp';
+
+interface MillworkImage {
+	image: ImageMetadata;
+	alt: string;
+	project: string;
+}
+
+const gallery: MillworkImage[] = [
+	{
+		image: homeTr09,
+		alt: 'HOME TR custom walnut wall of open shelving with integrated warm lighting and concealed storage',
+		project: 'home-tr',
+	},
+	{
+		image: homeIt01,
+		alt: 'HOME IT living room with a full-width oak media wall, open shelving and lower cabinets',
+		project: 'home-it',
+	},
+	{
+		image: homeDr03,
+		alt: 'HOME DR bar with black cabinetry, lit bottle shelving, wine storage and a stone counter',
+		project: 'home-dr',
+	},
+	{
+		image: homeKa01,
+		alt: 'HOME KA double-height living room with illuminated display niches and a vertical oak screen',
+		project: 'home-ka',
+	},
+	{
+		image: homeTr25,
+		alt: 'HOME TR study with a walnut built-in library, display shelving and a white desk',
+		project: 'home-tr',
+	},
+	{
+		image: homeDr15,
+		alt: 'HOME DR office with a full wall of fluted cabinetry, open shelves, drawers and integrated lighting',
+		project: 'home-dr',
+	},
+	{
+		image: commercialHs02,
+		alt: 'COMMERCIAL HS salon with pale oak cabinetry, mirrored storage and illuminated work surfaces',
+		project: 'commercial-hs',
+	},
+	{
+		image: homeIt07,
+		alt: 'HOME IT bedroom with a green illuminated media wall, display shelving and custom drawers',
+		project: 'home-it',
+	},
+	{
+		image: commercialG305,
+		alt: 'Commercial G3 retail shelving with integrated lighting displaying luggage and accessories',
+		project: 'home-g3',
+	},
+];
+
+const hero = gallery[0];
+const full = gallery.map((item) => item.image.src);
+const projects = (await getCollection('projects')).filter((project) => !project.data.draft);
+const projectTitles = Object.fromEntries(projects.map((project) => [project.id, project.data.title]));
+
+const breadcrumbs: BreadcrumbEntry[] = [{ name: 'Millwork', url: '/millwork' }];
+const description =
+	'Custom millwork and built-ins by Paula Ambrosio Interiors: media walls, libraries, bars, storage and commercial cabinetry designed as part of the architecture of each room.';
+const pageTitle = 'Custom Millwork & Built-Ins in Miami';
+const pagePath = '/millwork';
+---
+
+<Layout
+	title={pageTitle}
+	description={description}
+	canonical={pagePath}
+	ogImage={hero.image.src}
+	ogImageAlt={hero.alt}
+>
+	<Fragment slot="head" set:html={schemaScript(serviceSchema({
+		path: pagePath,
+		name: 'Custom Millwork',
+		description,
+	}))} />
+	<Fragment slot="head" set:html={schemaScript(webPageSchema({
+		path: pagePath,
+		title: 'Custom Millwork | Paula Ambrosio Interiors',
+		description,
+		breadcrumbs,
+	}))} />
+
+	<article>
+		<section class="relative flex min-h-[70vh] items-end overflow-hidden bg-ink">
+			<img
+				src={hero.image.src}
+				alt={hero.alt}
+				width={hero.image.width}
+				height={hero.image.height}
+				loading="eager"
+				decoding="async"
+				fetchpriority="high"
+				class="absolute inset-0 h-full w-full object-cover opacity-90"
+			/>
+			<div class="absolute inset-0 bg-gradient-to-t from-ink/65 via-ink/10 to-transparent" aria-hidden="true"></div>
+			<div class="relative z-10 container-editorial pb-14 pt-40 text-bone">
+				<Breadcrumbs items={breadcrumbs} tone="light" />
+				<p class="eyebrow mt-10 text-brass">Custom Millwork</p>
+				<h1 class="font-display mt-4 max-w-3xl text-5xl leading-[0.98] lg:text-7xl">Built into the architecture.</h1>
+				<p class="mt-5 max-w-xl text-lg leading-relaxed text-bone/80">
+					Joinery that gives every room its rhythm, storage and sense of permanence.
+				</p>
+			</div>
+		</section>
+
+		<section class="container-editorial grid gap-14 py-20 lg:grid-cols-12 lg:py-28">
+			<div class="lg:col-span-4">
+				<p class="eyebrow text-stone">The service</p>
+				<h2 class="font-display mt-4 text-4xl leading-tight">The quiet structure behind a finished room.</h2>
+			</div>
+			<div class="lg:col-span-7 lg:col-start-6">
+				<p class="text-lg leading-relaxed text-graphite">
+					Custom millwork is more than cabinetry. It is the way a room holds what matters: books, art, media, glassware, clothing and the daily details of life. We design built-ins as part of the interior architecture, resolving proportion, material, lighting and storage together.
+				</p>
+				<p class="mt-6 text-lg leading-relaxed text-graphite">
+					Across residences, hospitality and commercial spaces, the result is practical joinery with an editorial point of view—made to belong to the room, not compete with it.
+				</p>
+			</div>
+		</section>
+
+		<section class="border-y border-sand bg-linen py-20 lg:py-24" aria-labelledby="millwork-scope">
+			<div class="container-editorial">
+				<div class="max-w-2xl">
+					<p class="eyebrow text-stone">What we resolve</p>
+					<h2 id="millwork-scope" class="font-display mt-4 text-4xl lg:text-5xl">One language, carried through the room.</h2>
+				</div>
+				<div class="mt-12 grid gap-px bg-sand sm:grid-cols-2 lg:grid-cols-4">
+					{[
+						{ number: '01', title: 'Media walls', body: 'Television, display, cable management and storage composed as one architectural elevation.' },
+						{ number: '02', title: 'Libraries & display', body: 'Open shelving and concealed storage with the right balance of objects, books and negative space.' },
+						{ number: '03', title: 'Bars & service areas', body: 'Integrated cabinetry for bottles, glassware, appliances and the rituals that happen around them.' },
+						{ number: '04', title: 'Commercial joinery', body: 'Durable, guest-facing cabinetry for salons, retail environments and hospitality interiors.' },
+					].map((item) => (
+						<div class="bg-bone p-7 lg:p-8">
+							<span class="font-display text-4xl text-brass">{item.number}</span>
+							<h3 class="mt-5 font-display text-2xl">{item.title}</h3>
+							<p class="mt-3 text-sm leading-relaxed text-slate">{item.body}</p>
+						</div>
+					))}
+				</div>
+			</div>
+		</section>
+
+		<section class="container-editorial py-20 lg:py-28" aria-labelledby="millwork-gallery">
+			<div class="mb-12 flex flex-wrap items-end justify-between gap-6">
+				<div>
+					<p class="eyebrow text-stone">Selected work</p>
+					<h2 id="millwork-gallery" class="font-display mt-4 text-4xl lg:text-5xl">Made for the way a room is lived in.</h2>
+				</div>
+				<p class="max-w-sm text-sm leading-relaxed text-slate">A selection of installed millwork and built-ins from our residential, hospitality and commercial projects.</p>
+			</div>
+
+			<div class="columns-1 gap-6 sm:columns-2" style="column-fill: balance;">
+				{gallery.map((item, i) => (
+					<figure class="mb-8 break-inside-avoid">
+						<button
+							type="button"
+							class="group relative block w-full cursor-zoom-in overflow-hidden"
+							data-lightbox-trigger
+							data-full={item.image.src}
+							aria-label={`Open ${item.alt} fullscreen, image ${i + 1} of ${gallery.length}`}
+						>
+							<img
+								src={item.image.src}
+								alt={item.alt}
+								width={item.image.width}
+								height={item.image.height}
+								loading={i < 2 ? 'eager' : 'lazy'}
+								decoding="async"
+								class="h-auto w-full motion-safe:transition-transform motion-safe:duration-700 group-hover:scale-[1.03]"
+							/>
+							<span class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100" aria-hidden="true">
+								<svg class="absolute right-4 top-4 h-9 w-9 text-bone drop-shadow-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 3H3v6M15 3h6v6M9 21H3v-6M15 21h6v-6" stroke-linecap="round" stroke-linejoin="round" /></svg>
+							</span>
+						</button>
+						<figcaption class="mt-3">
+							<a href={projectUrl(item.project)} class="eyebrow text-stone underline decoration-brass/60 underline-offset-4 transition-colors hover:text-ink" data-analytics-event="cta_view_project" data-analytics-location="millwork_gallery">
+								From {projectTitles[item.project] ?? item.project} <span aria-hidden="true">↗</span>
+							</a>
+						</figcaption>
+					</figure>
+				))}
+			</div>
+		</section>
+
+		<ProjectLightbox title="Custom Millwork" full={full} />
+
+		<section class="bg-graphite py-20 text-bone lg:py-24" aria-labelledby="millwork-process">
+			<div class="container-editorial grid gap-12 lg:grid-cols-12">
+				<div class="lg:col-span-5">
+					<p class="eyebrow text-brass">The approach</p>
+					<h2 id="millwork-process" class="font-display mt-4 text-4xl lg:text-5xl">Every line has a job.</h2>
+				</div>
+				<div class="lg:col-span-6 lg:col-start-7">
+					<p class="text-lg leading-relaxed text-bone/80">
+						We start with the room: its light, circulation and the objects it needs to hold. From there, material, hardware, lighting and proportions are brought into the same conversation, so the finished joinery feels inevitable—useful first, and beautiful because it is so precisely resolved.
+					</p>
+					<a href="/projects/" class="btn-primary btn-on-dark mt-8" data-analytics-event="cta_view_project" data-analytics-location="millwork_approach">Explore all projects <span aria-hidden="true">→</span></a>
+				</div>
+			</div>
+		</section>
+	</article>
+
+	<CtaBanner
+		title="Discuss a Millwork Project"
+		body="Tell us about the room, residence or commercial space you are shaping. We will schedule a confidential discovery session with our design team."
+		primaryLabel="Start Your Project"
+		primaryAnalyticsEvent="cta_start_project"
+		analyticsLocation="millwork_final_cta"
+		secondaryLabel="View More Projects"
+		secondaryHref="/projects/"
+	/>
+</Layout>
