@@ -1,0 +1,170 @@
+{
+  "disclosure": "AI-generated conceptual imagery, not photographs of completed Paula Ambrosio projects, the studio workshop or team. Finish names describe visual color direction, not verified species or product specifications.",
+  "processing": "WebP encoding and proportional downsampling only. No generative edits, compositing, color changes or cropping of the supplied PNG originals. Full-size quality 90; 768px quality 86. Original PNGs preserved with their Library identities.",
+  "reference_projects": {
+    "millwork-ribbed-panel-paula-inspired-concept.png": [
+      "HOME KA"
+    ],
+    "millwork-honey-taupe-cabinet-paula-inspired-concept.png": [
+      "HOME IT",
+      "HOME KA"
+    ],
+    "millwork-wood-finish-samples-paula-inspired-concept.png": [
+      "HOME IT",
+      "HOME KA",
+      "Commercial G3 — Swiss"
+    ]
+  },
+  "assets": [
+    {
+      "source_filename": "millwork-joinery-concept.png",
+      "source_sha256": "a56d71489b8e866201749ce9c87ef8fd1d8475a3b143ece45eb2175fcdbb6af7",
+      "source_dimensions": [
+        1536,
+        1024
+      ],
+      "library_file_id": "libfile_1ff4fcdcfbc081919455a99b91739f1e",
+      "variants": [
+        {
+          "path": "/images/millwork-concepts/millwork-joinery-concept.webp",
+          "width": 1536,
+          "height": 1024,
+          "bytes": 173382,
+          "sha256": "8424d53adf7eab948fbf72007e47e0a524e4cb3454bdce4b7536516227106b58"
+        },
+        {
+          "path": "/images/millwork-concepts/millwork-joinery-concept-768.webp",
+          "width": 768,
+          "height": 512,
+          "bytes": 44056,
+          "sha256": "7e265220bcd2576c95af7a4633065f90b8fddbb2e4fa7d37c48f7ec6c33020f0"
+        }
+      ]
+    },
+    {
+      "source_filename": "millwork-craft-workshop-concept.png",
+      "source_sha256": "0e63c094b8be802cdcd7f0eeda82750ad4b890cbe6328e8e89b3d142ac7d2cb3",
+      "source_dimensions": [
+        1536,
+        1024
+      ],
+      "library_file_id": "libfile_54910ea6811c8191af4b353f929f8177",
+      "variants": [
+        {
+          "path": "/images/millwork-concepts/millwork-craft-workshop-concept.webp",
+          "width": 1536,
+          "height": 1024,
+          "bytes": 168644,
+          "sha256": "17e23d07299a9371ac68e187751f455c99052b1c63ab19ef7ac993a818d5030b"
+        },
+        {
+          "path": "/images/millwork-concepts/millwork-craft-workshop-concept-768.webp",
+          "width": 768,
+          "height": 512,
+          "bytes": 49666,
+          "sha256": "fcbfa845dc73301adefa026352e908a5495d53f8c9056b08fd6cdbd7ae72f66f"
+        }
+      ]
+    },
+    {
+      "source_filename": "millwork-miami-interior-concept.png",
+      "source_sha256": "998b4f5cab15c77e3ef24d44f1342d2c054645494db30c6b70a499c97ea97480",
+      "source_dimensions": [
+        1536,
+        1024
+      ],
+      "library_file_id": "libfile_f4118010531c8191a7e1ca20873e4c92",
+      "variants": [
+        {
+          "path": "/images/millwork-concepts/millwork-miami-interior-concept.webp",
+          "width": 1536,
+          "height": 1024,
+          "bytes": 244992,
+          "sha256": "1b6994dccdbc7e5505e1a8032e7523ee3eb3f1b9bb6f0537889951aded84c988"
+        },
+        {
+          "path": "/images/millwork-concepts/millwork-miami-interior-concept-768.webp",
+          "width": 768,
+          "height": 512,
+          "bytes": 46724,
+          "sha256": "7377ed6dc83acd9beb900e865dae36af5f00b4e654e58a795d64baaf1fbd8533"
+        }
+      ]
+    },
+    {
+      "source_filename": "millwork-ribbed-panel-paula-inspired-concept.png",
+      "source_sha256": "68ea477a5245de8de06f023869666e2e458fce7964146fe035ce8d1f6bea821d",
+      "source_dimensions": [
+        1536,
+        1024
+      ],
+      "library_file_id": "libfile_e98ad2ed61588191810c6b6e8e400732",
+      "variants": [
+        {
+          "path": "/images/millwork-concepts/millwork-ribbed-panel-paula-inspired-concept.webp",
+          "width": 1536,
+          "height": 1024,
+          "bytes": 137428,
+          "sha256": "d28e27a5f82b6c00728cc08eab99114567974027604a13cc105b4c45ee5def49"
+        },
+        {
+          "path": "/images/millwork-concepts/millwork-ribbed-panel-paula-inspired-concept-768.webp",
+          "width": 768,
+          "height": 512,
+          "bytes": 32130,
+          "sha256": "3dd2b0f835d16912d28a8702f5c2d6be7f2ce4f8a4c65a924c5d01c1e138cb93"
+        }
+      ]
+    },
+    {
+      "source_filename": "millwork-honey-taupe-cabinet-paula-inspired-concept.png",
+      "source_sha256": "33c63c239fab061f80b0bde8c218b3f279cea1e45c117e7e3a84f87b870cf310",
+      "source_dimensions": [
+        1536,
+        1024
+      ],
+      "library_file_id": "libfile_9d5a6f0b0ea48191b28ec07473126854",
+      "variants": [
+        {
+          "path": "/images/millwork-concepts/millwork-honey-taupe-cabinet-paula-inspired-concept.webp",
+          "width": 1536,
+          "height": 1024,
+          "bytes": 189952,
+          "sha256": "42781af2a8f762f4eb376f95c24a30f878b5d034269b259372dfcf8815bd72d8"
+        },
+        {
+          "path": "/images/millwork-concepts/millwork-honey-taupe-cabinet-paula-inspired-concept-768.webp",
+          "width": 768,
+          "height": 512,
+          "bytes": 40070,
+          "sha256": "e7ecc8975a2b3a495299ca9423091d37c61b0acc30360283ad56732102324380"
+        }
+      ]
+    },
+    {
+      "source_filename": "millwork-wood-finish-samples-paula-inspired-concept.png",
+      "source_sha256": "47380c26481d5153a10456c460aa476ecc61bba6ab9f7d9dd02cdb22b8796ae5",
+      "source_dimensions": [
+        1536,
+        1024
+      ],
+      "library_file_id": "libfile_e9ec6d03e170819182cc37870707dee7",
+      "variants": [
+        {
+          "path": "/images/millwork-concepts/millwork-wood-finish-samples-paula-inspired-concept.webp",
+          "width": 1536,
+          "height": 1024,
+          "bytes": 217042,
+          "sha256": "c3162e912b192464775b8f55b99ff5220bf8e214388c3bf8666fd8a7f18094d7"
+        },
+        {
+          "path": "/images/millwork-concepts/millwork-wood-finish-samples-paula-inspired-concept-768.webp",
+          "width": 768,
+          "height": 512,
+          "bytes": 47972,
+          "sha256": "f2ce093cadc35cfec61efcff2da12d31a3e27e87c86b8fdd2516a0fc671f5d19"
+        }
+      ]
+    }
+  ]
+}
