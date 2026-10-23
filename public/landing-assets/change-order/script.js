@@ -128,7 +128,11 @@ const englishCopy = {
  "Leia a história completa da Paula": "Read Paula's complete story",
  "Seu navegador não reproduz vídeo. Leia a": "Your browser cannot play video. Read",
  "história da Paula": "Paula's story",
- "abaixo.": "below."
+ "abaixo.": "below.",
+ "Preparando o vídeo…": "Preparing video…",
+ "Carregando vídeo…": "Loading video…",
+ "Vídeo pronto": "Video ready",
+ "Reproduzindo vídeo": "Playing video"
 };
 Object.assign(englishCopy, {
  "Antes de fazer o extra,": "Before you do the extra work,",
@@ -198,9 +202,39 @@ function applyLanguage(next, updateUrl = false) {
  document.querySelector('meta[property="og:title"]')?.setAttribute('content', document.title);
  document.querySelector('meta[property="og:description"]')?.setAttribute('content', english ? 'Document changes. Align costs. Record approvals. A practical system for interior designers.' : 'Documente mudanças. Alinhe custos. Registre aprovações. Um sistema prático para designers de interiores.');
  document.querySelector('meta[property="og:image:alt"]')?.setAttribute('content', english ? 'The Change Order System by Paula Ambrosio Interiors, US$27' : 'The Change Order System, de Paula Ambrósio Interiors, por US$27');
+ updateVideoStatus();
  updateSelection();
  closeMenu();
  if (updateUrl) { const url = new URL(window.location.href); if (english) url.searchParams.set('lang', 'en'); else url.searchParams.delete('lang'); history.replaceState(null, '', url); }
+}
+const vsl = document.querySelector('.paula-video-frame video');
+const vslStatus = document.querySelector('.paula-video-status-label');
+const vslBuffer = document.querySelector('.paula-video-buffer');
+const vslPlayback = document.querySelector('.paula-video-playback');
+function videoPercent(value) { return Number.isFinite(value) ? Math.max(0, Math.min(100, value)) : 0; }
+function updateVideoProgress() {
+ if (!vsl) return;
+ const duration = vsl.duration;
+ const playback = duration > 0 ? videoPercent((vsl.currentTime / duration) * 100) : 0;
+ let buffered = playback;
+ if (vsl.buffered.length && duration > 0) buffered = videoPercent((vsl.buffered.end(vsl.buffered.length - 1) / duration) * 100);
+ if (vslBuffer) vslBuffer.style.width = buffered + '%';
+ if (vslPlayback) vslPlayback.style.width = playback + '%';
+}
+function updateVideoStatus(key = '') {
+ if (!vslStatus) return;
+ const statusKey = key || (vsl?.readyState >= 3 ? 'Vídeo pronto' : 'Preparando o vídeo…');
+ vslStatus.textContent = language === 'en' ? englishCopy[statusKey] || statusKey : statusKey;
+}
+if (vsl) {
+ vsl.addEventListener('waiting', () => updateVideoStatus('Carregando vídeo…'));
+ vsl.addEventListener('progress', updateVideoProgress);
+ vsl.addEventListener('loadedmetadata', updateVideoProgress);
+ vsl.addEventListener('durationchange', updateVideoProgress);
+ vsl.addEventListener('timeupdate', updateVideoProgress);
+ vsl.addEventListener('canplay', () => { updateVideoStatus('Vídeo pronto'); updateVideoProgress(); });
+ vsl.addEventListener('playing', () => { updateVideoStatus('Reproduzindo vídeo'); updateVideoProgress(); });
+ vsl.addEventListener('pause', () => { updateVideoStatus('Vídeo pronto'); updateVideoProgress(); });
 }
 const menu = document.querySelector('.menu-toggle');
 const nav = document.getElementById('product-nav');
