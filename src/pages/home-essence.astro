@@ -1,6 +1,5 @@
 ---
 import { Image } from 'astro:assets';
-import portfolioLiving from '../assets/projects/home-aa/web/01.webp';
 import portfolioDetail from '../assets/projects/home-aa/web/03.webp';
 import Layout from '../layouts/Layout.astro';
 import { homeEssence as product } from '../data/home-essence';
@@ -11,14 +10,14 @@ const imageAlt = 'Paula Ambrósio Home Essence room spray: blush and clear glass
 ---
 <Layout title="Home Essence · Home Spray" description={description} canonical="/home-essence/" ogImage="/og/home-essence.jpg" ogImageAlt={imageAlt} compactFooter>
   <Fragment slot="head">
-    <link rel="preload" as="image" href={product.image} />
+    <link rel="preload" as="image" href="/images/home-essence/editorial-collection.jpg" />
     <Fragment set:html={schemaScript({ '@context':'https://schema.org', '@type':'Product', name:product.name, description, image:`${SITE.url}${product.image}`, brand:{'@type':'Brand',name:'Paula Ambrosio Home'}, url:`${SITE.url}/home-essence/`, offers:{'@type':'Offer',price:product.price,priceCurrency:product.currency,url:product.checkoutUrl} })} />
   </Fragment>
   <div class="essence-page">
-    <section class="essence-hero" aria-labelledby="essence-title">
+    <section class="essence-hero editorial-hero" aria-labelledby="essence-title">
       <div class="hero-copy">
         <p class="essence-label reveal">Paula Ambrósio Home</p>
-        <h1 id="essence-title" class="reveal">Home<br /><em>Essence.</em></h1>
+        <h1 id="essence-title" class="reveal">Home <em>Essence.</em></h1>
         <p class="hero-description reveal">The finishing touch.<br />A feeling that belongs to your space.</p>
         <div class="hero-purchase reveal">
           <p class="price"><span>US$</span>{product.price}</p>
@@ -26,13 +25,10 @@ const imageAlt = 'Paula Ambrósio Home Essence room spray: blush and clear glass
           <p class="purchase-caption">Home Spray · Purchase on Paula’s official store</p>
         </div>
       </div>
-      <div class="hero-art" aria-label="Official Home Essence product presentation">
-        <Image src={portfolioLiving} alt="HOME A&A living room — a project from Paula Ambrosio’s portfolio." widths={[720,1200,1600]} sizes="(max-width: 800px) 100vw, 55vw" quality={80} class="portfolio-backdrop" />
-        <div class="product-frame hero-product" data-parallax>
-          <img src={product.image} width="1200" height="673" alt={imageAlt} fetchpriority="high" decoding="async" />
-        </div>
-        <span class="art-index" aria-hidden="true">HOME A&amp;A · PAULA AMBRÓSIO INTERIORS</span>
-      </div>
+      <picture class="editorial-hero-photo">
+        <source media="(max-width: 600px)" srcset="/images/home-essence/editorial-clear.jpg" />
+        <img src="/images/home-essence/editorial-collection.jpg" width="1536" height="1024" alt="Home Essence campaign composition: blush and clear bottles on warm travertine." fetchpriority="high" decoding="async" />
+      </picture>
       <a href="#the-essence" class="scroll-link">Explore the collection <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 4v16m-6-6 6 6 6-6" /></svg></a>
     </section>
 
@@ -55,21 +51,30 @@ const imageAlt = 'Paula Ambrósio Home Essence room spray: blush and clear glass
         <h2 id="collection-title">A touch of <em>luxury.</em></h2>
         <p>Soft tones. Clear glass. Golden details.</p>
       </div>
-      <div class="collection-grid">
-        {[{position:'left',label:'Soft presence',number:'01'},{position:'center',label:'Pure expression',number:'02'},{position:'right',label:'Golden details',number:'03'}].map(item => (
-          <figure class="collection-card reveal">
-            <div class={`collection-photo ${item.position}`}>
-              <img src={product.image} width="1200" height="673" alt={`${item.label}: a detail from the official Paula Ambrósio Home Essence product artwork.`} loading="lazy" decoding="async" />
-            </div>
-            <figcaption><span>{item.label}</span><span>{item.number}</span></figcaption>
+      <div class="editorial-sequence">
+        {[{image:'editorial-blush',label:'Soft presence',number:'01'},{image:'editorial-clear',label:'Pure expression',number:'02'},{image:'editorial-gold',label:'Golden details',number:'03'}].map(item => (
+          <figure class="editorial-slide" style={`--scene:url('/images/home-essence/${item.image}.jpg')`}>
+            <img src={`/images/home-essence/${item.image}.jpg`} width="1122" height="1402" alt={`${item.label}: Home Essence campaign imagery supplied by the studio.`} loading="lazy" decoding="async" />
+            <figcaption><span class="essence-label">Home Essence / {item.number}</span><strong>{item.label}</strong></figcaption>
           </figure>
         ))}
       </div>
       <p class="collection-note">Product presentations shown for illustration. Confirm the presentation included in your purchase with Paula.</p>
     </section>
 
+    <section class="essence-film" aria-label="Home Essence film, revealed as you scroll">
+      <div class="film-stage">
+        <video class="scroll-film" muted playsinline preload="none" poster="/images/home-essence/editorial-collection.jpg" data-src="/images/home-essence/essence-film.mp4" aria-label="Home Essence visual presentation, without sound"></video>
+        <div class="film-caption"><p class="essence-label">Every detail, considered.</p><h2>The art of <em>atmosphere.</em></h2></div>
+      </div>
+    </section>
+    <section class="essence-details" aria-label="Home Essence design details">
+      <figure><img src="/images/home-essence/editorial-label.jpg" width="1122" height="1402" alt="Close-up of the PA monogram and textured Home Essence label." loading="lazy" decoding="async" /></figure>
+      <figure><img src="/images/home-essence/editorial-atomizer.jpg" width="1254" height="1254" alt="Close-up of the golden Home Essence atomizer and glass bottle." loading="lazy" decoding="async" /></figure>
+    </section>
+
     <section class="essence-final" id="shop" aria-labelledby="shop-title">
-      <div class="final-art reveal"><img src={product.image} width="1200" height="673" alt={imageAlt} loading="lazy" decoding="async" /></div>
+      <div class="final-art reveal"><img src="/images/home-essence/editorial-collection.jpg" width="1536" height="1024" alt={imageAlt} loading="lazy" decoding="async" /></div>
       <div class="final-copy reveal">
         <p class="essence-label">Paula Ambrósio Home</p>
         <h2 id="shop-title">Make room<br />for <em>the feeling.</em></h2>
@@ -101,6 +106,18 @@ const imageAlt = 'Paula Ambrósio Home Essence room spray: blush and clear glass
   @media(max-width:800px){.essence-hero{grid-template-columns:1fr;min-height:0}.hero-copy{padding:3.5rem 24px 3rem;text-align:center}.hero-copy h1{font-size:clamp(4.7rem,18vw,7rem);margin:1.7rem 0}.hero-description{font-size:.9rem}.hero-purchase{margin-top:1.5rem}.purchase-caption{margin-inline:auto!important}.hero-art{min-height:0;height:70svh;max-height:680px}.product-frame{width:auto;height:85%;max-width:80%;aspect-ratio:276/464}.art-index{bottom:1rem;right:1rem}.scroll-link{display:none}.essence-story{padding:5rem 24px;grid-template-columns:1fr;gap:2.5rem;min-height:0}.story-heading h2{font-size:clamp(3.7rem,15vw,6rem)}.story-copy{max-width:100%}.collection-section{padding:5rem 16px}.collection-grid{gap:14px;grid-template-columns:1fr 1fr}.collection-card:nth-child(2){margin-top:2rem}.collection-card:last-child{grid-column:1/-1;width:calc(50% - 7px);justify-self:center;margin-top:1rem}.collection-heading{margin-bottom:2.5rem}.collection-card figcaption{font-size:.52rem;letter-spacing:.06em;gap:.5rem}.collection-note{font-size:.62rem;margin-top:2rem!important}.essence-final{grid-template-columns:1fr;min-height:0;gap:3rem;padding:4rem 24px}.final-copy h2{font-size:clamp(3.2rem,12vw,5rem)}.order-details{max-width:none}}
   @media(prefers-reduced-motion:no-preference){.essence-page.motion-ready .reveal{opacity:0;transform:translateY(24px);transition:opacity .8s var(--ease-editorial),transform .8s var(--ease-editorial)}.essence-page.motion-ready .reveal.is-visible{opacity:1;transform:none}}
   @media(prefers-reduced-motion:reduce){.product-frame{transform:none!important;will-change:auto}.essence-button:hover{transform:none}.collection-card:hover img{scale:1}.reveal{opacity:1!important;transform:none!important}}
+
+  /* Full-screen editorial imagery. Native scroll drives the slides: no autoplay,
+     no carousel controls, no scroll trapping, and a static reduced-motion flow. */
+  .editorial-hero{min-height:calc(100svh - 4rem);height:calc(100svh - 4rem);display:flex;isolation:isolate;align-items:flex-end;color:#fff;overflow:hidden}
+  .editorial-hero-photo{position:absolute;inset:0;z-index:-2}.editorial-hero-photo img{display:block;width:100%;height:100%;object-fit:cover;object-position:center}
+  .editorial-hero::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,#21170e00 38%,#21170e88 74%,#21170ee0 100%)}
+  .editorial-hero .hero-copy{padding:2rem 5vw 3rem;width:100%;display:grid;grid-template-columns:1fr auto;align-items:end;column-gap:2rem;text-align:left}
+  .editorial-hero .essence-label{grid-column:1/-1;color:#fff}.editorial-hero h1{font-size:clamp(3rem,6vw,6.2rem);margin:.5rem 0;line-height:1;letter-spacing:-.035em;color:#fff}.editorial-hero h1 em{color:#f1dcc4}.editorial-hero .hero-description{display:none}.editorial-hero .hero-purchase{margin:0;grid-column:2;grid-row:2;text-align:right}.editorial-hero .price{font-size:2rem;color:#fff}.editorial-hero .purchase-caption{color:#f5eee5;font-size:.6rem}.editorial-hero .essence-button{background:#f9f5f0;color:#211c18;margin-top:.5rem}.editorial-hero .scroll-link{display:none}
+  .collection-section{padding:6rem 0 0}.collection-heading{padding-inline:24px}.editorial-sequence{position:relative;isolation:isolate}.editorial-slide{position:sticky;top:4rem;height:calc(100svh - 4rem);margin:0;overflow:hidden;background:#b9a68c;isolation:isolate;display:grid;place-items:center}.editorial-slide::before{content:"";position:absolute;inset:-30px;background-image:var(--scene);background-size:cover;background-position:center;filter:blur(24px) brightness(.72);z-index:-2}.editorial-slide::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 65%,#20170b8c);z-index:0;pointer-events:none}.editorial-slide>img{width:100%;height:100%;object-fit:contain;display:block}.editorial-slide figcaption{position:absolute;left:5vw;bottom:3rem;z-index:1;color:#fff;text-shadow:0 2px 15px #0008}.editorial-slide figcaption strong{display:block;font:italic clamp(2.5rem,5vw,5rem)/1.1 var(--font-display);margin-top:.6rem}.collection-note{padding:2rem 24px;margin:0 auto!important;background:var(--essence-cream)}
+  @media(max-width:800px){.editorial-hero{height:calc(100svh - 4rem);min-height:600px}.editorial-hero .hero-copy{display:block;padding:2rem 20px;text-align:center}.editorial-hero h1{font-size:clamp(3rem,11vw,4.5rem);margin:.6rem 0}.editorial-hero .hero-purchase{text-align:center;margin-top:.8rem}.editorial-hero .price{font-size:1.65rem}.editorial-hero .essence-label{font-size:.55rem}.editorial-hero .purchase-caption{margin:.6rem auto 0!important}.editorial-slide figcaption{left:24px;bottom:2rem}.editorial-slide>img{object-fit:cover;object-position:center}.collection-section{padding-top:4rem}}
+  @media(prefers-reduced-motion:reduce){.editorial-slide{position:relative;top:0}.editorial-hero .reveal{transition:none!important}}
+  .essence-film{height:220svh;background:#b9a68c}.film-stage{height:calc(100svh - 4rem);position:sticky;top:4rem;isolation:isolate;overflow:hidden}.scroll-film{height:100%;width:100%;object-fit:contain;display:block;background:#c2ac91}.film-caption{position:absolute;inset:auto 0 0;padding:5rem 5vw 3rem;background:linear-gradient(transparent,#21170eaa);color:white}.film-caption h2{font:clamp(2.4rem,5vw,5rem)/1.1 var(--font-display);margin-top:.8rem}.essence-details{display:grid;grid-template-columns:1fr 1fr;background:#eae1d7;gap:16px;padding:16px}.essence-details figure{margin:0;overflow:hidden;aspect-ratio:1}.essence-details img{width:100%;height:100%;object-fit:cover;display:block}.essence-film.film-static{height:calc(100svh - 4rem)}.film-static .film-stage{position:relative;top:0}@media(max-width:800px){.scroll-film{object-fit:contain;background:#b9a68c}.essence-details{gap:8px;padding:8px}.film-caption{padding:3rem 24px 2rem}}@media(prefers-reduced-motion:reduce){.essence-film{height:calc(100svh - 4rem)}.film-stage{position:relative;top:0}}
 </style>
 <script>
   const page = document.querySelector<HTMLElement>('.essence-page');
@@ -131,4 +148,38 @@ const imageAlt = 'Paula Ambrósio Home Essence room spray: blush and clear glass
   setMotion();
   reduced.addEventListener('change',setMotion);
   window.addEventListener('scroll',onScroll,{passive:true});
+</script>
+
+<script>
+  const filmSection = document.querySelector<HTMLElement>('.essence-film');
+  const film = document.querySelector<HTMLVideoElement>('.scroll-film');
+  const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const connection = (navigator as Navigator & {connection?:{saveData?:boolean}}).connection;
+  let filmQueued = false;
+  let nearFilm = false;
+  const filmStatic = () => motionPreference.matches || connection?.saveData === true;
+  const updateFilm = () => {
+    filmQueued = false;
+    if (!film || !filmSection || filmStatic() || !nearFilm || !Number.isFinite(film.duration)) return;
+    const rect = filmSection.getBoundingClientRect();
+    const progress = Math.max(0,Math.min(1,(64-rect.top)/Math.max(1,rect.height-window.innerHeight+64)));
+    const target = progress*Math.max(0,film.duration-.04);
+    if (Math.abs(film.currentTime-target)>.08 && !film.seeking) film.currentTime=target;
+  };
+  const queueFilm = () => {if(!filmQueued && nearFilm && !filmStatic()){filmQueued=true;requestAnimationFrame(updateFilm)}};
+  const configureFilm = () => {
+    if(!film || !filmSection)return;
+    filmSection.classList.toggle('film-static',filmStatic());
+    if(filmStatic()){film.pause();film.removeAttribute('src');film.load();}
+    else if(nearFilm && !film.getAttribute('src')){film.src=film.dataset.src!;film.load();}
+  };
+  if(film && filmSection && 'IntersectionObserver' in window){
+    const filmObserver = new IntersectionObserver(entries=>{nearFilm=entries[0].isIntersecting;configureFilm();queueFilm();},{rootMargin:'300px'});
+    filmObserver.observe(filmSection);
+    film.addEventListener('loadedmetadata',queueFilm);
+    film.addEventListener('error',()=>filmSection.classList.add('film-static'));
+    window.addEventListener('scroll',queueFilm,{passive:true});
+    motionPreference.addEventListener('change',configureFilm);
+    configureFilm();
+  }else{filmSection?.classList.add('film-static');}
 </script>

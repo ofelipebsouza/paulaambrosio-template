@@ -17,3 +17,10 @@ test('Product artwork, motion fallback and merchant limitations are retained',()
  assert.match(page,/Confirm the presentation included/);
  assert.match(page,/shipping/i);
 });
+test('Editorial film is silent, lazy and scroll-driven with static fallback',()=>{
+ assert.match(page,/muted playsinline preload="none"/);
+ assert.match(page,/poster="\/images\/home-essence\/editorial-collection.jpg"/);
+ assert.match(page,/saveData/);assert.match(page,/filmStatic/);
+ assert.doesNotMatch(page,/<video[^>]*(?:autoplay|controls)/);
+ assert.match(page,/film\.currentTime=target/);
+});
