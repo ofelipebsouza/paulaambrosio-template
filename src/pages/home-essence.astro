@@ -1,0 +1,129 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { homeEssence as product } from '../data/home-essence';
+import { SITE } from '../config';
+import { schemaScript } from '../lib/seo';
+const description = 'Discover Home Essence by Paula Ambrosio. A room spray created to bring another dimension to your space. US$49.87. Shop through Paula’s official store.';
+const imageAlt = 'Paula Ambrósio Home Essence room spray: blush and clear glass bottles with gold details, shown in the official product artwork.';
+---
+<Layout title="Home Essence · Home Spray" description={description} canonical="/home-essence/" ogImage="/og/home-essence.jpg" ogImageAlt={imageAlt} compactFooter>
+  <Fragment slot="head">
+    <link rel="preload" as="image" href={product.image} />
+    <Fragment set:html={schemaScript({ '@context':'https://schema.org', '@type':'Product', name:product.name, description, image:`${SITE.url}${product.image}`, brand:{'@type':'Brand',name:'Paula Ambrosio Home'}, url:`${SITE.url}/home-essence/`, offers:{'@type':'Offer',price:product.price,priceCurrency:product.currency,url:product.checkoutUrl} })} />
+  </Fragment>
+  <div class="essence-page">
+    <section class="essence-hero" aria-labelledby="essence-title">
+      <div class="hero-copy">
+        <p class="essence-label reveal">Paula Ambrósio Home</p>
+        <h1 id="essence-title" class="reveal">Home<br /><em>Essence.</em></h1>
+        <p class="hero-description reveal">The finishing touch.<br />A feeling that belongs to your space.</p>
+        <div class="hero-purchase reveal">
+          <p class="price"><span>US$</span>{product.price}</p>
+          <a class="essence-button" href={product.checkoutUrl}>Discover the essence <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 17 17 7M7 7h10v10" /></svg></a>
+          <p class="purchase-caption">Home Spray · Purchase on Paula’s official store</p>
+        </div>
+      </div>
+      <div class="hero-art" aria-label="Official Home Essence product presentation">
+        <div class="art-halo" aria-hidden="true"></div>
+        <div class="product-frame hero-product" data-parallax>
+          <img src={product.image} width="1200" height="673" alt={imageAlt} fetchpriority="high" decoding="async" />
+        </div>
+        <span class="art-index" aria-hidden="true">01 / HOME COLLECTION</span>
+      </div>
+      <a href="#the-essence" class="scroll-link">Explore the collection <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 4v16m-6-6 6 6 6-6" /></svg></a>
+    </section>
+
+    <section id="the-essence" class="essence-story" aria-labelledby="story-title">
+      <div class="story-heading reveal">
+        <p class="essence-label">Designed to be felt</p>
+        <h2 id="story-title">Beyond what<br />you <em>see.</em></h2>
+      </div>
+      <div class="story-copy reveal">
+        <p class="story-lede">Beautiful interiors tell a story.<br />Scent adds another layer.</p>
+        <p>Created by interior designer Paula Ambrosio, Home Essence brings her perspective on space into a room spray. A thoughtful detail for the spaces you make your own.</p>
+        <p class="fragrance-line">The fragrance <span>Essence of the Wealthy</span></p>
+      </div>
+    </section>
+
+    <section class="collection-section" aria-labelledby="collection-title">
+      <div class="collection-heading reveal">
+        <p class="essence-label">The visual collection</p>
+        <h2 id="collection-title">A touch of <em>luxury.</em></h2>
+        <p>Soft tones. Clear glass. Golden details.</p>
+      </div>
+      <div class="collection-grid">
+        {[{position:'left',label:'Soft presence',number:'01'},{position:'center',label:'Pure expression',number:'02'},{position:'right',label:'Golden details',number:'03'}].map(item => (
+          <figure class="collection-card reveal">
+            <div class={`collection-photo ${item.position}`}>
+              <img src={product.image} width="1200" height="673" alt={`${item.label}: a detail from the official Paula Ambrósio Home Essence product artwork.`} loading="lazy" decoding="async" />
+            </div>
+            <figcaption><span>{item.label}</span><span>{item.number}</span></figcaption>
+          </figure>
+        ))}
+      </div>
+      <p class="collection-note">Product presentations shown for illustration. Confirm the presentation included in your purchase with Paula.</p>
+    </section>
+
+    <section class="essence-final" id="shop" aria-labelledby="shop-title">
+      <div class="final-art reveal"><img src={product.image} width="1200" height="673" alt={imageAlt} loading="lazy" decoding="async" /></div>
+      <div class="final-copy reveal">
+        <p class="essence-label">Paula Ambrósio Home</p>
+        <h2 id="shop-title">Make room<br />for <em>the feeling.</em></h2>
+        <p>Home Spray · Home Essence</p>
+        <p class="price final-price"><span>US$</span>{product.price}</p>
+        <a class="essence-button" href={product.checkoutUrl}>Shop Home Essence <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 17 17 7M7 7h10v10" /></svg></a>
+        <p class="purchase-caption">You’ll continue to Paula’s official Stan store.</p>
+        <div class="order-details">
+          <details><summary>Where do I place my order?</summary><p>Use “Shop Home Essence” to continue to Paula’s official store. Your order and payment are handled there.</p></details>
+          <details><summary>Delivery and product details</summary><p>The official listing offers delivery in the USA. Confirm the bottle presentation, shipping cost and delivery timing with Paula before purchasing.</p></details>
+          <a href="/contact/" class="question-link">A question before ordering? Contact the studio <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 17 17 7M7 7h10v10" /></svg></a>
+        </div>
+      </div>
+    </section>
+  </div>
+</Layout>
+
+<style>
+  .essence-page{--essence-cream:var(--color-bone);--essence-ink:var(--color-graphite);--essence-taupe:var(--color-coffee);color:var(--essence-ink);overflow:clip}
+  .essence-page :is(h1,h2,p,figure){margin:0}.essence-label{font-family:var(--font-label);font-size:.65rem;letter-spacing:.23em;text-transform:uppercase;line-height:1.7}.essence-hero{min-height:calc(100svh - 5rem);position:relative;display:grid;grid-template-columns:1fr 1.08fr;background:var(--essence-cream)}
+  .hero-copy{padding:clamp(4rem,9vh,7rem) 3vw 6rem 7vw;align-self:center;z-index:1}.hero-copy h1{font-size:clamp(4.5rem,8.2vw,9rem);font-weight:400;line-height:.87;letter-spacing:-.055em;margin:2rem 0 1.8rem}.essence-page em{font-weight:400;color:var(--essence-taupe)}.hero-description{font-size:clamp(.95rem,1.2vw,1.1rem);line-height:1.8;color:var(--color-slate)}.hero-purchase{margin-top:2.1rem}.price{font-family:var(--font-display);font-size:2.25rem;letter-spacing:-.04em;line-height:1.2}.price span{font-family:var(--font-label);font-size:.65rem;letter-spacing:.1em;margin-right:.6rem;vertical-align:middle}
+  .essence-button{display:inline-flex;align-items:center;justify-content:space-between;gap:3rem;min-height:52px;padding:.95rem 1.5rem;background:var(--essence-ink);color:var(--essence-cream);font-family:var(--font-label);font-size:.65rem;text-transform:uppercase;letter-spacing:.15em;margin-top:1rem;transition:background .3s,transform .3s}.essence-button:hover{background:var(--color-coffee-deep);transform:translateY(-2px)}.essence-button span{font-family:Arial,sans-serif;font-size:1.15rem}.purchase-caption{font-size:.62rem;line-height:1.7;color:var(--color-slate);margin-top:.85rem!important;max-width:27rem}
+  .hero-art{position:relative;min-height:620px;display:grid;place-items:center;background:#e9dfd4;isolation:isolate;overflow:hidden}.art-halo{position:absolute;width:120%;height:120%;border-radius:50%;background:radial-gradient(ellipse,#fffaf2a6,transparent 65%);left:-30%;top:-25%;z-index:-1}.product-frame{width:min(72%,28rem);aspect-ratio:276/464;overflow:hidden;box-shadow:30px 36px 60px -35px #543b2d65;transform:translateY(var(--parallax,0px)) rotate(-2deg);will-change:transform}.product-frame img{width:300%;max-width:none;height:100%;object-fit:cover;transform:translateX(-33.333333%)}.art-index{position:absolute;bottom:2rem;right:2rem;font-family:var(--font-label);font-size:.55rem;letter-spacing:.18em;color:#605146}.scroll-link{position:absolute;bottom:2rem;left:7vw;display:flex;align-items:center;gap:2rem;font-size:.6rem;letter-spacing:.13em;text-transform:uppercase}.scroll-link span{font-size:1rem}
+  .essence-story{min-height:78svh;padding:8rem 9vw;display:grid;grid-template-columns:1.15fr 1fr;gap:8vw;align-items:center;background:#211c18;color:var(--essence-cream)}.story-heading h2{font-size:clamp(3.5rem,6.3vw,7rem);line-height:1;letter-spacing:-.04em;margin-top:1.5rem}.essence-story em{color:var(--color-sand)}.story-copy{max-width:32rem}.story-copy p{font-size:.95rem;line-height:1.95;color:#d9cfc5}.story-copy .story-lede{font-family:var(--font-display);font-size:clamp(1.7rem,2.1vw,2.5rem);line-height:1.3;color:var(--essence-cream);margin-bottom:1.6rem}.fragrance-line{border-top:1px solid #ffffff25;margin-top:2.5rem!important;padding-top:1.5rem;font-size:.6rem!important;letter-spacing:.13em;text-transform:uppercase}.fragrance-line span{display:block;font-family:var(--font-display);font-size:1.45rem;text-transform:none;letter-spacing:0;margin-top:.6rem}
+  .collection-section{padding:7rem 5vw;background:var(--essence-cream)}.collection-heading{text-align:center;margin-bottom:3.5rem}.collection-heading h2{font-size:clamp(2.8rem,5vw,5rem);letter-spacing:-.035em;margin:1rem 0}.collection-heading>p:last-child{font-size:.8rem;color:var(--color-slate)}.collection-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2vw;max-width:1400px;margin:auto}.collection-photo{aspect-ratio:276/464;overflow:hidden}.collection-photo img{height:100%;width:300%;max-width:none;object-fit:cover;transition:scale .8s var(--ease-editorial)}.collection-photo.center img{transform:translateX(-33.333333%)}.collection-photo.right img{transform:translateX(-66.666666%)}.collection-card:hover img{scale:1.025}.collection-card figcaption{display:flex;justify-content:space-between;align-items:center;font-family:var(--font-label);text-transform:uppercase;font-size:.62rem;letter-spacing:.12em;padding-top:1.2rem}.collection-card:nth-child(2){margin-top:3.5rem}.collection-note{max-width:40rem;text-align:center;font-size:.65rem;line-height:1.7;color:var(--color-slate);margin:3rem auto 0!important}
+  .essence-final{min-height:100svh;display:grid;grid-template-columns:1fr 1fr;background:#eae1d7;align-items:center;padding:6rem 6vw;gap:6vw}.final-art{box-shadow:0 30px 55px -35px #51372765}.final-art img{display:block;width:100%;height:auto}.final-copy h2{font-size:clamp(3rem,5vw,5.8rem);line-height:1;letter-spacing:-.04em;margin:1.5rem 0}.final-copy>p:not(.price):not(.essence-label):not(.purchase-caption){font-size:.8rem;color:var(--color-slate)}.final-price{margin-top:1.6rem!important}.order-details{margin-top:2.4rem;max-width:32rem}.order-details details{border-top:1px solid #0002}.order-details summary{padding:1rem 0;cursor:pointer;font-size:.75rem;line-height:1.5}.order-details details p{font-size:.75rem;line-height:1.8;padding:0 0 1rem;color:var(--color-slate)}.question-link{display:block;font-size:.65rem;line-height:1.8;padding-top:1.3rem;border-top:1px solid #0002}.question-link:hover{text-decoration:underline}.essence-page :is(a,summary):focus-visible{outline:2px solid var(--color-coffee-deep);outline-offset:5px}.essence-page [id]{scroll-margin-top:6rem}
+  @media(min-width:1600px){.hero-art{min-height:calc(100svh - 5rem)}}
+  @media(max-width:800px){.essence-hero{grid-template-columns:1fr;min-height:0}.hero-copy{padding:3.5rem 24px 3rem;text-align:center}.hero-copy h1{font-size:clamp(4.7rem,18vw,7rem);margin:1.7rem 0}.hero-description{font-size:.9rem}.hero-purchase{margin-top:1.5rem}.purchase-caption{margin-inline:auto!important}.hero-art{min-height:0;height:70svh;max-height:680px}.product-frame{width:auto;height:85%;max-width:80%;aspect-ratio:276/464}.art-index{bottom:1rem;right:1rem}.scroll-link{display:none}.essence-story{padding:5rem 24px;grid-template-columns:1fr;gap:2.5rem;min-height:0}.story-heading h2{font-size:clamp(3.7rem,15vw,6rem)}.story-copy{max-width:100%}.collection-section{padding:5rem 16px}.collection-grid{gap:14px;grid-template-columns:1fr 1fr}.collection-card:nth-child(2){margin-top:2rem}.collection-card:last-child{grid-column:1/-1;width:calc(50% - 7px);justify-self:center;margin-top:1rem}.collection-heading{margin-bottom:2.5rem}.collection-card figcaption{font-size:.52rem;letter-spacing:.06em;gap:.5rem}.collection-note{font-size:.62rem;margin-top:2rem!important}.essence-final{grid-template-columns:1fr;min-height:0;gap:3rem;padding:4rem 24px}.final-copy h2{font-size:clamp(3.2rem,12vw,5rem)}.order-details{max-width:none}}
+  @media(prefers-reduced-motion:no-preference){.essence-page.motion-ready .reveal{opacity:0;transform:translateY(24px);transition:opacity .8s var(--ease-editorial),transform .8s var(--ease-editorial)}.essence-page.motion-ready .reveal.is-visible{opacity:1;transform:none}}
+  @media(prefers-reduced-motion:reduce){.product-frame{transform:none!important;will-change:auto}.essence-button:hover{transform:none}.collection-card:hover img{scale:1}.reveal{opacity:1!important;transform:none!important}}
+</style>
+<script>
+  const page = document.querySelector<HTMLElement>('.essence-page');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let observer: IntersectionObserver | undefined;
+  let ticking = false;
+  const hero = document.querySelector<HTMLElement>('.essence-hero');
+  const art = document.querySelector<HTMLElement>('[data-parallax]');
+  function updateParallax() {
+    ticking = false;
+    if (!hero || !art || reduced.matches) return;
+    const rect = hero.getBoundingClientRect();
+    if (rect.bottom <= 0 || rect.top >= window.innerHeight) return;
+    art.style.setProperty('--parallax', `${Math.min(28, Math.max(-28, -rect.top * .055))}px`);
+  }
+  function onScroll(){ if (!ticking && !reduced.matches){ticking=true;requestAnimationFrame(updateParallax);} }
+  function setMotion(){
+    observer?.disconnect();
+    page?.classList.remove('motion-ready');
+    if (reduced.matches){art?.style.removeProperty('--parallax');return;}
+    if ('IntersectionObserver' in window){
+      page?.classList.add('motion-ready');
+      observer = new IntersectionObserver((entries)=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('is-visible');observer?.unobserve(entry.target);}}),{threshold:.08});
+      page?.querySelectorAll('.reveal').forEach(el=>observer?.observe(el));
+    }
+    updateParallax();
+  }
+  setMotion();
+  reduced.addEventListener('change',setMotion);
+  window.addEventListener('scroll',onScroll,{passive:true});
+</script>
