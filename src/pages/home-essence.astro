@@ -5,7 +5,7 @@ import Layout from '../layouts/Layout.astro';
 import { homeEssence as product } from '../data/home-essence';
 import { SITE } from '../config';
 import { schemaScript } from '../lib/seo';
-const description = 'Discover Home Essence by Paula Ambrosio. A room spray created to bring another dimension to your space. US$49.87. Shop through Paula’s official store.';
+const description = `Discover Home Essence by Paula Ambrosio. A room spray created to bring another dimension to your space. US$${product.price}. Secure checkout with Stripe.`;
 const imageAlt = 'Paula Ambrósio Home Essence room spray: blush and clear glass bottles with gold details, shown in the official product artwork.';
 ---
 <Layout title="Home Essence · Home Spray" description={description} canonical="/home-essence/" ogImage="/og/home-essence.jpg" ogImageAlt={imageAlt} compactFooter>
@@ -22,7 +22,7 @@ const imageAlt = 'Paula Ambrósio Home Essence room spray: blush and clear glass
         <div class="hero-purchase reveal">
           <p class="price"><span>US$</span>{product.price}</p>
           <a class="essence-button" href={product.checkoutUrl}>Discover the essence <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 17 17 7M7 7h10v10" /></svg></a>
-          <p class="purchase-caption">Home Spray · Purchase on Paula’s official store</p>
+          <p class="purchase-caption">Home Spray · Secure checkout with Stripe</p>
         </div>
       </div>
       <picture class="editorial-hero-photo">
@@ -81,10 +81,10 @@ const imageAlt = 'Paula Ambrósio Home Essence room spray: blush and clear glass
         <p>Home Spray · Home Essence</p>
         <p class="price final-price"><span>US$</span>{product.price}</p>
         <a class="essence-button" href={product.checkoutUrl}>Shop Home Essence <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 17 17 7M7 7h10v10" /></svg></a>
-        <p class="purchase-caption">You’ll continue to Paula’s official Stan store.</p>
+        <p class="purchase-caption">You’ll continue to a secure Stripe checkout to complete your purchase.</p>
         <div class="order-details">
-          <details><summary>Where do I place my order?</summary><p>Use “Shop Home Essence” to continue to Paula’s official store. Your order and payment are handled there.</p></details>
-          <details><summary>Delivery and product details</summary><p>The official listing offers delivery in the USA. Confirm the bottle presentation, shipping cost and delivery timing with Paula before purchasing.</p></details>
+          <details><summary>Where do I place my order?</summary><p>Use “Shop Home Essence” to open the secure Stripe checkout. Your order and payment are completed there.</p></details>
+          <details><summary>Delivery and product details</summary><p>Confirm the bottle presentation, shipping cost and delivery timing with Paula before purchasing.</p></details>
           <a href="/contact/" class="question-link">A question before ordering? Contact the studio <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 17 17 7M7 7h10v10" /></svg></a>
         </div>
       </div>
