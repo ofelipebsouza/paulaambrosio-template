@@ -63,12 +63,25 @@ not the deployment. The inquiry itself is never affected: the CRM write is
 wrapped in `try/catch` and a failure logs `crm_store_failed`, never an error
 response.
 
+Manual lead/task changes and report writes use confirmed persistence when Redis
+is configured. A failed or ambiguous write returns `503 write_unconfirmed`, not
+success; the UI asks the operator to refresh and verify before trying again.
+No automatic write retry is performed, because the backend may have committed
+before its response was lost. Lead/task reads required for these edits return
+`503 read_unavailable` instead of silently editing an in-memory fallback.
+The automatic initial-reply tasks are read before the reply timestamp is saved.
+These multi-write operations are not transactions: a partial result still needs
+reconciliation. The contact receipt and agent/cron paths retain their existing
+contracts; this manual-edit safeguard does not establish their durability.
+
 Retention: leads are ordinary business records. If a purge policy is required,
 add `CRM_RETENTION_DAYS` and delete from `crm:idx:time` in the cron route.
 
 ## 3. Access
 
 1. `CRM_PASSWORD` (required) — compared with `timingSafeEqual`.
+   When it is missing, session creation and validation both fail closed,
+   including previously issued cookies if the session secret remains configured.
 2. On success the server sets `crm_session` = `exp.hmac`, `HttpOnly`,
    `SameSite=Lax`, `Secure` on HTTPS, 12 h (`CRM_SESSION_TTL`).
 3. `CRM_SESSION_SECRET` signs it; if unset the key is derived from the password
@@ -102,6 +115,10 @@ tasks. Existing response timestamps are not rewritten by this change.
 The board is plain HTML5 drag & drop (no library); each card also carries a
 `<select>` so the same move works with a keyboard or on touch. A drop is
 optimistic — the card moves immediately and `PATCH` repaints or rolls it back.
+Refreshes and lead details ignore stale responses; closing a dialog cancels
+pending detail rendering. Repeated writes to the same lead are suppressed while
+a save is in flight. Failed moves restore the last confirmed view, not a claim
+that the server definitely rolled back an uncertain write.
 
 ### Lead enrichment
 

@@ -78,13 +78,16 @@ function sign(payload: string): string {
 
 /** `exp.timestamp.signature` — verifiable without a lookup table. */
 export function createSessionToken(now = Date.now()): string {
+	if (!passwordConfigured()) throw new Error('crm_not_configured');
 	const exp = Math.floor(now / 1000) + sessionTtlSeconds();
 	const payload = String(exp);
 	return `${payload}.${sign(payload)}`;
 }
 
 export function verifySessionToken(token: string | undefined | null, now = Date.now()): boolean {
-	if (!token) return false;
+	// A missing password disables the dashboard, including existing cookies.
+	// Never verify against the predictable `derived:` fallback when unconfigured.
+	if (!passwordConfigured() || !token) return false;
 	const [expRaw, signature, ...rest] = token.split('.');
 	if (!expRaw || !signature || rest.length) return false;
 

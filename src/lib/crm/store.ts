@@ -60,6 +60,43 @@ export function storeStatus(): StoreStatus {
 	return { ...status };
 }
 
+/** Manual edits must not claim success after an unconfirmed durable write.
+ * A timeout can follow a committed write; callers must reconcile, not retry.
+ * With no Redis configuration, explicit development memory mode still works.
+ */
+export class CrmWriteUnconfirmedError extends Error {
+	constructor() {
+		super('crm_write_unconfirmed');
+		this.name = 'CrmWriteUnconfirmedError';
+	}
+}
+export interface WriteOptions {
+	requireDurable?: boolean;
+}
+function requireWriteResult(results: unknown[] | null, options: WriteOptions): void {
+	if (!results && options.requireDurable &&
+		(import.meta.env.UPSTASH_REDIS_REST_URL || import.meta.env.UPSTASH_REDIS_REST_TOKEN)) {
+		throw new CrmWriteUnconfirmedError();
+	}
+}
+
+/** Strict reads distinguish a missing record from an unavailable backend. */
+export class CrmReadUnavailableError extends Error {
+	constructor() {
+		super('crm_read_unavailable');
+		this.name = 'CrmReadUnavailableError';
+	}
+}
+export interface ReadOptions {
+	requireAvailable?: boolean;
+}
+function requireReadResult(results: unknown[] | null, options: ReadOptions): void {
+	if (!results && options.requireAvailable &&
+		(import.meta.env.UPSTASH_REDIS_REST_URL || import.meta.env.UPSTASH_REDIS_REST_TOKEN)) {
+		throw new CrmReadUnavailableError();
+	}
+}
+
 let warned = false;
 
 function noteFailure(reason: string): void {
@@ -185,11 +222,13 @@ function parseJson<T>(value: unknown): T | null {
 /* Leads                                                                      */
 /* -------------------------------------------------------------------------- */
 
-export async function saveLead(lead: CrmLead): Promise<void> {
+export async function saveLead(lead: CrmLead, options: WriteOptions = {}): Promise<void> {
 	const doc = JSON.stringify(lead);
 	const results = await redis([['SET', `crm:lead:${lead.id}`, doc], ['ZADD', 'crm:idx:time', lead.createdAt, lead.id]]);
+	requireWriteResult(results, options);
 	if (results) {
-		await redis([['SET', `crm:idx:email:${emailKey(lead.email)}`, lead.id]]);
+		const indexResult = await redis([['SET', `crm:idx:email:${emailKey(lead.email)}`, lead.id]]);
+		requireWriteResult(indexResult, options);
 		return;
 	}
 
@@ -304,9 +343,12 @@ export async function insertLeadWithReceipt(
 	return { status: 'unavailable' };
 }
 
-export async function getLead(id: string): Promise<CrmLead | null> {
+export async function getLead(id: string, options: ReadOptions = {}): Promise<CrmLead | null> {
 	const results = await redis([['GET', `crm:lead:${id}`]]);
+	requireReadResult(results, options);
 	const doc = results ? parseJson<CrmLead>(results[0]) : (mem.leads.get(id) ?? null);
+	if (options.requireAvailable && results && results[0] !== null &&
+		(!doc || typeof doc !== 'object' || Array.isArray(doc))) throw new CrmReadUnavailableError();
 	return doc ? normalizeLead(doc) : null;
 }
 
@@ -379,7 +421,7 @@ export async function listLeads({ status, query, limit = 200, offset = 0 }: Lead
 
 	// A failed read on a Redis-backed index must not present an empty pipeline:
 	// fall back to what this instance still holds, exactly as the write path does.
-	if (!fromRedis && results) docs = [...mem.leads.values()];
+	if (!fromRedis && results && ids.length) docs = [...mem.leads.values()];
 
 	const needle = query?.trim().toLowerCase() ?? '';
 	const filtered = docs.filter((lead) => {
@@ -404,9 +446,10 @@ export async function allLeads(): Promise<CrmLead[]> {
 /* Timeline events                                                            */
 /* -------------------------------------------------------------------------- */
 
-export async function pushEvent(leadId: string, event: CrmEvent): Promise<void> {
+export async function pushEvent(leadId: string, event: CrmEvent, options: WriteOptions = {}): Promise<void> {
 	const member = JSON.stringify(event);
 	const results = await redis([['ZADD', `crm:events:${leadId}`, event.ts, member]]);
+	requireWriteResult(results, options);
 	if (results) return;
 	const list = mem.events.get(leadId) ?? [];
 	list.push(event);
@@ -654,21 +697,26 @@ export async function totalsBy(field: 'service' | 'form' | 'location'): Promise<
 /* Follow-up tasks                                                            */
 /* -------------------------------------------------------------------------- */
 
-export async function saveTask(task: CrmTask): Promise<void> {
+export async function saveTask(task: CrmTask, options: WriteOptions = {}): Promise<void> {
 	const results = await redis([
 		['SET', `crm:task:${task.id}`, JSON.stringify(task)],
 		['ZADD', 'crm:idx:tasks', task.dueAt, task.id],
 	]);
+	requireWriteResult(results, options);
 	if (results) return;
 	mem.tasks.set(task.id, task);
 	mem.taskIdx.set(task.id, task.dueAt);
 }
 
-export async function listTasks(): Promise<CrmTask[]> {
+export async function listTasks(options: ReadOptions = {}): Promise<CrmTask[]> {
 	const results = await redis([['ZRANGE', 'crm:idx:tasks', '0', '-1']]);
+	requireReadResult(results, options);
 	let ids: string[] = [];
 	if (results) {
 		const raw = results[0];
+		if (options.requireAvailable && (!Array.isArray(raw) || raw.some((id) => typeof id !== 'string'))) {
+			throw new CrmReadUnavailableError();
+		}
 		ids = Array.isArray(raw) ? (raw as string[]) : [];
 	} else {
 		ids = [...mem.taskIdx.keys()].sort((a, b) => (mem.taskIdx.get(a) ?? 0) - (mem.taskIdx.get(b) ?? 0));
@@ -677,9 +725,15 @@ export async function listTasks(): Promise<CrmTask[]> {
 
 	if (results) {
 		const fetched = await redis(ids.map((id) => ['GET', `crm:task:${id}`]));
+		requireReadResult(fetched, options);
 		if (fetched) {
 			return fetched
-				.map((row) => parseJson<CrmTask>(row))
+				.map((row) => {
+					const task = parseJson<CrmTask>(row);
+					if (options.requireAvailable && row !== null &&
+						(!task || typeof task !== 'object' || Array.isArray(task))) throw new CrmReadUnavailableError();
+					return task;
+				})
 				.filter((task): task is CrmTask => task !== null)
 				.sort((a, b) => a.dueAt - b.dueAt);
 		}
@@ -698,8 +752,9 @@ export async function getTask(id: string): Promise<CrmTask | null> {
 /* Hermes report                                                              */
 /* -------------------------------------------------------------------------- */
 
-export async function saveReport(report: HermesReport): Promise<void> {
+export async function saveReport(report: HermesReport, options: WriteOptions = {}): Promise<void> {
 	const results = await redis([['SET', 'crm:report:last', JSON.stringify(report)]]);
+	requireWriteResult(results, options);
 	if (results) return;
 	mem.report = report;
 }
