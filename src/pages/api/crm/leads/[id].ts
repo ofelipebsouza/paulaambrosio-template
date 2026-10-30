@@ -15,22 +15,24 @@ import { crmJson, leadRef, log } from '../../../../lib/crm/http';
 import { applyLeadPatch } from '../../../../lib/crm/lead-actions';
 import { completeReplyTasks } from '../../../../lib/crm/task-actions';
 import { isLeadStatus } from '../../../../lib/crm/schema';
-import { listEvents, listTasks, getLead, pushEvent, saveLead, saveTask } from '../../../../lib/crm/store';
+import { CrmReadUnavailableError, CrmWriteUnconfirmedError, listEvents, listTasks, getLead, pushEvent, saveLead, saveTask } from '../../../../lib/crm/store';
 
 export const prerender = false;
 
-export const ALL: APIRoute = async ({ request, params }) => {
+const handle: APIRoute = async ({ request, params }) => {
 	const denied = requireCrm(request);
 	if (denied) return denied;
 
 	const id = String(params.id ?? '');
 	if (!id) return crmJson({ ok: false, error: 'missing_id' }, 400);
 
-	const lead = await getLead(id);
-	if (!lead) return crmJson({ ok: false, error: 'not_found' }, 404);
+	const storedLead = await getLead(id, { requireAvailable: true });
+	if (!storedLead) return crmJson({ ok: false, error: 'not_found' }, 404);
 
+	// Do not mutate the fallback store by reference if persistence later fails.
+	const lead = structuredClone(storedLead);
 	if (request.method === 'GET') {
-		const [events, tasks] = await Promise.all([listEvents(id), listTasks()]);
+		const [events, tasks] = await Promise.all([listEvents(id), listTasks({ requireAvailable: true })]);
 		return crmJson({
 			ok: true,
 			lead,
@@ -61,28 +63,36 @@ export const ALL: APIRoute = async ({ request, params }) => {
 	const result = applyLeadPatch(lead, body, now);
 	if (!result.changed.length) return crmJson({ ok: true, lead, unchanged: true });
 
-	lead.updatedAt = now;
-	await saveLead(lead);
-	for (const event of result.events) {
-		await pushEvent(lead.id, { ts: now, type: event.type, detail: event.detail, actor: 'studio' });
-	}
-
-	/* Follow-up tasks ----------------------------------------------------- */
+	// Establish the reminder set before persisting firstResponseAt.
+	const tasksToClose = result.responded
+		? completeReplyTasks(await listTasks({ requireAvailable: true }), lead.id, now)
+		: [];
 	let closedTasks = 0;
-	if (result.responded) {
-		const tasks = completeReplyTasks(await listTasks(), lead.id, now);
-		for (const task of tasks) {
-			closedTasks += 1;
-			await saveTask(task);
+	try {
+		lead.updatedAt = now;
+		await saveLead(lead, { requireDurable: true });
+		for (const event of result.events) {
+			await pushEvent(lead.id, { ts: now, type: event.type, detail: event.detail, actor: 'studio' }, { requireDurable: true });
 		}
-		if (closedTasks) {
-			await pushEvent(lead.id, {
-				ts: now,
-				type: 'task',
-				detail: `Closed ${closedTasks} follow-up task(s) after the first reply`,
-				actor: 'studio',
-			});
+
+		/* Follow-up tasks ----------------------------------------------------- */
+		if (result.responded) {
+			for (const task of tasksToClose) {
+				closedTasks += 1;
+				await saveTask(task, { requireDurable: true });
+			}
+			if (closedTasks) {
+				await pushEvent(lead.id, {
+					ts: now,
+					type: 'task',
+					detail: `Closed ${closedTasks} follow-up task(s) after the first reply`,
+					actor: 'studio',
+				}, { requireDurable: true });
+			}
 		}
+	} catch (error) {
+		if (!(error instanceof CrmWriteUnconfirmedError)) throw error;
+		return crmJson({ ok: false, error: 'write_unconfirmed', reconcileBeforeRetry: true }, 503);
 	}
 
 	/* JEV ----------------------------------------------------------------- */
@@ -101,4 +111,14 @@ export const ALL: APIRoute = async ({ request, params }) => {
 	});
 
 	return crmJson({ ok: true, lead });
+};
+
+
+export const ALL: APIRoute = async (context) => {
+	try {
+		return await handle(context);
+	} catch (error) {
+		if (!(error instanceof CrmReadUnavailableError)) throw error;
+		return crmJson({ ok: false, error: 'read_unavailable' }, 503);
+	}
 };

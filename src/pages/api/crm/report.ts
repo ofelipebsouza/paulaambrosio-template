@@ -18,7 +18,7 @@ import { requireCrm, requireHermes, verifyBodySignature } from '../../../lib/crm
 import { crmJson, log } from '../../../lib/crm/http';
 import { buildMetrics, responseRate } from '../../../lib/crm/metrics';
 import type { HermesReport } from '../../../lib/crm/schema';
-import { allLeads, dailyCounts, getReport, listTasks, saveReport, storeStatus } from '../../../lib/crm/store';
+import { CrmWriteUnconfirmedError, allLeads, dailyCounts, getReport, listTasks, saveReport, storeStatus } from '../../../lib/crm/store';
 
 export const prerender = false;
 
@@ -93,7 +93,12 @@ export const ALL: APIRoute = async ({ request }) => {
 		const report = sanitise(parsed);
 		if (!report) return crmJson({ ok: false, error: 'missing_summary' }, 422);
 
-		await saveReport(report);
+		try {
+			await saveReport(report, { requireDurable: true });
+		} catch (error) {
+			if (!(error instanceof CrmWriteUnconfirmedError)) throw error;
+			return crmJson({ ok: false, error: 'write_unconfirmed', reconcileBeforeRetry: true }, 503);
+		}
 		log('info', 'crm_report_received', { generatedAt: report.generatedAt, actions: report.actions.length });
 
 		return crmJson({ ok: true, storedAt: Date.now() });

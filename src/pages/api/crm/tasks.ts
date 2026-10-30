@@ -9,20 +9,20 @@ import type { APIRoute } from 'astro';
 import { requireCrm } from '../../../lib/crm/guard';
 import { crmJson, log } from '../../../lib/crm/http';
 import type { TaskState } from '../../../lib/crm/schema';
-import { listTasks, saveTask, storeStatus } from '../../../lib/crm/store';
+import { CrmReadUnavailableError, CrmWriteUnconfirmedError, listTasks, saveTask, storeStatus } from '../../../lib/crm/store';
 
 export const prerender = false;
 
 const STATES: TaskState[] = ['open', 'done', 'snoozed'];
 
-export const ALL: APIRoute = async ({ request }) => {
+const handle: APIRoute = async ({ request }) => {
 	const denied = requireCrm(request);
 	if (denied) return denied;
 
 	const now = Date.now();
 
 	if (request.method === 'GET') {
-		const tasks = await listTasks();
+		const tasks = await listTasks({ requireAvailable: true });
 		return crmJson({
 			ok: true,
 			tasks,
@@ -44,14 +44,30 @@ export const ALL: APIRoute = async ({ request }) => {
 	const state = typeof body.state === 'string' ? (body.state as TaskState) : null;
 	if (!id || !state || !STATES.includes(state)) return crmJson({ ok: false, error: 'invalid_task' }, 422);
 
-	const tasks = await listTasks();
-	const task = tasks.find((entry) => entry.id === id);
-	if (!task) return crmJson({ ok: false, error: 'not_found' }, 404);
+	const tasks = await listTasks({ requireAvailable: true });
+	const storedTask = tasks.find((entry) => entry.id === id);
+	if (!storedTask) return crmJson({ ok: false, error: 'not_found' }, 404);
 
+	const task = structuredClone(storedTask);
 	task.state = state;
 	task.completedAt = state === 'done' ? now : null;
-	await saveTask(task);
+	try {
+		await saveTask(task, { requireDurable: true });
+	} catch (error) {
+		if (!(error instanceof CrmWriteUnconfirmedError)) throw error;
+		return crmJson({ ok: false, error: 'write_unconfirmed', reconcileBeforeRetry: true }, 503);
+	}
 
 	log('info', 'crm_task_updated', { state, closedBy: 'studio' });
 	return crmJson({ ok: true, task, lead: null });
+};
+
+
+export const ALL: APIRoute = async (context) => {
+	try {
+		return await handle(context);
+	} catch (error) {
+		if (!(error instanceof CrmReadUnavailableError)) throw error;
+		return crmJson({ ok: false, error: 'read_unavailable' }, 503);
+	}
 };

@@ -1362,6 +1362,9 @@ function jevTone(temperature: string | undefined): string {
 	let currentLeadId: string | null = null;
 	let leads: Array<Record<string, unknown>> = [];
 	let actionFeedback = '';
+	let refreshVersion = 0;
+	let detailVersion = 0;
+	const pendingLeadWrites = new Set<string>();
 	/** The record currently open in the dialog — used by the block buttons. */
 	let currentLead: Record<string, unknown> | null = null;
 
@@ -1382,12 +1385,16 @@ function jevTone(temperature: string | undefined): string {
 	}
 
 	async function refresh(): Promise<void> {
+		const version = ++refreshVersion;
 		const [metricsRes, leadsRes, tasksRes, reportRes] = await Promise.all([
 			getJson('/api/crm/metrics/'),
 			getJson(`/api/crm/leads/?limit=500${search ? `&q=${encodeURIComponent(search)}` : ''}${filter ? `&status=${filter}` : ''}`),
 			getJson('/api/crm/tasks/'),
 			getJson('/api/crm/report/'),
 		]);
+
+		// A slower poll/search must not overwrite a newer result.
+		if (version !== refreshVersion) return;
 
 		if (metricsRes?.metrics) {
 			const metricsPayload = metricsRes.metrics as Record<string, unknown>;
@@ -1461,7 +1468,7 @@ function jevTone(temperature: string | undefined): string {
 			if (note) note.textContent = entry.note;
 		}
 
-		const count = $('crm-lead-count');
+		const count = $('#crm-lead-count');
 		if (count) count.textContent = String(metrics.total ?? 0);
 
 		renderChart((metrics.daily ?? {}) as Record<string, number>);
@@ -1601,7 +1608,7 @@ function jevTone(temperature: string | undefined): string {
 
 		let openCount = 0;
 		for (const status of BOARD_COLUMNS) openCount += byStatus.get(status)?.length ?? 0;
-		const openEl = $('crm-board-open');
+		const openEl = $('#crm-board-open');
 		if (openEl) openEl.textContent = String(openCount);
 
 		for (const status of BOARD_COLUMNS) {
@@ -1706,9 +1713,9 @@ function jevTone(temperature: string | undefined): string {
 	}
 
 	function renderLeads(): void {
-		const body = $('crm-leads');
-		const cardsHost = $('crm-leads-cards');
-		const foot = $('crm-leads-foot');
+		const body = $('#crm-leads');
+		const cardsHost = $('#crm-leads-cards');
+		const foot = $('#crm-leads-foot');
 		if (!body && !cardsHost) return;
 
 		const visible = leads.slice(0, 100);
@@ -1859,7 +1866,9 @@ function jevTone(temperature: string | undefined): string {
 	const dialog = $<HTMLDialogElement>('#crm-lead-dialog');
 
 	async function openLead(id: string): Promise<void> {
+		const version = ++detailVersion;
 		const payload = await getJson(`/api/crm/leads/${encodeURIComponent(id)}/`);
+		if (version !== detailVersion) return;
 		if (!payload?.lead || !dialog) {
 			setStatus('Não foi possível abrir este contato. Tente atualizar a fila.');
 			return;
@@ -2008,16 +2017,23 @@ function jevTone(temperature: string | undefined): string {
 	/* ------------------------------------------------------------- Actions */
 
 	async function patchLead(id: string, body: Record<string, unknown>): Promise<boolean> {
+		if (pendingLeadWrites.has(id)) return false;
+		pendingLeadWrites.add(id);
 		const payload = await getJson(`/api/crm/leads/${encodeURIComponent(id)}/`, {
 			method: 'PATCH',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(body),
 		});
 		if (payload?.ok) {
-			await refresh();
+			try { await refresh(); } finally { pendingLeadWrites.delete(id); }
 			return true;
 		}
-		setStatus('That change could not be saved. Try again.');
+		pendingLeadWrites.delete(id);
+		// A failed response may follow a committed write: never retry automatically.
+		// Restore the last confirmed board/table rather than retaining an optimistic move.
+		renderBoard();
+		renderLeads();
+		setStatus('Não foi possível confirmar a alteração. Atualize/verifique o registro antes de tentar novamente.');
 		return false;
 	}
 
@@ -2028,7 +2044,7 @@ function jevTone(temperature: string | undefined): string {
 			body: JSON.stringify({ id, state }),
 		});
 		if (!result?.ok) {
-			setStatus('Não foi possível salvar a tarefa. Os dados exibidos podem estar antigos.');
+			setStatus('Não foi possível confirmar a alteração. Atualize/verifique o registro antes de tentar novamente.');
 			return;
 		}
 		actionFeedback = state === 'done' ? 'Tarefa concluída e salva.' : 'Tarefa atualizada.';
@@ -2109,13 +2125,15 @@ function jevTone(temperature: string | undefined): string {
 		jevReclassifyButton.textContent = 'Analisando…';
 		setStatus('Analisando este contato…');
 
-		const result = await askJev({ action: 'classify', id: currentLeadId });
+		const id = currentLeadId;
+		const version = detailVersion;
+		const result = await askJev({ action: 'classify', id });
 
 		jevReclassifyButton.disabled = false;
 		jevReclassifyButton.textContent = 'Reanalisar';
 		if (result?.ok) {
 			actionFeedback = 'Contato analisado.';
-			await openLead(currentLeadId);
+			if (dialog?.open && currentLeadId === id && version === detailVersion) await openLead(id);
 			await refresh();
 		} else {
 			setStatus('JEV could not be reached for this lead.');
@@ -2166,32 +2184,52 @@ function jevTone(temperature: string | undefined): string {
 			return;
 		}
 		if (target.id === 'crm-dialog-status' && currentLeadId) {
-			void patchLead(currentLeadId, { status: (target as HTMLSelectElement).value }).then(() =>
-				openLead(currentLeadId ?? ''),
-			);
+			const id = currentLeadId;
+			const version = detailVersion;
+			void patchLead(id, { status: (target as HTMLSelectElement).value }).then((ok) => {
+				if (ok && dialog?.open && currentLeadId === id && version === detailVersion) void openLead(id);
+			});
 		}
 	});
 
 	$<HTMLButtonElement>('#crm-dialog-responded')?.addEventListener('click', async () => {
 		if (!currentLeadId) return;
-		const ok = await patchLead(currentLeadId, { responded: true });
-		if (ok) await openLead(currentLeadId);
+		const id = currentLeadId;
+		const version = detailVersion;
+		const ok = await patchLead(id, { responded: true });
+		if (ok && dialog?.open && currentLeadId === id && version === detailVersion) await openLead(id);
 	});
 
 	$<HTMLFormElement>('#crm-note-form')?.addEventListener('submit', async (event) => {
 		event.preventDefault();
 		const input = $<HTMLInputElement>('#crm-note');
 		if (!currentLeadId || !input?.value.trim()) return;
-		const ok = await patchLead(currentLeadId, { note: input.value.trim() });
-		if (ok) {
-			input.value = '';
-			await openLead(currentLeadId);
+		const id = currentLeadId;
+		const version = detailVersion;
+		const submitted = input.value;
+		const ok = await patchLead(id, { note: submitted.trim() });
+		if (ok && dialog?.open && currentLeadId === id && version === detailVersion) {
+			if (input.value === submitted) input.value = '';
+			await openLead(id);
 		}
 	});
 
-	$<HTMLButtonElement>('#crm-dialog-close')?.addEventListener('click', () => dialog?.close());
+	function dismissLead(): void {
+		detailVersion++;
+		currentLeadId = null;
+		currentLead = null;
+	}
+	dialog?.addEventListener('close', dismissLead);
+	dialog?.addEventListener('cancel', dismissLead);
+	$<HTMLButtonElement>('#crm-dialog-close')?.addEventListener('click', () => {
+		dismissLead();
+		dialog?.close();
+	});
 	dialog?.addEventListener('click', (event) => {
-		if (event.target === dialog) dialog.close();
+		if (event.target === dialog) {
+			dismissLead();
+			dialog.close();
+		}
 	});
 
 	/* ---------------------------------------------------- View toggle */

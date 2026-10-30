@@ -18,7 +18,7 @@
     "lead:test": "node scripts/lead-test.mjs",
     "smtp:check": "node scripts/smtp-check.mjs",
     "dns:check": "node scripts/dns-check.mjs",
-    "crm:test": "node scripts/crm-test.mjs",
+    "crm:test": "node scripts/crm-test.mjs && node scripts/crm-write-durability-test.mjs && node --test tests/crm-auth.test.mjs tests/crm-dashboard.test.mjs",
     "contact:test": "node --test tests/contact-submission.test.mjs",
     "privacy:test": "node --test tests/privacy-disclosure.test.mjs",
     "tracking:test": "node scripts/google-tracking-test.mjs",
