@@ -5,7 +5,7 @@ const PIXEL_ID = '577841214418796';
 const SCRIPT_ID = 'paula-meta-pixel';
 const SDK_URL = 'https://connect.facebook.net/en_US/fbevents.js';
 type MetaQueue = ((...args: unknown[]) => void) & { queue?: unknown[][]; loaded?: boolean; version?: string; push?: MetaQueue; callMethod?: (...args: unknown[]) => void; __paulaOwned?: boolean };
-type MetaWindow = Window & { fbq?: MetaQueue; _fbq?: MetaQueue; __paulaMetaPixel?: { needsReload: boolean } };
+type MetaWindow = Window & { fbq?: MetaQueue; _fbq?: MetaQueue; __paulaMetaPixel?: { needsReload: boolean; checkout?: () => boolean } };
 
 export function metaPixelAvailable(): boolean {
  return META_PIXEL_ENABLED && typeof window !== 'undefined' && location.hostname === 'www.paulaambrosio.com' &&
@@ -17,6 +17,7 @@ export function installMetaPixel(): void {
  const w = window as MetaWindow;
  if (w.__paulaMetaPixel) return;
  w.__paulaMetaPixel = { needsReload: false };
+ let ownedQueue: MetaQueue | undefined;
  let initialized = false;
  let pageViewed = false;
  let revoked = false;
@@ -26,8 +27,8 @@ export function installMetaPixel(): void {
   revoked = true;
   w.__paulaMetaPixel!.needsReload = true;
   if (!initialized) return;
-  if (w.fbq?.queue) w.fbq.queue.length = 0;
-  if (w.fbq) w.fbq('consent', 'revoke');
+  if (ownedQueue?.queue) ownedQueue.queue.length = 0;
+  if (ownedQueue) ownedQueue('consent', 'revoke');
   document.getElementById(SCRIPT_ID)?.remove();
   // Revocation is terminal for this document; reload is required before reinit.
  };
@@ -56,6 +57,7 @@ export function installMetaPixel(): void {
   fbq('init', PIXEL_ID);
   fbq('consent', 'grant');
   if (!pageViewed) { fbq('track', 'PageView'); pageViewed = true; }
+  ownedQueue = fbq;
   w.fbq = fbq;
   if (!w._fbq) w._fbq = fbq;
   const script = document.createElement('script');
@@ -65,6 +67,13 @@ export function installMetaPixel(): void {
   script.src = SDK_URL;
   script.onerror = deny;
   document.head.append(script);
+ };
+ w.__paulaMetaPixel.checkout = () => {
+  reconcile(); // Re-read stored consent at the action, including expiry/storage failure.
+  if (revoked || !initialized || !ownedQueue || w.fbq !== ownedQueue || w._fbq !== ownedQueue) return false;
+  // Target only our pixel even if another integration later adds a pixel ID.
+  ownedQueue('trackSingle', PIXEL_ID, 'InitiateCheckout');
+  return true;
  };
  window.addEventListener('paula:consent-change', reconcile);
  window.addEventListener('paula:consent-denied', () => { revoked = true; w.__paulaMetaPixel!.needsReload = true; deny(); });
@@ -76,3 +85,9 @@ export function metaPixelNeedsReload(): boolean {
  return typeof window !== 'undefined' && Boolean((window as MetaWindow).__paulaMetaPixel?.needsReload);
 }
 
+/** Called only by the genuine outbound checkout handler; no URL or form data sent. */
+export function trackMetaCheckout(): boolean {
+ if (!metaPixelAvailable()) return false;
+ try { return (window as MetaWindow).__paulaMetaPixel?.checkout?.() ?? false; }
+ catch { return false; } // Tracking failure must never prevent checkout navigation.
+}

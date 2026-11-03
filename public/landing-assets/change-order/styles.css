@@ -15,3 +15,6 @@
 
 /* Paula’s original account and existing portrait. */
 .paula-story{display:grid;grid-template-columns:minmax(240px,.8fr) minmax(0,1.2fr);gap:clamp(32px,6vw,96px);align-items:start;background:#f2eee7}.paula-story .story-portrait img{width:100%;height:auto;aspect-ratio:4/5;object-fit:cover;object-position:43% center}.paula-story h2{font-size:clamp(32px,4vw,55px);line-height:1.12;margin-bottom:28px}.paula-story p{line-height:1.8;margin-bottom:18px}.story-portrait p{font-size:13px;letter-spacing:.12em;text-transform:uppercase;margin-top:16px}@media(max-width:700px){.paula-story{grid-template-columns:1fr}.paula-story .story-portrait img{aspect-ratio:4/3}}
+
+/* Author display rules must not override unavailable checkout/interest controls. */
+#checkout-link[hidden], #open-interest[hidden] { display: none; }
