@@ -252,6 +252,7 @@ const opener = document.getElementById('open-interest');
 const email = document.getElementById('interest-email');
 const money = () => new Intl.NumberFormat(language === 'en' ? 'en-US' : 'pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 function updateSelection() {
+ updateCheckout();
  const amount = addon.checked ? 3699 : 2700;
  const selection = addon.checked ? 'The Change Order System + Room Checklist + Rental' : 'The Change Order System';
  const price = `US$${money().format(amount / 100)}`;
@@ -274,3 +275,25 @@ window.addEventListener('pagehide', () => { if (dialog.open) dialog.close(); });
 document.querySelectorAll('[data-language]').forEach(button => button.addEventListener('click', () => applyLanguage(button.dataset.language, true)));
 window.addEventListener('popstate', () => applyLanguage(new URL(window.location.href).searchParams.get('lang')));
 applyLanguage(language);
+
+// Build-time validated destinations; a missing bundle never falls back to base.
+function updateCheckout() {
+ const link = document.getElementById('checkout-link');
+ const destination = addon.checked ? document.body.dataset.checkoutBundle : document.body.dataset.checkoutBase;
+ const english = language === 'en';
+ const available = Boolean(destination);
+ link.hidden = !available;
+ opener.hidden = available;
+ if (available) link.setAttribute('href', destination); else link.removeAttribute('href');
+ link.textContent = english ? 'Continue to checkout ↗' : 'Continuar para o checkout ↗';
+ document.getElementById('checkout-status').textContent = available ? (english ? 'Checkout available' : 'Checkout disponível') : (english ? 'Sales opening soon' : 'Vendas em breve');
+ document.getElementById('checkout-note').textContent = available
+  ? (english ? 'Continue to Hotmart to review your selection and payment details.' : 'Continue para a Hotmart para conferir sua seleção e os detalhes do pagamento.')
+  : (english ? 'The purchase link will be added here. No purchase or payment takes place on this page.' : 'O link de compra será disponibilizado aqui. Nenhuma compra ou cobrança é realizada nesta página.');
+ document.getElementById('checkout-selection-note').textContent = available
+  ? (english ? 'Review the materials, currency and final total at checkout before paying.' : 'Confira os materiais, a moeda e o total final no checkout antes de pagar.')
+  : (english ? 'The selection above only illustrates the materials’ price. It does not create an order or reservation.' : 'A seleção acima apenas simula o valor dos materiais. Não cria pedido nem reserva.');
+ document.getElementById('checkout-faq').textContent = available
+  ? (english ? 'Use the checkout button for your selected materials. Review access and delivery details on Hotmart before paying.' : 'Use o botão de checkout para os materiais selecionados. Confira as condições de acesso e entrega na Hotmart antes de pagar.')
+  : (english ? 'Sales are not yet open for this selection. For now, you can ask the studio for launch information.' : 'As vendas ainda não estão abertas para esta seleção. Por enquanto, você pode solicitar informações sobre o lançamento ao estúdio.');
+}

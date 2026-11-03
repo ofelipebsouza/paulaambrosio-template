@@ -3,6 +3,7 @@ import PaulaProjectGallery from '../components/landings/PaulaProjectGallery.astr
 import head from '../data/landings/change-order-head.html?raw';
 import body from '../data/landings/change-order-body.html?raw';
 import GoogleConsent from '../components/GoogleConsent.astro';
+import { checkoutUrl } from '../lib/change-order/checkout';
 import OpenAIPixel from '../components/OpenAIPixel.astro';
 import paulaProfile from '../assets/paula-profile.webp';
 const correctedBody = body.replace('__CHANGE_ORDER_STUDIO_PORTRAIT__', paulaProfile.src);
@@ -13,8 +14,12 @@ const afterOffer = correctedBody.slice(offerStart);
 <!doctype html>
 <html lang="pt-BR">
   <head><OpenAIPixel /><Fragment set:html={head} /></head>
-  <body><Fragment set:html={beforeOffer} /><PaulaProjectGallery /><Fragment set:html={afterOffer} /><GoogleConsent /></body>
+  <body data-checkout-base={checkoutUrl(import.meta.env.CHANGE_ORDER_CHECKOUT_URL)} data-checkout-bundle={checkoutUrl(import.meta.env.CHANGE_ORDER_BUNDLE_CHECKOUT_URL)}><Fragment set:html={beforeOffer} /><PaulaProjectGallery /><Fragment set:html={afterOffer} /><GoogleConsent /></body>
 </html>
+<script>
+ import { installChangeOrderTracking } from '../lib/change-order/tracking';
+ installChangeOrderTracking();
+</script>
 <style is:global>
   .paula-video {
     display: grid;
