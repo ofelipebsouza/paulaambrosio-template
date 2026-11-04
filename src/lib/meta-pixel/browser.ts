@@ -54,10 +54,13 @@ export function installMetaPixel(): void {
   fbq.version = '2.0';
   fbq.push = fbq;
   fbq.__paulaOwned = true;
-  fbq('consent', 'revoke');
+  // No SDK exists before the consent check above. A queued revoke can pause
+  // SDK queue processing before it reaches a later grant, init or PageView.
+  // Start granted only after affirmative consent; deny() still clears queued
+  // work and revokes if permission changes while the SDK is downloading.
+  fbq('consent', 'grant');
   fbq('set', 'autoConfig', false, PIXEL_ID);
   fbq('init', PIXEL_ID);
-  fbq('consent', 'grant');
   if (!pageViewed) { fbq('track', 'PageView'); pageViewed = true; }
   ownedQueue = fbq;
   w.fbq = fbq;
