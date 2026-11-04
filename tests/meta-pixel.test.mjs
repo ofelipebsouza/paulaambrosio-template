@@ -17,8 +17,8 @@ const granted = JSON.stringify({ version: 1, at: 1800000000000, analytics: false
 test('no consent, analytics-only, expired and excluded routes do not load Meta', () => {
  for (const f of [fixture(), fixture({ consent: JSON.stringify({ version: 1, at: 1800000000000, analytics: true, advertising: false }) }), fixture({ consent: granted, hostname: 'preview.vercel.app' }), fixture({ consent: granted, pathname: '/admin/' })]) { f.install(); assert.equal(f.scripts.size, 0); }
 });
-test('grant queues revoke, autoConfig, init, grant and one PageView; repeated signals do not duplicate', () => {
- const f = fixture({ consent: granted }); f.install(); f.fire('pageshow'); f.fire('paula:consent-change'); assert.equal(f.scripts.size, 1); assert.equal(f.context.window.fbq.push, f.context.window.fbq); assert.equal(f.context.window._fbq, f.context.window.fbq); assert.deepEqual(JSON.parse(JSON.stringify(f.context.window.fbq.queue.map(x => x[0]))), ['consent', 'set', 'init', 'consent', 'track']);
+test('affirmative consent queues grant, autoConfig, init and one PageView without a blocking revoke', () => {
+ const f = fixture({ consent: granted }); f.install(); f.fire('pageshow'); f.fire('paula:consent-change'); assert.equal(f.scripts.size, 1); assert.equal(f.context.window.fbq.push, f.context.window.fbq); assert.equal(f.context.window._fbq, f.context.window.fbq); assert.deepEqual(JSON.parse(JSON.stringify(f.context.window.fbq.queue)), [['consent', 'grant'], ['set', 'autoConfig', false, '577841214418796'], ['init', '577841214418796'], ['track', 'PageView']]);
 });
 test('revocation clears delayed queue and is terminal across reacceptance', () => {
  const f = fixture({ consent: granted }); f.install(); f.setConsent(JSON.stringify({ version: 1, at: 1800000000000, analytics: false, advertising: false })); f.fire('paula:consent-denied'); assert.deepEqual(JSON.parse(JSON.stringify(f.context.window.fbq.queue)), [['consent', 'revoke']]); f.setConsent(granted); f.fire('paula:consent-change'); assert.equal(f.scripts.size, 0);
@@ -83,4 +83,35 @@ test('leads require current consent, canonical host and SDK ownership', () => {
  assert.equal(broken.context.MetaPixel.measureMetaAcceptedLead(receipt),false);
  assert.equal(broken.context.MetaPixel.measureMetaAcceptedLead(receipt),false);
  assert.equal(calls,1);
+});
+
+// Offline model of the observed SDK behavior: revoke pauses queue draining.
+// This does not load Meta or prove delivery; it protects the bootstrap ordering
+// and the race where consent is withdrawn before the delayed SDK executes.
+function drainWithConsentGate(f) {
+ const fbq = f.context.window.fbq;
+ const events = []; const pixels = []; let allowed = true;
+ fbq.callMethod = (command, ...args) => {
+  if (command === 'consent') { allowed = args[0] === 'grant'; return; }
+  if (command === 'init') pixels.push(args[0]);
+  if (command === 'track' && allowed) events.push(args[0]);
+ };
+ while (allowed && fbq.queue.length) fbq.callMethod(...fbq.queue.shift());
+ return { events, pixels };
+}
+test('delayed SDK can drain initialization and PageView without a grant stranded behind revoke', () => {
+ const f = fixture({ consent: granted }); f.install();
+ const result = drainWithConsentGate(f);
+ assert.deepEqual(result, {events:['PageView'],pixels:['577841214418796']});
+ assert.equal(f.context.window.fbq.queue.length,0);
+ f.fire('pageshow'); f.fire('paula:consent-change');
+ assert.deepEqual(result.events,['PageView']);
+});
+test('withdrawal or expiry before SDK execution leaves no initialization or PageView to drain', () => {
+ for (const raw of [null, JSON.stringify({version:1,at:1,analytics:true,advertising:true})]) {
+  const f = fixture({ consent: granted }); f.install(); f.setConsent(raw); f.fire('pageshow');
+  assert.deepEqual(drainWithConsentGate(f), {events:[],pixels:[]});
+  assert.equal(f.context.MetaPixel.measureMetaAcceptedLead(receipt),false);
+  assert.equal(f.context.MetaPixel.trackMetaCheckout(),false);
+ }
 });
