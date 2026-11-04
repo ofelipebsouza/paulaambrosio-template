@@ -84,7 +84,7 @@ test('throwing loader or dataLayer cannot affect business flow',()=>{
 });
 test('form calls independent vendors only within accepted-response branch',()=>{
  const form=read('../src/components/Analytics.astro');
- assert.match(form,/if \(\[200, 502, 503\]\.includes\(response.status\) && result\?\.leadAcceptance\) \{\s*measureAcceptedLead\(result.leadAcceptance\);\s*measureGoogleAcceptedLead\(result.leadAcceptance\);\s*\}/);
+ assert.match(form,/if \(\[200, 502, 503\]\.includes\(response.status\) && result\?\.leadAcceptance\) \{\s*measureAcceptedLead\(result.leadAcceptance\);\s*measureGoogleAcceptedLead\(result.leadAcceptance\);\s*measureMetaAcceptedLead\(result.leadAcceptance\);\s*\}/);
  assert.equal((form.match(/measureGoogleAcceptedLead\(result.leadAcceptance\)/g)??[]).length,1);
 });
 

@@ -57,7 +57,7 @@ function fixture(responses, { formId = 'contact', email = 'studio@example.test',
 		addEventListener(name, listener, options);
 	};
 	let navigations = 0;
-	const events = [], accepted = [], googleAccepted = [], requests = [];
+	const events = [], accepted = [], googleAccepted = [], metaAccepted = [], requests = [];
 	let uuids = 0;
 	const fetch = async (url, init) => {
 		if (url === '/api/analytics/collect/') return Response.json({ ok: true });
@@ -69,12 +69,12 @@ function fixture(responses, { formId = 'contact', email = 'studio@example.test',
 	};
 	Object.assign(dom.window, {
 		fetch,
-		boundary: { CONTACT_FIELDS, HONEYPOT_FIELD, ANALYTICS_EVENTS, measureAcceptedLead: receipt => accepted.push(receipt), measureGoogleAcceptedLead: receipt => googleAccepted.push(receipt), trackEvent: (event, data) => events.push({ event, data }) },
+		boundary: { CONTACT_FIELDS, HONEYPOT_FIELD, ANALYTICS_EVENTS, measureAcceptedLead: receipt => accepted.push(receipt), measureGoogleAcceptedLead: receipt => googleAccepted.push(receipt), measureMetaAcceptedLead: receipt => metaAccepted.push(receipt), trackEvent: (event, data) => events.push({ event, data }) },
 	});
 	Object.defineProperty(dom.window.crypto, 'randomUUID', { value: () => `934b02bd-40fb-4ff1-836f-${String(++uuids).padStart(12,'0')}` });
 	dom.window.eval(code);
 	return {
-		form, button, status, events, requests, accepted, googleAccepted, document,
+		form, button, status, events, requests, accepted, googleAccepted, metaAccepted, document,
 		submit: () => Promise.all(submitListeners.map(listener => listener(new Event('submit', { cancelable: true })))),
 		edit: (name, value, type = 'input') => {
 			const field = form.elements.namedItem(name); field.value = value;
@@ -185,11 +185,12 @@ test('only server acceptance is forwarded, including accepted CRM writes followe
   await x.submit();
   assert.deepEqual(x.accepted, [receipt]);
   assert.deepEqual(x.googleAccepted, [receipt]);
+  assert.deepEqual(x.metaAccepted, [receipt]);
   if(status===200) { assertRestored(x); assert.equal(x.resets(),1); assert.equal(x.form.fields.get('email'),''); assert.match(x.status.textContent,/has been received/); assert.deepEqual(x.events.map(item=>item.event),['form_submit','form_success']); }
   if(status!==200) assertError(x);
  }
  for(const status of [200,403,422,429,500]) {
-  const x=fixture([response(status)]); await x.submit(); assert.equal(x.accepted.length,0); assert.equal(x.googleAccepted.length,0);
+  const x=fixture([response(status)]); await x.submit(); assert.equal(x.accepted.length,0); assert.equal(x.googleAccepted.length,0); assert.equal(x.metaAccepted.length,0);
  }
 });
 test('a retried unchanged inquiry reuses its nonce while edited input gets a new nonce', async () => {
@@ -198,7 +199,7 @@ test('a retried unchanged inquiry reuses its nonce while edited input gets a new
  assert.equal(x.requests[0].headers['X-Submission-Id'],x.requests[1].headers['X-Submission-Id']);
  x.form.fields.set('message','Changed inquiry'); await x.submit();
  assert.notEqual(x.requests[1].headers['X-Submission-Id'],x.requests[2].headers['X-Submission-Id']);
- assert.equal(x.accepted.length,0); assert.equal(x.googleAccepted.length,0);
+ assert.equal(x.accepted.length,0); assert.equal(x.googleAccepted.length,0); assert.equal(x.metaAccepted.length,0);
 });
 
 for (const formId of ['contact', 'project_inquiry']) {

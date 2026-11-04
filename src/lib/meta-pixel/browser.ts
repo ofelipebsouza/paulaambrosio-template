@@ -1,11 +1,12 @@
 import { CONSENT_KEY, parseConsent } from '../google-tracking/core';
+import { isLeadAcceptance, type LeadAcceptance } from '../lead-acceptance';
 import { META_PIXEL_ENABLED } from './config';
 
 const PIXEL_ID = '577841214418796';
 const SCRIPT_ID = 'paula-meta-pixel';
 const SDK_URL = 'https://connect.facebook.net/en_US/fbevents.js';
 type MetaQueue = ((...args: unknown[]) => void) & { queue?: unknown[][]; loaded?: boolean; version?: string; push?: MetaQueue; callMethod?: (...args: unknown[]) => void; __paulaOwned?: boolean };
-type MetaWindow = Window & { fbq?: MetaQueue; _fbq?: MetaQueue; __paulaMetaPixel?: { needsReload: boolean; checkout?: () => boolean } };
+type MetaWindow = Window & { fbq?: MetaQueue; _fbq?: MetaQueue; __paulaMetaPixel?: { needsReload: boolean; checkout?: () => boolean; lead?: (receipt: LeadAcceptance) => boolean } };
 
 export function metaPixelAvailable(): boolean {
  return META_PIXEL_ENABLED && typeof window !== 'undefined' && location.hostname === 'www.paulaambrosio.com' &&
@@ -19,6 +20,7 @@ export function installMetaPixel(): void {
  w.__paulaMetaPixel = { needsReload: false };
  let ownedQueue: MetaQueue | undefined;
  let initialized = false;
+ const measuredLeads = new Set<string>();
  let pageViewed = false;
  let revoked = false;
  let timer: ReturnType<typeof setTimeout> | undefined;
@@ -75,6 +77,14 @@ export function installMetaPixel(): void {
   ownedQueue('trackSingle', PIXEL_ID, 'InitiateCheckout');
   return true;
  };
+ w.__paulaMetaPixel.lead = receipt => {
+  reconcile();
+  if (revoked || !initialized || !ownedQueue || w.fbq !== ownedQueue || w._fbq !== ownedQueue || measuredLeads.has(receipt.eventId)) return false;
+  // Reserve before calling the SDK: a throwing SDK must not cause a duplicate retry.
+  measuredLeads.add(receipt.eventId);
+  ownedQueue('trackSingle', PIXEL_ID, 'Lead', {}, { eventID: receipt.eventId });
+  return true;
+ };
  window.addEventListener('paula:consent-change', reconcile);
  window.addEventListener('paula:consent-denied', () => { revoked = true; w.__paulaMetaPixel!.needsReload = true; deny(); });
  window.addEventListener('storage', event => { if (event.key === CONSENT_KEY || event.key === null) reconcile(); });
@@ -90,4 +100,12 @@ export function trackMetaCheckout(): boolean {
  if (!metaPixelAvailable()) return false;
  try { return (window as MetaWindow).__paulaMetaPixel?.checkout?.() ?? false; }
  catch { return false; } // Tracking failure must never prevent checkout navigation.
+}
+
+/** Only an opaque server acceptance receipt can trigger a lead; never forward form fields. */
+export function measureMetaAcceptedLead(value: unknown): boolean {
+ try {
+  if (!isLeadAcceptance(value) || !metaPixelAvailable()) return false;
+  return (window as MetaWindow).__paulaMetaPixel?.lead?.(value) ?? false;
+ } catch { return false; } // Optional tracking cannot interrupt the form's result.
 }

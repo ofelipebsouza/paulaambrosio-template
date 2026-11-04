@@ -152,6 +152,7 @@ const breadcrumbs: BreadcrumbEntry[] = [{ name: 'Privacy', url: '/privacy' }];
 				It may share technical connection and browser information with Meta and use cookies or similar identifiers for ad measurement.
 				We do not send contact fields, form values or inquiry messages to Meta. This integration does not use advanced matching,
 				Conversions API or custom conversion events. After permission, it sends one standard PageView for the document.
+				When the server confirms acceptance of an inquiry, we send a standard Lead event with an opaque receipt ID to prevent duplicates, without contact fields.
 				When direct checkout measurement is enabled on Change Order, activating a configured Hotmart checkout link
 				also sends the standard InitiateCheckout event to our pixel. This measures a click-through, not a sale,
 				payment or confirmation that the checkout loaded. No form values or checkout URLs are included in that event payload.

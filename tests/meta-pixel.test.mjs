@@ -59,3 +59,28 @@ test('storage failure and throwing SDK cannot leak checkout or break navigation'
  broken.context.window.fbq.callMethod = () => { throw new Error('blocked'); };
  assert.equal(broken.context.MetaPixel.trackMetaCheckout(), false);
 });
+
+const receipt = { version: 1, eventId: '934b02bd-40fb-4ff1-836f-8f2f390c1077' };
+test('accepted lead targets only owned pixel, strips fields and deduplicates receipt', () => {
+ const f = fixture({ consent: granted }); f.install();
+ assert.equal(f.context.MetaPixel.measureMetaAcceptedLead({ ...receipt, email: 'private@example.test' }), true);
+ assert.deepEqual(JSON.parse(JSON.stringify(f.context.window.fbq.queue.at(-1))), ['trackSingle', '577841214418796', 'Lead', {}, { eventID: receipt.eventId }]);
+ assert.equal(f.context.MetaPixel.measureMetaAcceptedLead(receipt), false);
+ for (const value of [null, {ok:true}, {version:1,eventId:'bad'}, {version:2,eventId:receipt.eventId}]) assert.equal(f.context.MetaPixel.measureMetaAcceptedLead(value), false);
+});
+test('leads require current consent, canonical host and SDK ownership', () => {
+ for (const f of [fixture(), fixture({consent:granted,hostname:'preview.vercel.app'}), fixture({consent:granted,pathname:'/admin/'})]) {
+  f.install(); assert.equal(f.context.MetaPixel.measureMetaAcceptedLead(receipt),false);
+ }
+ const f=fixture({consent:granted}); f.install(); f.setConsent(null);
+ assert.equal(f.context.MetaPixel.measureMetaAcceptedLead(receipt),false);
+ const replaced=fixture({consent:granted}); replaced.install(); replaced.context.window.fbq=()=>{};
+ assert.equal(replaced.context.MetaPixel.measureMetaAcceptedLead(receipt),false);
+ const failed=fixture({consent:granted}); failed.install(); [...failed.scripts.values()][0].onerror();
+ assert.equal(failed.context.MetaPixel.measureMetaAcceptedLead(receipt),false);
+ const broken=fixture({consent:granted}); broken.install(); let calls=0;
+ broken.context.window.fbq.callMethod=()=>{ calls++; throw Error('blocked'); };
+ assert.equal(broken.context.MetaPixel.measureMetaAcceptedLead(receipt),false);
+ assert.equal(broken.context.MetaPixel.measureMetaAcceptedLead(receipt),false);
+ assert.equal(calls,1);
+});
