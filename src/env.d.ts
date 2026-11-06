@@ -8,6 +8,10 @@
  * Vercel project (Production, Preview and Development), never in the repository.
  */
 interface ImportMetaEnv {
+	/** Public destination rendered at build time; blank keeps HOST UP unavailable. */
+	readonly HOST_UP_CHECKOUT_URL?: string;
+	/** Public Stripe destination; unset retains verified offer, blank disables sales. */
+	readonly HOME_ESSENCE_CHECKOUT_URL?: string;
 	/** Disabled until the container audit, consent template and release approval are complete. */
 	readonly PUBLIC_GOOGLE_TRACKING_ENABLED?: string;
 	readonly PUBLIC_GTM_CONTAINER_ID?: string;
