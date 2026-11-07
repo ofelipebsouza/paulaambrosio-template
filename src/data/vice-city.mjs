@@ -6,7 +6,7 @@
 export const viceCity = Object.freeze({
   name: 'Vice City',
   subtitle: 'Interior Design Guide',
-  price: '3.99',
+  price: '5.99',
   currency: 'USD',
   format: 'PDF',
   language: 'English',

@@ -41,3 +41,19 @@ test('emitted images, descriptions, section anchors and FAQ controls exist', () 
   assert.match(doc.body.textContent, /Eight pages/);
   assert.doesNotMatch(doc.body.textContent, /guide is being prepared/);
 });
+
+
+test('US$5.99 is consistent across both offers, metadata, structured data and discovery', () => {
+  const prices = [...doc.querySelectorAll('.vice-price')].map(el => el.textContent.trim());
+  assert.deepEqual(prices, ['US$5.99', 'US$5.99']);
+  for (const selector of ['meta[name="description"]', 'meta[property="og:description"]', 'meta[name="twitter:description"]']) {
+    assert.match(doc.querySelector(selector).content, /US\$5\.99/);
+  }
+  const schemas = [...doc.querySelectorAll('script[type="application/ld+json"]')].map(el => JSON.parse(el.textContent));
+  const pageSchema = schemas.flatMap(schema => schema['@graph'] ?? [schema]).find(schema => schema['@type'] === 'WebPage');
+  assert.ok(pageSchema, 'WebPage structured data exists');
+  assert.match(pageSchema.description, /US\$5\.99/);
+  const linksDoc = new JSDOM(readFileSync(new URL('dist/client/links/index.html', root), 'utf8')).window.document;
+  assert.match(linksDoc.querySelector('a[href="/vice-city/"]').textContent, /US\$5\.99/);
+  for (const page of [doc, linksDoc]) assert.doesNotMatch(page.documentElement.outerHTML, /US\$\s*3[.,]99/);
+});

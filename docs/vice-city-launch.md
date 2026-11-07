@@ -1,6 +1,6 @@
 # Vice City landing page
 
-Draft route: `/vice-city/`. English PDF, US$3.99, one-time purchase via Stan Store.
+Draft route: `/vice-city/`. English PDF, US$5.99, one-time purchase via Stan Store.
 This branch is for review only. Do not merge or deploy without the owner's approval.
 
 ## Current state
@@ -23,7 +23,7 @@ This branch is for review only. Do not merge or deploy without the owner's appro
 1. Review the final PDF with Paula. Check that all five topic descriptions remain
    accurate, replace preparation wording only as appropriate, and confirm imagery.
 2. Upload the approved PDF to the intended Stan Store product. Verify its seller,
-   exact title, USD 3.99 one-time price, taxes/fees if applicable, delivery and refund
+   exact title, USD 5.99 one-time price, taxes/fees if applicable, delivery and refund
    terms. Do not publish the paid PDF in this repository or the site's public assets.
 3. Obtain the verified direct product URL, shaped like
    `https://stan.store/<seller>/p/<product>`. Set `checkoutUrl` and `readyForSale: true`
@@ -49,11 +49,19 @@ was added. Existing site analytics remain under the shared layout's controls.
 - Production build: passed, including 23 existing tracking-safety tests and the
   guard over 105 pages. Three pre-existing missing-schema informational notes
   remain on `/change-order/`, `/host-up/` and `/layout-starter-kit/`.
-- Compiled-page checks: 3 passed (metadata, disabled checkout, image paths, ARIA
-  references, section anchors and FAQ markup).
+- Compiled-page checks: 4 passed (metadata, disabled checkout, image paths, ARIA
+  references, section anchors, FAQ markup and price consistency).
 - Real-browser layout and interaction QA is **not verified** in this environment.
   The local Chromium launch failed because its socket operation was not permitted.
   The cloud browser could not reach the localhost preview; it also disallowed an
   offline data URL. Review desktop and phone layouts in the normal preview before
   approval. No screenshot or visual-pass claim is supplied.
 - No live payment or delivery test has been performed. Checkout remains disabled.
+
+## Price revision
+
+The owner changed the price to US$5.99. The product data now drives both purchase
+placements, the materials link and the page/OG/Twitter/structured descriptions.
+Regression checks verify the compiled page and discovery card at the new price.
+The supplied promotional images contain no price and are unchanged. Checkout
+remains disabled until the matching Stan Store offer is verified.

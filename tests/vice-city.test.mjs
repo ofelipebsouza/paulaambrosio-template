@@ -8,8 +8,8 @@ const read = file => readFileSync(new URL('../' + file, import.meta.url), 'utf8'
 const page = read('src/pages/vice-city.astro');
 const component = read('src/components/vice-city/GuideCheckout.astro');
 
-test('confirmed offer is English PDF at US$3.99 and is closed by default', () => {
-  assert.equal(viceCity.price, '3.99');
+test('confirmed offer is English PDF at US$5.99 and is closed by default', () => {
+  assert.equal(viceCity.price, '5.99');
   assert.equal(viceCity.currency, 'USD');
   assert.equal(viceCity.language, 'English');
   assert.equal(viceCity.format, 'PDF');
