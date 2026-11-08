@@ -1,0 +1,24 @@
+---
+import { viceCity, getViceCityCheckoutUrl } from '../../data/vice-city.mjs';
+interface Props { id: string; }
+const { id } = Astro.props;
+const checkoutUrl = getViceCityCheckoutUrl();
+---
+<div class="vice-checkout">
+  <p class="vice-price"><span>US$</span>{viceCity.price}</p>
+  <p class="vice-purchase-type">One-time purchase · PDF in English</p>
+  {checkoutUrl ? (
+    <a class="vice-button" href={checkoutUrl} aria-describedby={`${id}-note`}>
+      Get the guide <span aria-hidden="true">↗</span>
+    </a>
+  ) : (
+    <button class="vice-button" type="button" disabled aria-describedby={`${id}-note`}>
+      Coming soon <span aria-hidden="true">↗</span>
+    </button>
+  )}
+  <p id={`${id}-note`} class="vice-checkout-note">
+    {checkoutUrl
+      ? 'Continue to Stan Store to review your order and complete your purchase.'
+      : 'Sales are not open yet. No payment is taken on this page.'}
+  </p>
+</div>

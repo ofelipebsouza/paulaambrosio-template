@@ -1,0 +1,140 @@
+---
+import { Image } from 'astro:assets';
+import Layout from '../layouts/Layout.astro';
+import GuideCheckout from '../components/vice-city/GuideCheckout.astro';
+import guideArtwork from '../assets/vice-city/guide-artwork.webp';
+import detailPhoto from '../assets/projects/home-aa/web/03.webp';
+import { viceCity, getViceCityCheckoutUrl } from '../data/vice-city.mjs';
+import { schemaScript, webPageSchema } from '../lib/seo';
+import '../styles/vice-city.css';
+
+const checkoutUrl = getViceCityCheckoutUrl();
+const description = `Vice City by Paula Ambrosio. An English-language interior design PDF inspired by Miami, with palettes, materials, lighting, layouts and a buying plan. US$${viceCity.price}.`;
+const topics = [
+  { number: '01', title: 'Color palettes', text: 'A starting point for a Miami-inspired interior, with color setting the mood.' },
+  { number: '02', title: 'Materials & texture', text: 'An approach to combining finishes and textures with intention.' },
+  { number: '03', title: 'Lighting', text: 'Ideas for shaping the atmosphere of a room through light.' },
+  { number: '04', title: 'Layouts', text: 'A look at how furniture placement changes the way a space feels.' },
+  { number: '05', title: 'Your buying plan', text: 'A way to organize the next steps before you start shopping.' },
+];
+---
+<Layout
+  title="Vice City · Interior Design Guide"
+  description={description}
+  canonical="/vice-city/"
+  ogImage="/og/vice-city.jpg"
+  ogImageAlt="Vice City Style Guide by Paula Ambrosio. Miami-inspired interiors, digital interior design guide."
+  noindex
+  compactFooter
+>
+  <Fragment slot="head" set:html={schemaScript(webPageSchema({ path: '/vice-city/', title: 'Vice City · Interior Design Guide', description }))} />
+
+  <div class="vice-page">
+    <section class="vice-hero" aria-labelledby="vice-title">
+      <div class="vice-hero-copy">
+        <p class="vice-eyebrow">The digital design guide</p>
+        <h1 id="vice-title">Vice <em>City.</em></h1>
+        <p class="vice-hero-line">A Miami state of mind.<br />A home that feels like you.</p>
+        <p class="vice-intro">An interior design guide by Paula Ambrosio. Explore color, materials, lighting and layout through a Miami-inspired lens.</p>
+        <GuideCheckout id="hero-checkout" />
+        <a class="vice-explore" href="#inside">Explore the guide <span aria-hidden="true">↓</span></a>
+      </div>
+      <figure class="vice-hero-image">
+        <Image
+          src={guideArtwork}
+          alt="Vice City Style Guide promotional artwork, with an illustrated Miami-inspired interior, warm neutral seating, ocean views and palms."
+          widths={[480, 720, 941]}
+          sizes="(max-width: 760px) 85vw, 400px"
+          quality={85}
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+        />
+        <figcaption>Vice City Style Guide <span>Promotional artwork</span></figcaption>
+      </figure>
+    </section>
+
+    <div class="vice-meta" aria-label="Guide details">
+      <span>By Paula Ambrosio</span>
+      <span>{viceCity.format} · {viceCity.language}</span>
+      <span>Miami-inspired interiors</span>
+    </div>
+
+    <section id="inside" class="vice-inside" aria-labelledby="inside-title">
+      <div class="vice-section-heading">
+        <p class="vice-eyebrow">Inside the guide</p>
+        <h2 id="inside-title">The feeling.<br /><em>The details.</em></h2>
+        <p>Start with inspiration. Give it a place in your home.</p>
+        <p class="vice-preparation">Eight pages of inspiration and practical planning, including room-by-room ideas and an illustrative budget.</p>
+      </div>
+      <ol class="vice-topics">
+        {topics.map(topic => (
+          <li>
+            <span class="vice-topic-number" aria-hidden="true">{topic.number}</span>
+            <div><h3>{topic.title}</h3><p>{topic.text}</p></div>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <section class="vice-studio" aria-labelledby="studio-title">
+      <figure>
+        <Image
+          src={detailPhoto}
+          alt="Warm wood, veined stone and integrated lighting in the HOME A&A residence by Paula Ambrosio Interiors."
+          widths={[560, 900, 1200]}
+          sizes="(max-width: 760px) 100vw, 45vw"
+          quality={80}
+          loading="lazy"
+          decoding="async"
+        />
+        <figcaption>HOME A&amp;A · Studio portfolio</figcaption>
+      </figure>
+      <div class="vice-studio-copy">
+        <p class="vice-eyebrow">The designer’s perspective</p>
+        <h2 id="studio-title">A sense of place.<br /><em>A personal point of view.</em></h2>
+        <p>Paula Ambrosio is the principal designer and cofounder of Paula Ambrosio Interiors, a Miami interior design studio.</p>
+        <p>Vice City brings a Miami-inspired direction to a digital interior design guide, with the studio’s considered approach to color, texture and space.</p>
+        <a class="vice-text-link" href="/about/">Meet Paula <span aria-hidden="true">↗</span></a>
+        <p class="vice-image-note">This photograph shows the studio’s existing portfolio. The guide artwork above is an illustrative concept, not a completed project.</p>
+      </div>
+    </section>
+
+    <section class="vice-offer" aria-labelledby="offer-title">
+      <div>
+        <p class="vice-eyebrow">Vice City · Interior Design Guide</p>
+        <h2 id="offer-title">Bring the inspiration<br /><em>closer to home.</em></h2>
+        <p>Palettes. Materials. Lighting. Layouts.<br />And a plan for what comes next.</p>
+      </div>
+      <GuideCheckout id="offer-checkout" />
+    </section>
+
+    <section class="vice-faq" aria-labelledby="faq-title">
+      <div class="vice-section-heading">
+        <p class="vice-eyebrow">A few details</p>
+        <h2 id="faq-title">Before you <em>begin.</em></h2>
+      </div>
+      <div class="vice-questions">
+        <details>
+          <summary>What is Vice City?</summary>
+          <p>An English-language interior design guide in PDF format by Paula Ambrosio, inspired by Miami. It covers color palettes, materials, lighting, layouts and a buying plan.</p>
+        </details>
+        <details>
+          <summary>Can I buy the guide now?</summary>
+          <p>{checkoutUrl
+            ? 'Yes. Select “Get the guide” to continue to the product checkout on Stan Store. Review the final total and product terms there before paying.'
+            : 'Not yet. Sales are not open and no payment is taken on this page. The purchase button will open the product checkout on Stan Store when it is ready.'}</p>
+        </details>
+        <details>
+          <summary>Is this a physical book or a design service?</summary>
+          <p>It is a digital PDF, not a printed book or a personalized design service. For help with your own project, <a href="/contact/">contact the studio</a>.</p>
+        </details>
+        <details>
+          <summary>Is this an official game product?</summary>
+          <p>No. This is an independent interior design guide. It is not affiliated with, endorsed by or sponsored by Rockstar Games or Take-Two Interactive. No game artwork or screenshots are used.</p>
+        </details>
+      </div>
+    </section>
+    <p class="vice-disclaimer">Independent design inspiration by Paula Ambrosio. Not affiliated with Rockstar Games or Take-Two Interactive.</p>
+  </div>
+</Layout>
