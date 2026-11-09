@@ -106,21 +106,35 @@ test('accept and reject close after saving and reopen with the saved choices', (
  }
 });
 
-test('the discreet privacy control preserves its name, target and equal summary actions', () => {
+test('summary keeps a prominent accept action beside equally sized reject and manage choices', () => {
  const x = fixture();
  assert.equal(x.get('open').getAttribute('aria-label'), 'Privacy choices');
  assert.equal(x.get('open').getAttribute('aria-controls'), 'paula-consent-panel');
  assert.match(source, /<span class="consent-open-label">Privacy<\/span>/);
+ assert.match(source, /id="paula-consent-reject"[^>]*>Reject</);
+ assert.match(source, /id="paula-consent-preferences"[^>]*>Manage</);
+ assert.match(source, /id="paula-consent-accept"[^>]*>Accept</);
+ assert.equal(x.get('reject').getAttribute('class'), 'consent-action');
+ assert.equal(x.get('preferences').getAttribute('class'), 'consent-action');
+ assert.equal(x.get('accept').getAttribute('class'), 'consent-action consent-accept');
  for (const name of ['reject', 'preferences', 'accept']) {
-  assert.equal(x.get(name).getAttribute('class'), 'consent-action', 'all choices share one visual treatment');
+  assert.equal(x.get(name).hidden, false);
   assert.equal(x.get(name).getAttribute('style'), undefined);
  }
+ assert.doesNotMatch(source, /id="paula-consent-analytics"[^>]*\bchecked\b/);
+ assert.doesNotMatch(source, /id="paula-consent-ads"[^>]*\bchecked\b/);
+ assert.match(source, /personalized advertising stays off/i);
+ assert.match(source, /#paula-consent-accept'\)\?\.addEventListener\('click', \(\) => \{ analytics\.checked = true; advertising\.checked = true; save\(\); \}\)/);
+ assert.match(source, /#paula-consent-reject'\)\?\.addEventListener\('click', \(\) => \{ analytics\.checked = false; advertising\.checked = false; save\(\); \}\)/);
+ assert.doesNotMatch(source, /gtag\s*\(|ad_storage|ad_user_data|ad_personalization/);
  const styles = source.match(/<style>([\s\S]*?)<\/style>/)[1];
  for (const name of ['consent-open', 'consent-action']) {
   const rule = styles.match(new RegExp(`\\.${name}\\s*\\{([^}]+)\\}`))[1];
   assert.match(rule, /min-height:\s*44px/, 'a smaller visual control keeps its full touch target');
  }
  assert.match(styles, /\.consent-actions-summary\s*\{\s*grid-template-columns:\s*repeat\(3,\s*minmax\(0,\s*1fr\)\)/);
+ assert.match(styles, /\.consent-accept\s*\{[^}]*background:\s*var\(--color-ink/);
+ assert.doesNotMatch(styles, /\.consent-action\s*\{[^}]*(?:opacity:\s*0?\.[0-9]|font-size:\s*(?:[0-9]|10)px)/);
  assert.match(styles, /#paula-consent-root :focus-visible\s*\{[^}]*outline:\s*2px solid/);
 });
 

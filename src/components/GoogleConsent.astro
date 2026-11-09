@@ -8,19 +8,19 @@ const configured = OPENAI_PIXEL_ENABLED || META_PIXEL_ENABLED || GOOGLE_TRACKING
  <div id="paula-consent-root" hidden>
   <button id="paula-consent-open" type="button" aria-label="Privacy choices" aria-expanded="false" aria-controls="paula-consent-panel" class="consent-open"><span class="consent-open-label">Privacy</span></button>
   <section id="paula-consent-panel" hidden aria-labelledby="paula-consent-title" class="consent-panel">
-   <h2 id="paula-consent-title" class="font-display">Your privacy choices</h2>
-   <p class="consent-copy">Optional analytics and ad measurement. Your choice. <a href="/privacy/">Privacy policy</a></p>
+   <h2 id="paula-consent-title" class="font-display">Help us understand this visit</h2>
+   <p class="consent-copy">Optional analytics and ad measurement show which projects are useful and whether an inquiry began with an ad. No inquiry details are shared, and personalized advertising stays off. <a href="/privacy/">Privacy policy</a></p>
    <div id="paula-consent-summary" class="consent-actions consent-actions-summary">
     <button id="paula-consent-reject" type="button" class="consent-action">Reject</button>
-    <button id="paula-consent-preferences" type="button" aria-expanded="false" aria-controls="paula-consent-preferences-panel" class="consent-action">Preferences</button>
-    <button id="paula-consent-accept" type="button" class="consent-action">Accept</button>
+    <button id="paula-consent-preferences" type="button" aria-expanded="false" aria-controls="paula-consent-preferences-panel" class="consent-action">Manage</button>
+    <button id="paula-consent-accept" type="button" class="consent-action consent-accept">Accept</button>
    </div>
    <div id="paula-consent-preferences-panel" hidden>
     <label class="consent-option"><input id="paula-consent-analytics" type="checkbox" /> Website analytics</label>
     <label class="consent-option"><input id="paula-consent-ads" type="checkbox" /> Advertising measurement</label>
     <p class="consent-detail">Personalized advertising stays off. You can change these choices at any time.</p>
     <div class="consent-actions">
-     <button id="paula-consent-save" type="button" class="consent-action">Save choices</button>
+     <button id="paula-consent-save" type="button" class="consent-action consent-accept">Save choices</button>
      <button id="paula-consent-close" type="button" class="consent-action">Close</button>
     </div>
    </div>
@@ -64,35 +64,49 @@ const configured = OPENAI_PIXEL_ENABLED || META_PIXEL_ENABLED || GOOGLE_TRACKING
  }
  .consent-panel {
   z-index: 50;
-  width: min(360px, calc(100vw - var(--consent-left) - var(--consent-right)));
+  width: min(420px, calc(100vw - var(--consent-left) - var(--consent-right)));
   max-height: calc(100vh - var(--consent-bottom) - max(12px, env(safe-area-inset-top)));
   max-height: calc(100dvh - var(--consent-bottom) - max(12px, env(safe-area-inset-top)));
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: 12px;
+  padding: 16px 16px 14px;
   border: 1px solid var(--color-sand, #ceb297);
-  border-radius: 4px;
+  border-radius: 2px;
   background: var(--color-white, #fff);
-  box-shadow: 0 2px 12px rgb(0 0 0 / 6%);
+  box-shadow: 0 16px 40px -18px rgb(31 27 24 / 28%);
  }
- .consent-panel h2 { margin: 0; font-size: 18px; line-height: 1.2; }
- .consent-copy { margin: 6px 0 0; font-size: 13px; line-height: 1.5; color: var(--color-slate, #4f4540); }
- .consent-copy a, .consent-reload { text-decoration: underline; text-underline-offset: 3px; }
- .consent-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin-top: 10px; }
+ .consent-panel h2 { margin: 0; font-size: 1.375rem; font-weight: 500; line-height: 1.15; letter-spacing: -0.01em; }
+ .consent-copy { margin: 8px 0 0; font-size: 14px; line-height: 1.5; color: var(--color-slate, #4f4540); }
+ .consent-copy a, .consent-reload { color: var(--color-ink, #000); text-decoration: underline; text-underline-offset: 3px; }
+ .consent-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
  .consent-actions-summary { grid-template-columns: repeat(3, minmax(0, 1fr)); }
  .consent-action {
   min-width: 0;
   min-height: 44px;
-  padding: 8px 6px;
-  border: 1px solid var(--color-sand, #ceb297);
-  border-radius: 3px;
+  padding: 10px 8px;
+  border: 1px solid color-mix(in srgb, var(--color-ink, #000) 32%, transparent);
+  border-radius: 2px;
   background: transparent;
-  color: inherit;
-  font-size: 12px;
-  line-height: 1.4;
-  overflow-wrap: anywhere;
+  color: var(--color-ink, #000);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  line-height: 1.2;
+  text-transform: uppercase;
+ }
+ .consent-accept {
+  background: var(--color-ink, #000);
+  border-color: var(--color-ink, #000);
+  color: var(--color-bone, #f9f5f0);
  }
  .consent-action:hover, .consent-open:hover .consent-open-label { background: var(--color-bone, #f9f5f0); }
+ .consent-accept:hover { background: var(--color-coffee, #8c6a54); border-color: var(--color-coffee, #8c6a54); color: var(--color-white, #fff); }
+ @media (max-width: 640px) {
+  .consent-panel { padding: 12px 12px 10px; }
+  .consent-panel h2 { font-size: 1.2rem; }
+  .consent-copy { margin-top: 6px; font-size: 13px; line-height: 1.45; }
+  .consent-actions { margin-top: 8px; gap: 6px; }
+ }
  .consent-open, .consent-action, .consent-reload { cursor: pointer; }
  .consent-option { display: flex; align-items: center; gap: 10px; min-height: 44px; font-size: 13px; line-height: 1.5; cursor: pointer; }
  .consent-option:first-child { margin-top: 8px; }
