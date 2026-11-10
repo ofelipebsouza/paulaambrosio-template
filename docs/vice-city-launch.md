@@ -1,7 +1,8 @@
 # Vice City landing page
 
-Draft route: `/vice-city/`. English PDF, US$5.99, one-time purchase via Stan Store.
-This branch is for review only. Do not merge or deploy without the owner's approval.
+Route: `/vice-city/`. English PDF, US$5.99, one-time purchase via Stan Store.
+The sales activation PR is for review only. Do not merge or deploy without the
+owner's approval.
 
 ## Current state
 
@@ -9,59 +10,62 @@ This branch is for review only. Do not merge or deploy without the owner's appro
 - Uses the supplied Vice City promotional artwork and HOME A&A photography already
   in the studio portfolio. Captions distinguish illustrative artwork from a real
   completed project. No game assets or paid PDF pages are included.
-- Copy covers the confirmed outline: palettes, materials, lighting, layouts and a
-  buying plan. The completed English PDF has eight pages, room-by-room ideas and an illustrative
-  budget. No testimonials, delivery timing or refund promises are made.
-- Both purchase buttons are disabled. No checkout URL or public PDF download is
-  supplied. A disabled button cannot send a visitor to a placeholder checkout.
+- Copy covers palettes, materials, lighting, layouts and a buying plan. The English
+  PDF has eight pages, room-by-room ideas and an illustrative budget. No testimonials,
+  delivery timing or refund promises are made.
+- Both purchase CTAs use the verified direct Stan Store product URL:
+  `https://stan.store/Paulaambrosio_/p/miami-style-made-simple?lang=en`.
+  `readyForSale` is `true`; the price remains US$5.99.
+- The existing URL guard still fails closed for unfinished products, invalid URLs,
+  storefronts, non-HTTPS URLs and off-platform links. It checks URL shape only;
+  it cannot verify the seller, file, price or terms.
 - Listed only in the materials group on `/links/`; global navigation is unchanged.
 - `noindex, follow`, excluded from the XML sitemap, consistent with existing
   advertising product landings. No crawl block is added.
 
-## Before opening sales
+## Launch evidence — 2026-11-10
 
-1. Review the final PDF with Paula. Check that all five topic descriptions remain
-   accurate, replace preparation wording only as appropriate, and confirm imagery.
-2. Upload the approved PDF to the intended Stan Store product. Verify its seller,
-   exact title, USD 5.99 one-time price, taxes/fees if applicable, delivery and refund
-   terms. Do not publish the paid PDF in this repository or the site's public assets.
-3. Obtain the verified direct product URL, shaped like
-   `https://stan.store/<seller>/p/<product>`. Set `checkoutUrl` and `readyForSale: true`
-   together in `src/data/vice-city.mjs`. The validator checks only the URL shape;
-   it cannot confirm the seller, file, price or terms. If Stan returns a different
-   official URL format, verify it before adapting the validator and tests.
-4. Update the default-state regression test after approval. Test both CTA links in
-   mobile and desktop layouts, the actual product page, the final total and delivery
-   setup. Do not make a real purchase as a test without authorization.
-5. Run `npm run lint`, `node --test tests/vice-city.test.mjs`, `npm run sitemap:test`,
-   and `npm run build` (includes tracking-safety tests and the full link guard).
-   Then run `node --test tests/vice-city-build.test.mjs` for compiled HTML checks.
-6. Keep the PR draft until the owner approves the guide, checkout and page.
+The owner requested activation of infoproduct sales. According to the task's
+confirmed history, Paula tested this guide, completed a purchase and received it;
+the delivered file was subsequently checked and confirmed correct.
+The public product page was checked on 2026-11-10 in the parent task: **Vice Miami
+Interior Style Guide**, **US$5.99**, with Stripe card checkout, Google Pay and
+PayPal displayed. This records supplied verification, not a new purchase made
+while implementing this change. Payment methods can vary with browser/device.
 
-No new lead-capture form, customer data collection or purchase/conversion event
-was added. Existing site analytics remain under the shared layout's controls.
+The approved PDF stays on the delivery platform; it is not added to this repository
+or public site assets. No payment integration, credentials, other product,
+lead-capture form or purchase/conversion event is changed. Existing site analytics
+remain under the shared layout's controls.
 
-## Verification on this branch
+## Validation and release
 
-- `npm run astro -- sync`, then `npm run lint`: passed.
-- New source/checkout tests, existing product-landing and Home Essence tests: 12 passed.
-- Sitemap policy tests: 4 passed.
-- Production build: passed, including 23 existing tracking-safety tests and the
-  guard over 105 pages. Three pre-existing missing-schema informational notes
-  remain on `/change-order/`, `/host-up/` and `/layout-starter-kit/`.
-- Compiled-page checks: 4 passed (metadata, disabled checkout, image paths, ARIA
-  references, section anchors, FAQ markup and price consistency).
-- Real-browser layout and interaction QA is **not verified** in this environment.
-  The local Chromium launch failed because its socket operation was not permitted.
-  The cloud browser could not reach the localhost preview; it also disallowed an
-  offline data URL. Review desktop and phone layouts in the normal preview before
-  approval. No screenshot or visual-pass claim is supplied.
-- No live payment or delivery test has been performed. Checkout remains disabled.
+Run `npm run astro -- sync`, `npm run lint`,
+`node --test tests/vice-city.test.mjs tests/product-landings.test.mjs tests/home-essence.test.mjs`,
+`npm run sitemap:test`, and `npm run build` (includes tracking-safety tests and the
+full link guard). Then run `node --test tests/vice-city-build.test.mjs`.
 
-## Price revision
+The source regression checks the exact approved URL, including `?lang=en`, and the
+existing fail-closed cases. Compiled-page tests check both live CTA links, purchase
+guidance, price consistency, metadata, images, ARIA references, FAQ and discovery.
+Review desktop and phone layouts in a local preview and record results in the PR.
+No new real purchase is needed for this code change.
 
-The owner changed the price to US$5.99. The product data now drives both purchase
-placements, the materials link and the page/OG/Twitter/structured descriptions.
-Regression checks verify the compiled page and discovery card at the new price.
-The supplied promotional images contain no price and are unchanged. Checkout
-remains disabled until the matching Stan Store offer is verified.
+Keep the PR draft until review. Merge and deployment require separate instruction.
+To suspend sales later, set `readyForSale: false`; the existing component will render
+both disabled buttons and the unavailable-sales explanation.
+
+### Results for sales activation
+
+- Astro sync and TypeScript lint: passed.
+- Product/source regressions: 12 passed; sitemap policy: 4 passed.
+- Build: passed, including 23 tracking-safety tests and the guard over 106 pages
+  and 99 sitemap URLs. Existing informational missing-JSON-LD notes remain on
+  `/change-order/`, `/host-up/` and `/layout-starter-kit/`.
+- Compiled-page checks: 4 passed, including both exact checkout destinations.
+- `git diff --check`: passed.
+- Visual/interactive preview QA remains unverified: local Chromium failed at
+  startup with `socket() failed: Operation not permitted`; the cloud browser
+  returned `ERR_CONNECTION_REFUSED` for localhost. No screenshot or visual-pass
+  claim is supplied. Desktop/mobile interaction review remains for an accessible
+  preview. No real purchase was attempted during this implementation.
