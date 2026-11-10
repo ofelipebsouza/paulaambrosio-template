@@ -8,14 +8,16 @@ const read = file => readFileSync(new URL('../' + file, import.meta.url), 'utf8'
 const page = read('src/pages/vice-city.astro');
 const component = read('src/components/vice-city/GuideCheckout.astro');
 
-test('confirmed offer is English PDF at US$5.99 and is closed by default', () => {
+test('confirmed English PDF offer at US$5.99 uses the verified Stan product', () => {
   assert.equal(viceCity.price, '5.99');
   assert.equal(viceCity.currency, 'USD');
   assert.equal(viceCity.language, 'English');
   assert.equal(viceCity.format, 'PDF');
-  assert.equal(viceCity.readyForSale, false);
-  assert.equal(viceCity.checkoutUrl, null);
-  assert.equal(getViceCityCheckoutUrl(), null);
+  assert.equal(viceCity.readyForSale, true);
+  const checkoutUrl = 'https://stan.store/Paulaambrosio_/p/miami-style-made-simple?lang=en';
+  assert.equal(viceCity.checkoutUrl, checkoutUrl);
+  assert.equal(getViceCityCheckoutUrl(), checkoutUrl);
+  assert.equal(getViceCityCheckoutUrl({ ...viceCity, readyForSale: false }), null);
 });
 
 test('checkout only opens when ready and a direct HTTPS Stan product URL is supplied', () => {
@@ -54,7 +56,7 @@ test('landing preserves brand, canonical, noindex and existing consent', () => {
   for (const file of ['Header', 'Footer']) assert.ok(!read(`src/components/${file}.astro`).includes('/vice-city/'));
 });
 
-test('copy distinguishes portfolio imagery, pending sales and independent inspiration', () => {
+test('copy distinguishes portfolio imagery and independent inspiration', () => {
   for (const text of ['Color palettes', 'Materials & texture', 'Lighting', 'Layouts', 'Your buying plan',
     'not a completed project', 'not a printed book or a personalized design service',
     'not affiliated with', 'Rockstar Games', 'Take-Two Interactive']) {

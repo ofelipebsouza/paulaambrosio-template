@@ -1,6 +1,6 @@
 /**
- * Keep checkout closed until the final PDF and the matching Stan Store product
- * have both been reviewed. Never substitute a storefront or an invented URL.
+ * The final PDF and matching Stan Store product were confirmed for launch.
+ * Never substitute a storefront or an invented URL.
  * See docs/vice-city-launch.md before changing these launch controls.
  */
 export const viceCity = Object.freeze({
@@ -10,8 +10,8 @@ export const viceCity = Object.freeze({
   currency: 'USD',
   format: 'PDF',
   language: 'English',
-  readyForSale: false,
-  checkoutUrl: null,
+  readyForSale: true,
+  checkoutUrl: 'https://stan.store/Paulaambrosio_/p/miami-style-made-simple?lang=en',
 });
 
 /**

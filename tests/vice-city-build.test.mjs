@@ -16,14 +16,20 @@ test('emitted page has correct metadata, landmarks and no duplicate IDs', () => 
   assert.equal(ids.length, new Set(ids).size);
 });
 
-test('emitted checkout is disabled with real explanatory text and no destination', () => {
-  assert.equal(doc.querySelectorAll('.vice-button:disabled').length, 2);
-  assert.equal(doc.querySelectorAll('.vice-page a[href*="stan.store"]').length, 0);
+test('both emitted CTAs link to the verified Stan product with purchase guidance', () => {
+  const checkoutUrl = 'https://stan.store/Paulaambrosio_/p/miami-style-made-simple?lang=en';
+  const links = [...doc.querySelectorAll('.vice-page a.vice-button')];
+  assert.equal(links.length, 2);
+  assert.equal(doc.querySelectorAll('.vice-button:disabled').length, 0);
+  assert.equal(doc.querySelectorAll('.vice-page a[href*="stan.store"]').length, 2);
   assert.equal(doc.querySelectorAll('.vice-page form').length, 0);
-  for (const button of doc.querySelectorAll('.vice-button')) {
-    assert.equal(button.getAttribute('type'), 'button');
-    assert.match(doc.getElementById(button.getAttribute('aria-describedby')).textContent, /Sales are not open yet/);
+  for (const link of links) {
+    assert.equal(link.getAttribute('href'), checkoutUrl);
+    assert.match(link.textContent, /Get the guide/);
+    assert.match(doc.getElementById(link.getAttribute('aria-describedby')).textContent,
+      /Continue to Stan Store to review your order and complete your purchase/);
   }
+  assert.doesNotMatch(doc.querySelector('.vice-page').textContent, /Sales are not open yet|Coming soon/);
 });
 
 test('emitted images, descriptions, section anchors and FAQ controls exist', () => {
