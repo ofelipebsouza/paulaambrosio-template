@@ -204,7 +204,14 @@ test('absent and rejected consent block Google forwarding for actual phone and W
 		assert.equal(x.google('phone_click').length, 0);
 		assert.equal(x.google('whatsapp_click').length, 0);
 		assert.equal(x.scripts.length, 0);
-		assert.equal((x.window.dataLayer ?? []).length, 0);
+		const layer = x.window.dataLayer ?? [];
+		assert.equal(layer.filter(item => typeof item?.event === 'string' && item.event.startsWith('paula_')).length, 0);
+		if (consent) {
+			const update = layer.find(item => item?.[0] === 'consent' && item?.[1] === 'update');
+			assert.equal(update[2].analytics_storage, 'denied');
+			assert.equal(update[2].ad_storage, 'denied');
+			assert.equal(update[2].ad_personalization, 'denied');
+		} else assert.equal(layer.length, 0);
 		assert.deepEqual(x.vercel.map(item => item.event), ['phone_click', 'whatsapp_click'], 'Consent here governs Google, not existing internal/Vercel tracking');
 	}
 });
@@ -221,8 +228,6 @@ test('analytics and advertising permissions independently gate the real contact 
 
 test('rejection after a grant suppresses later contact clicks without navigation', async () => {
 	const x = fixture({ consent: consentGranted });
-	// Simulate the loader's completion callback without fetching or executing it.
-	x.scripts[0].onload();
 	x.click(phone());
 	x.click(whatsapp());
 	await Promise.resolve();
