@@ -33,9 +33,16 @@ test('accepted receipt emits minimal payload once, advertising-only consent is s
  const x=fixture({advertising:true});
  assert.equal(x.api.measureGoogleAcceptedLead({...receipt,email:'private@example.test',budget:'secret',message:'private'}),true);
  assert.deepEqual(x.events(),[{event:'paula_lead_accepted',transaction_id:receipt.eventId,page_section:'contact',service_key:'none'}]);
- assert.equal(x.loads.length,1);
+ assert.equal(x.loads.length,0);
  assert.equal(x.api.measureGoogleAcceptedLead(receipt),false);
- assert.deepEqual(x.window.dataLayer.slice(0,3).map(e=>e.event).join(','),'paula_consent_update,gtm.js,paula_consent_ready');
+ const names=x.window.dataLayer.map(e=>e?.event).filter(Boolean);
+ assert.equal([...names].join(','),'paula_consent_update,paula_consent_ready,paula_lead_accepted');
+ const update=x.window.dataLayer.find(e=>e?.[0]==='consent'&&e?.[1]==='update');
+ assert.ok(x.window.dataLayer.indexOf(update)<x.window.dataLayer.findIndex(e=>e?.event==='paula_lead_accepted'));
+ assert.equal(update[2].ad_storage,'granted');
+ assert.equal(update[2].ad_user_data,'granted');
+ assert.equal(update[2].ad_personalization,'denied');
+ assert.equal(x.window.dataLayer.filter(e=>e?.event==='paula_lead_accepted').length,1);
 });
 test('HTTP 200, attempts, pageviews, generic success, malformed and absent receipts never convert',()=>{
  const x=fixture({analytics:true,advertising:true});x.api.restoreConsent();
@@ -65,19 +72,21 @@ test('failed consent persistence cannot use a stale readable grant',()=>{
  const x=fixture({advertising:true});x.failWrite();assert.equal(x.api.saveConsent({analytics:false,advertising:false}),false);
  assert.equal(x.api.measureGoogleAcceptedLead(receipt),false);assert.equal(x.events().length,0);
 });
-test('withdrawal while container downloads discards queued receipt and stale grants',()=>{
+test('withdrawal stops further receipts without injecting a container',()=>{
  const x=fixture({advertising:true});x.api.measureGoogleAcceptedLead(receipt);assert.equal(x.events().length,1);
- x.api.saveConsent({analytics:false,advertising:false});assert.equal(x.events().length,0);assert.equal(x.scripts.size,0);
+ x.api.saveConsent({analytics:false,advertising:false});assert.equal(x.scripts.size,0);
  assert.equal(x.session.has('paula_google_measured_v1'),false);
+ assert.equal(x.window.dataLayer.filter(e=>e?.event==='paula_consent_update').at(-1).paula_advertising_consent,'denied');
  x.api.saveConsent({analytics:false,advertising:true});assert.equal(x.api.measureGoogleAcceptedLead(receipt),false);
+ assert.equal(x.events().length,1);
 });
 test('session IDs deduplicate after reload; no form data are retained',()=>{
  const session=new Map();const x=fixture({advertising:true,session});x.api.measureGoogleAcceptedLead(receipt);
  assert.deepEqual(JSON.parse(session.get('paula_google_measured_v1')),[receipt.eventId]);
  const y=fixture({advertising:true,session});assert.equal(y.api.measureGoogleAcceptedLead(receipt),false);assert.equal(y.events().length,0);
 });
-test('throwing loader or dataLayer cannot affect business flow',()=>{
- const x=fixture({advertising:true});x.context.document.head.append=()=>{throw Error('blocked');};
+test('throwing consent command or dataLayer cannot affect business flow',()=>{
+ const x=fixture({advertising:true});x.window.gtag=()=>{throw Error('blocked');};
  assert.equal(x.api.measureGoogleAcceptedLead(receipt),false);
  const y=fixture({advertising:true});y.api.restoreConsent();y.window.dataLayer.push=()=>{throw Error('blocked');};
  assert.equal(y.api.measureGoogleAcceptedLead(receipt),false);

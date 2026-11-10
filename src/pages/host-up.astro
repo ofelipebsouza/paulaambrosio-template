@@ -4,12 +4,13 @@ import head from '../data/landings/host-up-head.html?raw';
 import body from '../data/landings/host-up-body.html?raw';
 import GoogleConsent from '../components/GoogleConsent.astro';
 import OpenAIPixel from '../components/OpenAIPixel.astro';
+import GoogleTag from '../components/GoogleTag.astro';
 const offerStart = body.indexOf('<section class="offer ');
 const beforeOffer = body.slice(0, offerStart);
 const afterOffer = body.slice(offerStart);
 ---
 <!doctype html>
 <html lang="pt-BR">
-  <head><OpenAIPixel /><Fragment set:html={head} /></head>
+  <head><OpenAIPixel /><GoogleTag /><Fragment set:html={head} /></head>
   <body><Fragment set:html={beforeOffer} /><PaulaProjectGallery /><Fragment set:html={afterOffer} /><GoogleConsent /></body>
 </html>

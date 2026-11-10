@@ -3,11 +3,19 @@ import { isLeadAcceptance } from '../lead-acceptance';
 export interface ConsentChoice { analytics: boolean; advertising: boolean; }
 export interface SavedConsent extends ConsentChoice { version: 1; at: number; }
 export interface TrackingConfig { enabled: boolean; containerId: string; reviewedVersion: string; }
+export interface ConsentModeState {
+ analytics_storage: 'granted' | 'denied';
+ ad_storage: 'granted' | 'denied';
+ ad_user_data: 'granted' | 'denied';
+ ad_personalization: 'denied';
+ wait_for_update?: number;
+}
 export interface TrackingPort {
  hostname(): string;
  pathname(): string;
  push(value: Record<string, unknown>): void;
- loadContainer(id: string): void;
+ /** Consent Mode update. The document head owns the default and gtm.js. */
+ updateConsent?(state: ConsentModeState): void;
  now(): number;
 }
 export const CONSENT_KEY = 'paula_optional_consent_v1';
@@ -39,12 +47,48 @@ export function configReady(config: TrackingConfig, hostname: string): boolean {
   /^[1-9]\d*$/.test(config.reviewedVersion) && HOSTS.has(hostname);
 }
 
+const PRIVATE_PATH = /^\/(admin|api|style-guides-and-branding)(\/|$)/;
+export function trackingPathAllowed(pathname: string): boolean {
+ return !PRIVATE_PATH.test(pathname.split(/[?#]/, 1)[0]);
+}
+
+/** Denied storage until a saved or banner choice. Personalization is never granted. */
+export function consentModeState(choice: ConsentChoice, waitForUpdate?: number): ConsentModeState {
+ return {
+  analytics_storage: choice.analytics ? 'granted' : 'denied',
+  ad_storage: choice.advertising ? 'granted' : 'denied',
+  ad_user_data: choice.advertising ? 'granted' : 'denied',
+  ad_personalization: 'denied',
+  ...(waitForUpdate ? { wait_for_update: waitForUpdate } : {}),
+ };
+}
+
+/**
+ * Consent Mode v2 advanced head: default denied, optional saved update, then gtm.js.
+ * No standalone gtag.js loader and no noscript iframe. Returns '' for an invalid id.
+ */
+export function googleHeadScripts(containerId: string): string {
+ if (!/^GTM-[A-Z0-9]{6,}$/.test(containerId)) return '';
+ const denied = JSON.stringify(consentModeState({ analytics: false, advertising: false }, 500));
+ const key = JSON.stringify(CONSENT_KEY);
+ const id = JSON.stringify(containerId);
+ return `<script>
+window.dataLayer=window.dataLayer||[];
+window.gtag=window.gtag||function gtag(){window.dataLayer.push(arguments);};
+window.gtag('consent','default',${denied});
+try{var saved=JSON.parse(localStorage.getItem(${key})||'null');var now=Date.now();if(saved&&saved.version===1&&typeof saved.analytics==='boolean'&&typeof saved.advertising==='boolean'&&typeof saved.at==='number'&&Number.isFinite(saved.at)&&saved.at<=now&&now-saved.at<=${CONSENT_MAX_AGE}){window.gtag('consent','update',{analytics_storage:saved.analytics?'granted':'denied',ad_storage:saved.advertising?'granted':'denied',ad_user_data:saved.advertising?'granted':'denied',ad_personalization:'denied'});}}catch(e){}
+</script>
+<script>
+(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.referrerPolicy='origin';j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer',${id});
+</script>`;
+}
+
 export function pageContext(pathname: string): { page_section: string; service_key: string } {
  const path = pathname.split(/[?#]/, 1)[0].replace(/\/+$/, '') + '/';
  const service = SERVICES[path];
  if (service) return { page_section: 'service', service_key: service };
  if (path === '/') return { page_section: 'home', service_key: 'none' };
- const section = ['about', 'contact', 'services', 'projects', 'journal', 'locations', 'spaces', 'press', 'faq', 'privacy']
+ const section = ['about', 'contact', 'services', 'projects', 'journal', 'locations', 'spaces', 'press', 'faq', 'privacy', 'millwork', 'new-york-clients']
   .find((part) => path === `/${part}/` || path.startsWith(`/${part}/`));
  return { page_section: section ?? 'other', service_key: 'none' };
 }
@@ -54,9 +98,9 @@ export function createTracking(config: TrackingConfig, port: TrackingPort) {
  let loaded = false;
  let revoked = false;
  let pageViewed = false;
- let initialized = false;
  const accepted = new Set<string>();
- const active = () => configReady(config, port.hostname()) && !/^\/(admin|api|style-guides-and-branding)(\/|$)/.test(port.pathname());
+ const active = () => configReady(config, port.hostname()) && trackingPathAllowed(port.pathname());
+ const publishConsent = () => { if (active()) port.updateConsent?.(consentModeState(choice)); };
  const consentEvent = () => ({
   event: 'paula_consent_update',
   paula_analytics_consent: choice.analytics ? 'granted' : 'denied',
@@ -67,6 +111,8 @@ export function createTracking(config: TrackingConfig, port: TrackingPort) {
   ready: active,
   needsReload: () => revoked,
   containerFailed: () => { loaded = false; },
+  /** Banner rejection never reaches the grant path; still updates Consent Mode once there. */
+  publishConsent,
   /** Returns true when a fresh document is recommended after permission removal. */
   consent(next: ConsentChoice): boolean {
    const unchanged = choice.analytics === next.analytics && choice.advertising === next.advertising;
@@ -74,18 +120,17 @@ export function createTracking(config: TrackingConfig, port: TrackingPort) {
    choice = { analytics: next.analytics === true, advertising: next.advertising === true };
    if (!active()) return false;
    if (loaded && removed) {
-    // Stop first-party emission immediately. A reload removes already loaded tag code.
+    // Stop first-party emission immediately. A reload clears tag code for other vendors.
     revoked = true;
+    publishConsent();
     port.push(consentEvent());
     return true;
    }
    if (revoked || (!choice.analytics && !choice.advertising) || (loaded && unchanged)) return false;
+   // Apply the Consent Mode command before any following dataLayer event.
+   publishConsent();
    port.push(consentEvent());
-   if (!loaded) {
-    if (!initialized) { port.push({ 'gtm.start': port.now(), event: 'gtm.js' }); initialized = true; }
-    port.loadContainer(config.containerId);
-    loaded = true;
-   }
+   loaded = true;
    // GTM applies consent API changes after the update event. Initialize tags on this NEXT event.
    port.push({ event: 'paula_consent_ready', ...pageContext(port.pathname()) });
    return false;

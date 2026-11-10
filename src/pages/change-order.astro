@@ -5,6 +5,7 @@ import body from '../data/landings/change-order-body.html?raw';
 import GoogleConsent from '../components/GoogleConsent.astro';
 import { checkoutUrl } from '../lib/change-order/checkout';
 import OpenAIPixel from '../components/OpenAIPixel.astro';
+import GoogleTag from '../components/GoogleTag.astro';
 import paulaProfile from '../assets/paula-profile.webp';
 const correctedBody = body.replace('__CHANGE_ORDER_STUDIO_PORTRAIT__', paulaProfile.src);
 const offerStart = correctedBody.indexOf('<section class="offer ');
@@ -13,7 +14,7 @@ const afterOffer = correctedBody.slice(offerStart);
 ---
 <!doctype html>
 <html lang="pt-BR">
-  <head><OpenAIPixel /><Fragment set:html={head} /></head>
+  <head><OpenAIPixel /><GoogleTag /><Fragment set:html={head} /></head>
   <body data-checkout-base={checkoutUrl(import.meta.env.CHANGE_ORDER_CHECKOUT_URL)} data-checkout-bundle={checkoutUrl(import.meta.env.CHANGE_ORDER_BUNDLE_CHECKOUT_URL)}><Fragment set:html={beforeOffer} /><PaulaProjectGallery /><Fragment set:html={afterOffer} /><GoogleConsent /></body>
 </html>
 <script>

@@ -1,0 +1,9 @@
+---
+import { GOOGLE_TRACKING } from '../lib/google-tracking/config';
+import { googleHeadScripts, trackingPathAllowed } from '../lib/google-tracking/core';
+
+const scripts = GOOGLE_TRACKING.enabled && trackingPathAllowed(Astro.url.pathname)
+	? googleHeadScripts(GOOGLE_TRACKING.containerId)
+	: '';
+---
+{scripts && <Fragment set:html={scripts} />}

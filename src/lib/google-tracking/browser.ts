@@ -2,9 +2,9 @@ import { openAIPixelAvailable, openAIPixelNeedsReload } from '../openai-pixel/br
 import { metaPixelAvailable, metaPixelNeedsReload } from '../meta-pixel/browser';
 import { GOOGLE_TRACKING } from './config';
 import { isLeadAcceptance, isSubmissionId } from '../lead-acceptance';
-import { CONSENT_KEY, createTracking, parseConsent, type ConsentChoice, type SavedConsent } from './core';
+import { CONSENT_KEY, createTracking, parseConsent, type ConsentChoice, type ConsentModeState, type SavedConsent } from './core';
 
-type TrackingWindow = Window & { dataLayer?: Array<Record<string, unknown>>; __paulaGoogle?: ReturnType<typeof createTracking>; __paulaGtmReady?: boolean; __paulaGoogleConsentFailed?: boolean };
+type TrackingWindow = Window & { dataLayer?: Array<Record<string, unknown>>; gtag?: (...args: unknown[]) => void; __paulaGoogle?: ReturnType<typeof createTracking>; __paulaGoogleConsentFailed?: boolean };
 const ACCEPTED_KEY = 'paula_google_measured_v1';
 function clearAcceptedHistory(): void {
  try { sessionStorage.removeItem(ACCEPTED_KEY); } catch { /* Consent gates remain authoritative. */ }
@@ -17,18 +17,7 @@ function runtime() {
   pathname: () => location.pathname,
   now: () => Date.now(),
   push: (value) => { (w.dataLayer ??= []).push(value); },
-  loadContainer: (id) => {
-   if (document.getElementById('paula-google-container')) return;
-   const script = document.createElement('script');
-   script.id = 'paula-google-container'; script.async = true;
-   // Never include page paths, queries or fragments in the cross-origin loader referrer.
-   script.referrerPolicy = 'origin';
-   script.src = `https://www.googletagmanager.com/gtm.js?id=${encodeURIComponent(id)}`;
-   w.__paulaGtmReady = false;
-   script.onload = () => { w.__paulaGtmReady = true; };
-   script.onerror = () => { script.remove(); w.__paulaGoogle?.containerFailed(); };
-   document.head.append(script);
-  },
+  updateConsent: (state) => applyConsentUpdate(w, state),
  });
  return w.__paulaGoogle;
 }
@@ -38,7 +27,16 @@ export function savedConsent(): SavedConsent | null {
 export function trackingAvailable(): boolean { return (runtime()?.ready() ?? false) || openAIPixelAvailable() || metaPixelAvailable(); }
 export function reloadRecommended(): boolean { return (runtime()?.needsReload() ?? false) || openAIPixelNeedsReload() || metaPixelNeedsReload(); }
 export function restoreConsent(): void {
- try { const choice = savedConsent(); if (!choice?.advertising) clearAcceptedHistory(); if (choice) runtime()?.consent(choice); } catch { /* Form UX never depends on tracking. */ }
+ try {
+  const choice = savedConsent();
+  if (!choice?.advertising) clearAcceptedHistory();
+  if (!choice) return;
+  const engine = runtime();
+  engine?.consent(choice);
+  // A stored rejection never enters the grant path. The head snippet updates first;
+  // this repeats the command for a document whose inline script did not run.
+  if (!choice.analytics && !choice.advertising) engine?.publishConsent();
+ } catch { /* Form UX never depends on tracking. */ }
 }
 function notifyConsentChange(denied = false): void {
  try { window.dispatchEvent(new Event(denied ? 'paula:consent-denied' : 'paula:consent-change')); } catch { /* Optional listeners must never change preference persistence. */ }
@@ -58,7 +56,9 @@ export function saveConsent(choice: ConsentChoice): boolean {
  }
  notifyConsentChange();
  try {
-  if (runtime()?.consent(choice)) clearGoogleCookies();
+  const engine = runtime();
+  if (engine?.consent(choice)) clearGoogleCookies();
+  else if (!choice.analytics && !choice.advertising) engine?.publishConsent();
   return true;
  } catch {
   // Preferences were saved. Optional loader failures must not misreport that choice.
@@ -99,18 +99,16 @@ export function trackGoogleEvent(event: string): void {
  } catch { /* No navigation or form failures from measurement. */ }
 }
 
+function applyConsentUpdate(w: TrackingWindow, state: ConsentModeState): void {
+ w.dataLayer ??= [];
+ // Resolve dataLayer at call time. The head snippet normally defines gtag first.
+ if (typeof w.gtag !== 'function') w.gtag = function gtag() { (w.dataLayer as unknown[]).push(arguments); };
+ w.gtag('consent', 'update', state);
+}
+
 /** Clear only first-party Google measurement cookies when consent is withdrawn. */
 function clearGoogleCookies(): void {
  clearAcceptedHistory();
- const w = window as TrackingWindow;
- if (!w.__paulaGtmReady) {
-  // If consent is withdrawn while GTM is downloading, never replay old grants/events.
-  document.getElementById('paula-google-container')?.remove();
-  if (w.dataLayer) {
-   w.dataLayer.splice(0, w.dataLayer.length);
-   w.dataLayer.push({ event: 'paula_consent_update', paula_analytics_consent: 'denied', paula_advertising_consent: 'denied', paula_ad_personalization: 'denied' });
-  }
- }
  for (const cookie of document.cookie.split(';')) {
   const name = cookie.trim().split('=', 1)[0];
   if (!/^(_ga(?:_|$)|_gcl_|_gac_)/.test(name)) continue;
