@@ -6,7 +6,7 @@ const data=readFileSync('src/data/home-essence.ts','utf8');
 test('Home Essence uses the verified USD offer and Stripe checkout',()=>{
  assert.match(data,/price: '47\.90'/); assert.match(data,/currency: 'USD'/);
  assert.match(data,/checkoutUrl: 'https:\/\/buy\.stripe\.com\/6oU00j26a5y81sM8tTfQI01'/);
- assert.equal((page.match(/href=\{product\.checkoutUrl\}/g)||[]).length,2);
+ assert.equal((page.match(/href=\{checkoutUrl\}/g)||[]).length,2);
  assert.match(page,/US\$\$\{product\.price\}/);
  assert.match(page,/secure Stripe checkout/);
  assert.doesNotMatch(`${page}\n${data}`,/stan\.store|official Stan store|49\.87/);

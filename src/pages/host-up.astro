@@ -1,9 +1,11 @@
 ---
 import PaulaProjectGallery from '../components/landings/PaulaProjectGallery.astro';
 import head from '../data/landings/host-up-head.html?raw';
-import body from '../data/landings/host-up-body.html?raw';
+import sourceBody from '../data/landings/host-up-body.html?raw';
+import { hostUpCheckout } from '../lib/host-up/checkout';
 import GoogleConsent from '../components/GoogleConsent.astro';
 import OpenAIPixel from '../components/OpenAIPixel.astro';
+const body = hostUpCheckout(sourceBody, import.meta.env.HOST_UP_CHECKOUT_URL);
 const offerStart = body.indexOf('<section class="offer ');
 const beforeOffer = body.slice(0, offerStart);
 const afterOffer = body.slice(offerStart);
