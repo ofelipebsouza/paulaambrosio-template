@@ -5,12 +5,12 @@ import Layout from '../layouts/Layout.astro';
 import { homeEssence as product } from '../data/home-essence';
 import { SITE } from '../config';
 import { schemaScript } from '../lib/seo';
-const description = `Discover Home Essence by Paula Ambrosio. A room spray created to bring another dimension to your space. US$${product.price}. Secure checkout with Stripe.`;
-const imageAlt = 'Paula Ambrósio Home Essence room spray: blush and clear glass bottles with gold details, shown in the official product artwork.';
+const description = `Discover Home Essence by Paula Ambrosio. A warm, woody room spray with cardamom, amber and vetiver. 100 mL. Make home unforgettable. US$${product.price}. Secure checkout with Stripe.`;
+const imageAlt = 'Home Essence Room Spray by Paula Ambrosio Home, amber glass bottle with a gold cap and cream label, 100 mL. Concept visual.';
 ---
-<Layout title="Home Essence · Home Spray" description={description} canonical="/home-essence/" ogImage="/og/home-essence.jpg" ogImageAlt={imageAlt} compactFooter>
+<Layout title="Home Essence · Home Spray" description={description} canonical="/home-essence/" ogImage="/images/home-essence/front.jpg" ogImageAlt={imageAlt} compactFooter>
   <Fragment slot="head">
-    <link rel="preload" as="image" href="/images/home-essence/editorial-collection.jpg" />
+    <link rel="preload" as="image" href="/images/home-essence/front.jpg" />
     <Fragment set:html={schemaScript({ '@context':'https://schema.org', '@type':'Product', name:product.name, description, image:`${SITE.url}${product.image}`, brand:{'@type':'Brand',name:'Paula Ambrosio Home'}, url:`${SITE.url}/home-essence/`, offers:{'@type':'Offer',price:product.price,priceCurrency:product.currency,url:product.checkoutUrl} })} />
   </Fragment>
   <div class="essence-page">
@@ -18,18 +18,17 @@ const imageAlt = 'Paula Ambrósio Home Essence room spray: blush and clear glass
       <div class="hero-copy">
         <p class="essence-label reveal">Paula Ambrósio Home</p>
         <h1 id="essence-title" class="reveal">Home <em>Essence.</em></h1>
-        <p class="hero-description reveal">The finishing touch.<br />A feeling that belongs to your space.</p>
+        <p class="hero-description reveal">Make home unforgettable.<br />A warm, woody signature for your space.</p>
         <div class="hero-purchase reveal">
           <p class="price"><span>US$</span>{product.price}</p>
           <a class="essence-button" href={product.checkoutUrl}>Discover the essence <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 17 17 7M7 7h10v10" /></svg></a>
-          <p class="purchase-caption">Home Spray · Secure checkout with Stripe</p>
+          <p class="purchase-caption">Room Spray · 100 mL / 3.38 US fl oz · Stripe checkout</p>
         </div>
       </div>
       <picture class="editorial-hero-photo">
-        <source media="(max-width: 600px)" srcset="/images/home-essence/editorial-clear.jpg" />
-        <img src="/images/home-essence/editorial-collection.jpg" width="1536" height="1024" alt="Home Essence campaign composition: blush and clear bottles on warm travertine." fetchpriority="high" decoding="async" />
+        <img src="/images/home-essence/front.jpg" width="1024" height="1536" alt={imageAlt} fetchpriority="high" decoding="async" />
       </picture>
-      <a href="#the-essence" class="scroll-link">Explore the collection <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 4v16m-6-6 6 6 6-6" /></svg></a>
+      <a href="#the-essence" class="scroll-link">Explore the essence <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 4v16m-6-6 6 6 6-6" /></svg></a>
     </section>
 
     <section id="the-essence" class="essence-story" aria-labelledby="story-title">
@@ -41,44 +40,39 @@ const imageAlt = 'Paula Ambrósio Home Essence room spray: blush and clear glass
       <div class="story-copy reveal">
         <p class="story-lede">Beautiful interiors tell a story.<br />Scent adds another layer.</p>
         <p>Created by interior designer Paula Ambrosio, Home Essence brings her perspective on space into a room spray. A thoughtful detail for the spaces you make your own.</p>
-        <p class="fragrance-line">The fragrance <span>Essence of the Wealthy</span></p>
+        <p class="fragrance-line">The signature <span>Cardamom · Amber · Vetiver</span></p>
+        <p>A warm, woody fragrance with a subtle spicy character. Amyris, Indonesian patchouli, Nepalese alder and a soft touch of leather complete the scent. Medium intensity.</p>
       </div>
     </section>
 
     <section class="collection-section" aria-labelledby="collection-title">
       <div class="collection-heading reveal">
-        <p class="essence-label">The visual collection</p>
+        <p class="essence-label">Home Essence moments</p>
         <h2 id="collection-title">A touch of <em>luxury.</em></h2>
-        <p>Soft tones. Clear glass. Golden details.</p>
+        <p>Warm woods. Amber glass. Golden details.</p>
       </div>
       <div class="editorial-sequence">
-        {[{image:'editorial-blush',label:'Soft presence',number:'01'},{image:'editorial-clear',label:'Pure expression',number:'02'},{image:'editorial-gold',label:'Golden details',number:'03'}].map(item => (
+        {[{image:'invitation',label:'An invitation to stay',number:'01'},{image:'signature',label:'A warm, woody signature',number:'02'},{image:'evening',label:'Let the evening linger',number:'03'}].map(item => (
           <figure class="editorial-slide" style={`--scene:url('/images/home-essence/${item.image}.jpg')`}>
             <img src={`/images/home-essence/${item.image}.jpg`} width="1122" height="1402" alt={`${item.label}: Home Essence campaign imagery supplied by the studio.`} loading="lazy" decoding="async" />
             <figcaption><span class="essence-label">Home Essence / {item.number}</span><strong>{item.label}</strong></figcaption>
           </figure>
         ))}
       </div>
-      <p class="collection-note">Product presentations shown for illustration. Confirm the presentation included in your purchase with Paula.</p>
+      <p class="collection-note">Concept visuals supplied by Paula Ambrosio Home. Confirm the presentation included in your purchase with Paula.</p>
     </section>
 
-    <section class="essence-film" aria-label="Home Essence film, revealed as you scroll">
-      <div class="film-stage">
-        <video class="scroll-film" muted playsinline preload="none" poster="/images/home-essence/editorial-collection.jpg" data-src="/images/home-essence/essence-film.mp4" aria-label="Home Essence visual presentation, without sound"></video>
-        <div class="film-caption"><p class="essence-label">Every detail, considered.</p><h2>The art of <em>atmosphere.</em></h2></div>
-      </div>
-    </section>
-    <section class="essence-details" aria-label="Home Essence design details">
-      <figure><img src="/images/home-essence/editorial-label.jpg" width="1122" height="1402" alt="Close-up of the PA monogram and textured Home Essence label." loading="lazy" decoding="async" /></figure>
-      <figure><img src="/images/home-essence/editorial-atomizer.jpg" width="1254" height="1254" alt="Close-up of the golden Home Essence atomizer and glass bottle." loading="lazy" decoding="async" /></figure>
+    <section class="essence-details" aria-label="Home Essence fragrance and label">
+      <figure><img src="/images/home-essence/notes.jpg" width="1024" height="1536" alt="Home Essence fragrance notes: cardamom, amber, vetiver, amyris, Indonesian patchouli, Nepalese alder and soft leather." loading="lazy" decoding="async" /></figure>
+      <figure><img src="/images/home-essence/back.jpg" width="1024" height="1536" alt="Concept visual of the Home Essence rear label, describing the warm woody fragrance, medium intensity and 100 mL size." loading="lazy" decoding="async" /></figure>
     </section>
 
     <section class="essence-final" id="shop" aria-labelledby="shop-title">
-      <div class="final-art reveal"><img src="/images/home-essence/editorial-collection.jpg" width="1536" height="1024" alt={imageAlt} loading="lazy" decoding="async" /></div>
+      <div class="final-art reveal"><img src="/images/home-essence/front.jpg" width="1024" height="1536" alt={imageAlt} loading="lazy" decoding="async" /></div>
       <div class="final-copy reveal">
         <p class="essence-label">Paula Ambrósio Home</p>
-        <h2 id="shop-title">Make room<br />for <em>the feeling.</em></h2>
-        <p>Home Spray · Home Essence</p>
+        <h2 id="shop-title">Make home<br /><em>unforgettable.</em></h2>
+        <p>Room Spray · 100 mL / 3.38 US fl oz</p>
         <p class="price final-price"><span>US$</span>{product.price}</p>
         <a class="essence-button" href={product.checkoutUrl}>Shop Home Essence <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 17 17 7M7 7h10v10" /></svg></a>
         <p class="purchase-caption">You’ll continue to a secure Stripe checkout to complete your purchase.</p>
@@ -119,6 +113,12 @@ const imageAlt = 'Paula Ambrósio Home Essence room spray: blush and clear glass
   @media(prefers-reduced-motion:reduce){.editorial-slide{position:relative;top:0}.editorial-hero .reveal{transition:none!important}}
   .essence-film{height:220svh;background:#b9a68c}.film-stage{height:calc(100svh - 4rem);position:sticky;top:4rem;isolation:isolate;overflow:hidden}.scroll-film{height:100%;width:100%;object-fit:contain;display:block;background:#c2ac91}.film-caption{position:absolute;inset:auto 0 0;padding:5rem 5vw 3rem;background:linear-gradient(transparent,#21170eaa);color:white}.film-caption h2{font:clamp(2.4rem,5vw,5rem)/1.1 var(--font-display);margin-top:.8rem}.essence-details{display:grid;grid-template-columns:1fr 1fr;background:#eae1d7;gap:16px;padding:16px}.essence-details figure{margin:0;overflow:hidden;aspect-ratio:1}.essence-details img{width:100%;height:100%;object-fit:cover;display:block}.essence-film.film-static{height:calc(100svh - 4rem)}.film-static .film-stage{position:relative;top:0}@media(max-width:800px){.scroll-film{object-fit:contain;background:#b9a68c}.essence-details{gap:8px;padding:8px}.film-caption{padding:3rem 24px 2rem}}@media(prefers-reduced-motion:reduce){.essence-film{height:calc(100svh - 4rem)}.film-stage{position:relative;top:0}}
 .film-caption em{color:#f1dcc4}.editorial-hero .hero-copy{text-shadow:0 2px 14px #21170e99}.editorial-hero .essence-button{text-shadow:none}
+
+  .editorial-hero{display:grid;grid-template-columns:1fr 1fr;height:auto;min-height:calc(100svh - 4rem);background:#f1e5d5;color:var(--essence-ink);align-items:center}
+  .editorial-hero::after{display:none}.editorial-hero-photo{position:relative;inset:auto;z-index:auto;align-self:stretch}.editorial-hero-photo img{height:100%;max-height:900px;object-fit:contain;background:#ead9c5}
+  .editorial-hero .hero-copy{display:block;padding:4rem 5vw;text-shadow:none}.editorial-hero .essence-label,.editorial-hero h1,.editorial-hero .price{color:var(--essence-ink)}.editorial-hero h1 em{color:var(--essence-taupe)}.editorial-hero .hero-description{display:block}.editorial-hero .hero-purchase{text-align:left;margin-top:2rem}.editorial-hero .purchase-caption{color:var(--color-slate)}.editorial-hero .essence-button{background:var(--essence-ink);color:var(--essence-cream)}
+  .editorial-slide{position:relative;top:auto;height:auto;background:#eee0ce}.editorial-slide::before,.editorial-slide::after{display:none}.editorial-slide>img{width:100%;height:auto;max-height:90svh;object-fit:contain}.editorial-slide figcaption{position:static;color:var(--essence-ink);text-shadow:none;padding:1.5rem 24px}.editorial-slide figcaption strong{font-size:2rem}.editorial-sequence{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;padding:0 24px}.essence-details figure{aspect-ratio:2/3}.essence-details img{object-fit:contain}.essence-details{max-width:1200px;margin:auto}
+  @media(max-width:800px){.editorial-hero{grid-template-columns:1fr;min-height:0}.editorial-hero .hero-copy{text-align:center;padding:3rem 24px}.editorial-hero .hero-purchase{text-align:center}.editorial-hero-photo img{height:auto;max-height:85svh}.editorial-sequence{grid-template-columns:1fr;padding:0 16px}.editorial-slide>img{max-height:none}.essence-details{grid-template-columns:1fr}}
 </style>
 <script>
   const page = document.querySelector<HTMLElement>('.essence-page');
@@ -149,38 +149,4 @@ const imageAlt = 'Paula Ambrósio Home Essence room spray: blush and clear glass
   setMotion();
   reduced.addEventListener('change',setMotion);
   window.addEventListener('scroll',onScroll,{passive:true});
-</script>
-
-<script>
-  const filmSection = document.querySelector<HTMLElement>('.essence-film');
-  const film = document.querySelector<HTMLVideoElement>('.scroll-film');
-  const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const connection = (navigator as Navigator & {connection?:{saveData?:boolean}}).connection;
-  let filmQueued = false;
-  let nearFilm = false;
-  const filmStatic = () => motionPreference.matches || connection?.saveData === true;
-  const updateFilm = () => {
-    filmQueued = false;
-    if (!film || !filmSection || filmStatic() || !nearFilm || !Number.isFinite(film.duration)) return;
-    const rect = filmSection.getBoundingClientRect();
-    const progress = Math.max(0,Math.min(1,(64-rect.top)/Math.max(1,rect.height-window.innerHeight+64)));
-    const target = progress*Math.max(0,film.duration-.04);
-    if (Math.abs(film.currentTime-target)>.08 && !film.seeking) film.currentTime=target;
-  };
-  const queueFilm = () => {if(!filmQueued && nearFilm && !filmStatic()){filmQueued=true;requestAnimationFrame(updateFilm)}};
-  const configureFilm = () => {
-    if(!film || !filmSection)return;
-    filmSection.classList.toggle('film-static',filmStatic());
-    if(filmStatic()){film.pause();film.removeAttribute('src');film.load();}
-    else if(nearFilm && !film.getAttribute('src')){film.src=film.dataset.src!;film.load();}
-  };
-  if(film && filmSection && 'IntersectionObserver' in window){
-    const filmObserver = new IntersectionObserver(entries=>{nearFilm=entries[0].isIntersecting;configureFilm();queueFilm();},{rootMargin:'300px'});
-    filmObserver.observe(filmSection);
-    film.addEventListener('loadedmetadata',queueFilm);
-    film.addEventListener('error',()=>filmSection.classList.add('film-static'));
-    window.addEventListener('scroll',queueFilm,{passive:true});
-    motionPreference.addEventListener('change',configureFilm);
-    configureFilm();
-  }else{filmSection?.classList.add('film-static');}
 </script>
