@@ -22,10 +22,11 @@ test('Product artwork, motion fallback and merchant limitations are retained',()
  assert.match(page,/shipping/i);
  assert.doesNotMatch(page,/offers delivery in the USA/);
 });
-test('Editorial film is silent, lazy and scroll-driven with static fallback',()=>{
- assert.match(page,/muted playsinline preload="none"/);
- assert.match(page,/poster="\/images\/home-essence\/editorial-collection.jpg"/);
- assert.match(page,/saveData/);assert.match(page,/filmStatic/);
- assert.doesNotMatch(page,/<video[^>]*(?:autoplay|controls)/);
- assert.match(page,/film\.currentTime=target/);
+test('Current amber bottle artwork and notes replace retired product visuals',()=>{
+ for(const name of ['front','back','notes','invitation','signature','evening']) assert.ok(existsSync(`public/images/home-essence/${name}.jpg`));
+ assert.match(page,/Cardamom · Amber · Vetiver/);
+ assert.match(page,/100 mL/);
+ assert.match(page,/Medium intensity/);
+ assert.match(page,/Concept visuals supplied/);
+ assert.doesNotMatch(page,/editorial-collection|editorial-blush|editorial-clear|essence-film.mp4|<video/);
 });
