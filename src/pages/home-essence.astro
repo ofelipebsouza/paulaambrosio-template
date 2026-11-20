@@ -10,7 +10,7 @@ const imageAlt = 'Home Essence Room Spray by Paula Ambrosio Home, amber glass bo
 ---
 <Layout title="Home Essence · Home Spray" description={description} canonical="/home-essence/" ogImage="/images/home-essence/front.jpg" ogImageAlt={imageAlt} compactFooter>
   <Fragment slot="head">
-    <link rel="preload" as="image" href="/images/home-essence/front.jpg" />
+    <link rel="preload" as="image" href="/images/home-essence/front.webp" type="image/webp" fetchpriority="high" />
     <Fragment set:html={schemaScript({ '@context':'https://schema.org', '@type':'Product', name:product.name, description, image:`${SITE.url}${product.image}`, brand:{'@type':'Brand',name:'Paula Ambrosio Home'}, url:`${SITE.url}/home-essence/`, offers:{'@type':'Offer',price:product.price,priceCurrency:product.currency,url:product.checkoutUrl} })} />
   </Fragment>
   <div class="essence-page">
@@ -26,7 +26,7 @@ const imageAlt = 'Home Essence Room Spray by Paula Ambrosio Home, amber glass bo
         </div>
       </div>
       <picture class="editorial-hero-photo">
-        <img src="/images/home-essence/front.jpg" width="1024" height="1536" alt={imageAlt} fetchpriority="high" decoding="async" />
+        <img src="/images/home-essence/front.webp" width="1024" height="1536" alt={imageAlt} fetchpriority="high" decoding="sync" />
       </picture>
       <a href="#the-essence" class="scroll-link">Explore the essence <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 4v16m-6-6 6 6 6-6" /></svg></a>
     </section>
@@ -52,9 +52,9 @@ const imageAlt = 'Home Essence Room Spray by Paula Ambrosio Home, amber glass bo
         <p>Warm woods. Amber glass. Golden details.</p>
       </div>
       <div class="editorial-sequence">
-        {[{image:'invitation',label:'An invitation to stay',number:'01'},{image:'signature',label:'A warm, woody signature',number:'02'},{image:'evening',label:'Let the evening linger',number:'03'}].map(item => (
-          <figure class="editorial-slide" style={`--scene:url('/images/home-essence/${item.image}.jpg')`}>
-            <img src={`/images/home-essence/${item.image}.jpg`} width="1122" height="1402" alt={`${item.label}: Home Essence campaign imagery supplied by the studio.`} loading="lazy" decoding="async" />
+        {[{image:'invitation',label:'An invitation to stay',number:'01',width:1122,height:1402},{image:'signature',label:'A warm, woody signature',number:'02',width:1122,height:1402},{image:'evening',label:'Let the evening linger',number:'03',width:864,height:1536}].map(item => (
+          <figure class="editorial-slide" style={`--scene:url('/images/home-essence/${item.image}.webp')`}>
+            <img src={`/images/home-essence/${item.image}.webp`} width={item.width} height={item.height} alt={`${item.label}: Home Essence campaign imagery supplied by the studio.`} loading="lazy" decoding="async" />
             <figcaption><span class="essence-label">Home Essence / {item.number}</span><strong>{item.label}</strong></figcaption>
           </figure>
         ))}
@@ -63,12 +63,12 @@ const imageAlt = 'Home Essence Room Spray by Paula Ambrosio Home, amber glass bo
     </section>
 
     <section class="essence-details" aria-label="Home Essence fragrance and label">
-      <figure><img src="/images/home-essence/notes.jpg" width="1024" height="1536" alt="Home Essence fragrance notes: cardamom, amber, vetiver, amyris, Indonesian patchouli, Nepalese alder and soft leather." loading="lazy" decoding="async" /></figure>
-      <figure><img src="/images/home-essence/back.jpg" width="1024" height="1536" alt="Concept visual of the Home Essence rear label, describing the warm woody fragrance, medium intensity and 100 mL size." loading="lazy" decoding="async" /></figure>
+      <figure><img src="/images/home-essence/notes.webp" width="1024" height="1536" alt="Home Essence fragrance notes: cardamom, amber, vetiver, amyris, Indonesian patchouli, Nepalese alder and soft leather." loading="lazy" decoding="async" /></figure>
+      <figure><img src="/images/home-essence/back.webp" width="1024" height="1536" alt="Concept visual of the Home Essence rear label, describing the warm woody fragrance, medium intensity and 100 mL size." loading="lazy" decoding="async" /></figure>
     </section>
 
     <section class="essence-final" id="shop" aria-labelledby="shop-title">
-      <div class="final-art reveal"><img src="/images/home-essence/front.jpg" width="1024" height="1536" alt={imageAlt} loading="lazy" decoding="async" /></div>
+      <div class="final-art reveal"><img src="/images/home-essence/front.webp" width="1024" height="1536" alt={imageAlt} loading="lazy" decoding="async" /></div>
       <div class="final-copy reveal">
         <p class="essence-label">Paula Ambrósio Home</p>
         <h2 id="shop-title">Make home<br /><em>unforgettable.</em></h2>
