@@ -97,7 +97,7 @@
 		background-color: color-mix(in srgb, var(--color-brass) 30%, transparent);
 	}
 
-	/* Fullscreen dialog sheets (nav menu + inquiry form) share one behavior */
+	/* Fullscreen dialog sheet (mobile nav menu) */
 	dialog[open] {
 		display: block;
 	}

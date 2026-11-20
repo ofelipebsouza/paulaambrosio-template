@@ -70,16 +70,8 @@ try {
     page.on('pageerror', error => pageErrors.push(error.message));
     await page.goto(`${base}/contact/`, { waitUntil: 'networkidle' });
     await page.locator('form[data-analytics-form="contact"][data-analytics-bound="true"]').waitFor();
-    for (const kind of ['contact', 'project_inquiry']) {
+    for (const kind of ['contact']) {
       const form = page.locator(`form[data-analytics-form="${kind}"]`);
-      const modal = page.locator('#inquiry-modal');
-      const openModal = async () => {
-        const trigger = page.locator('.inquiry-open').first();
-        if (await trigger.isVisible()) await trigger.click();
-        else await trigger.evaluate(button => button.click()); // Header intentionally hides this trigger on desktop.
-        await modal.waitFor({ state: 'visible' });
-      };
-      if (kind === 'project_inquiry') await openModal();
       const name = form.locator('[name="name"]');
       const email = form.locator('[name="email"]');
       const message = form.locator('[name="message"]');
@@ -115,13 +107,6 @@ try {
       assert.equal(await message.getAttribute('aria-invalid'), null);
       assert.equal(await form.locator(`[id^="${kind}-error-"]`).count(), 0, 'Dynamic field errors removed');
       assert.equal(await status.textContent(), '', 'Editing clears stale validation summary');
-      if (kind === 'project_inquiry') {
-        assert.equal(await message.getAttribute('aria-describedby'), 'inq-message-error', 'Preserve static accessibility description');
-        await page.keyboard.press('Escape');
-        assert.equal(await modal.evaluate(el => el.open), false);
-        await openModal();
-        assert.equal(await message.inputValue(), 'Updated synthetic project details.', 'Close/reopen retains unfinished inquiry');
-      }
       responseMode = 'unavailable';
       await submit.click();
       await status.getByRole('link', { name: 'Open email draft' }).waitFor();
@@ -142,13 +127,7 @@ try {
       assert.equal(submissions.length, previousCount + 3, 'Only 422, 503 and accepted 200 submissions');
       const successPath = `/tmp/paula-${viewport.name}-${kind}-success.png`;
       await page.screenshot({ path: successPath, fullPage: kind === 'contact' }); screenshots.push(successPath);
-      if (kind === 'project_inquiry') {
-        await modal.getByRole('button', { name: 'Close inquiry form' }).click();
-        await openModal();
-        assert.equal(await message.inputValue(), '');
-        await page.keyboard.press('Escape');
-      }
-      console.log(`PASS ${viewport.name}/${kind}: native validation, 422 focus/preservation, editing cleanup, 503 retry, accepted 200 reset${kind === 'project_inquiry' ? ', modal close/reopen' : ''}`);
+      console.log(`PASS ${viewport.name}/${kind}: native validation, 422 focus/preservation, editing cleanup, 503 retry, accepted 200 reset`);
     }
     assert.deepEqual(pageErrors, [], 'No uncaught browser errors');
     assert.deepEqual(unexpectedAPIs, [], 'No unexpected API writes');

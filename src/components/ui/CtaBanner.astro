@@ -13,6 +13,7 @@ const {
 	title = 'Begin Your Project',
 	body = 'Tell us about your residence or property. We will schedule a confidential discovery session with our design team.',
 	primaryLabel = 'Start Your Project',
+	primaryHref = '/contact/',
 	secondaryLabel = 'Explore Our Work',
 	secondaryHref = '/projects/',
 	primaryAnalyticsEvent = 'cta_start_project',
@@ -48,12 +49,12 @@ const secondaryAnalyticsEvent = secondaryRoute === '/services'
 		<h2 class="font-display mx-auto max-w-2xl text-4xl lg:text-5xl leading-tight">{title}</h2>
 		<p class="mx-auto mt-5 max-w-xl text-lede text-slate">{body}</p>
 		<div class="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-			<button
-				type="button"
-				class="inquiry-open btn-primary cursor-pointer"
+			<a
+				href={trailingSlash(primaryHref)}
+				class="btn-primary"
 				data-analytics-event={primaryAnalyticsEvent}
 				data-analytics-location={analyticsLocation}
-			>{primaryLabel}</button>
+			>{primaryLabel}</a>
 			<a
 				href={trailingSlash(secondaryHref)}
 				class="btn-secondary"

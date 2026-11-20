@@ -24,7 +24,6 @@ Visitante → <form action="/api/contact/"> → POST /api/contact/
 | `src/lib/rate-limit.ts` | Rate limit distribuído via Upstash REST, com fallback em memória **declarado como tal** nos logs. |
 | `src/components/ui/Turnstile.astro` | Widget opcional do Cloudflare Turnstile; nada é renderizado nem carregado sem a site key. |
 | `src/pages/contact.astro` | Formulário completo da página de contato. |
-| `src/components/Header.astro` | Formulário compacto do modal "Start your project" (mesmo endpoint). |
 | `src/components/Analytics.astro` | Estado de envio, mensagens de sucesso/erro e eventos de analytics. |
 | `astro.config.mjs` | `output: 'static'` + adapter da Vercel: só este endpoint roda on-demand, o resto continua estático. |
 
