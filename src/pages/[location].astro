@@ -75,12 +75,12 @@ const ctas = location.data.ctas;
 				</h1>
 				{sub && <p class="mt-4 max-w-2xl text-lg leading-relaxed text-bone/80">{sub}</p>}
 				<div class="mt-8">
-					<button
-						type="button"
-						class="inquiry-open btn-primary btn-on-dark cursor-pointer"
+					<a
+						href="/contact/"
+						class="btn-primary btn-on-dark"
 						data-analytics-event="cta_start_project"
 						data-analytics-location="hero"
-					>{ctas?.primary ?? 'Start Your Project'}</button>
+					>{ctas?.primary ?? 'Start Your Project'}</a>
 				</div>
 			</div>
 		</section>
@@ -114,12 +114,12 @@ const ctas = location.data.ctas;
 				</div>
 				<div class="container-editorial mt-16 text-center">
 					<p class="eyebrow text-stone mb-6">Ready to begin?</p>
-					<button
-						type="button"
-						class="inquiry-open btn-primary cursor-pointer"
+					<a
+						href="/contact/"
+						class="btn-primary"
 						data-analytics-event="cta_start_project"
 						data-analytics-location="after_projects"
-					>{ctas?.primary ?? 'Start Your Project'}</button>
+					>{ctas?.primary ?? 'Start Your Project'}</a>
 				</div>
 			</section>
 		)}

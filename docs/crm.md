@@ -1,7 +1,7 @@
 # Internal CRM
 
 The studio pipeline behind `/admin/`: every inquiry that reaches the contact
-page or the header modal, its follow-up deadlines, the conversion funnel and the
+page, its follow-up deadlines, the conversion funnel and the
 live report posted by the **Hermes Agent**, with **JEV** consuming the events.
 
 It is internal by construction — not linked from the site, `noindex` on every
@@ -13,7 +13,7 @@ session cookie that never leaves the server.
 ## 1. Architecture
 
 ```
-contact page / header modal
+contact page
         │  POST /api/contact/
         ▼
  api/contact.ts ──┬─► blocklist check  silent 200 for a blocked sender
