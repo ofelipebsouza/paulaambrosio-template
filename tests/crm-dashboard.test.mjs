@@ -12,7 +12,7 @@ const fixture = (id) => ({id,name:`Fixture ${id}`,email:`${id}@example.test`,sta
 const tick = () => new Promise(resolve => setImmediate(resolve));
 function deferred() { let resolve; const promise = new Promise(r => {resolve=r;}); return {promise,resolve}; }
 function setup() {
- const dom = new JSDOM(`<p id="crm-status-line"></p><span id="crm-board-open"></span><table><tbody id="crm-leads"></tbody></table><div id="crm-leads-cards"></div><p id="crm-leads-foot"></p><div data-dropzone="novo"></div><div data-dropzone="proposta"></div><dialog id="crm-lead-dialog"><button id="crm-dialog-close">Close</button><p id="crm-dialog-name"></p><select id="crm-dialog-status"><option value="novo">New</option><option value="proposta">Proposal</option></select></dialog>`, {url:'https://site.example.test/admin/',runScripts:'outside-only'});
+ const dom = new JSDOM(`<p id="crm-status-line"></p><span id="crm-board-open"></span><table><tbody id="crm-leads"></tbody></table><div id="crm-leads-cards"></div><p id="crm-leads-foot"></p><div data-dropzone="novo"></div><div data-dropzone="proposta"></div><span data-intake-origin="houzz" data-intake-tier="T3"></span><dialog id="crm-lead-dialog"><form id="crm-intake-form"><select name="origin"><option value="website">Website</option><option value="houzz">Houzz</option></select><select name="recommendedService"><option value="Residential">Residential</option><option value="Turnkey">Turnkey</option></select><input name="nextStep"><input name="nextStepDate" type="date"><button type="submit">Save</button></form><span id="crm-intake-feedback"></span><div id="crm-dialog-meta"></div><button id="crm-dialog-close">Close</button><p id="crm-dialog-name"></p><select id="crm-dialog-status"><option value="novo">New</option><option value="proposta">Proposal</option></select></dialog>`, {url:'https://site.example.test/admin/',runScripts:'outside-only'});
  const {window}=dom;
  window.setInterval=()=>0;
  window.CSS={escape:s=>s};
@@ -100,5 +100,34 @@ test('rapid repeated detail opens and Escape do not reopen or render stale conte
  h.dialog.dispatchEvent(new h.window.Event('cancel'));
  pending.resolve(Response.json({ok:true,lead:fixture('one'),events:[]}));await Promise.all([first,second]);
  assert.equal(h.dialog.open,false);assert.equal(h.window.document.querySelector('#crm-dialog-name').textContent,'');
+ } finally {h.dom.window.close();}
+});
+
+test('lead intake fields are displayed and studio edits save with the due date', async () => {
+ const h=setup();
+ try {
+  await tick();
+  let patch;
+  const lead={...fixture('initial'),location:'Hillsboro Beach',propertyType:'Penthouse',investmentTier:'T3',origin:'website',recommendedService:'Residential',nextStep:'Call',nextStepDate:'2026-11-23'};
+  h.setFetch(async (path, init) => {
+   if(init?.method==='PATCH') { patch=JSON.parse(init.body); return Response.json({ok:true,lead:{...lead,...patch}}); }
+   if(path==='/api/crm/leads/initial/') return Response.json({ok:true,lead});
+   if(path==='/api/crm/metrics/') return Response.json({ok:true, metrics:{originTiers:{houzz:{T3:2}}}});
+   return Response.json({ok:true,leads:[lead],tasks:[],report:null});
+  });
+  await h.api.openLead('initial');
+  const doc=h.window.document;
+  assert.match(doc.querySelector('#crm-dialog-meta').textContent,/Hillsboro Beach.*Penthouse.*T3/);
+  const form=doc.querySelector('#crm-intake-form');
+  assert.equal(form.elements.nextStepDate.value,'2026-11-23');
+  form.elements.origin.value='houzz';
+  form.elements.recommendedService.value='Turnkey';
+  form.elements.nextStep.value='Call about scope';
+  form.elements.nextStepDate.value='2026-11-24';
+  form.dispatchEvent(new h.window.Event('submit',{bubbles:true,cancelable:true}));
+  await tick();
+  assert.deepEqual(patch,{origin:'houzz',recommendedService:'Turnkey',nextStep:'Call about scope',nextStepDate:'2026-11-24'});
+  assert.equal(doc.querySelector('#crm-intake-feedback').textContent,'Acompanhamento salvo.');
+  assert.equal(doc.querySelector('[data-intake-origin="houzz"][data-intake-tier="T3"]').textContent,'2');
  } finally {h.dom.window.close();}
 });

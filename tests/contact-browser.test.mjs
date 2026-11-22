@@ -81,10 +81,21 @@ try {
       await email.fill('browser-test@example.test');
       await form.locator('[name="phone"]').fill('5550100999');
       if (kind === 'contact') {
-        for (const field of ['location', 'propertyType', 'service', 'budget', 'timeline']) await form.locator(`[name="${field}"]`).selectOption({ index: 1 });
+        await form.locator('[name="location"]').fill('Hillsboro Beach');
+        for (const field of ['propertyType', 'service', 'timeline', 'origin']) await form.locator(`[name="${field}"]`).selectOption({ index: 1 });
       }
-      const initial = await form.evaluate(el => Object.fromEntries(new FormData(el)));
       const previousCount = submissions.length;
+      const budget = form.locator('[name="budget"]');
+      assert.equal(await budget.getAttribute('aria-describedby'), 'budget-help');
+      assert.match(await form.locator('#budget-help').textContent(), /Design fees are quoted separately/);
+      await message.fill('Check the required estimate first.');
+      await submit.click();
+      assert.equal(await budget.evaluate(el => el.validity.valueMissing), true);
+      assert.equal(await budget.evaluate(el => el === document.activeElement), true);
+      assert.equal(submissions.length, previousCount, 'Native validation must require an investment answer');
+      await budget.selectOption('Not sure yet');
+      await message.fill('');
+      const initial = await form.evaluate(el => Object.fromEntries(new FormData(el)));
       await submit.click();
       assert.equal(await message.evaluate(el => el.validity.valueMissing), true, `${viewport.name}/${kind}: native required message`);
       assert.equal(await message.evaluate(el => el === document.activeElement), true);
@@ -120,7 +131,8 @@ try {
       assert.ok(failedSubmission.id, 'Retry key is generated');
       assert.equal(submissions.at(-1).id, failedSubmission.id, 'Unchanged retry retains submission ID');
       for (const field of ['name', 'email', 'phone', 'message']) assert.equal(await form.locator(`[name="${field}"]`).inputValue(), '', `${field} reset after accepted 200`);
-      if (kind === 'contact') for (const field of ['location', 'propertyType', 'service', 'budget', 'timeline']) assert.equal(await form.locator(`[name="${field}"]`).inputValue(), '');
+      if (kind === 'contact') await form.locator('[name="location"]').fill('Hillsboro Beach');
+        for (const field of ['propertyType', 'service', 'timeline', 'origin']) assert.equal(await form.locator(`[name="${field}"]`).inputValue(), '');
       assert.equal(await form.locator('[aria-invalid="true"]').count(), 0);
       assert.equal(await submit.isEnabled(), true);
       assert.equal(await form.getAttribute('aria-busy'), 'false');

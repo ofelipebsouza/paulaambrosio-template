@@ -22,6 +22,8 @@ import { createHash, randomUUID } from 'node:crypto';
 import { isSubmissionId, type LeadAcceptance } from '../../lib/lead-acceptance';
 import {
 	CONTACT_FIELDS,
+	INTAKE_VERSION,
+	LEGACY_BUDGET_OPTIONS,
 	FIELD_LIMITS,
 	HONEYPOT_FIELD,
 	TURNSTILE_FIELD,
@@ -95,9 +97,12 @@ function validate(raw: Record<string, unknown>): ValidationResult {
 
 	for (const spec of CONTACT_FIELDS) {
 		const value = sanitize(raw[spec.name], spec);
-		payload[spec.name] = value;
+		// Missing optional origin keeps the canonical fingerprint of prior requests.
+		if (spec.name !== 'origin' || value) payload[spec.name] = value;
 
 		if (spec.required && !value) {
+			// Older cached clients and integrations did not render this required field.
+			if (spec.name === 'budget' && raw.intake_version !== INTAKE_VERSION) continue;
 			// Location and service are required on the comprehensive /contact/ page,
 			// but optional on compact forms like the project inquiry modal.
 			if (
@@ -119,7 +124,9 @@ function validate(raw: Record<string, unknown>): ValidationResult {
 			errors.email = 'Please enter a valid email address.';
 			continue;
 		}
-		if (spec.options && !spec.options.includes(value)) {
+		const legacyBudget = spec.name === 'budget' && raw.intake_version !== INTAKE_VERSION
+			&& (LEGACY_BUDGET_OPTIONS as readonly string[]).includes(value);
+		if (spec.options && !spec.options.includes(value) && !legacyBudget) {
 			errors[spec.name] = `Please choose one of the listed ${spec.label.toLowerCase()} options.`;
 		}
 	}
@@ -459,6 +466,7 @@ export const ALL: APIRoute = async ({ request }) => {
 		await transporter.sendMail({
 			from,
 			to: payload.email,
+			replyTo: recipient,
 			subject: confirmation.subject,
 			text: confirmation.text,
 			html: confirmation.html,

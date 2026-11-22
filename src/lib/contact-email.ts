@@ -9,7 +9,8 @@
  * Every interpolated value is HTML-escaped — user input never reaches the
  * markup unescaped. Copy stays restrained and human: no marketing filler.
  */
-import { CONTACT_FIELDS, type ContactFieldName } from './contact-form';
+import { CONTACT_FIELDS, leadOriginLabel, type ContactFieldName } from './contact-form';
+import { currentInvestmentTier, isPriorityIntake, type InvestmentTier } from './lead-intake';
 
 export interface ContactPayload {
 	name: string;
@@ -19,6 +20,7 @@ export interface ContactPayload {
 	propertyType: string;
 	service: string;
 	budget: string;
+	origin?: string;
 	timeline: string;
 	message: string;
 }
@@ -63,7 +65,7 @@ function label(field: ContactFieldName): string {
 function rows(data: ContactPayload): Array<{ label: string; value: string }> {
 	return CONTACT_FIELDS.filter((spec) => spec.name !== 'message' && data[spec.name]).map((spec) => ({
 		label: spec.label,
-		value: data[spec.name],
+		value: (spec.name === 'origin' ? leadOriginLabel(data.origin) : data[spec.name]) ?? '',
 	}));
 }
 
@@ -73,11 +75,15 @@ function rows(data: ContactPayload): Array<{ label: string; value: string }> {
 
 export function composeLeadEmail(data: ContactPayload, recipient: string): ComposedEmail {
 	const name = safeSubjectFragment(data.name);
-	const subject = `New Project Inquiry — ${name}`;
+	const tier = currentInvestmentTier(data.budget);
+	const priority = isPriorityIntake(tier);
+	// Reuse the approved studio inbox. The priority notice never goes to the lead.
+	const heading = priority ? 'Priority Project Inquiry' : 'New Project Inquiry';
+	const subject = priority ? `${heading} (${tier}) — ${name}` : `${heading} — ${name}`;
 
 	const text = [
 		STUDIO_SIGNATURE,
-		'New Project Inquiry',
+		heading,
 		'',
 		...rows(data).map((row) => `${row.label}: ${row.value}`),
 		'',
@@ -91,7 +97,7 @@ export function composeLeadEmail(data: ContactPayload, recipient: string): Compo
 		.join('\n');
 
 	const html = emailShell({
-		heading: 'New Project Inquiry',
+		heading,
 		body: `
 			${rows(data)
 				.map(
@@ -119,7 +125,70 @@ export function composeLeadEmail(data: ContactPayload, recipient: string): Compo
 /* Visitor confirmation                                                       */
 /* -------------------------------------------------------------------------- */
 
+/** Send matching studio copy for the five current bands. Old clients retain their receipt. */
 export function composeConfirmationEmail(data: ContactPayload): ComposedEmail {
+	const tier = currentInvestmentTier(data.budget);
+	return tier ? composeTierConfirmation(data, tier) : composeStandardConfirmation(data);
+}
+
+const STUDIO_SITE = 'https://www.paulaambrosio.com';
+const DESIGN_EXPRESS_URL = `${STUDIO_SITE}/design-express-miami/`;
+const DESIGN_CONSULTATION_URL = `${STUDIO_SITE}/design-consultation-miami/`;
+
+type EmailLine = readonly (string | { text: string; href: string; bold?: boolean })[];
+function composeTierConfirmation(data: ContactPayload, tier: InvestmentTier): ComposedEmail {
+	const firstName = safeSubjectFragment(data.name).split(/\s+/)[0] || 'there';
+	let subject = 'Your project with Paula Ambrosio Interior Design';
+	const callback = (purpose: string) => data.phone && data.phone.replace(/\D/g, '').length >= 7
+		? `Our team will call you within 24 hours ${purpose}.`
+		: `Please reply with the best number to reach you. Our team will call within 24 hours of receiving it ${purpose}.`;
+	const lines: EmailLine[] = [[`Hi ${firstName},`]];
+	if (tier === 'T1') {
+		lines.push(
+			['Thank you for reaching out. For projects of this scope, our clients love two options: ', { text: 'Design Consultation', href: DESIGN_CONSULTATION_URL, bold: true }, ', an expert session to plan layout, materials and finishes, and ', { text: 'Design Express', href: DESIGN_EXPRESS_URL, bold: true }, ', a complete design delivered on a shorter timeline.'],
+			['You can learn more here: ', { text: 'Design Express', href: DESIGN_EXPRESS_URL }, ' or ', { text: 'Design Consultation', href: DESIGN_CONSULTATION_URL }],
+			[callback('to recommend the best fit and schedule your consultation')],
+		);
+	} else if (tier === 'T2') {
+		lines.push(
+			['Thank you for sharing your project with us. At this scope, we usually recommend our Luxury Residential Design service, room by room or for the entire home, with custom millwork and full coordination.'],
+			[callback('to schedule a 20-minute introductory consultation')],
+		);
+	} else if (tier === 'T3') {
+		subject = 'Your residence with Paula Ambrosio Interior Design';
+		lines.push(
+			['Thank you for considering our studio. For a project of this scale, our Turnkey Interior Design service manages everything from concept and procurement to installation and final styling, so you receive a finished, move in ready home.'],
+			['Paula will personally review your inquiry.'],
+			[callback('to schedule a private consultation')],
+		);
+	} else if (tier === 'T4') {
+		subject = 'A private consultation with Paula Ambrosio';
+		lines.push(
+			["Thank you for reaching out. Projects of this scale receive Paula's direct attention from the very first conversation, with a dedicated team for design, procurement and on site coordination."],
+			[callback('to schedule your consultation with Paula')],
+		);
+	} else {
+		lines.push(
+			["Thank you for reaching out. Many of our clients start without a defined budget, and that's perfectly fine. In a short call, we'll understand your goals and recommend the right path."],
+			[callback('to schedule an introductory consultation')],
+		);
+	}
+	const signature = tier === 'T4'
+		? ['Paula Ambrosio', 'Principal Designer, Paula Ambrosio Interior Design']
+		: [STUDIO_SIGNATURE];
+	const text = lines.map((line) => line.map((part) => typeof part === 'string' ? part : `${part.text} (${part.href})`).join(''))
+		.concat([`Warm regards,\n${signature.join('\n')}`]).join('\n\n');
+	const body = [...lines, ['Warm regards,'], ...signature.map((line) => [line])]
+		.map((line) => `<tr><td style="font-family:${SANS};font-size:15px;line-height:1.75;color:${INK};padding-bottom:14px;">${line.map((part) => {
+			if (typeof part === 'string') return escapeHtml(part);
+			const link = `<a href="${escapeHtml(part.href)}" style="color:${STONE};text-decoration:underline;">${escapeHtml(part.text)}</a>`;
+			return ('bold' in part && part.bold) ? `<strong>${link}</strong>` : link;
+		}).join('')}</td></tr>`).join('');
+	const html = emailShell({ heading: subject, body, footnote: escapeHtml(STUDIO_SIGNATURE) });
+	return { subject, text, html };
+}
+
+function composeStandardConfirmation(data: ContactPayload): ComposedEmail {
 	// Prefer the first name: the confirmation is a courtesy note, not a form letter.
 	const firstName = data.name.split(/\s+/)[0] || data.name;
 	const subject = 'Thank you for contacting Paula Ambrosio Interior Design';

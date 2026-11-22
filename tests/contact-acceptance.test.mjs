@@ -456,3 +456,74 @@ test('a valid Turnstile response reaches durable acceptance through the offline 
 	assert.equal(x.count('fetch'), 1);
 	assert.equal(x.durableWrites.length, 1);
 });
+
+const intakeCases = [
+ ['Under $100,000', 'T1', 'Consultation', /Design Consultation/],
+ ['$100,000 to $500,000', 'T2', 'Residential', /Luxury Residential Design/],
+ ['$500,000 to $1,000,000', 'T3', 'Turnkey', /Turnkey Interior Design/],
+ ['Over $1,000,000', 'T4', 'Turnkey', /Paula's direct attention/],
+ ['Not sure yet', 'Unsure', undefined, /without a defined budget/],
+];
+for (const [budget, tier, service, copy] of intakeCases) {
+ test(`intake ${tier}: tags, selects the right reply, and only prioritizes T3/T4 internally`, async () => {
+  const x = fixture();
+  const fields = { intake_version:'2', budget, origin:'broker', location:'Hillsboro Beach', propertyType:'Penthouse' };
+  const result = await x.submit({ fields });
+  assertMinimalReceipt(result);
+  assert.equal(x.durableWrites.length, 1);
+  const [lead] = x.durableWrites;
+  assert.equal(lead.investmentTier, tier);
+  assert.equal(lead.origin, 'broker');
+  assert.equal(lead.location, 'Hillsboro Beach');
+  assert.equal(lead.propertyType, 'Penthouse');
+  assert.equal(lead.recommendedService, service);
+  assert.equal(lead.status, 'novo');
+  assert.equal(lead.firstResponseAt, null);
+  assert.equal(lead.nextStep, 'Review inquiry and follow up');
+  assert.match(lead.nextStepDate, /^\d{4}-\d{2}-\d{2}$/);
+  const [studio, visitor] = x.of('sendMail').map(call => call.args[0]);
+  assert.equal(studio.to, 'studio@example.test');
+  assert.equal(studio.subject.startsWith('Priority Project Inquiry'), tier === 'T3' || tier === 'T4');
+  assert.match(studio.text, /Real estate broker/);
+  assert.equal(visitor.to, 'visitor@example.test');
+  assert.equal(visitor.replyTo, 'studio@example.test');
+  assert.match(visitor.text, copy);
+  assert.match(visitor.text, /within 24 hours/);
+  assert.doesNotMatch(visitor.text, /\$\d|\[booking link\]|priority project inquiry|real estate broker/i);
+  assert.doesNotMatch(result.text, /investmentTier|recommendedService|nextStep|origin|broker|Penthouse/);
+  if (tier === 'T1') {
+   assert.match(visitor.html, /href="https:\/\/www\.paulaambrosio\.com\/design-express-miami\//);
+   assert.match(visitor.html, /href="https:\/\/www\.paulaambrosio\.com\/design-consultation-miami\//);
+  }
+  assertMinimalReceipt(await x.submit({ fields }));
+  assert.equal(x.count('sendMail'), 2, 'A replay sends neither another confirmation nor a second alert');
+ });
+}
+
+test('the v2 form requires a valid budget while old clients keep their confirmation', async () => {
+ for (const budget of ['', 'fake range', 'Prefer to discuss']) {
+  const x = fixture();
+  const result = await x.submit({fields: { intake_version:'2', budget }});
+  assert.equal(result.status, 422);
+  assert.match(result.body.errors.budget, /investment/i);
+  assert.equal(x.count('sendMail'), 0);
+ }
+ const legacy = fixture();
+ assertMinimalReceipt(await legacy.submit({fields: {budget:''}}));
+ assert.match(legacy.of('sendMail')[1].args[0].text, /our team will review the information/);
+ const noPhone = fixture();
+ assertMinimalReceipt(await noPhone.submit({fields: {intake_version:'2', budget:'Not sure yet', phone:'', name:'<Fixture>'}}));
+ const message = noPhone.of('sendMail')[1].args[0];
+ assert.match(message.text, /Please reply with the best number.*within 24 hours of receiving it/);
+ assert.match(message.html, /&lt;Fixture&gt;/);
+ assert.doesNotMatch(message.html, /<Fixture>/);
+});
+
+test('a fake source on v2 is rejected without a CRM record or an email', async () => {
+ const x = fixture();
+ const result = await x.submit({fields:{intake_version:'2',budget:'Not sure yet',origin:'arbitrary tracking value'}});
+ assert.equal(result.status, 422);
+ assert.ok(result.body.errors.origin);
+ assert.equal(x.durableWrites.length, 0);
+ assert.equal(x.count('sendMail'), 0);
+});

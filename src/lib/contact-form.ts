@@ -7,6 +7,30 @@
  * Field names here must match the `<input name>` attributes exactly: they are
  * the keys of the lead email and of the analytics metadata.
  */
+export const INTAKE_VERSION = '2';
+export const BUDGET_HELP = 'This helps us recommend the right service for you. Design fees are quoted separately.';
+export const BUDGET_TIERS = [
+	{ tier: 'T1', label: 'Under $100,000' },
+	{ tier: 'T2', label: '$100,000 to $500,000' },
+	{ tier: 'T3', label: '$500,000 to $1,000,000' },
+	{ tier: 'T4', label: 'Over $1,000,000' },
+	{ tier: 'Unsure', label: 'Not sure yet' },
+] as const;
+export type InvestmentTier = (typeof BUDGET_TIERS)[number]['tier'];
+export const BUDGET_OPTIONS = BUDGET_TIERS.map(({ label }) => label);
+export const LEGACY_BUDGET_OPTIONS = ['$100k – $250k', '$250k – $500k', '$500k – $1M', '$1M+', 'Prefer to discuss'] as const;
+
+export const LEAD_ORIGINS = [
+	{ value: 'website', label: 'Website' },
+	{ value: 'houzz', label: 'Houzz' },
+	{ value: 'google', label: 'Google' },
+	{ value: 'instagram', label: 'Instagram' },
+	{ value: 'referral', label: 'Referral' },
+	{ value: 'broker', label: 'Real estate broker' },
+] as const;
+export type LeadOrigin = (typeof LEAD_ORIGINS)[number]['value'];
+export const ORIGIN_OPTIONS = LEAD_ORIGINS.map(({ value }) => value);
+export const leadOriginLabel = (value: unknown): string => LEAD_ORIGINS.find((option) => option.value === value)?.label ?? '';
 
 /**
  * Server endpoint that receives inquiries.
@@ -28,6 +52,7 @@ export const FIELD_LIMITS = {
 	propertyType: 60,
 	service: 80,
 	budget: 40,
+	origin: 20,
 	timeline: 40,
 	message: 3000,
 } as const;
@@ -40,6 +65,8 @@ export const TURNSTILE_FIELD = 'cf-turnstile-response';
 
 export const SERVICE_OPTIONS = [
 	'Full-Service Interior Design',
+	'Design Consultation',
+	'Design Express',
 	'Turnkey Interior Design',
 	'Luxury Residential Interior Design',
 	'New Construction',
@@ -51,35 +78,35 @@ export const SERVICE_OPTIONS = [
 export const LOCATION_OPTIONS = [
 	'Miami',
 	'Miami Beach',
+	'Hillsboro Beach',
+	'Deerfield Beach',
+	'Coral Gables',
+	'Fort Lauderdale',
 	'Sunny Isles Beach',
 	'Aventura',
 	'Bal Harbour',
 	'Boca Raton',
 	'Palm Beach',
-	'Other / International',
+	'North Miami',
+	'Pinecrest',
+	'Surfside',
+	'Delray Beach',
 ] as const;
 
 export const PROPERTY_TYPE_OPTIONS = [
 	'Primary Residence',
 	'Second Home',
 	'Condo / Apartment',
+	'Penthouse',
 	'Single-Family Home',
 	'New Construction',
 	'Commercial / Hospitality',
 	'Other',
 ] as const;
 
-export const BUDGET_OPTIONS = [
-	'$100k – $250k',
-	'$250k – $500k',
-	'$500k – $1M',
-	'$1M+',
-	'Prefer to discuss',
-] as const;
-
 export const TIMELINE_OPTIONS = ['Immediately', '1–3 months', '3–6 months', '6–12 months', 'Flexible'] as const;
 
-export type ContactTextField = 'name' | 'email' | 'phone' | 'location' | 'propertyType' | 'service' | 'budget' | 'timeline' | 'message';
+export type ContactTextField = 'name' | 'email' | 'phone' | 'location' | 'propertyType' | 'service' | 'budget' | 'origin' | 'timeline' | 'message';
 
 export interface ContactFieldSpec {
 	/** Form field name (also the email label source and analytics key). */
@@ -101,10 +128,11 @@ export const CONTACT_FIELDS: readonly ContactFieldSpec[] = [
 	{ name: 'name', label: 'Name', required: true },
 	{ name: 'email', label: 'Email', required: true },
 	{ name: 'phone', label: 'Phone', required: false },
-	{ name: 'location', label: 'Project Location', required: true },
+	{ name: 'location', label: 'Project city', required: true },
 	{ name: 'propertyType', label: 'Property Type', required: false, options: PROPERTY_TYPE_OPTIONS },
 	{ name: 'service', label: 'Service', required: true, options: SERVICE_OPTIONS },
-	{ name: 'budget', label: 'Approximate Budget', required: false, options: BUDGET_OPTIONS },
+	{ name: 'budget', label: 'Estimated investment for your project', required: true, options: BUDGET_OPTIONS },
+	{ name: 'origin', label: 'How did you hear about us?', required: false, options: ORIGIN_OPTIONS },
 	{ name: 'timeline', label: 'Desired Timeline', required: false, options: TIMELINE_OPTIONS },
 	{ name: 'message', label: 'Message', required: true, multiline: true },
 ] as const;

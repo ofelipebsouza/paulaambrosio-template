@@ -1,9 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { redisHashCounts, redisPipelineResults } from '../src/lib/redis-response';
-import { applyLeadPatch } from '../src/lib/crm/lead-actions';
+import { applyLeadPatch, invalidIntakeField } from '../src/lib/crm/lead-actions';
+import { buildMetrics } from '../src/lib/crm/metrics';
+import { resolveLeadOrigin, studioFollowUpDate } from '../src/lib/lead-intake';
 import { completeReplyTasks } from '../src/lib/crm/task-actions';
-import { buildLead, type CrmTask } from '../src/lib/crm/schema';
+import { buildLead, leadForHermes, type CrmTask } from '../src/lib/crm/schema';
 import { dailyCounts, ledgerCounts, getLead, insertLead, saveTask, listTasks } from '../src/lib/crm/store';
 import { getAnalyticsSummary } from '../src/lib/analytics/store';
 import { scheduleFollowUps } from '../src/lib/crm/automation';
@@ -219,4 +221,61 @@ test('dashboard guidance explains explicit reply recording, not an automatic sta
  const page = await readFile('src/pages/admin/index.astro', 'utf8');
  assert.ok(page.includes('Use <em>Marcar como respondido</em> para registrar o primeiro retorno'));
  assert.ok(!page.includes('Moving a lead out of <em>New</em> records its first response'));
+});
+
+test('lead source attribution follows documented precedence and never treats a spoofed hostname as Google', () => {
+ assert.equal(resolveLeadOrigin('broker','google','https://instagram.com/'), 'broker');
+ assert.equal(resolveLeadOrigin(undefined,'google_ads','https://www.houzz.com/'), 'google');
+ assert.equal(resolveLeadOrigin(undefined,undefined,'https://l.instagram.com/'), 'instagram');
+ assert.equal(resolveLeadOrigin(undefined,undefined,'https://www.houzz.com/pro/'), 'houzz');
+ assert.equal(resolveLeadOrigin(undefined,undefined,'https://www.google.com.evil.test/'), undefined);
+ assert.equal(studioFollowUpDate(Date.UTC(2026, 10, 22, 3)), '2026-11-22', 'target date is Miami date, not UTC date');
+});
+
+test('new studio fields can be edited, audited without free text, and excluded from Hermes', () => {
+ const item = lead('intake-test');
+ const update = { origin:'referral', recommendedService:'Express', nextStep:'Call the fixture', nextStepDate:'2026-12-01' };
+ assert.equal(invalidIntakeField(update), undefined);
+ const applied = applyLeadPatch(item, update, now+1);
+ assert.deepEqual(applied.changed,Object.keys(update));
+ assert.equal(applied.responded,false);
+ assert.equal(applied.events[0]?.type,'intake');
+ assert.doesNotMatch(applied.events[0]?.detail ?? '', /Call the fixture/);
+ assert.equal(item.origin,'referral');
+ assert.equal(item.nextStepDate,'2026-12-01');
+ for(const key of ['investmentTier', ...Object.keys(update)]) assert.ok(!(key in leadForHermes(item)));
+ assert.equal(invalidIntakeField({nextStepDate:'2026-02-29'}),'nextStepDate');
+ assert.equal(invalidIntakeField({origin:'anything'}),'origin');
+ assert.equal(invalidIntakeField({recommendedService:'anything'}),'recommendedService');
+ assert.equal(invalidIntakeField({nextStep:'x'.repeat(241)}),'nextStep');
+ assert.equal(invalidIntakeField({nextStep:'hello\nworld'}),'nextStep');
+ assert.equal(applyLeadPatch(item,{nextStepDate:''},now+2).changed[0],'nextStepDate');
+});
+
+test('the last-30-day CRM matrix counts sources by tier, handles old records and excludes older leads', () => {
+ const fresh = {...lead('new'), origin:'houzz' as const, investmentTier:'T3' as const};
+ const oldActive = {...lead('legacy'), origin:undefined, utm:{source:'instagram'}, investmentTier:undefined, budget:'$250k – $500k'};
+ const expired = {...lead('expired'), createdAt:now-31*86_400_000};
+ const unknown = {...lead('unknown'), origin:undefined};
+ const metrics = buildMetrics({leads:[fresh, oldActive, expired, unknown],tasks:[],daily:{},now});
+ assert.deepEqual(metrics.originTiers,{houzz:{T3:1}, instagram:{T2:1}, unknown:{Unsure:1}});
+});
+
+test('authenticated intake changes persist; an impossible date never changes the record', async () => {
+ const item = lead('intake-route');
+ await insertLead(item);
+ const path = '/api/crm/leads/intake-route/';
+ const submit = (body: unknown) => leadRoute({ request:request(path,body,'PATCH'),params:{ id:item.id } } as never);
+ const bad = await submit({ origin:'broker', nextStepDate:'2026-02-31' });
+ assert.equal(bad.status,422);
+ assert.equal((await bad.json()).field,'nextStepDate');
+ assert.equal((await getLead(item.id))?.origin,'website');
+ const update = { origin:'broker', recommendedService:'Turnkey', nextStep:'Set up introductory call', nextStepDate:'2026-11-24' };
+ const ok = await submit(update);
+ assert.equal(ok.status,200);
+ const stored = await getLead(item.id);
+ for(const [key,value] of Object.entries(update)) assert.equal(stored?.[key as keyof typeof stored],value);
+ assert.equal(stored?.firstResponseAt,null);
+ const denied = await leadRoute({request:new Request('https://site.example.test'+path,{method:'PATCH',body: JSON.stringify(update)}),params:{id:item.id}} as never);
+ assert.equal(denied.status,401);
 });

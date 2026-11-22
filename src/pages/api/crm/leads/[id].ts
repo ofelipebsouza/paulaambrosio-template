@@ -2,7 +2,7 @@
  * GET /api/crm/leads/:id/ — one lead with its timeline and follow-up tasks.
  * PATCH /api/crm/leads/:id/ — move it through the pipeline or annotate it.
  *
- * PATCH body: { status?, note?, assignedTo?, responded? }
+ * PATCH body: { status?, note?, assignedTo?, responded?, origin?, recommendedService?, nextStep?, nextStepDate? }
  *
  * The mutation itself lives in `src/lib/crm/lead-actions.ts`, shared with the
  * Hermes agent endpoint, so a move made here and a move made by the agent are
@@ -12,8 +12,9 @@ import type { APIRoute } from 'astro';
 import { emitJev, leadData } from '../../../../lib/crm/automation';
 import { requireCrm } from '../../../../lib/crm/guard';
 import { crmJson, leadRef, log } from '../../../../lib/crm/http';
-import { applyLeadPatch } from '../../../../lib/crm/lead-actions';
+import { applyLeadPatch, invalidIntakeField } from '../../../../lib/crm/lead-actions';
 import { completeReplyTasks } from '../../../../lib/crm/task-actions';
+import { investmentTierFor } from '../../../../lib/lead-intake';
 import { isLeadStatus } from '../../../../lib/crm/schema';
 import { CrmReadUnavailableError, CrmWriteUnconfirmedError, listEvents, listTasks, getLead, pushEvent, saveLead, saveTask } from '../../../../lib/crm/store';
 
@@ -35,7 +36,7 @@ const handle: APIRoute = async ({ request, params }) => {
 		const [events, tasks] = await Promise.all([listEvents(id), listTasks({ requireAvailable: true })]);
 		return crmJson({
 			ok: true,
-			lead,
+			lead: { ...lead, investmentTier: lead.investmentTier ?? investmentTierFor(lead.budget) },
 			events,
 			tasks: tasks.filter((task) => task.leadId === id),
 		});
@@ -50,6 +51,10 @@ const handle: APIRoute = async ({ request, params }) => {
 		return crmJson({ ok: false, error: 'invalid_body' }, 400);
 	}
 
+	if (!body || typeof body !== 'object' || Array.isArray(body)) {
+		return crmJson({ ok: false, error: 'invalid_body' }, 400);
+	}
+
 	// Reject malformed input before touching the document: the caller gets an
 	// explicit 422 instead of a silent normalisation to `novo`.
 	if (body.status !== undefined && !isLeadStatus(body.status)) {
@@ -58,6 +63,9 @@ const handle: APIRoute = async ({ request, params }) => {
 	if (body.note !== undefined && !String(body.note ?? '').trim()) {
 		return crmJson({ ok: false, error: 'empty_note' }, 422);
 	}
+
+	const invalidField = invalidIntakeField(body);
+	if (invalidField) return crmJson({ ok: false, error: 'invalid_intake_field', field: invalidField }, 422);
 
 	const now = Date.now();
 	const result = applyLeadPatch(lead, body, now);

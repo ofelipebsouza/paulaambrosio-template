@@ -12,6 +12,7 @@
 import type { APIRoute } from 'astro';
 import { requireCrm } from '../../../lib/crm/guard';
 import { text } from '../../../lib/crm/http';
+import { investmentTierFor, leadOriginLabel } from '../../../lib/lead-intake';
 import { normalizeStatus } from '../../../lib/crm/schema';
 import { allLeads } from '../../../lib/crm/store';
 
@@ -28,6 +29,11 @@ const HEADERS = [
 	'Property type',
 	'Service',
 	'Budget',
+	'Investment tier',
+	'Lead origin',
+	'Recommended service',
+	'Next step',
+	'Next step date (Miami)',
 	'Timeline',
 	'Form',
 	'Page',
@@ -74,6 +80,11 @@ export const ALL: APIRoute = async ({ request }) => {
 			lead.propertyType,
 			lead.service,
 			lead.budget,
+			lead.investmentTier ?? investmentTierFor(lead.budget),
+			leadOriginLabel(lead.origin),
+			lead.recommendedService,
+			lead.nextStep,
+			lead.nextStepDate,
 			lead.timeline,
 			lead.form,
 			lead.page,
