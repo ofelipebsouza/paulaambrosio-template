@@ -152,9 +152,10 @@ test('contact-page literal phone destinations match the displayed numbers in com
 	}
 });
 
-test('all seven existing tel anchors dispatch once through the real handler after repeated initialization', () => {
-	let checked = 0;
+test('all existing tel anchors dispatch once through the real handler after repeated initialization', () => {
+	const expectedBySource = { 'contact.astro': 3, 'links.astro': 2, 'Footer.astro': 1 };
 	for (const { path, source } of phoneSources) {
+		let checked = 0;
 		for (const [anchorMarkup] of source.matchAll(/<a\b[^>]*\bhref=(?:"tel:[^"]*"|\{`tel:[^`]*`\})[^>]*>/g)) {
 			const x = fixture({ consent: consentGranted, initializeTwice: true });
 			const literal = anchorMarkup.match(/href="([^"]*)"/)?.[1];
@@ -170,8 +171,8 @@ test('all seven existing tel anchors dispatch once through the real handler afte
 			assert.ok(!JSON.stringify([x.vercel, x.requests, x.window.dataLayer]).includes(href));
 			checked++;
 		}
+		assert.equal(checked, expectedBySource[path.split('/').at(-1)], `Review contact-click coverage for ${path}`);
 	}
-	assert.equal(checked, 7, 'Review contact-click coverage if source anchor inventory changes');
 });
 
 test('synthetic WhatsApp anchor emits once per click and repeated initialization adds no handler', async () => {
