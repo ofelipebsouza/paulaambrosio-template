@@ -25,6 +25,7 @@ const SERVICES: Record<string, string> = {
  '/design-consultation-miami/': 'design_consultation',
  '/design-express-miami/': 'design_express',
  '/turnkey-interior-design-miami/': 'turnkey_interiors',
+ '/penthouse-interior-design-miami-beach/': 'penthouse_interiors',
  '/luxury-residential-interior-design-miami/': 'luxury_residential',
  '/hospitality-interior-design-miami/': 'hospitality_interiors',
 };
