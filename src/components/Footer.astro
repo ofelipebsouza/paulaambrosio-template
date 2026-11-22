@@ -45,10 +45,11 @@ const socialIconMap: Record<string, string> = {
 					<p><a href={`tel:${SITE.phoneE164}`} class="hover:text-brass">{SITE.phone}</a></p>
 				</address>
 				<div class="mt-6"><HouzzServiceBadge inverted /></div>
-				<div class="mt-6 flex items-center gap-4">
+				<div class="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2">
 					{SOCIAL_LINKS.map(({ label, href }) => (
-						<a href={href} class="text-bone/60 transition-colors hover:text-brass" aria-label={`${SITE.name} on ${label}`} target="_blank" rel="noopener noreferrer">
+						<a href={href} class="inline-flex min-h-11 items-center gap-1.5 text-sm text-bone/70 transition-colors hover:text-brass" target="_blank" rel="noopener noreferrer">
 							<i class={`${socialIconMap[label] ?? 'ph ph-link'} text-xl`} aria-hidden="true"></i>
+							<span>{label}</span>
 						</a>
 					))}
 				</div>

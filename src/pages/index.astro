@@ -40,6 +40,15 @@ const featuredProjects = [...allProjects].sort((a, b) =>
   Number(b.id === 'home-fl') - Number(a.id === 'home-fl') || (b.data.year ?? 0) - (a.data.year ?? 0),
 );
 
+// Avoid repeating the lead carousel photograph in the homepage portfolio.
+const firstHeroSource = heroSlides[0]?.src.src;
+const homeProjectCards = featuredProjects.map((project) => {
+  const { featuredImage, gallery, galleryAlt } = project.data;
+  const alternative = gallery?.findIndex((image) => image.src !== featuredImage.src) ?? -1;
+  if (featuredImage.src !== firstHeroSource || alternative < 0 || !gallery?.[alternative] || !galleryAlt?.[alternative]) return project;
+  return { ...project, data: { ...project.data, featuredImage: gallery[alternative], imageAlt: galleryAlt[alternative] } };
+});
+
 const latestJournal = (await getCollection('journal'))
 	.filter((p) => !p.data.draft)
 	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
@@ -262,7 +271,7 @@ const processSteps = [
 				<a href="/projects/" class="eyebrow text-stone underline decoration-brass/60 underline-offset-8 hover:text-ink transition-colors">View all projects</a>
 			</div>
 			<div class="fade-up">
-				<ProjectGrid projects={featuredProjects} columns={3} />
+				<ProjectGrid projects={homeProjectCards} columns={3} />
 			</div>
 		</div>
 	</section>
