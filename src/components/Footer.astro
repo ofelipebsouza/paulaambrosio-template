@@ -1,5 +1,5 @@
 ---
-import { SITE, FOOTER_LOCATIONS, NAV_LINKS, SOCIAL_LINKS, serviceUrl, locationUrl } from '../config';
+import { SITE, FOOTER_LOCATIONS, NAV_LINKS, SOCIAL_LINKS, serviceUrl } from '../config';
 import Logo from './ui/Logo.astro';
 
 const { compactFooter = false } = Astro.props;
@@ -20,7 +20,7 @@ const socialIconMap: Record<string, string> = {
 				<div class="w-48">
 					<Logo variant="light" class="h-auto" loading="lazy" />
 				</div>
-				<p class="text-xs text-bone/60">© {year} {SITE.legalName}. All Rights Reserved. Miami, FL.</p>
+				<p class="text-xs text-bone/60">© {year} {SITE.name}. All Rights Reserved. Miami, FL.</p>
 				<a href="/privacy/" class="text-xs text-bone/60 transition-colors hover:text-brass">Privacy Policy</a>
 			</div>
 		</div>
@@ -42,7 +42,6 @@ const socialIconMap: Record<string, string> = {
 					<p>{SITE.address}</p>
 					<p><a href={`mailto:${SITE.email}`} class="hover:text-brass">{SITE.email}</a></p>
 					<p><a href={`tel:${SITE.phoneE164}`} class="hover:text-brass">{SITE.phone}</a></p>
-					<p><a href="tel:+17862085412" class="hover:text-brass">{SITE.phone2}</a></p>
 				</address>
 				<div class="mt-6 flex items-center gap-4">
 					{SOCIAL_LINKS.map(({ label, href }) => (
@@ -61,7 +60,7 @@ const socialIconMap: Record<string, string> = {
 					<li><a href={serviceUrl('turnkey-interior-design-miami')} class="hover:text-bone">Turnkey Interior Design</a></li>
 					<li><a href={serviceUrl('luxury-residential-interior-design-miami')} class="hover:text-bone">Luxury Residential</a></li>
 					<li><a href={serviceUrl('hospitality-interior-design-miami')} class="hover:text-bone">Hospitality Design</a></li>
-					<li><a href="/services/" class="hover:text-bone">All Services</a></li>
+					<li><a href={serviceUrl('design-express-miami')} class="hover:text-bone">Design Express</a></li>
 					<li><a href="/millwork/" class="hover:text-bone">Millwork</a></li>
 				</ul>
 			</nav>
@@ -72,13 +71,14 @@ const socialIconMap: Record<string, string> = {
 					{FOOTER_LOCATIONS.map((loc) => (
 						<li><a href={loc.href} class="hover:text-bone">{loc.label}</a></li>
 					))}
+					<li><a href="/locations/" class="hover:text-bone">All Locations</a></li>
 				</ul>
 			</nav>
 
 			<nav aria-label="Footer studio" class="lg:col-span-3">
 				<h3 class="eyebrow text-brass">Studio</h3>
 				<ul class="mt-4 space-y-2.5 text-sm text-bone/60">
-					{NAV_LINKS.map((link) => (
+					{NAV_LINKS.filter(({ href }) => !['/services/', '/locations/', '/contact/'].includes(href)).map((link) => (
 						<li><a href={link.href} class="hover:text-bone">{link.label}</a></li>
 					))}
 					<li><a href="/home-essence/" class="hover:text-bone">Home Essence</a></li>
@@ -92,7 +92,7 @@ const socialIconMap: Record<string, string> = {
 		</div>
 
 		<div class="mt-14 flex flex-col items-center justify-between gap-4 border-t border-bone/10 pt-8 text-xs text-bone/60 sm:flex-row">
-			<p>© {year} {SITE.legalName}. All Rights Reserved. Miami, FL.</p>
+			<p>© {year} {SITE.name}. All Rights Reserved. Miami, FL.</p>
 		</div>
 	</div>
 </footer>

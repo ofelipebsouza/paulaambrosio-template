@@ -17,8 +17,8 @@ export type OgKind = 'project' | 'service' | 'location' | 'journal' | 'home' | '
 export const OG_BANNER = '/og/brand-banner.jpg';
 export const OG_BANNER_ALT = 'Paula Ambrosio Interiors — luxury interior design studio in Miami';
 
-/** Home share image (first project cover, mirroring `src/pages/index.astro`). */
-export const HOME_OG = '/og/home-hero.jpg';
+/** Home share image (residential project cover, mirroring `src/pages/index.astro`). */
+export const HOME_OG = '/og/home-residential.jpg';
 
 /** Stable file id inside `/og/` — slugs may contain slashes; URLs may not. */
 export const ogAssetId = (kind: OgKind | 'brand', id: string): string =>

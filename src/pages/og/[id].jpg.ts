@@ -8,19 +8,24 @@ import { getCollection } from 'astro:content';
 import { ogAssetId } from '../../lib/og';
 import { renderBrandBanner, renderPhotoBanner, resolveSource } from '../../lib/og-render';
 
+import { getHomeHeroProjects } from '../../lib/home-hero';
+
 interface OgProps {
 	img?: ImageMetadata;
 }
 
 export async function getStaticPaths() {
 	const projects = (await getCollection('projects')).filter((p) => !p.data.draft);
+	const [homeHero] = getHomeHeroProjects(projects);
 	const services = await getCollection('services');
 	const locations = await getCollection('locations');
 	const journal = (await getCollection('journal')).filter((p) => !p.data.draft);
 	const spaces = (await getCollection('spaces')).filter((s) => !s.data.draft);
 
 	const photos: { id: string; img: ImageMetadata }[] = [
-		// Home hero mirrors `src/pages/index.astro`: first non-draft project cover.
+		// Share the same residential cover as the home carousel.
+		...(homeHero ? [{ id: ogAssetId('home', 'residential'), img: homeHero.data.featuredImage }] : []),
+		// Keep the original share URL valid for links already distributed.
 		...(projects[0] ? [{ id: ogAssetId('home', 'hero'), img: projects[0].data.featuredImage }] : []),
 		...projects.map((p) => ({ id: ogAssetId('project', p.id), img: p.data.featuredImage })),
 		...services.map((s) => ({ id: ogAssetId('service', s.id), img: s.data.featuredImage })),

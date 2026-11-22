@@ -5,13 +5,14 @@ import Layout from '../layouts/Layout.astro';
 import ProjectGrid from '../components/projects/ProjectGrid.astro';
 import CtaBanner from '../components/ui/CtaBanner.astro';
 import { webPageSchema, schemaScript } from '../lib/seo';
-import { serviceUrl, locationUrl } from '../config';
+import { SITE, serviceUrl, FOOTER_LOCATIONS } from '../config';
 import { HOME_OG } from '../lib/og';
+import { getHomeHeroProjects } from '../lib/home-hero';
 import paulaProfile from '../assets/paula-profile.webp';
 
 const allProjects = (await getCollection('projects')).filter((p) => !p.data.draft);
 
-const heroSlides = allProjects.filter((p) => p.data.projectType !== 'Renders').slice(0, 9).map((p) => ({
+const heroSlides = getHomeHeroProjects(allProjects).map((p) => ({
 	src: p.data.featuredImage,
 	alt: p.data.imageAlt ?? p.data.title,
 }));
@@ -41,6 +42,12 @@ const latestJournal = (await getCollection('journal'))
 	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
 	.slice(0, 3);
 
+const focusedServices = [
+  { title: 'Custom Millwork', href: '/millwork/', id: 'millwork', description: 'Built-in cabinetry, media walls and architectural details designed to fit your home.' },
+  { title: 'Design Consultation', href: serviceUrl('design-consultation-miami'), id: 'design-consultation-miami', description: 'Work with a designer to resolve a layout, refine material selections or decide what to do next.' },
+  { title: 'Design Express', href: serviceUrl('design-express-miami'), id: 'design-express-miami', description: 'Streamlined turnkey design for a furnished, move-in-ready residence on a shorter timeline.' },
+];
+
 const processSteps = [
 	{ label: 'Discovery',               desc: 'A confidential conversation about how you live and what the property needs to become.' },
 	{ label: 'Concept & Design',        desc: 'Mood boards, spatial concepts and the creative direction for the project.' },
@@ -53,10 +60,10 @@ const processSteps = [
 
 <Layout
 	title="Luxury Interior Design in Miami | Paula Ambrosio Interiors"
-	description="Paula Ambrosio Interiors is a Miami luxury interior design studio creating full-service and turnkey interiors for residences, penthouses and hospitality spaces across South Florida."
+	description={SITE.description}
 	canonical="/"
 	ogImage={HOME_OG}
-	ogImageAlt={allProjects[0]?.data.imageAlt}
+	ogImageAlt={heroSlides[0]?.alt}
 >
 	<Fragment slot="head">
 		<!-- LCP image: preloaded first in <head> so it starts before the font
@@ -74,7 +81,7 @@ const processSteps = [
 	<Fragment slot="head" set:html={schemaScript(webPageSchema({
 		path: '/',
 		title: 'Paula Ambrosio Interiors | Luxury Interior Design in Miami',
-		description: 'Full-service and turnkey luxury interior design for Miami and South Florida.',
+		description: SITE.description,
 	}))} />
 
 	<!-- 1. Hero: crossfade carousel, title sits below -->
@@ -161,7 +168,7 @@ const processSteps = [
 			</div>
 			<p class="eyebrow text-stone mb-6 tracking-widest">Full-Service &amp; Turnkey Interior Design</p>
 			<p class="font-display text-2xl leading-relaxed text-graphite lg:text-[1.85rem]">
-				For 21 years and more than 2,000 completed projects, Paula Ambrosio Interior Design has delivered luxury interiors that are as functional as they are beautiful. From our Miami studio, sisters Paula and Amanda Ambrosio serve clients across South Florida and around the world through a turnkey process that transforms an empty residence into a move-in-ready home in as little as 40 days.
+				For 21 years and more than 2,000 completed projects, Paula Ambrosio Interiors has delivered luxury interiors that are as functional as they are beautiful. From our Miami studio, sisters Paula and Amanda Ambrosio serve clients across South Florida and around the world through a turnkey process that transforms an empty residence into a move-in-ready home in as little as 40 days.
 			</p>
 			<div class="ornament-divider mt-8">
 				<span class="ornament-divider-diamond"></span>
@@ -226,6 +233,16 @@ const processSteps = [
 					</span>
 				</a>
 			</div>
+      <div class="mt-6 grid gap-6 lg:grid-cols-3">
+        {focusedServices.map((service) => (
+          <a href={service.href} class="group flex flex-col border border-sand p-8 transition-colors hover:bg-linen lg:p-10"
+            data-analytics-event="service_open" data-analytics-service={service.id} data-analytics-location="services">
+            <h3 class="font-display text-3xl leading-snug">{service.title}</h3>
+            <p class="mt-4 flex-1 leading-relaxed text-slate">{service.description}</p>
+            <span class="eyebrow mt-6 text-coffee">Explore {service.title} <span aria-hidden="true">→</span></span>
+          </a>
+        ))}
+      </div>
 		</div>
 	</section>
 
@@ -274,13 +291,13 @@ const processSteps = [
 			<a href="/locations/" class="eyebrow text-stone underline decoration-brass/60 underline-offset-8 hover:text-ink transition-colors">All locations</a>
 		</div>
 		<ul class="grid grid-cols-2 gap-px bg-sand sm:grid-cols-3 lg:grid-cols-4 fade-up stagger-children">
-			{['Miami', 'Miami Beach', 'Sunny Isles Beach', 'Aventura', 'Bal Harbour', 'Boca Raton', 'Palm Beach'].map((loc) => (
+			{FOOTER_LOCATIONS.map(({ label, href }) => (
 				<li class="bg-bone">
 					<a
-						href={locationUrl(loc.toLowerCase().replace(/\s+/g, '-'))}
+						href={href}
 						class="group flex h-full min-h-[8rem] flex-col justify-between p-7 transition-colors duration-300 hover:bg-linen"
 					>
-						<span class="font-display text-xl transition-colors duration-300 group-hover:text-coffee">{loc}</span>
+						<span class="font-display text-xl transition-colors duration-300 group-hover:text-coffee">{label}</span>
 						<span aria-hidden="true" class="mt-6 eyebrow text-stone transition-transform duration-500 group-hover:translate-x-1.5">→</span>
 					</a>
 				</li>
@@ -311,10 +328,10 @@ const processSteps = [
 				<h2 class="font-display mt-5 text-4xl leading-tight lg:text-5xl">Design guided by experience, delivered with precision.</h2>
 				<div class="mt-6 h-px w-12 bg-brass/50"></div>
 				<p class="mt-8 leading-relaxed text-slate">
-					Paula Ambrosio Interior Design is a luxury interior design studio in Miami specializing in high-end residential interior design, home renovations, custom interiors and full-service turnkey projects throughout Miami and South Florida.
+					Paula Ambrosio Interiors is a luxury interior design studio in Miami specializing in high-end residential interior design, home renovations, custom interiors and full-service turnkey projects throughout Miami and South Florida.
 				</p>
 				<p class="mt-5 leading-relaxed text-slate">
-					Our story began 21 years ago in Rio de Janeiro, Brazil, when sisters Paula and Amanda Ambrosio founded Studio Decore. Ten years ago, Paula founded Paula Ambrosio Interior Design in Miami, bringing her international design experience and sophisticated aesthetic to the South Florida market.
+					Our story began 21 years ago in Rio de Janeiro, Brazil, when sisters Paula and Amanda Ambrosio founded Studio Decore. Ten years ago, Paula founded Paula Ambrosio Interiors in Miami, bringing her international design experience and sophisticated aesthetic to the South Florida market.
 				</p>
 				<a href="/about/" class="btn-secondary mt-10">Meet Paula</a>
 			</div>

@@ -69,7 +69,7 @@ const breadcrumbs: BreadcrumbEntry[] = [
 ---
 
 <Layout
-	title={`${project.data.title} | ${subtitle || 'Interior Design Project'} | Paula Ambrosio Interiors`}
+	title={project.data.seoTitle ?? `${project.data.title} | ${subtitle || 'Interior Design Project'} | Paula Ambrosio Interiors`}
 	description={project.data.seoDescription ?? project.data.description}
 	canonical={projectUrl(project.id)}
 	ogImage={ogImage}
