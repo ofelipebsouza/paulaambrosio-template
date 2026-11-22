@@ -38,6 +38,7 @@ const projectsCollection = defineCollection({
 			description: z.string().min(1),
 			featuredImage: image(),
 			imageAlt: z.string().optional(),
+			heroImageCaption: z.string().optional(),
 			gallery: z.array(image()).default([]),
 			galleryAlt: z.array(z.string().trim().min(1)).default([]),
 			// Gallery grouped by contiguous sector slices (render studies: Club Room / Living / Master).
@@ -136,6 +137,7 @@ const locationsCollection = defineCollection({
 			heroTitle: z.string().optional(),
 			featuredImage: image(),
 			imageAlt: z.string().optional(),
+			heroImageCaption: z.string().optional(),
 			faqs: faqSchema.default([]),
 			ctas: ctaSchema,
 			...seoFields,
