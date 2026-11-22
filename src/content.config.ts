@@ -39,12 +39,17 @@ const projectsCollection = defineCollection({
 			featuredImage: image(),
 			imageAlt: z.string().optional(),
 			gallery: z.array(image()).default([]),
+			galleryAlt: z.array(z.string().trim().min(1)).default([]),
 			// Gallery grouped by contiguous sector slices (render studies: Club Room / Living / Master).
 			sectors: z.array(z.object({ name: z.string(), images: z.number().int().positive() })).default([]),
 			credits: z.string().optional(),
 			relatedServices: z.array(z.string()).default([]),
 			relatedLocations: z.array(z.string()).default([]),
 			...seoFields,
+		}).superRefine(({ gallery, galleryAlt }, ctx) => {
+			if (galleryAlt.length && (galleryAlt.length !== gallery.length || new Set(galleryAlt).size !== galleryAlt.length)) {
+				ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['galleryAlt'], message: 'Provide one distinct description for every gallery image, in gallery order.' });
+			}
 		}),
 });
 

@@ -168,11 +168,13 @@ const breadcrumbs: BreadcrumbEntry[] = [
 									class="group relative mb-6 block w-full cursor-zoom-in overflow-hidden break-inside-avoid"
 									data-lightbox-trigger
 									data-full={full[item.i]}
-									aria-label={`Open image ${item.i + 1} of ${gallerySources.length} fullscreen`}
+									aria-label={project.data.galleryAlt[item.i]
+									? `View fullscreen: ${project.data.galleryAlt[item.i]}`
+									: `Open image ${item.i + 1} of ${gallerySources.length} fullscreen`}
 								>
 									<img
 										src={item.url}
-										alt={`${project.data.title}, ${useSectors && item.sector !== 'Others' ? `${item.sector}, ` : ''}${project.data.location ?? 'interior'} detail ${item.i + 1}`}
+										alt={project.data.galleryAlt[item.i] ?? `${project.data.title}, ${useSectors && item.sector !== 'Others' ? `${item.sector}, ` : ''}${project.data.location ?? 'interior'} detail ${item.i + 1}`}
 										width="1000"
 										height="750"
 										loading="lazy"
