@@ -184,9 +184,7 @@ const maxLengthFor = (field: ContactFieldName) => FIELD_LIMITS[field];
 				<p class="analytics-form-status mt-3 text-sm" role="status" aria-live="polite"></p>
 				<noscript>
 					<p class="mt-3 text-sm text-slate">
-						Prefer email? Write to
-						<a class="underline decoration-brass/60 underline-offset-4" href={`mailto:${SITE.email}`}>{SITE.email}</a>
-						or call <a class="underline decoration-brass/60 underline-offset-4" href={`tel:${SITE.phoneE164}`}>{SITE.phone}</a>.
+						Prefer email? Write to{' '}<a class="underline decoration-brass/60 underline-offset-4" href={`mailto:${SITE.email}`}>{SITE.email}</a>{' '}or call <a class="underline decoration-brass/60 underline-offset-4" href={`tel:${SITE.phoneE164}`}>{SITE.phone}</a>.
 					</p>
 				</noscript>
 			</form>
