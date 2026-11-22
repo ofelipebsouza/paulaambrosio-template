@@ -79,6 +79,16 @@ test('only public catalog enums cross the dataLayer boundary',()=>{
  assert.deepEqual(pageContext('/new-york-clients/?utm=secret'),{page_section:'new-york-clients',service_key:'none'});
  assert.ok(!JSON.stringify(x.events).includes('secret'));
 });
+test('penthouse WhatsApp attribution preserves consent and excludes URL parameters',()=>{
+ const x=fixture();x.location.path='/penthouse-interior-design-miami-beach/?email=secret@example.test#message';
+ assert.equal(x.engine.track('whatsapp_click'),false);
+ x.engine.consent({analytics:true,advertising:false});
+ assert.equal(x.engine.track('whatsapp_click'),false);
+ x.engine.consent({analytics:true,advertising:true});
+ assert.equal(x.engine.track('whatsapp_click'),true);
+ assert.deepEqual(x.events.at(-1),{event:'paula_whatsapp_click',page_section:'service',service_key:'penthouse_interiors'});
+ assert.ok(!JSON.stringify(x.events).includes('secret'));
+});
 test('invalid, future, expired and overbroad saved values cannot become grants',()=>{
  for(const value of [null,'bad','{}','null',JSON.stringify({version:1,analytics:'true',advertising:true,at:999}),JSON.stringify({version:1,analytics:true,advertising:true,at:1001}),JSON.stringify({version:1,analytics:true,advertising:true,at:-CONSENT_MAX_AGE})])assert.equal(parseConsent(value,1000),null);
  assert.deepEqual(parseConsent(JSON.stringify({version:1,analytics:true,advertising:false,at:1000,email:'never retain'}),1000),{version:1,analytics:true,advertising:false,at:1000});
