@@ -69,7 +69,7 @@ const breadcrumbs: BreadcrumbEntry[] = [
 ---
 
 <Layout
-	title={project.data.seoTitle ?? `${project.data.title} | ${subtitle || 'Interior Design Project'} | Paula Ambrosio Interiors`}
+	title={project.data.seoTitle ?? `${project.data.title} | ${subtitle || 'Interior Design Project'} | Paula Ambrosio Interior Design`}
 	description={project.data.seoDescription ?? project.data.description}
 	canonical={projectUrl(project.id)}
 	ogImage={ogImage}
@@ -100,7 +100,7 @@ const breadcrumbs: BreadcrumbEntry[] = [
 				<Breadcrumbs items={breadcrumbs} tone="light" />
 				<h1 class="font-display mt-8 max-w-3xl text-4xl lg:text-6xl">{project.data.title}</h1>
 				{subtitle && (
-					<p class="mt-4 max-w-2xl text-lg text-bone/80">{subtitle} | Paula Ambrosio Interiors</p>
+					<p class="mt-4 max-w-2xl text-lg text-bone/80">{subtitle} | Paula Ambrosio Interior Design</p>
 				)}
 			</div>
 		</section>

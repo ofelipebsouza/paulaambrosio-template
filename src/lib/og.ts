@@ -15,7 +15,7 @@ export type OgKind = 'project' | 'service' | 'location' | 'journal' | 'home' | '
 
 /** Ivory brand banner with the official logo — used by pages without a photo. */
 export const OG_BANNER = '/og/brand-banner.jpg';
-export const OG_BANNER_ALT = 'Paula Ambrosio Interiors — luxury interior design studio in Miami';
+export const OG_BANNER_ALT = 'Paula Ambrosio Interior Design — luxury interior design studio in Miami';
 
 /** Home share image (residential project cover, mirroring `src/pages/index.astro`). */
 export const HOME_OG = '/og/home-residential.jpg';

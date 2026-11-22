@@ -128,6 +128,7 @@ const locationsCollection = defineCollection({
 			draft: z.boolean().default(false),
 			introduction: z.string().min(1),
 			heroSubheadline: z.string().optional(),
+			heroTitle: z.string().optional(),
 			featuredImage: image(),
 			imageAlt: z.string().optional(),
 			faqs: faqSchema.default([]),
