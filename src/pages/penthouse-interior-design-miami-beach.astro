@@ -5,7 +5,7 @@ import Layout from '../layouts/Layout.astro';
 import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
 import CtaBanner from '../components/ui/CtaBanner.astro';
 import FAQ from '../components/ui/FAQ.astro';
-import { SITE, locationUrl, serviceUrl } from '../config';
+import { MESSAGING, SITE, locationUrl, serviceUrl } from '../config';
 import { faqSchema, schemaScript, serviceSchema, webPageSchema } from '../lib/seo';
 
 const path = '/penthouse-interior-design-miami-beach/';
@@ -43,8 +43,8 @@ const faqs = [
         <p class="mt-6 max-w-2xl text-lede text-slate">A penthouse interior designer in Miami Beach starts with the view: ocean, bay or skyline. We frame that view, make the rooms feel comfortable to live in and choose materials with the coastal climate in mind.</p>
         <p class="mt-4 max-w-2xl leading-relaxed text-slate">Paula Ambrosio brings 21 years of design experience to penthouses and luxury condos across Miami Beach and South Florida.</p>
         <div class="mt-8 flex flex-wrap items-center gap-3" role="group" aria-label="Contact the studio">
-          <a href={`https://wa.me/${SITE.phoneE164.slice(1)}`} class="btn-primary" target="_blank" rel="noopener noreferrer">Chat on WhatsApp</a>
-          <a href={`sms:${SITE.phoneE164}`} class="btn-secondary">Send a Text (SMS)</a>
+          <a href={MESSAGING.whatsapp} class="btn-primary" target="_blank" rel="noopener noreferrer">Chat on WhatsApp</a>
+          <a href={MESSAGING.sms} class="btn-secondary">Send a Text (SMS)</a>
           <a href={`mailto:${SITE.email}`} class="btn-secondary">Email the Studio</a>
           <a href="/contact/" class="btn-secondary">Start Your Project</a>
         </div>
