@@ -12,6 +12,8 @@
  */
 import AdminLayout from '../../layouts/AdminLayout.astro';
 import { readSession } from '../../lib/crm/auth';
+import { LEAD_ORIGINS, RECOMMENDED_SERVICES } from '../../lib/lead-intake';
+import { NEXT_STEP_LIMIT } from '../../lib/crm/lead-actions';
 import { buildMetrics, responseRate } from '../../lib/crm/metrics';
 import {
 	BOARD_STATUSES,
@@ -39,6 +41,8 @@ export const prerender = false;
 if (!readSession(Astro.request)) return Astro.redirect('/admin/login/');
 
 const now = Date.now();
+const INTAKE_TIER_COLUMNS = ['T1', 'T2', 'T3', 'T4', 'Unsure'] as const;
+const INTAKE_ORIGIN_ROWS = [...LEAD_ORIGINS, { value: 'unknown', label: 'Não informada' }];
 const [leads, tasks, dailyResult, report, ledgerResult, blocks] = await Promise.all([
 	allLeads(),
 	listTasks(),
@@ -348,6 +352,20 @@ function jevTone(temperature: string | undefined): string {
 		</div>
 		<div class="border border-sand/70 bg-white p-5"><p class="eyebrow text-stone">Próximo passo</p><p class="mt-3 text-sm leading-relaxed text-graphite">Abra uma pessoa para ler a mensagem completa, responder pelo seu aplicativo de email e registrar o retorno aqui.</p><p class="mt-4 border-t border-sand/60 pt-4 text-xs leading-relaxed text-mist">Sugestões automáticas são apoio para confirmar com o cliente — nunca uma certeza sobre orçamento ou fechamento.</p></div>
 	</section>
+
+	<details class="mt-6 border border-sand/70 bg-white px-5 py-4">
+		<summary class="cursor-pointer text-sm font-medium text-graphite">Leads por origem e faixa de investimento</summary>
+		<p class="mt-3 text-xs text-slate">Últimos 30 dias. Usamos a origem informada ou identificada; isso não substitui a atribuição de anúncios.</p>
+		<div class="mt-4 overflow-x-auto">
+			<table class="w-full min-w-96 text-left text-sm" aria-label="Leads por origem e faixa de investimento nos últimos 30 dias">
+				<thead><tr><th class="border-b border-sand px-2 py-2" scope="col">Origem</th>{INTAKE_TIER_COLUMNS.map((tier) => <th class="border-b border-sand px-2 py-2" scope="col">{tier}</th>)}</tr></thead>
+				<tbody>{INTAKE_ORIGIN_ROWS.map(({ value, label }) => <tr>
+					<th scope="row" class="border-b border-sand/50 px-2 py-2 font-normal">{label}</th>
+					{INTAKE_TIER_COLUMNS.map((tier) => <td class="border-b border-sand/50 px-2 py-2" data-intake-origin={value} data-intake-tier={tier}>{metrics.originTiers[value]?.[tier] ?? 0}</td>)}
+				</tr>)}</tbody>
+			</table>
+		</div>
+	</details>
 
 	<div class="mt-10 flex items-center gap-4">
 		<p class="eyebrow text-stone shrink-0">Acompanhamento</p>
@@ -927,8 +945,34 @@ function jevTone(temperature: string | undefined): string {
 
 			<dl class="mt-6 grid gap-4 sm:grid-cols-2" id="crm-dialog-meta"></dl>
 
+			<form id="crm-intake-form" class="mt-6 border-t border-sand/60 pt-5">
+				<p class="eyebrow text-stone">Origem e acompanhamento</p>
+				<div class="mt-3 grid gap-4 sm:grid-cols-2">
+					<label class="block text-sm text-graphite">Origem do lead
+						<select name="origin" class="mt-1 min-h-11 w-full border border-sand bg-white px-3 py-2">
+							<option value="">Não informada</option>
+							{LEAD_ORIGINS.map(({value, label}) => <option value={value}>{label}</option>)}
+						</select>
+					</label>
+					<label class="block text-sm text-graphite">Serviço recomendado
+						<select name="recommendedService" class="mt-1 min-h-11 w-full border border-sand bg-white px-3 py-2">
+							<option value="">A definir</option>
+							{RECOMMENDED_SERVICES.map((service) => <option value={service}>{service}</option>)}
+						</select>
+					</label>
+					<label class="block text-sm text-graphite">Próximo passo
+						<input name="nextStep" type="text" maxlength={NEXT_STEP_LIMIT} class="mt-1 min-h-11 w-full border border-sand px-3 py-2" />
+					</label>
+					<label class="block text-sm text-graphite">Data do próximo passo (Miami)
+						<input name="nextStepDate" type="date" min="2000-01-01" max="9999-12-31" class="mt-1 min-h-11 w-full border border-sand px-3 py-2" />
+					</label>
+				</div>
+				<button type="submit" class="btn-secondary mt-4">Salvar acompanhamento</button>
+				<p id="crm-intake-feedback" class="mt-2 text-sm text-slate" role="status" aria-live="polite"></p>
+			</form>
+
 			<div class="mt-6 border-t border-sand/60 pt-5">
-				<p class="eyebrow text-stone">Origem</p>
+				<p class="eyebrow text-stone">Dados técnicos de origem</p>
 				<dl class="mt-3 grid gap-4 sm:grid-cols-2" id="crm-dialog-origin"></dl>
 				<div class="mt-4 flex flex-wrap gap-2" id="crm-dialog-flags"></div>
 			</div>
@@ -1276,12 +1320,12 @@ function jevTone(temperature: string | undefined): string {
 	const STATUS_LABELS: Record<LeadStatusValue, string> = {
 		novo: 'Novo contato',
 		atendimento_ia: 'Triagem inicial',
-		atendimento_humano: 'Atendimento Paula',
+		atendimento_humano: 'Contatado',
 		reuniao_agendada: 'Reunião agendada',
 		reuniao_realizada: 'Reunião realizada',
 		proposta: 'Proposta enviada',
 		fechado: 'Fechado',
-		perdido: 'Não avançou',
+		perdido: 'Perdido',
 	};
 	const displayTemperature = (value: unknown): string => ({
 		hot: 'Interesse alto', warm: 'Explorando opções', cold: 'Interesse inicial', spam: 'Possível contato não comercial',
@@ -1423,6 +1467,12 @@ function jevTone(temperature: string | undefined): string {
 	/* ----------------------------------------------------------- Rendering */
 
 	function renderMetrics(metrics: Record<string, unknown>, storage?: { backend?: string }): void {
+		const originTiers = metrics.originTiers as Record<string, Record<string, number>> | undefined;
+		if (originTiers) {
+			for (const cell of document.querySelectorAll<HTMLElement>('[data-intake-origin][data-intake-tier]')) {
+				cell.textContent = String(originTiers[cell.dataset.intakeOrigin ?? '']?.[cell.dataset.intakeTier ?? ''] ?? 0);
+			}
+		}
 		const answered = Number(metrics.answeredWithin24h ?? 0);
 		const jev = (metrics.jev ?? {}) as Record<string, unknown>;
 		const scored = Number(jev.scored ?? 0);
@@ -1887,11 +1937,13 @@ function jevTone(temperature: string | undefined): string {
 				['Email', String(lead.email ?? '')],
 				['Phone', String(lead.phone || '—')],
 				['Service', String(lead.service || '—')],
-				['Location', String(lead.location || '—')],
-				['Budget', String(lead.budget || '—')],
+				['Project city', String(lead.location || '—')],
+				['Property type', String(lead.propertyType || '—')],
+				['Investment tier', String(lead.investmentTier || 'Unsure')],
+				['Estimated investment', String(lead.budget || '—')],
 				['Timeline', String(lead.timeline || '—')],
 				['Received', fmtDate(Number(lead.createdAt))],
-				['Source', `${lead.form === 'project_inquiry' ? 'Modal' : 'Contact page'} · ${String(lead.page ?? '/')}`],
+				['Inquiry entry point', `${lead.form === 'project_inquiry' ? 'Modal' : 'Contact page'} · ${String(lead.page ?? '/')}`],
 				['Status', STATUS_LABELS[lead.status as LeadStatusValue] ?? String(lead.status)],
 				['First reply', lead.firstResponseAt ? relative(Number(lead.firstResponseAt)) : 'not yet'],
 			];
@@ -1902,6 +1954,17 @@ function jevTone(temperature: string | undefined): string {
 				)
 				.join('');
 		}
+
+		const intakeForm = $<HTMLFormElement>('#crm-intake-form');
+		if (intakeForm) {
+			const names = ['origin', 'recommendedService', 'nextStep', 'nextStepDate'];
+			for (const name of names) {
+				const input = intakeForm.elements.namedItem(name) as HTMLInputElement | HTMLSelectElement | null;
+				if (input) input.value = String(lead[name] ?? '');
+			}
+		}
+		const intakeFeedback = $('#crm-intake-feedback');
+		if (intakeFeedback) intakeFeedback.textContent = '';
 
 		const message = $('#crm-dialog-message');
 		if (message) message.textContent = String(lead.message ?? '');
@@ -2198,6 +2261,27 @@ function jevTone(temperature: string | undefined): string {
 		const version = detailVersion;
 		const ok = await patchLead(id, { responded: true });
 		if (ok && dialog?.open && currentLeadId === id && version === detailVersion) await openLead(id);
+	});
+
+	$<HTMLFormElement>('#crm-intake-form')?.addEventListener('submit', async (event) => {
+		event.preventDefault();
+		const form = event.currentTarget as HTMLFormElement;
+		const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+		if (!currentLeadId || !submit || submit.disabled) return;
+		const id = currentLeadId;
+		const version = detailVersion;
+		const body = Object.fromEntries(new FormData(form));
+		const feedback = $('#crm-intake-feedback');
+		if (feedback) feedback.textContent = 'Salvando…';
+		submit.disabled = true;
+		try {
+			const ok = await patchLead(id, body);
+			if (dialog?.open && currentLeadId === id && version === detailVersion && feedback) {
+				feedback.textContent = ok ? 'Acompanhamento salvo.' : 'Não foi possível confirmar. Reabra o contato antes de tentar novamente.';
+			}
+		} finally {
+			submit.disabled = false;
+		}
 	});
 
 	$<HTMLFormElement>('#crm-note-form')?.addEventListener('submit', async (event) => {

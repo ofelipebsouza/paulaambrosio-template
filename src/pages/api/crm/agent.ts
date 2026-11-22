@@ -22,7 +22,7 @@ import { requireHermes, verifyBodySignature } from '../../../lib/crm/guard';
 import { crmJson, clientIp, json, log } from '../../../lib/crm/http';
 import { applyLeadPatch } from '../../../lib/crm/lead-actions';
 import { completeReplyTasks } from '../../../lib/crm/task-actions';
-import { isLeadStatus, normalizeStatus } from '../../../lib/crm/schema';
+import { leadForHermes, isLeadStatus, normalizeStatus } from '../../../lib/crm/schema';
 import {
 	getLead,
 	listTasks,
@@ -120,7 +120,7 @@ export const ALL: APIRoute = async ({ request }) => {
 	const now = Date.now();
 	const previousStatus = normalizeStatus(lead.status);
 	const result = applyLeadPatch(lead, patch, now);
-	if (!result.changed.length) return crmJson({ ok: true, lead, unchanged: true });
+	if (!result.changed.length) return crmJson({ ok: true, lead: leadForHermes(lead), unchanged: true });
 
 	lead.updatedAt = now;
 	await saveLead(lead);
@@ -161,5 +161,5 @@ export const ALL: APIRoute = async ({ request }) => {
 		closedTasks,
 	});
 
-	return crmJson({ ok: true, lead, actor: 'hermes' });
+	return crmJson({ ok: true, lead: leadForHermes(lead), actor: 'hermes' });
 };

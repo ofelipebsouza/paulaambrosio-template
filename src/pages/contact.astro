@@ -6,6 +6,7 @@ import type { BreadcrumbEntry } from '../lib/seo';
 import { SITE, SOCIAL_LINKS, MESSAGING } from '../config';
 import Turnstile from '../components/ui/Turnstile.astro';
 import UtmFields from '../components/UtmFields.astro';
+import { BUDGET_HELP, INTAKE_VERSION, LEAD_ORIGINS } from '../lib/lead-intake';
 import {
 	BUDGET_OPTIONS,
 	CONTACT_API_PATH,
@@ -103,6 +104,7 @@ const maxLengthFor = (field: ContactFieldName) => FIELD_LIMITS[field];
 				data-analytics-form="contact"
 				data-contact-email={SITE.email}
 			>
+				<input type="hidden" name="intake_version" value={INTAKE_VERSION} />
 				<div class="grid gap-6 sm:grid-cols-2">
 					<div>
 						<label for="name" class="eyebrow text-slate">{labelFor('name')} *</label>
@@ -123,10 +125,12 @@ const maxLengthFor = (field: ContactFieldName) => FIELD_LIMITS[field];
 					</div>
 					<div>
 						<label for="location" class="eyebrow text-slate">{labelFor('location')} *</label>
-						<select id="location" name="location" required={isRequired('location')} class={inputClass}>
-							<option value="">Select a location</option>
-							{LOCATION_OPTIONS.map((option) => <option value={option}>{option}</option>)}
-						</select>
+						<input id="location" name="location" type="text" list="project-cities"
+							required={isRequired('location')} maxlength={maxLengthFor('location')}
+							placeholder="Enter or select a city" class={inputClass} />
+						<datalist id="project-cities">
+							{LOCATION_OPTIONS.map((option) => <option value={option}></option>)}
+						</datalist>
 					</div>
 				</div>
 				<div class="grid gap-6 sm:grid-cols-2">
@@ -147,11 +151,12 @@ const maxLengthFor = (field: ContactFieldName) => FIELD_LIMITS[field];
 				</div>
 				<div class="grid gap-6 sm:grid-cols-2">
 					<div>
-						<label for="budget" class="eyebrow text-slate">{labelFor('budget')}</label>
-						<select id="budget" name="budget" class={inputClass}>
+						<label for="budget" class="eyebrow text-slate">{labelFor('budget')} *</label>
+						<select id="budget" name="budget" required={isRequired('budget')} aria-describedby="budget-help" class={inputClass}>
 							<option value="">Select a range</option>
 							{BUDGET_OPTIONS.map((option) => <option value={option}>{option}</option>)}
 						</select>
+						<p id="budget-help" class="mt-2 text-sm text-slate">{BUDGET_HELP}</p>
 					</div>
 					<div>
 						<label for="timeline" class="eyebrow text-slate">{labelFor('timeline')}</label>
@@ -160,6 +165,13 @@ const maxLengthFor = (field: ContactFieldName) => FIELD_LIMITS[field];
 							{TIMELINE_OPTIONS.map((option) => <option value={option}>{option}</option>)}
 						</select>
 					</div>
+				</div>
+		<div>
+					<label for="origin" class="eyebrow text-slate">{labelFor('origin')}</label>
+					<select id="origin" name="origin" class={inputClass}>
+						<option value="">Select a source (optional)</option>
+						{LEAD_ORIGINS.map((option) => <option value={option.value}>{option.label}</option>)}
+					</select>
 				</div>
 				<div>
 					<label for="message" class="eyebrow text-slate">{labelFor('message')} *</label>

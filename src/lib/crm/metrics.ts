@@ -6,6 +6,7 @@
  * are ratios in 0…1; the client decides how to round them.
  */
 import { LEAD_STATUSES, OPEN_STATUSES, dayKey, normalizeStatus, type CrmLead, type CrmTask, type JevTemperature, type LeadStatus } from './schema';
+import { investmentTierFor, leadOriginLabel, resolveLeadOrigin, type InvestmentTier } from '../lead-intake';
 
 /** Won / closed inside one bucket — what the "what converts" cards render. */
 export interface ConversionBucket {
@@ -58,6 +59,8 @@ export interface CrmMetrics {
 	byBudget: Record<string, number>;
 	/** UTM source, or `direct` when the visitor arrived without a campaign. */
 	bySource: Record<string, number>;
+	/** Studio-reported or recognized lead origin crossed with author-declared tier, last 30 days. */
+	originTiers: Record<string, Partial<Record<InvestmentTier, number>>>;
 
 	/** JEV verdicts over the leads that carry a score. */
 	jev: JevMetrics;
@@ -100,6 +103,7 @@ export function buildMetrics({
 	const byForm: Record<string, number> = {};
 	const byBudget: Record<string, number> = {};
 	const bySource: Record<string, number> = {};
+	const originTiers: CrmMetrics['originTiers'] = {};
 	const convByService: Record<string, ConversionBucket> = {};
 	const convByBudget: Record<string, ConversionBucket> = {};
 	const convBySource: Record<string, ConversionBucket> = {};
@@ -173,6 +177,13 @@ export function buildMetrics({
 		}
 
 		const age = now - lead.createdAt;
+		if (age >= 0 && age <= 30 * DAY) {
+			const origin = lead.origin ?? resolveLeadOrigin(undefined, lead.utm?.source, lead.referrer) ?? 'unknown';
+			const source = leadOriginLabel(origin) ? origin : 'unknown';
+			const tier = lead.investmentTier ?? investmentTierFor(lead.budget);
+			const row = originTiers[source] ??= {};
+			row[tier] = (row[tier] ?? 0) + 1;
+		}
 		if (age <= 30 * DAY) last30 += 1;
 		else if (age <= 60 * DAY) prev30 += 1;
 		if (dayKey(lead.createdAt) === todayKey) today += 1;
@@ -239,6 +250,7 @@ export function buildMetrics({
 		byForm: sortByValue(byForm),
 		byBudget: sortByValue(byBudget),
 		bySource: sortByValue(bySource),
+		originTiers,
 		jev: {
 			...jev,
 			avgScore: jev.scored > 0 ? scoreTotal / jev.scored : null,

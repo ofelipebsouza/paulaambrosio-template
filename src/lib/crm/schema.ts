@@ -10,6 +10,10 @@
  */
 import { CONTACT_FORM_IDS } from '../contact-form';
 import type { ContactPayload } from '../contact-email';
+import {
+	DEFAULT_NEXT_STEP, investmentTierFor, studioFollowUpDate, recommendedServiceFor, resolveLeadOrigin,
+	type InvestmentTier, type LeadOrigin, type RecommendedService,
+} from '../lead-intake';
 
 /* -------------------------------------------------------------------------- */
 /* Pipeline                                                                   */
@@ -46,12 +50,12 @@ export const LEGACY_STATUS_ALIAS: Record<string, LeadStatus> = {
 export const STATUS_LABELS: Record<LeadStatus, string> = {
 	novo: 'Novo contato',
 	atendimento_ia: 'Triagem inicial',
-	atendimento_humano: 'Atendimento Paula',
+	atendimento_humano: 'Contatado',
 	reuniao_agendada: 'Reunião agendada',
 	reuniao_realizada: 'Reunião realizada',
 	proposta: 'Proposta enviada',
 	fechado: 'Fechado',
-	perdido: 'Não avançou',
+	perdido: 'Perdido',
 };
 
 /** Statuses still requiring a reply — drives the "awaiting answer" counter. */
@@ -225,6 +229,13 @@ export interface CrmLead {
 	propertyType: string;
 	service: string;
 	budget: string;
+	/** Optional for archived records; the budget wording is retained unchanged. */
+	investmentTier?: InvestmentTier;
+	origin?: LeadOrigin | '';
+	recommendedService?: RecommendedService | '';
+	nextStep?: string;
+	/** Date-only studio follow-up deadline, YYYY-MM-DD, in America/New_York. */
+	nextStepDate?: string;
 	timeline: string;
 	message: string;
 
@@ -261,7 +272,13 @@ export interface CrmLead {
 	notes: CrmNote[];
 }
 
-export type LeadEventType = 'created' | 'status' | 'note' | 'response' | 'task' | 'delivery';
+/** Preserve the existing external Hermes contract; new studio notes and tags stay internal. */
+export function leadForHermes(lead: CrmLead): Omit<CrmLead, 'investmentTier' | 'origin' | 'recommendedService' | 'nextStep' | 'nextStepDate'> {
+	const { investmentTier, origin, recommendedService, nextStep, nextStepDate, ...existing } = lead;
+	return existing;
+}
+
+export type LeadEventType = 'created' | 'status' | 'note' | 'response' | 'task' | 'delivery' | 'intake';
 
 export interface CrmEvent {
 	ts: number;
@@ -341,6 +358,7 @@ export function newId(): string {
 }
 
 export function buildLead({ payload, form, page, id, now, context }: LeadSource): CrmLead {
+	const investmentTier = investmentTierFor(payload.budget);
 	return {
 		id,
 		createdAt: now,
@@ -353,6 +371,11 @@ export function buildLead({ payload, form, page, id, now, context }: LeadSource)
 		propertyType: payload.propertyType,
 		service: payload.service,
 		budget: payload.budget,
+		investmentTier,
+		origin: resolveLeadOrigin(payload.origin, context?.utm?.source, context?.referrer) ?? 'website',
+		recommendedService: recommendedServiceFor(investmentTier, payload.service),
+		nextStep: DEFAULT_NEXT_STEP,
+		nextStepDate: studioFollowUpDate(now),
 		timeline: payload.timeline,
 		message: payload.message,
 		form: form || CONTACT_FORM_IDS.contact,

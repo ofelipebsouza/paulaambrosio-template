@@ -14,6 +14,7 @@
  * back to its own KPIs and says "waiting for Hermes" instead of erroring.
  */
 import type { APIRoute } from 'astro';
+import { leadForHermes } from '../../../lib/crm/schema';
 import { requireCrm, requireHermes, verifyBodySignature } from '../../../lib/crm/guard';
 import { crmJson, log } from '../../../lib/crm/http';
 import { buildMetrics, responseRate } from '../../../lib/crm/metrics';
@@ -114,12 +115,12 @@ export const ALL: APIRoute = async ({ request }) => {
 	if (hermes === null) {
 		const now = Date.now();
 		const [leads, tasks, daily] = await Promise.all([allLeads(), listTasks(), dailyCounts(30)]);
-		const metrics = buildMetrics({ leads, tasks, daily, now });
+		const { originTiers, ...metrics } = buildMetrics({ leads, tasks, daily, now });
 		return crmJson({
 			ok: true,
 			report,
 			metrics: { ...metrics, answeredWithin24h: responseRate(leads, 24, now) },
-			leads: leads.slice(0, 100),
+			leads: leads.slice(0, 100).map(leadForHermes),
 			storage: storeStatus(),
 			generatedAt: now,
 		});

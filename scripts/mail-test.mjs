@@ -32,7 +32,8 @@ const payload = {
 	location: 'Miami Beach',
 	propertyType: 'Condo / Apartment',
 	service: 'Turnkey Interior Design',
-	budget: '$500k – $1M',
+	budget: '$500,000 to $1,000,000',
+	origin: 'broker',
 	timeline: '3–6 months',
 	message: 'Reforma completa.\n</script><b>bold</b> & "aspas" — 3 quartos.',
 };
@@ -203,23 +204,23 @@ if (sink.messages.length === 2) {
 	check('lead: remetente é o estúdio, nunca o visitante', leadHeader('From').includes(STUDIO) && !leadHeader('From').includes(payload.email));
 	check('lead: visitante em Reply-To (resposta volta para ele)', leadHeader('Reply-To').includes(payload.email));
 	check('lead: entregue na caixa do estúdio', leadMessage.recipients.includes(STUDIO));
-	check('lead: assunto nomeia o cliente', leadHeader('Subject').includes('New Project Inquiry') && leadHeader('Subject').includes('Marina'));
+	check('lead: assunto nomeia o cliente', leadHeader('Subject').includes('Priority Project Inquiry (T3)') && leadHeader('Subject').includes('Marina'));
 	check('lead: assunto sem CR/LF (sem header injection)', !/[\r\n]/.test(leadHeader('Subject')));
 	check('lead: multipart com texto e HTML', leadHeader('Content-Type').includes('multipart/alternative'));
 
 	check('confirmação: entregue ao visitante', confirmationMessage.recipients.includes(payload.email));
-	check('confirmação: assunto combinado', confirmationHeader('Subject') === 'Thank you for contacting Paula Ambrosio Interiors');
+	check('confirmação: assunto combinado', confirmationHeader('Subject') === 'Your residence with Paula Ambrosio Interior Design');
 
 	// Content: the bodies that were transmitted, asserted on the composed source.
-	const leadLabels = ['Name:', 'Email:', 'Phone:', 'Project Location:', 'Property Type:', 'Service:', 'Approximate Budget:', 'Desired Timeline:', 'Message:'];
+	const leadLabels = ['Name:', 'Email:', 'Phone:', 'Project city:', 'Property Type:', 'Service:', 'Estimated investment for your project:', 'How did you hear about us?:', 'Desired Timeline:', 'Message:'];
 	check('lead: texto traz todos os campos rotulados', leadLabels.every((entry) => lead.text.includes(entry)));
-	check('lead: valores do visitante presentes no texto', lead.text.includes('Turnkey Interior Design') && lead.text.includes('$500k – $1M') && lead.text.includes('Miami Beach'));
+	check('lead: valores do visitante presentes no texto', lead.text.includes('Turnkey Interior Design') && lead.text.includes('$500,000 to $1,000,000') && lead.text.includes('Miami Beach'));
 	check('lead: quebras de linha da mensagem preservadas', lead.text.includes('Reforma completa.\n</script>'));
 	check('lead: HTML escapa tags, `&` e aspas do visitante', !lead.html.includes('<img src=x') && !lead.html.includes('</script><b>') && lead.html.includes('&lt;img src=x') && lead.html.includes('&amp;'));
 	check('lead: assunto sem caracteres de controle injetados', !/\r|\n|\t/.test(lead.subject));
 
-	check('confirmação: saudação pelo primeiro nome', confirmation.text.startsWith('Dear Marina,'));
-	check('confirmação: identidade do estúdio presente', confirmation.text.includes('Paula Ambrosio Interiors') && confirmation.text.includes('Miami, Florida'));
+	check('confirmação: saudação pelo primeiro nome', confirmation.text.startsWith('Hi Marina,'));
+	check('confirmação: identidade do estúdio presente', confirmation.text.includes('Paula Ambrosio Interior Design') && confirmation.text.includes('within 24 hours'));
 	check('confirmação: sem demais dados do formulário', !confirmation.text.includes(payload.phone) && !confirmation.text.includes(payload.message));
 }
 

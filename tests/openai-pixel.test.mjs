@@ -12,13 +12,24 @@ async function compiled(enabled = 'true') {
  return result.outputFiles[0].text;
 }
 const code = await compiled();
-async function compiledBridge(googleEnabled = 'true', pixelEnabled = 'true') {
+// Scope this fixture to the consent bootstrap's simulated switches. Production
+// Meta configuration intentionally remains unchanged.
+const metaFixture = (enabled) => ({
+ name: 'simulated-meta-switch',
+ setup(bundler) {
+  bundler.onLoad({ filter: /[\/]meta-pixel[\/]config\.ts$/ }, () => ({
+   contents: `export const META_PIXEL_ENABLED = ${enabled};`,
+   loader: 'ts',
+  }));
+ },
+});
+async function compiledBridge(googleEnabled = 'true', pixelEnabled = 'true', metaEnabled = true) {
  const result = await build({ stdin: {
   contents: `export * from './src/lib/google-tracking/browser'; export * from './src/lib/openai-pixel/browser';`,
   resolveDir: new URL('..', import.meta.url).pathname,
  }, bundle: true, write: false, format: 'cjs', target: 'es2022',
  define: { 'import.meta.env.PUBLIC_GOOGLE_TRACKING_ENABLED': JSON.stringify(googleEnabled),
-  'import.meta.env.PUBLIC_OPENAI_PIXEL_ENABLED': JSON.stringify(pixelEnabled) } });
+  'import.meta.env.PUBLIC_OPENAI_PIXEL_ENABLED': JSON.stringify(pixelEnabled) }, plugins: [metaFixture(metaEnabled)] });
  return result.outputFiles[0].text;
 }
 function fixture({ advertising = null, hostname = 'www.paulaambrosio.com', pathname = '/contact/',
@@ -166,7 +177,7 @@ test('explicit failed-save denial is latched even before Pixel initialization', 
 });
 
 test('Pixel-only configuration retains consent UI availability and withdrawal reload advice', async () => {
- const x = fixture({ advertising: true, source: await compiledBridge('false') });
+ const x = fixture({ advertising: true, source: await compiledBridge('false', 'true', false) });
  assert.equal(x.browser.trackingAvailable(), true);
  assert.equal(x.browser.reloadRecommended(), false);
  assert.equal(x.loads.length, 1);
@@ -176,20 +187,20 @@ test('Pixel-only configuration retains consent UI availability and withdrawal re
  assert.deepEqual(commands(x).at(-1), ['consent', false]);
  assert.equal(x.browser.reloadRecommended(), true);
  assert.equal(x.loads.some(script => script.id === 'paula-google-container'), false);
- const disabled = fixture({ source: await compiledBridge('false', 'false') });
+ const disabled = fixture({ source: await compiledBridge('false', 'false', false) });
  assert.equal(disabled.browser.trackingAvailable(), false);
 
  const component = await readFile(new URL('../src/components/GoogleConsent.astro', import.meta.url), 'utf8');
  const frontmatter = component.split('---')[1];
  assert.match(component, /\{configured && \(/);
- for (const [googleEnabled, pixelEnabled, expected] of [['false', 'true', true], ['false', 'false', false], ['true', 'false', true]]) {
+ for (const [googleEnabled, pixelEnabled, metaEnabled, expected] of [['false', 'true', false, true], ['false', 'false', false, false], ['true', 'false', false, true], ['false', 'false', true, true]]) {
   const { outputFiles } = await build({ stdin: { contents: `${frontmatter}\nexport { configured };`,
    resolveDir: new URL('../src/components/', import.meta.url).pathname }, bundle: true, write: false,
    format: 'cjs', define: { 'import.meta.env.PUBLIC_GOOGLE_TRACKING_ENABLED': JSON.stringify(googleEnabled),
-    'import.meta.env.PUBLIC_OPENAI_PIXEL_ENABLED': JSON.stringify(pixelEnabled) } });
+    'import.meta.env.PUBLIC_OPENAI_PIXEL_ENABLED': JSON.stringify(pixelEnabled) }, plugins: [metaFixture(metaEnabled)] });
   const module = { exports: {} };
   vm.runInNewContext(outputFiles[0].text, { module, exports: module.exports });
-  assert.equal(module.exports.configured, expected, `consent markup with Google=${googleEnabled}, Pixel=${pixelEnabled}`);
+  assert.equal(module.exports.configured, expected, `consent markup with Google=${googleEnabled}, Pixel=${pixelEnabled}, Meta=${metaEnabled}`);
  }
 });
 
