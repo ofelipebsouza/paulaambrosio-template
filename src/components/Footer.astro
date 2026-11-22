@@ -1,6 +1,7 @@
 ---
 import { SITE, FOOTER_LOCATIONS, NAV_LINKS, SOCIAL_LINKS, serviceUrl } from '../config';
 import Logo from './ui/Logo.astro';
+import HouzzServiceBadge from './ui/HouzzServiceBadge.astro';
 
 const { compactFooter = false } = Astro.props;
 const year = new Date().getFullYear();
@@ -43,6 +44,7 @@ const socialIconMap: Record<string, string> = {
 					<p><a href={`mailto:${SITE.email}`} class="hover:text-brass">{SITE.email}</a></p>
 					<p><a href={`tel:${SITE.phoneE164}`} class="hover:text-brass">{SITE.phone}</a></p>
 				</address>
+				<div class="mt-6"><HouzzServiceBadge inverted /></div>
 				<div class="mt-6 flex items-center gap-4">
 					{SOCIAL_LINKS.map(({ label, href }) => (
 						<a href={href} class="text-bone/60 transition-colors hover:text-brass" aria-label={`${SITE.name} on ${label}`} target="_blank" rel="noopener noreferrer">

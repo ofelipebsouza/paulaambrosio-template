@@ -1,0 +1,74 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
+import CtaBanner from '../components/ui/CtaBanner.astro';
+import FAQ from '../components/ui/FAQ.astro';
+import { locationUrl, serviceUrl } from '../config';
+import { faqSchema, schemaScript, serviceSchema, webPageSchema } from '../lib/seo';
+
+const path = '/penthouse-interior-design-miami-beach/';
+const heading = 'Penthouse Interior Design in Miami Beach';
+const title = 'Penthouse Interior Designer in Miami Beach | Paula Ambrosio Interior Design';
+const description = 'Luxury penthouse and condo interior design in Miami Beach, Bal Harbour, Sunny Isles Beach and Aventura. Turnkey design through installation and styling.';
+const turnkey = serviceUrl('turnkey-interior-design-miami');
+const locations = ['miami-beach', 'bal-harbour', 'sunny-isles-beach', 'aventura', 'surfside'] as const;
+const locationNames = ['Miami Beach', 'Bal Harbour', 'Sunny Isles Beach', 'Aventura', 'Surfside'];
+const breadcrumbs = [{ name: 'Services', url: '/services/' }, { name: heading, url: path }];
+const process = [
+  ['Discovery', 'We learn how you live and what the residence needs. We can meet in person or virtually.'],
+  ['Concept and 3D', 'We develop layouts, material palettes and 3D views of key rooms.'],
+  ['Building coordination', 'We work with building management and independent contractors to prepare design documentation and plan access.'],
+  ['Procurement', 'We order and track your furnishings, fixtures and accessories.'],
+  ['Installation and styling', 'We coordinate delivery, installation and final styling.'],
+];
+const faqs = [
+  { question: 'Can you manage a penthouse project if I live outside the United States?', answer: 'Yes. We work with clients at a distance using virtual design reviews, regular updates and local coordination.' },
+  { question: 'Do you work with condo association requirements?', answer: 'Yes. We coordinate with your building and independent contractors on design documentation, scheduling and delivery requirements. Your association and local authorities determine the approvals your project needs.' },
+  { question: 'How long does a turnkey penthouse project take?', answer: 'The timeline depends on the scope, building approvals, product lead times and installation access. We discuss the schedule with you before work starts.' },
+  { question: 'What does penthouse interior design cost in Miami Beach?', answer: 'Investment depends on the size of the residence, the work involved and the furnishings and finishes you select. After an initial conversation, we recommend the right service and prepare a proposal.' },
+];
+---
+<Layout {title} {description} canonical={path}>
+  <Fragment slot="head" set:html={schemaScript(webPageSchema({ path, title, description, breadcrumbs }))} />
+  <Fragment slot="head" set:html={schemaScript(serviceSchema({ path, name: heading, description, areaServed: [...locationNames, 'South Florida'] }))} />
+  <Fragment slot="head" set:html={schemaScript(faqSchema(faqs))} />
+  <article>
+    <section class="border-b border-sand bg-linen py-16 lg:py-24">
+      <div class="container-editorial">
+        <Breadcrumbs items={breadcrumbs} />
+        <p class="eyebrow mt-10 text-stone">Luxury condos and penthouses</p>
+        <h1 class="font-display mt-4 max-w-4xl text-display">{heading}</h1>
+        <p class="mt-6 max-w-2xl text-lede text-slate">A penthouse interior designer in Miami Beach starts with the view: ocean, bay or skyline. We frame that view, make the rooms feel comfortable to live in and choose materials with the coastal climate in mind.</p>
+        <p class="mt-4 max-w-2xl leading-relaxed text-slate">Paula Ambrosio brings 21 years of design experience to penthouses and luxury condos across Miami Beach and South Florida.</p>
+        <a href="/contact/" class="btn-primary mt-8">Start Your Project</a>
+      </div>
+    </section>
+    <section class="container-editorial py-16 lg:py-24">
+      <div class="grid gap-10 lg:grid-cols-3">
+        <div><h2 class="font-display text-3xl">Designed around the view</h2><p class="mt-4 leading-relaxed text-slate">We plan furniture, lighting and custom millwork around how the light moves and where you want to look. We consider sun exposure and humidity when selecting finishes and fabrics.</p></div>
+        <div><h2 class="font-display text-3xl">Condo and penthouse expertise</h2><p class="mt-4 leading-relaxed text-slate">We coordinate with building management on design submissions, work hours and elevator access. Our studio details closets, media walls and bars, and independent contractor partners handle construction.</p></div>
+        <div><h2 class="font-display text-3xl">Turnkey penthouse interiors</h2><p class="mt-4 leading-relaxed text-slate">Our <a href={turnkey} class="underline underline-offset-4">turnkey interior design service</a> includes design, procurement and coordination through installation and final styling. We can select linens, art and accessories when included in your scope.</p></div>
+      </div>
+    </section>
+    <section class="border-y border-sand bg-linen py-16">
+      <div class="container-editorial">
+        <h2 class="font-display text-4xl">Where we design</h2>
+        <p class="mt-4 max-w-3xl text-slate">Our studio works in Miami Beach, South Beach, Bal Harbour, Bay Harbor Islands, Surfside, Sunny Isles Beach, Golden Beach, Aventura, Fisher Island, Key Biscayne and Fort Lauderdale.</p>
+        <ul class="mt-6 flex flex-wrap gap-x-6 gap-y-3">
+          {locations.map((id, i) => <li><a class="underline underline-offset-4" href={locationUrl(id)}>{locationNames[i]}</a></li>)}
+        </ul>
+      </div>
+    </section>
+    <section class="container-editorial py-16 lg:py-24">
+      <h2 class="font-display text-4xl">Our process</h2>
+      <ol class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
+        {process.map(([label, copy], i) => <li class="border-t border-sand pt-5"><span class="eyebrow text-stone">{String(i + 1).padStart(2, '0')}</span><h3 class="font-display mt-2 text-2xl">{label}</h3><p class="mt-2 text-slate">{copy}</p></li>)}
+      </ol>
+    </section>
+    <section class="container-editorial max-w-3xl pb-20">
+      <h2 class="font-display text-3xl">Frequently asked questions</h2>
+      <div class="mt-8"><FAQ {faqs} context="penthouse-miami-beach" /></div>
+    </section>
+  </article>
+  <CtaBanner title="Begin your penthouse project" body="Tell us about your residence, your timeline and how you want it to feel." primaryLabel="Start Your Project" secondaryLabel="Explore Turnkey Interior Design" secondaryHref={turnkey} />
+</Layout>

@@ -214,17 +214,18 @@ const socialIconMap: Record<string, string> = {
 
 		<div class="container-editorial mt-auto pb-10 pt-8">
 			<p class="font-display text-center text-2xl text-ink">Let&rsquo;s get social</p>
-			<div class="mt-5 flex items-center justify-center gap-4">
+			<div class="mx-auto mt-5 flex max-w-md flex-wrap items-center justify-center gap-2">
 				{SOCIAL_LINKS.map(({ label, href }) => {
 					const icon = socialIconMap[label];
 					return (
 						<a
 							href={href}
-							class="menu-link flex h-11 w-11 items-center justify-center rounded-full bg-coffee text-bone transition-colors hover:bg-coffee-deep"
+							class="menu-link flex min-h-11 items-center justify-center gap-2 rounded-full bg-coffee px-4 py-2 text-sm text-bone transition-colors hover:bg-coffee-deep"
 							aria-label={`${SITE.name} on ${label}`}
 							rel="noopener noreferrer"
 						>
-							<i class={`${icon ?? 'ph ph-link'} text-xl`} aria-hidden="true"></i>
+							<i class={`${icon ?? 'ph ph-link'} text-lg`} aria-hidden="true"></i>
+							<span>{label}</span>
 						</a>
 					);
 				})}

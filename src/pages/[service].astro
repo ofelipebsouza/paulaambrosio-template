@@ -107,6 +107,7 @@ const isResidential = service.id === 'luxury-residential-interior-design-miami';
 					<ul class="mt-4 space-y-2 text-sm text-graphite">
 						<li class="border-b border-sand pb-2"><a href={locationUrl('miami')} class="hover:text-stone">Interior Design in Miami</a></li>
 						<li class="border-b border-sand pb-2"><a href={locationUrl('miami-beach')} class="hover:text-stone">Interior Design in Miami Beach</a></li>
+						{service.id === 'turnkey-interior-design-miami' && <li class="border-b border-sand pb-2"><a href="/penthouse-interior-design-miami-beach/" class="hover:text-stone">Penthouse Interior Design in Miami Beach</a></li>}
 						<li class="border-b border-sand pb-2"><a href="/projects/" class="hover:text-stone" data-analytics-event="cta_view_project" data-analytics-location="service" data-analytics-service={service.id}>Selected Projects</a></li>
 					</ul>
 				</div>
