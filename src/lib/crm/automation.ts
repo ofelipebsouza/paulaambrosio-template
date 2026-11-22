@@ -99,7 +99,7 @@ export async function emitJev(event: JevEvent, data: Record<string, unknown>, no
 	if (!url) return false;
 
 	const secret = String(import.meta.env.JEV_WEBHOOK_SECRET ?? '').trim();
-	const envelope: JevEnvelope = { event, ts: now, studio: 'Paula Ambrosio Interiors', data };
+	const envelope: JevEnvelope = { event, ts: now, studio: 'Paula Ambrosio Interior Design', data };
 	const body = JSON.stringify(envelope);
 
 	try {

@@ -1,0 +1,8 @@
+---
+import { getEntry } from 'astro:content';
+import LocationPage from '../../components/locations/LocationPage.astro';
+
+const location = await getEntry('locations', 'coral-gables');
+if (!location || location.data.draft) throw new Error('The Coral Gables location requires a published content entry.');
+---
+<LocationPage location={location} />

@@ -5,12 +5,12 @@ import { webPageSchema, schemaScript } from '../lib/seo';
 
 <Layout
 	title="Page Not Found"
-	description="The page you are looking for does not exist. Explore the projects, services, locations and journal of Paula Ambrosio Interiors."
+	description="The page you are looking for does not exist. Explore the projects, services, locations and journal of Paula Ambrosio Interior Design."
 	noindex={true}
 >
 	<Fragment slot="head" set:html={schemaScript(webPageSchema({
 		path: '/404',
-		title: 'Page Not Found | Paula Ambrosio Interiors',
+		title: 'Page Not Found | Paula Ambrosio Interior Design',
 		description: 'The requested page could not be found.',
 	}))} />
 

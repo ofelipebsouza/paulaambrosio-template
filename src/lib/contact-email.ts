@@ -39,7 +39,7 @@ const SERIF = "Georgia, 'Times New Roman', Times, serif";
 const SANS = "'Helvetica Neue', Helvetica, Arial, sans-serif";
 
 export const SITE_HOST = 'paulaambrosio.com';
-const STUDIO_SIGNATURE = 'Paula Ambrosio Interiors';
+const STUDIO_SIGNATURE = 'Paula Ambrosio Interior Design';
 const STUDIO_LOCATION = 'Miami, Florida';
 
 export function escapeHtml(value: string): string {
@@ -122,12 +122,12 @@ export function composeLeadEmail(data: ContactPayload, recipient: string): Compo
 export function composeConfirmationEmail(data: ContactPayload): ComposedEmail {
 	// Prefer the first name: the confirmation is a courtesy note, not a form letter.
 	const firstName = data.name.split(/\s+/)[0] || data.name;
-	const subject = 'Thank you for contacting Paula Ambrosio Interiors';
+	const subject = 'Thank you for contacting Paula Ambrosio Interior Design';
 
 	const text = [
 		`Dear ${firstName},`,
 		'',
-		'Thank you for reaching out to Paula Ambrosio Interiors.',
+		'Thank you for reaching out to Paula Ambrosio Interior Design.',
 		'',
 		'We have received your project inquiry and our team will review the information you shared.',
 		'',

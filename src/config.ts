@@ -6,9 +6,8 @@
 
 export const SITE = {
 	url: 'https://www.paulaambrosio.com',
-	name: 'Paula Ambrosio Interiors',
+	name: 'Paula Ambrosio Interior Design',
 	shortName: 'Paula Ambrosio',
-	legalName: 'Paula Ambrosio Interiors LLC',
 	description:
 		'Luxury interior design studio in Miami. Turnkey, residential and hospitality interiors across South Florida, from concept to keys in hand.',
 	email: 'info@paulaambrosio.com',
@@ -53,7 +52,9 @@ export const locationUrl = (id: string): string =>
 		? '/interior-design-miami/'
 		: id === 'sunny-isles-beach'
 			? '/interior-designer-sunny-isles/'
-			: `/interior-designer-${id}/`;
+			: id === 'coral-gables'
+				? '/locations/coral-gables-interior-design/'
+				: `/interior-designer-${id}/`;
 export const projectUrl = (id: string): string => `/projects/${id}/`;
 export const spaceUrl = (id: string): string => `/spaces/${id}/`;
 
@@ -66,6 +67,10 @@ export const FOOTER_LOCATIONS = [
 	{ label: 'Boca Raton', href: locationUrl('boca-raton') },
 	{ label: 'Palm Beach', href: locationUrl('palm-beach') },
 	{ label: 'Delray Beach', href: locationUrl('delray-beach') },
+	{ label: 'Coral Gables', href: locationUrl('coral-gables') },
+	{ label: 'Fort Lauderdale', href: locationUrl('fort-lauderdale') },
+	{ label: 'Surfside', href: locationUrl('surfside') },
+	{ label: 'Pinecrest', href: locationUrl('pinecrest') },
 ] as const;
 
 /**

@@ -17,7 +17,7 @@ const SAND = '#CEB297';
 const GRAPHITE = '#5A5651';
 const SANS = "'Helvetica Neue', Helvetica, Arial, sans-serif";
 
-const STUDIO_SIGNATURE = 'Paula Ambrosio Interiors';
+const STUDIO_SIGNATURE = 'Paula Ambrosio Interior Design';
 
 function hoursLate(dueAt: number, now: number): string {
 	const hours = Math.round((now - dueAt) / 3_600_000);

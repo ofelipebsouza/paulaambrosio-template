@@ -12,7 +12,7 @@
  *  · Best effort. A slow or unreachable JEV never blocks an inquiry, a status
  *    change or the dashboard: `classifyLead` resolves to `null` and the lead
  *    stays "not scored" until someone runs the backfill.
- *  · The questions are written for Paula Ambrosio Interiors, not for a generic
+ *  · The questions are written for Paula Ambrosio Interior Design, not for a generic
  *    agency — a Brickell penthouse furnishing request must not be scored with
  *    the same criteria as a landing page request.
  *  · Nothing here logs a message body or an unmasked address.

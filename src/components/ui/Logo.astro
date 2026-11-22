@@ -6,7 +6,7 @@ interface Props {
 	loading?: 'eager' | 'lazy';
 }
 
-const { variant = 'auto', class: className = '', alt = 'Paula Ambrosio Interiors', loading = 'eager' } = Astro.props;
+const { variant = 'auto', class: className = '', alt = 'Paula Ambrosio Interior Design', loading = 'eager' } = Astro.props;
 const source = variant === 'light' ? '/brand/logo-white.svg' : variant === 'dark' ? '/brand/logo-black.svg' : '/brand/logo-currentColor.svg';
 ---
 

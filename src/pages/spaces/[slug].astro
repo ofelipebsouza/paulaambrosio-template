@@ -42,7 +42,7 @@ const otherSpaces = (await getCollection('spaces')).filter((s) => !s.data.draft 
 ---
 
 <Layout
-	title={`${space.data.title} Design Ideas | Paula Ambrosio Interiors`}
+	title={`${space.data.title} Design Ideas | Paula Ambrosio Interior Design`}
 	description={space.data.seoDescription ?? space.data.intro}
 	canonical={spaceUrl(space.id)}
 	ogImage={ogImage}
@@ -50,7 +50,7 @@ const otherSpaces = (await getCollection('spaces')).filter((s) => !s.data.draft 
 >
 	<Fragment slot="head" set:html={schemaScript(webPageSchema({
 		path: spaceUrl(space.id),
-		title: `${space.data.title} | Paula Ambrosio Interiors`,
+		title: `${space.data.title} | Paula Ambrosio Interior Design`,
 		description: space.data.seoDescription ?? space.data.intro,
 		breadcrumbs,
 	}))} />
@@ -72,7 +72,7 @@ const otherSpaces = (await getCollection('spaces')).filter((s) => !s.data.draft 
 			<div class="relative container-editorial pb-14 pt-40 text-bone z-10">
 				<Breadcrumbs items={breadcrumbs} tone="light" />
 				<h1 class="font-display mt-8 max-w-3xl text-4xl lg:text-6xl">{space.data.title}</h1>
-				<p class="mt-4 max-w-2xl text-lg text-bone/80">Curated from our projects | Paula Ambrosio Interiors</p>
+				<p class="mt-4 max-w-2xl text-lg text-bone/80">Curated from our projects | Paula Ambrosio Interior Design</p>
 			</div>
 		</section>
 
