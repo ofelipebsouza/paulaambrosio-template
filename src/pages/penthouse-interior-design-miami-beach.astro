@@ -1,4 +1,6 @@
 ---
+import { Image } from 'astro:assets';
+import conceptHero from '../assets/penthouse-miami-beach-concept.webp';
 import Layout from '../layouts/Layout.astro';
 import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
 import CtaBanner from '../components/ui/CtaBanner.astro';
@@ -46,6 +48,21 @@ const faqs = [
           <a href={`mailto:${SITE.email}`} class="btn-secondary">Email the Studio</a>
           <a href="/contact/" class="btn-secondary">Start Your Project</a>
         </div>
+        <figure class="mt-10">
+          <Image
+            src={conceptHero}
+            alt="Penthouse living room concept with warm oak shelving, curved seating and an ocean sunset"
+            widths={[480, 768, 1080, 1344]}
+            sizes="(min-width: 1320px) 1240px, calc(100vw - 48px)"
+            format="webp"
+            quality={78}
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+            class="h-auto w-full"
+          />
+          <figcaption class="mt-3 text-sm text-slate">Concept rendering</figcaption>
+        </figure>
       </div>
     </section>
     <section class="container-editorial py-16 lg:py-24">
