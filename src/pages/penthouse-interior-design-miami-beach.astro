@@ -5,7 +5,7 @@ import Layout from '../layouts/Layout.astro';
 import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
 import CtaBanner from '../components/ui/CtaBanner.astro';
 import FAQ from '../components/ui/FAQ.astro';
-import { MESSAGING, SITE, locationUrl, serviceUrl } from '../config';
+import { MESSAGING, SITE, locationUrl, projectUrl, serviceUrl } from '../config';
 import { faqSchema, schemaScript, serviceSchema, webPageSchema } from '../lib/seo';
 
 const path = '/penthouse-interior-design-miami-beach/';
@@ -70,6 +70,26 @@ const faqs = [
         <div><h2 class="font-display text-3xl">Designed around the view</h2><p class="mt-4 leading-relaxed text-slate">We plan furniture, lighting and custom millwork around how the light moves and where you want to look. We consider sun exposure and humidity when selecting finishes and fabrics.</p></div>
         <div><h2 class="font-display text-3xl">Condo and penthouse expertise</h2><p class="mt-4 leading-relaxed text-slate">We coordinate with building management on design submissions, work hours and elevator access. Our studio details closets, media walls and bars, and independent contractor partners handle construction.</p></div>
         <div><h2 class="font-display text-3xl">Turnkey penthouse interiors</h2><p class="mt-4 leading-relaxed text-slate">Our <a href={turnkey} class="underline underline-offset-4">turnkey interior design service</a> includes design, procurement and coordination through installation and final styling. We can select linens, art and accessories when included in your scope.</p></div>
+      </div>
+    </section>
+    <section id="before-you-buy" aria-labelledby="before-you-buy-heading" class="border-t border-sand bg-bone py-16 lg:py-24">
+      <div class="container-editorial grid gap-8 lg:grid-cols-2 lg:gap-16">
+        <div>
+          <p class="eyebrow text-stone">Before you buy</p>
+          <h2 id="before-you-buy-heading" class="font-display mt-4 max-w-xl text-4xl">Choose the residence that fits how you live</h2>
+          <p class="mt-5 max-w-xl leading-relaxed text-slate">Our design research can start before you purchase. If you are deciding between two or three condos or penthouses, we compare their floor plans, daylight, views and privacy. We consider whether the rooms can support your family, whether you work from home, host often or want a quiet second residence.</p>
+          <a href="/contact/" class="btn-primary mt-7 inline-flex">Discuss your shortlist</a>
+        </div>
+        <div class="border-t border-sand pt-6 lg:border-l lg:border-t-0 lg:pl-10 lg:pt-2">
+          <h3 class="font-display text-2xl">What we look at with you</h3>
+          <ul class="mt-4 list-disc space-y-2 pl-5 leading-relaxed text-slate">
+            <li>Furniture fit, room layouts, storage and how people move through the home.</li>
+            <li>Natural light, terrace access and what the view looks like from where you will actually sit.</li>
+            <li>What can stay, what you may want to change and what to confirm with building management.</li>
+          </ul>
+          <p class="mt-5 leading-relaxed text-slate">We can work with your real estate agent or collaborate with independent real estate partners. Our role is to compare the spaces from a design perspective, not to broker the purchase or verify building rules.</p>
+          <p class="mt-5 leading-relaxed text-slate">See our <a href={projectUrl('hillsboro-beach-penthouse')} class="underline underline-offset-4">Rosewood Residences penthouse design study</a> in <a href={locationUrl('hillsboro-beach')} class="underline underline-offset-4">Hillsboro Beach</a>. The images are studio 3D renderings, not photographs of a completed installation.</p>
+        </div>
       </div>
     </section>
     <section class="border-y border-sand bg-linen py-16">
