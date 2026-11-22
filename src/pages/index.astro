@@ -4,6 +4,7 @@ import { Image, getImage } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import ProjectGrid from '../components/projects/ProjectGrid.astro';
 import CtaBanner from '../components/ui/CtaBanner.astro';
+import HouzzServiceBadge from '../components/ui/HouzzServiceBadge.astro';
 import { webPageSchema, schemaScript } from '../lib/seo';
 import { SITE, serviceUrl, FOOTER_LOCATIONS } from '../config';
 import { HOME_OG } from '../lib/og';
@@ -21,7 +22,7 @@ const heroSlides = getHomeHeroProjects(allProjects).map((p) => ({
 // let narrow screens use an appropriately sized, sharp image.
 const heroShots = await Promise.all(
 	heroSlides.map(async (slide, i) => {
-		const widths = i === 0 ? [480, 640, 768, 960, 1088, 1200, 1600] : [768, 1200, 1600];
+		const widths = i === 0 ? [384, 480, 640, 768, 960, 1088, 1200, 1600] : [768, 1200, 1600];
 		const optimized = await getImage({ src: slide.src, widths, sizes: '100vw', quality: 60 });
 		return {
 			alt: slide.alt,
@@ -35,8 +36,9 @@ const heroShots = await Promise.all(
 	}),
 );
 
-const featuredProjects = allProjects
-	.sort((a, b) => (b.data.year ?? 0) - (a.data.year ?? 0));
+const featuredProjects = [...allProjects].sort((a, b) =>
+  Number(b.id === 'home-fl') - Number(a.id === 'home-fl') || (b.data.year ?? 0) - (a.data.year ?? 0),
+);
 
 const latestJournal = (await getCollection('journal'))
 	.filter((p) => !p.data.draft)
@@ -44,6 +46,7 @@ const latestJournal = (await getCollection('journal'))
 	.slice(0, 3);
 
 const focusedServices = [
+  { title: 'Penthouse Interior Design', href: '/penthouse-interior-design-miami-beach/', id: 'penthouse-interior-design-miami-beach', description: 'Interior design and turnkey furnishing for Miami Beach condos and penthouses.' },
   { title: 'Custom Millwork', href: '/millwork/', id: 'millwork', description: 'Built-in cabinetry, media walls and architectural details designed to fit your home.' },
   { title: 'Design Consultation', href: serviceUrl('design-consultation-miami'), id: 'design-consultation-miami', description: 'Work with a designer to resolve a layout, refine material selections or decide what to do next.' },
   { title: 'Design Express', href: serviceUrl('design-express-miami'), id: 'design-express-miami', description: 'Streamlined turnkey design for a furnished, move-in-ready residence on a shorter timeline.' },
@@ -174,6 +177,7 @@ const processSteps = [
 			<div class="ornament-divider mt-8">
 				<span class="ornament-divider-diamond"></span>
 			</div>
+			<div class="mt-8"><HouzzServiceBadge /></div>
 		</div>
 	</section>
 
@@ -234,7 +238,7 @@ const processSteps = [
 					</span>
 				</a>
 			</div>
-      <div class="mt-6 grid gap-6 lg:grid-cols-3">
+      <div class="mt-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
         {focusedServices.map((service) => (
           <a href={service.href} class="group flex flex-col border border-sand p-8 transition-colors hover:bg-linen lg:p-10"
             data-analytics-event="service_open" data-analytics-service={service.id} data-analytics-location="services">

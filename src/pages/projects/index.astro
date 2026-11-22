@@ -11,7 +11,7 @@ const spaces = (await getCollection('spaces')).filter((s) => !s.data.draft);
 const projects = (await getCollection('projects'))
 	.filter((p) => !p.data.draft)
 	.sort(
-	(a, b) => (b.data.year ?? 0) - (a.data.year ?? 0),
+	(a, b) => Number(b.id === 'home-fl') - Number(a.id === 'home-fl') || (b.data.year ?? 0) - (a.data.year ?? 0),
 );
 
 const breadcrumbs: BreadcrumbEntry[] = [{ name: 'Projects', url: '/projects' }];

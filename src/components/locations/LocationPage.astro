@@ -31,6 +31,8 @@ const breadcrumbs: BreadcrumbEntry[] = [
 	{ name: location.data.title, url: path },
 ];
 const ctas = location.data.ctas;
+const linksToPenthouse = ['miami-beach', 'sunny-isles-beach', 'aventura', 'bal-harbour', 'surfside'].includes(location.id);
+
 ---
 
 <Layout
@@ -87,6 +89,7 @@ const ctas = location.data.ctas;
 					<ul class="mt-4 space-y-2 text-sm text-graphite">
 						<li class="border-b border-sand pb-2"><a href={serviceUrl('turnkey-interior-design-miami')} class="hover:text-stone">Turnkey Interior Design</a></li>
 						<li class="border-b border-sand pb-2"><a href={serviceUrl('luxury-residential-interior-design-miami')} class="hover:text-stone">Luxury Residential Design</a></li>
+						{linksToPenthouse && <li class="border-b border-sand pb-2"><a href="/penthouse-interior-design-miami-beach/" class="hover:text-stone">Penthouse Interior Design in Miami Beach</a></li>}
 						<li class="border-b border-sand pb-2"><a href={serviceUrl('hospitality-interior-design-miami')} class="hover:text-stone">Hospitality Interior Design</a></li>
 					</ul>
 				</div>}

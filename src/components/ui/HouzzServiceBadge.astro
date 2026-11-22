@@ -1,0 +1,14 @@
+---
+import { HOUZZ_PROFILE_URL } from '../../config';
+
+const { inverted = false } = Astro.props;
+---
+<a
+  href={HOUZZ_PROFILE_URL}
+  target="_blank"
+  rel="noopener noreferrer"
+  class:list={['inline-flex w-fit items-center gap-3 text-sm leading-snug underline-offset-4 hover:underline', inverted ? 'text-bone/80' : 'text-ink']}
+>
+  <img src="/images/houzz-best-of-service-2026.png" alt="" width="54" height="54" loading="lazy" decoding="async" />
+  <span>Best of Houzz 2026<br /><span class="text-xs">Service</span></span>
+</a>

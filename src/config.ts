@@ -1,3 +1,5 @@
+export const HOUZZ_PROFILE_URL = 'https://www.houzz.com/pro/paula-ambrosio61/paula-ambrosio-interiors-design';
+
 /**
  * Central site configuration — single source of truth for the brand entity,
  * contact data, canonical URLs and navigation. Used by the SEO system,
@@ -37,7 +39,7 @@ export const PERSON = {
 	sameAs: [
 		'https://www.instagram.com/paulaambrosio_',
 		'https://www.linkedin.com/in/paula-ambrosio-99b908246',
-		'https://www.houzz.com/pro/paulaambrosio',
+		HOUZZ_PROFILE_URL,
 	],
 } as const;
 
@@ -126,7 +128,7 @@ export const SOCIAL_LINKS = [
 	{ label: 'TikTok', href: 'https://www.tiktok.com/@thepaulaambrosio' },
 	{ label: 'Threads', href: 'https://www.threads.net/@paulaambrosio_' },
 	{ label: 'LinkedIn', href: 'https://www.linkedin.com/in/paula-ambrosio-99b908246' },
-	{ label: 'Houzz', href: 'https://www.houzz.com/pro/paulaambrosio' },
+	{ label: 'Houzz', href: HOUZZ_PROFILE_URL },
 ] as const;
 
 /**
