@@ -17,11 +17,12 @@ const heroSlides = getHomeHeroProjects(allProjects).map((p) => ({
 	alt: p.data.imageAlt ?? p.data.title,
 }));
 
-// Slides 0–1 load up front; the rest defer (data-src) so the LCP image owns the
-// bandwidth — the carousel swaps each one in before it becomes visible.
+// Only the first photo competes for initial bandwidth. Smaller variants
+// let narrow screens use an appropriately sized, sharp image.
 const heroShots = await Promise.all(
 	heroSlides.map(async (slide, i) => {
-		const optimized = await getImage({ src: slide.src, widths: [768, 1200, 1600], sizes: '100vw', quality: 60 });
+		const widths = i === 0 ? [480, 640, 768, 960, 1088, 1200, 1600] : [768, 1200, 1600];
+		const optimized = await getImage({ src: slide.src, widths, sizes: '100vw', quality: 60 });
 		return {
 			alt: slide.alt,
 			src: optimized.src,
@@ -72,7 +73,6 @@ const processSteps = [
 		<link
 			rel="preload"
 			as="image"
-			href={heroShots[0].src}
 			imagesrcset={heroShots[0].srcset}
 			imagesizes="100vw"
 			fetchpriority="high"
@@ -90,7 +90,7 @@ const processSteps = [
 		<div id="hero-carousel" class="relative w-full overflow-hidden min-h-[80vw] sm:min-h-0 sm:aspect-[16/10] lg:aspect-[21/8]">
 			{heroShots.map((shot, i) => (
 				<div
-					class="hero-slide absolute inset-0 transition-opacity duration-[1400ms] ease-in-out"
+					class="hero-slide absolute inset-0 transition-opacity duration-[1400ms] ease-in-out motion-reduce:transition-none"
 					style={`opacity: ${i === 0 ? '1' : '0'};`}
 					aria-hidden={i !== 0 ? 'true' : undefined}
 				>
@@ -411,70 +411,72 @@ const processSteps = [
 	const slides = document.querySelectorAll<HTMLElement>('.hero-slide');
 	const dots   = document.querySelectorAll<HTMLButtonElement>('.hero-dot');
 	let current  = 0;
-	let timer: ReturnType<typeof setInterval>;
+	let timer: ReturnType<typeof setTimeout>;
+	let navigation = 0;
+	let pageLoaded = document.readyState === 'complete';
 
-	const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+	const autoRotate = window.matchMedia('(min-width: 1024px) and (prefers-reduced-motion: no-preference)');
 
-	// Deferred hero slides: promote data-src/data-srcset when needed.
-	function loadSlide(index: number) {
-		const img = slides[index]?.querySelector<HTMLImageElement>('img[data-src]');
-		if (!img) return;
-		if (img.dataset.srcset) img.srcset = img.dataset.srcset;
-		if (img.dataset.src) img.src = img.dataset.src;
-		img.removeAttribute('data-src');
-		img.removeAttribute('data-srcset');
-	}
-
-	// Prefetch the next slide as soon as the current one is shown (4s of margin).
-	function goTo(index: number) {
-		// Fade out current
-		slides[current].style.opacity = '0';
-		slides[current].setAttribute('aria-hidden', 'true');
-		(dots[current].firstElementChild as HTMLElement).style.width = '0.5rem';
-		dots[current].style.opacity = '0.5';
-		dots[current].setAttribute('aria-selected', 'false');
-
-		current = index;
-		loadSlide(current);
-		loadSlide((current + 1) % slides.length);
-
-		// Fade in next
-		slides[current].style.opacity = '1';
-		slides[current].removeAttribute('aria-hidden');
-		(dots[current].firstElementChild as HTMLElement).style.width = '1.75rem';
-		dots[current].style.opacity = '1';
-		dots[current].setAttribute('aria-selected', 'true');
-	}
-
-	function advance() {
-		goTo((current + 1) % slides.length);
+	async function loadSlide(index: number) {
+		const img = slides[index]?.querySelector<HTMLImageElement>('img');
+		if (!img) return false;
+		if (img.dataset.src) {
+			// A selected slide is no longer speculative. Set sizing before the
+			// fallback URL, and keep the current image visible through decode.
+			img.loading = 'eager';
+			if (img.dataset.srcset) img.srcset = img.dataset.srcset;
+			img.src = img.dataset.src;
+			img.removeAttribute('data-src');
+			img.removeAttribute('data-srcset');
+		}
+		try {
+			await img.decode();
+			return true;
+		} catch {
+			return false;
+		}
 	}
 
 	function startTimer() {
-		clearInterval(timer);
-		if (!reduced) timer = setInterval(advance, 4000);
+		clearTimeout(timer);
+		if (pageLoaded && autoRotate.matches && slides.length > 1) {
+			timer = setTimeout(() => void goTo((current + 1) % slides.length), 8000);
+		}
 	}
 
-	// Warm the second slide once the browser is idle so the first 4s
-	// transition shows an already-decoded image without stealing LCP bandwidth.
-	const warmNextSlide = () => loadSlide(1);
-	if ('requestIdleCallback' in window) {
-		requestIdleCallback(warmNextSlide);
+	async function goTo(index: number) {
+		const requested = ++navigation;
+		clearTimeout(timer);
+		if (index !== current && await loadSlide(index)) {
+			if (requested !== navigation) return;
+			slides[current].style.opacity = '0';
+			slides[current].setAttribute('aria-hidden', 'true');
+			(dots[current].firstElementChild as HTMLElement).style.width = '0.5rem';
+			dots[current].style.opacity = '0.5';
+			dots[current].setAttribute('aria-selected', 'false');
+
+			current = index;
+			slides[current].style.opacity = '1';
+			slides[current].removeAttribute('aria-hidden');
+			(dots[current].firstElementChild as HTMLElement).style.width = '1.75rem';
+			dots[current].style.opacity = '1';
+			dots[current].setAttribute('aria-selected', 'true');
+		}
+		if (requested === navigation) startTimer();
+	}
+
+	// Phones and reduced-motion visitors can still select every photo without
+	// an automatic download or a photo swap while the first view is loading.
+	dots.forEach((dot, i) => dot.addEventListener('click', () => void goTo(i)));
+	autoRotate.addEventListener('change', startTimer);
+	if (pageLoaded) {
+		startTimer();
 	} else {
-		setTimeout(warmNextSlide, 2000);
-	}
-
-	// Dot click → jump to slide and reset timer
-	dots.forEach((dot, i) => {
-		dot.addEventListener('click', () => {
-			if (i === current) return;
-			goTo(i);
+		window.addEventListener('load', () => {
+			pageLoaded = true;
 			startTimer();
-		});
-	});
-
-	startTimer();
-
+		}, { once: true });
+	}
 
 	// Scroll-reveal: add .is-visible when element enters viewport
 	const observer = new IntersectionObserver(
