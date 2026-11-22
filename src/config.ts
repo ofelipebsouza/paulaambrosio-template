@@ -66,6 +66,7 @@ export const FOOTER_LOCATIONS = [
 	{ label: 'Sunny Isles Beach', href: locationUrl('sunny-isles-beach') },
 	{ label: 'Aventura', href: locationUrl('aventura') },
 	{ label: 'Bal Harbour', href: locationUrl('bal-harbour') },
+	{ label: 'Hillsboro Beach', href: locationUrl('hillsboro-beach') },
 	{ label: 'Boca Raton', href: locationUrl('boca-raton') },
 	{ label: 'Palm Beach', href: locationUrl('palm-beach') },
 	{ label: 'Delray Beach', href: locationUrl('delray-beach') },
