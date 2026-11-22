@@ -10,7 +10,7 @@ export const SITE = {
 	shortName: 'Paula Ambrosio',
 	legalName: 'Paula Ambrosio Interiors LLC',
 	description:
-		'Miami luxury interior design studio specializing in full-service and turnkey interiors for high-end residences, penthouses, renovations and hospitality spaces across South Florida.',
+		'Luxury interior design studio in Miami. Turnkey, residential and hospitality interiors across South Florida, from concept to keys in hand.',
 	email: 'info@paulaambrosio.com',
 	phone: '+1 (786) 658-9478',
 	phone2: '+1 (786) 208-5412',
@@ -65,6 +65,7 @@ export const FOOTER_LOCATIONS = [
 	{ label: 'Bal Harbour', href: locationUrl('bal-harbour') },
 	{ label: 'Boca Raton', href: locationUrl('boca-raton') },
 	{ label: 'Palm Beach', href: locationUrl('palm-beach') },
+	{ label: 'Delray Beach', href: locationUrl('delray-beach') },
 ] as const;
 
 /**
@@ -79,7 +80,6 @@ export const NAV_LEFT = [
 		label: 'Services',
 		href: '/services/',
 		children: [
-			{ label: 'All Services', href: '/services/' },
 			{ label: 'Millwork', href: '/millwork/' },
 			{ label: 'Design Consultation', href: serviceUrl('design-consultation-miami') },
 			{ label: 'Design Express', href: serviceUrl('design-express-miami') },
@@ -92,7 +92,6 @@ export const NAV_LEFT = [
 		label: 'Projects',
 		href: '/projects/',
 		children: [
-			{ label: 'All Projects', href: '/projects/' },
 			{ label: 'Laundry Room', href: spaceUrl('laundry-room') },
 			{ label: 'Closet', href: spaceUrl('closet') },
 			{ label: 'Living Room', href: spaceUrl('living-room') },
