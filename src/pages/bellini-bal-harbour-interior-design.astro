@@ -2,6 +2,11 @@
 import Layout from '../layouts/Layout.astro';
 import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
 import { schemaScript, serviceSchema, webPageSchema } from '../lib/seo';
+import { Image } from 'astro:assets';
+import dressingRoom from '../assets/editorial/bellini-portfolio/dressing-room-vanity.webp';
+import wardrobe from '../assets/editorial/bellini-portfolio/illuminated-wardrobe.webp';
+import bathroomVanity from '../assets/editorial/bellini-portfolio/bathroom-vanity.webp';
+import shower from '../assets/editorial/bellini-portfolio/closed-shower.webp';
 
 const path = '/bellini-bal-harbour-interior-design/';
 const city = '/interior-designer-bal-harbour/';
@@ -9,6 +14,11 @@ const title = 'Bellini Bal Harbour Condo Interior Design | Paula Ambrosio';
 const heading = 'Bellini Bal Harbour Condo Interior Design';
 const description = 'Independent interior design for Bellini Bal Harbour condo owners. Plan a renovation, custom millwork or turnkey furnishing with our South Florida studio.';
 const breadcrumbs = [{ name: 'Bal Harbour', url: city }, { name: heading, url: path }];
+const studyViews = [
+  { src: bathroomVanity, alt: '3D rendering showing the full double vanity, stone counter and wall sconces from the front', caption: 'Full double vanity with stone and layered lighting' },
+  { src: shower, alt: '3D rendering of a stone shower with both glass doors closed and lit cabinetry beside it', caption: 'Closed glass shower doors and illuminated storage' },
+  { src: wardrobe, alt: '3D rendering of a light wood wardrobe with illuminated shelving and double hanging rails', caption: 'Illuminated wardrobe and custom storage' },
+];
 const scopes = [
   { title: 'Keep the layout. Change how it feels.', body: 'A furnishing refresh can change how the whole residence works without opening walls. We plan seating for conversation and the view, layer lighting, and select window treatments, rugs and fabrics with the coastal light in mind.' },
   { title: 'Renovate what no longer serves you.', body: 'When the kitchen, baths or closets no longer suit daily life, we evaluate what can stay and what needs a redesign. Our team designs finishes and built-in storage; independent contractors handle construction.' },
@@ -22,10 +32,18 @@ const scopes = [
     <section class="border-b border-sand bg-linen py-16 lg:py-24">
       <div class="container-editorial">
         <Breadcrumbs items={breadcrumbs} />
-        <p class="eyebrow mt-10 text-stone">Existing condo renovations and furnishing</p>
-        <h1 class="font-display mt-4 max-w-4xl text-display">{heading}</h1>
-        <p class="mt-6 max-w-2xl text-lede text-slate">A home at Bellini on Collins Avenue in Bal Harbour may already have the space you want. The question is what to keep and what to change. We help owners build on the best parts of their residence, from a furnishing refresh to a full interior renovation.</p>
-        <a href="/contact/" class="btn-primary mt-8 inline-flex" data-analytics-event="cta_start_project" data-analytics-location="hero">Discuss Your Bellini Residence</a>
+        <div class="mt-8 grid items-center gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16">
+          <div>
+            <p class="eyebrow text-stone">Existing condo renovations and furnishing</p>
+            <h1 class="font-display mt-4 max-w-4xl text-display">{heading}</h1>
+            <p class="mt-6 max-w-2xl text-lede text-slate">A home at Bellini on Collins Avenue in Bal Harbour may already have the space you want. The question is what to keep and what to change. We help owners build on the best parts of their residence, from a furnishing refresh to a full interior renovation.</p>
+            <a href="/contact/" class="btn-primary mt-8 inline-flex" data-analytics-event="cta_start_project" data-analytics-location="hero">Discuss Your Bellini Residence</a>
+          </div>
+          <figure class="mx-auto w-full max-w-sm lg:ml-auto lg:mr-0">
+            <Image src={dressingRoom} alt="3D rendering of a wood dressing room with a vanity, round stool and illuminated shelving" widths={[400, 768, 882]} sizes="(min-width: 1024px) 384px, (min-width: 450px) 384px, 90vw" class="block h-auto w-full" loading="eager" fetchpriority="high" />
+            <figcaption class="mt-3 text-sm text-slate">3D Design Study | Portfolio Reference. Not a Bellini residence.</figcaption>
+          </figure>
+        </div>
       </div>
     </section>
     <section aria-labelledby="scope-heading" class="container-editorial py-16 lg:py-24">
@@ -43,6 +61,21 @@ const scopes = [
         <div class="space-y-4 leading-relaxed text-slate">
           <p>We start with a measured review after you authorize access. Before changing a kitchen or bath, we identify existing service locations and flag questions for your contractor and other qualified professionals. If a room is working well, we look for ways to keep useful fixtures, finishes or furniture.</p>
           <p>Before ordering or scheduling, we ask management about the current approval process, work hours, protection requirements, access and delivery routes. For an occupied residence, we also plan which rooms can remain in use while work moves through the home. Requirements and permits are confirmed with the association and authorities as applicable; approval is not assumed.</p>
+        </div>
+      </div>
+    </section>
+    <section aria-labelledby="study-heading" class="border-t border-sand bg-linen py-16 lg:py-24">
+      <div class="container-editorial">
+        <p class="eyebrow text-stone">3D Design Study | Portfolio Reference</p>
+        <h2 id="study-heading" class="font-display mt-4 text-4xl">A closer look at bath and closet design</h2>
+        <p class="mt-4 max-w-3xl leading-relaxed text-slate">In this study for a separate private residence, we used 3D views to show how lighting, built-in storage and stone finishes would work together. These renderings are examples of our design process, not photographs of a completed installation or of Bellini.</p>
+        <div class="mt-8 grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
+          {studyViews.map(({ src, alt, caption }) => (
+            <figure>
+              <Image {src} {alt} widths={[360, 720]} sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw" class="block aspect-[7/10] w-full object-contain bg-bone" />
+              <figcaption class="mt-3 text-sm text-slate">{caption}</figcaption>
+            </figure>
+          ))}
         </div>
       </div>
     </section>
