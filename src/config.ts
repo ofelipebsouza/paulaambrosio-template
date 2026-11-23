@@ -108,7 +108,11 @@ export const NAV_RIGHT = [
 	{
 		label: 'Locations',
 		href: '/locations/',
-		children: FOOTER_LOCATIONS.map((loc) => ({ label: loc.label, href: loc.href })),
+		children: [
+			...FOOTER_LOCATIONS.slice(0, 1),
+			{ label: 'ONE Park Tower', href: '/one-park-tower-interior-design/' },
+			...FOOTER_LOCATIONS.slice(1),
+		],
 	},
 	{ label: 'Journal', href: '/journal/' },
 	{ label: 'Press', href: '/press/' },
