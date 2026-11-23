@@ -1,0 +1,114 @@
+---
+import { Image } from 'astro:assets';
+import example from '../assets/projects/home-aa/web/01.webp';
+import Layout from '../layouts/Layout.astro';
+import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
+import FAQ from '../components/ui/FAQ.astro';
+import CtaBanner from '../components/ui/CtaBanner.astro';
+import { locationUrl, serviceUrl } from '../config';
+import { faqSchema, schemaScript, serviceSchema, webPageSchema } from '../lib/seo';
+
+const path = '/one-park-tower-interior-design/';
+const copy = {
+  "title": "ONE Park Tower Interior Design, SoLé Mia North Miami | Paula Ambrosio Interior Design",
+  "meta": "Interior design for ONE Park Tower owners at SoLé Mia, North Miami. Turnkey design, furniture and custom millwork planned around your key handover.",
+  "h1": "Interior Design for ONE Park Tower Owners at SoLé Mia",
+  "intro": "Our North Miami studio helps ONE Park Tower owners plan and furnish a home that suits the way they live. Share your residence plan before closing so we can begin with the layout, furnishings and custom millwork, then coordinate installation when building access is available.",
+  "sections": [
+    [
+      "A home designed around the view",
+      "At SoLé Mia, a lagoon, park or bay outlook can shape the layout. We study what you see from the sofa, how daylight enters the room and how doors open onto the terrace. That helps us select furniture, window treatments and finishes without blocking circulation or crowding the view."
+    ],
+    [
+      "Make the most of your floor plan",
+      "In a residence with one or two bedrooms, built in storage and a flexible den can leave more room for daily life. In a three bedroom plan, we work through family routines, guest privacy and dining space. For penthouses, we consider the scale of seating, larger pieces, lighting and art as part of the plan."
+    ],
+    [
+      "Coordinate the project around handover",
+      "Before the keys, share the owner approved floor plan, finishes schedule and your best estimate of access. We plan the rooms, work through selections and identify items with longer lead times. Once access is permitted, we verify dimensions before custom pieces go into production, confirm delivery and elevator windows, then coordinate installation and styling. We confirm the date with you after we verify the scope, access and lead times."
+    ]
+  ],
+  "plans": [
+    [
+      "Design + Furniture",
+      "Layout, finishes direction and a curated furniture and lighting plan. We can include pieces from Uultis when they suit the space and are available."
+    ],
+    [
+      "Design + Furniture + Custom Millwork",
+      "Furniture and lighting plus built in solutions such as media walls, entry storage, desks, bars or closets. Custom pieces are measured on site before fabrication."
+    ],
+    [
+      "Turnkey Arrival",
+      "A coordinated plan from design and ordering to receiving, installation and final styling. We can phase essentials first if your move in date comes before all pieces arrive."
+    ]
+  ],
+  "faqs": [
+    [
+      "Can you start before I receive the keys?",
+      "Yes. We can start with your floor plan, room priorities and selections. We verify site dimensions and delivery requirements as soon as we have authorized access."
+    ],
+    [
+      "Can my home be ready when I receive the keys?",
+      "We plan around your target date, but the timing depends on building access, approvals, the scope and supplier lead times. We confirm the schedule after checking those dependencies."
+    ],
+    [
+      "Can I approve the design from out of town?",
+      "Yes. We can review plans and selections with you remotely and coordinate local delivery and installation according to your scope."
+    ],
+    [
+      "Can I start with just furniture or millwork?",
+      "Yes. Tell us which rooms you want to address first, and we can recommend a furniture, design or custom millwork scope that fits your priorities."
+    ]
+  ],
+  "disclaimer": "Paula Ambrosio Interior Design is an independent interior design studio and is not affiliated with the developer, sales team or condominium association of this building. Building names are used for identification only."
+};
+const city = locationUrl('miami');
+const turnkey = serviceUrl('turnkey-interior-design-miami');
+const penthouse = '/penthouse-interior-design-miami-beach/';
+const faqs = copy.faqs.map(([question, answer]) => ({ question, answer }));
+const breadcrumbs = [{ name: 'Locations', url: '/locations/' }, { name: 'Miami', url: city }, { name: 'ONE Park Tower', url: path }];
+---
+<Layout title={copy.title} description={copy.meta} canonical={path}>
+  <Fragment slot="head" set:html={schemaScript(webPageSchema({path, title:copy.title, description:copy.meta, breadcrumbs}))} />
+  <Fragment slot="head" set:html={schemaScript(serviceSchema({path, name:copy.h1, description:copy.meta, areaServed:['North Miami']}))} />
+  <Fragment slot="head" set:html={schemaScript(faqSchema(faqs))} />
+  <article>
+    <section class="bg-linen py-16 lg:py-24">
+      <div class="container-editorial">
+        <Breadcrumbs items={breadcrumbs} />
+        <p class="eyebrow mt-10 text-stone">SoLé Mia, North Miami</p>
+        <h1 class="font-display mt-4 max-w-4xl text-display">{copy.h1}</h1>
+        <p class="mt-6 max-w-3xl text-lede text-slate">{copy.intro}</p>
+        <a href="/contact/" class="btn-primary mt-8 inline-flex" data-analytics-event="cta_start_project" data-analytics-location="hero">Plan Your ONE Park Tower Residence</a>
+        <figure class="mt-10">
+          <Image src={example} alt="Warm wood media wall and pale seating in a North Miami residence designed by Paula Ambrosio Interior Design" widths={[480, 768, 1080, 1400]} sizes="(min-width: 1320px) 1240px, calc(100vw - 48px)" format="webp" quality={78} loading="eager" fetchpriority="high" class="h-auto w-full" />
+          <figcaption class="mt-3 text-sm text-slate">North Miami project by Paula Ambrosio Interior Design. Shown for inspiration; not at ONE Park Tower.</figcaption>
+        </figure>
+      </div>
+    </section>
+    <section class="container-editorial grid gap-8 py-16 lg:grid-cols-2 lg:py-24">
+      {copy.sections.slice(0,2).map(([heading, paragraph]) => <div><h2 class="font-display text-3xl">{heading}</h2><p class="mt-4 leading-relaxed text-slate">{paragraph}</p></div>)}
+    </section>
+    <section class="border-y border-sand bg-linen py-16 lg:py-24">
+      <div class="container-editorial">
+        <h2 class="font-display text-4xl">Homeowner Design Packages</h2>
+        <div class="mt-8 grid gap-8 lg:grid-cols-3">
+          {copy.plans.map(([heading, paragraph]) => <div class="border-t border-sand pt-5"><h3 class="font-display text-2xl">{heading}</h3><p class="mt-3 leading-relaxed text-slate">{paragraph}</p></div>)}
+        </div>
+      </div>
+    </section>
+    <section class="container-editorial py-16 lg:py-24">
+      <h2 class="font-display text-4xl">{copy.sections[2][0]}</h2>
+      <p class="mt-4 max-w-3xl leading-relaxed text-slate">{copy.sections[2][1]}</p>
+      <ul class="mt-6 flex flex-wrap gap-x-6 gap-y-3">
+        <li><a href={turnkey} class="underline underline-offset-4">Turnkey Interior Design</a></li><li><a href="/millwork/" class="underline underline-offset-4">Custom Millwork</a></li><li><a href={penthouse} class="underline underline-offset-4">Penthouse Interior Design</a></li><li><a href={city} class="underline underline-offset-4">Explore Miami Interior Design</a></li>
+      </ul>
+    </section>
+    <section class="container-editorial pb-16 lg:pb-24">
+      <h2 class="font-display text-3xl">Questions from Owners</h2>
+      <div class="mt-7 max-w-3xl"><FAQ {faqs} context="one-park-tower" /></div>
+      <p class="mt-8 max-w-3xl text-sm text-slate">Paula Ambrosio Interior Design is an independent interior design studio and is not affiliated with the developer, sales team or condominium association of this building. Building names are used for identification only.</p>
+    </section>
+  </article>
+  <CtaBanner title="Begin Your ONE Park Tower Project" body="Tell us which rooms you want ready and when you expect to receive the keys." primaryLabel="Start Your Project" secondaryLabel="Explore Turnkey" secondaryHref={turnkey} />
+</Layout>
