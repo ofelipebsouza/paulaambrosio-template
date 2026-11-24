@@ -103,7 +103,7 @@ const linkGroups: Array<{
 	<Fragment slot="head" set:html={schemaScript(webPageSchema({
 		path: '/links',
 		title: 'Links | Paula Ambrosio Interior Design',
-		description: 'Essential links for Paula Ambrosio Interior Design — projects, services, contact and social profiles.',
+		description: 'Essential links for Paula Ambrosio Interior Design: projects, services, contact and social profiles.',
 		breadcrumbs,
 	}))} />
 
@@ -134,7 +134,7 @@ const linkGroups: Array<{
 						@paulaambrosio_
 					</span>
 				</a>
-				<h1 class="font-display mt-6 text-4xl leading-tight lg:text-5xl">Luxury Interior Design in Miami</h1>
+				<h1 class="font-display mt-6 text-4xl leading-tight lg:text-5xl">Explore Paula Ambrosio Interior Design</h1>
 				<p class="mt-5 max-w-md text-base leading-relaxed text-slate">
 					Sophisticated interiors. Seamless execution. Designed around the way you live.
 				</p>
@@ -193,7 +193,7 @@ const linkGroups: Array<{
 					data-analytics-event="cta_view_project"
 					data-analytics-project={p.id}
 					data-analytics-location="links"
-					aria-label={`${p.data.title}, ${p.data.location} — View Project`}
+					aria-label={`${p.data.title}, ${p.data.location}, view project`}
 					class="project-slide group absolute inset-0 transition-opacity duration-[1400ms] ease-in-out focus-visible:outline-2 focus-visible:outline-coffee focus-visible:outline-offset-[-4px]"
 					style={`opacity: ${i === 0 ? '1' : '0'};`}
 					aria-hidden={i !== 0 ? 'true' : undefined}

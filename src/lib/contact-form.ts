@@ -72,8 +72,25 @@ export const SERVICE_OPTIONS = [
 	'New Construction',
 	'Renovation',
 	'Hospitality Interior Design',
+	'Custom Millwork',
 	'Other',
 ] as const;
+
+const SERVICE_LABELS: Record<string, string> = {
+	'Full-Service Interior Design': 'Full Interior Design',
+	'Design Consultation': 'Get Design Advice',
+	'Design Express': 'Furnish My Condo or Home',
+	'Turnkey Interior Design': 'Design and Furnish My Whole Home',
+	'Luxury Residential Interior Design': 'Luxury Residential Interior Design',
+	'New Construction': 'Design My New Home',
+	'Renovation': 'Renovate or Remodel My Home',
+	'Hospitality Interior Design': 'Design a Hotel or Commercial Space',
+	'Custom Millwork': 'Custom Cabinetry and Built Ins',
+};
+
+export function serviceLabelFor(option: string): string {
+	return SERVICE_LABELS[option] ?? option;
+}
 
 export const LOCATION_OPTIONS = [
 	'Miami',

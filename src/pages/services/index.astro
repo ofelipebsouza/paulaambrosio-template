@@ -9,12 +9,18 @@ import { serviceUrl } from '../../config';
 
 const services = (await getCollection('services')).filter((s) => !s.data.draft);
 
+const paths = [
+	{ label: 'Furnish My Condo', text: 'Choose furniture, lighting and accessories for a condo that is ready for installation.', href: serviceUrl('design-express-miami') },
+	{ label: 'Renovate My Home', text: 'Rework the layout, finishes, lighting and cabinetry with a team that coordinates with your contractor.', href: serviceUrl('luxury-residential-interior-design-miami') },
+	{ label: 'Design My New Home', text: 'Plan your interiors early and carry the design through furnishing and installation.', href: serviceUrl('turnkey-interior-design-miami') },
+];
+
 const breadcrumbs: BreadcrumbEntry[] = [{ name: 'Services', url: '/services' }];
 ---
 
 <Layout
-	title="Interior Design Services | Miami & South Florida"
-	description="Explore full-service residential, turnkey and hospitality interior design in Miami, plus custom millwork, consultation and Design Express."
+	title="Interior Design Services in Miami & South Florida"
+	description="Explore interior design services in Miami for condo furnishing, home renovations, new homes, custom cabinetry and hospitality."
 	canonical="/services"
 >
 	<Fragment slot="head" set:html={schemaScript(webPageSchema({
@@ -28,12 +34,22 @@ const breadcrumbs: BreadcrumbEntry[] = [{ name: 'Services', url: '/services' }];
 		<Breadcrumbs items={breadcrumbs} />
 		<p class="eyebrow mt-10 text-stone">Services</p>
 		<h1 class="font-display mt-4 max-w-2xl text-display">
-			One studio, responsible for the entire composition.
+			Interior Design Services in Miami and South Florida
 		</h1>
 		<p class="mt-6 max-w-xl text-lede text-slate">
-			From complete turnkey residences to hospitality environments, we deliver each service
-			with the same design direction, procurement discipline and installation care.
+			Tell us what you want to do with your property. We can furnish a condo, design a renovation or plan a new home before construction starts.
 		</p>
+	</section>
+
+	<section class="container-editorial pb-12" aria-label="Find the right service">
+		<div class="grid gap-4 md:grid-cols-3">
+			{paths.map((item) => (
+				<a href={item.href} class="block border border-sand p-6 transition-colors hover:bg-linen/60">
+					<h2 class="font-display text-2xl">{item.label}</h2>
+					<p class="mt-3 text-sm leading-relaxed text-slate">{item.text}</p>
+				</a>
+			))}
+		</div>
 	</section>
 
 	<section class="container-editorial pb-24">
