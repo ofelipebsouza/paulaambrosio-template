@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import example from '../assets/projects/home-s/web/09.webp';
 import Layout from '../layouts/Layout.astro';
 import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
@@ -24,8 +24,9 @@ const faqs = [
   { question: 'Can you work before I receive the keys?', answer: 'Yes. We start with your floor plan and agree on room priorities, then verify final measurements in person once authorized access is available.' },
   { question: 'Do you coordinate with the building?', answer: 'Yes. We check the association’s requirements and coordinate delivery, elevator reservations and installation within the approved windows.' },
 ];
+const sharePhoto = await getImage({ src: example, width: 1200, height: 630, fit: "cover", format: "jpg", quality: 80 });
 ---
-<Layout {title} {description} canonical={path}>
+<Layout ogImage={sharePhoto.src} ogImageAlt="Boca Raton portfolio residence, shown for inspiration" {title} {description} canonical={path}>
   <Fragment slot="head" set:html={schemaScript(webPageSchema({ path, title, description, breadcrumbs }))} />
   <Fragment slot="head" set:html={schemaScript(serviceSchema({ path, name: heading, description, areaServed: ['Bal Harbour'] }))} />
   <Fragment slot="head" set:html={schemaScript(faqSchema(faqs))} />

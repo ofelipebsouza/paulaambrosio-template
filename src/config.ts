@@ -56,6 +56,9 @@ export const spaceUrl = (id: string): string => `/spaces/${id}/`;
 
 export const FOOTER_LOCATIONS = [
 	{ label: 'Miami', href: locationUrl('miami') },
+	{ label: 'North Miami', href: locationUrl('north-miami') },
+	{ label: 'Bay Harbor Islands', href: locationUrl('bay-harbor-islands') },
+	{ label: 'Key Biscayne', href: locationUrl('key-biscayne') },
 	{ label: 'Miami Beach', href: locationUrl('miami-beach') },
 	{ label: 'Sunny Isles Beach', href: locationUrl('sunny-isles-beach') },
 	{ label: 'Aventura', href: locationUrl('aventura') },
@@ -88,6 +91,7 @@ export const NAV_LEFT = [
 			{ label: 'Turnkey Interior Design', href: serviceUrl('turnkey-interior-design-miami') },
 			{ label: 'Penthouse Interior Design', href: '/penthouse-interior-design-miami-beach/' },
 			{ label: 'Luxury Residential Design', href: serviceUrl('luxury-residential-interior-design-miami') },
+			{ label: 'Condo Renovation Design', href: serviceUrl('condo-renovation-interior-design-miami') },
 			{ label: 'Hospitality Interior Design', href: serviceUrl('hospitality-interior-design-miami') },
 		],
 	},
@@ -95,6 +99,9 @@ export const NAV_LEFT = [
 		label: 'Projects',
 		href: '/projects/',
 		children: [
+			{ label: 'Kitchen', href: spaceUrl('kitchen') },
+			{ label: 'Primary Bedroom', href: spaceUrl('primary-bedroom') },
+			{ label: 'Bathroom', href: spaceUrl('bathroom') },
 			{ label: 'Laundry Room', href: spaceUrl('laundry-room') },
 			{ label: 'Closet', href: spaceUrl('closet') },
 			{ label: 'Living Room', href: spaceUrl('living-room') },

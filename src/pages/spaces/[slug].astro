@@ -42,7 +42,7 @@ const otherSpaces = (await getCollection('spaces')).filter((s) => !s.data.draft 
 ---
 
 <Layout
-	title={`${space.data.title} Design Ideas | Paula Ambrosio Interior Design`}
+	title={space.data.seoTitle ?? `${space.data.title} Design Ideas in Miami`}
 	description={space.data.seoDescription ?? space.data.intro}
 	canonical={spaceUrl(space.id)}
 	ogImage={ogImage}
