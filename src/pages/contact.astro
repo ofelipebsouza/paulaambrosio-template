@@ -16,6 +16,7 @@ import {
 	LOCATION_OPTIONS,
 	PROPERTY_TYPE_OPTIONS,
 	SERVICE_OPTIONS,
+	serviceLabelFor,
 	TIMELINE_OPTIONS,
 	type ContactFieldName,
 } from '../lib/contact-form';
@@ -144,8 +145,8 @@ const maxLengthFor = (field: ContactFieldName) => FIELD_LIMITS[field];
 					<div>
 						<label for="service" class="eyebrow text-slate">{labelFor('service')} *</label>
 						<select id="service" name="service" required={isRequired('service')} class={inputClass}>
-							<option value="">Select a service</option>
-							{SERVICE_OPTIONS.map((option) => <option value={option}>{option}</option>)}
+							<option value="">What would you like to do?</option>
+							{SERVICE_OPTIONS.map((option) => <option value={option}>{serviceLabelFor(option)}</option>)}
 						</select>
 					</div>
 				</div>
@@ -162,7 +163,7 @@ const maxLengthFor = (field: ContactFieldName) => FIELD_LIMITS[field];
 						<label for="timeline" class="eyebrow text-slate">{labelFor('timeline')}</label>
 						<select id="timeline" name="timeline" class={inputClass}>
 							<option value="">Select a timeline</option>
-							{TIMELINE_OPTIONS.map((option) => <option value={option}>{option}</option>)}
+							{TIMELINE_OPTIONS.map((option) => <option value={option}>{option.replace('–', ' to ')}</option>)}
 						</select>
 					</div>
 				</div>
