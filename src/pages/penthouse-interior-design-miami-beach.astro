@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import conceptHero from '../assets/penthouse-miami-beach-concept.webp';
 import Layout from '../layouts/Layout.astro';
 import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
@@ -29,8 +29,9 @@ const faqs = [
   { question: 'How long does a turnkey penthouse project take?', answer: 'The timeline depends on the scope, building approvals, product lead times and installation access. We discuss the schedule with you before work starts.' },
   { question: 'What does penthouse interior design cost in Miami Beach?', answer: 'Investment depends on the size of the residence, the work involved and the furnishings and finishes you select. After an initial conversation, we recommend the right service and prepare a proposal.' },
 ];
+const sharePhoto = await getImage({ src: conceptHero, width: 1200, height: 630, fit: "cover", format: "jpg", quality: 80 });
 ---
-<Layout {title} {description} canonical={path}>
+<Layout ogImage={sharePhoto.src} ogImageAlt="Concept rendering of a Miami Beach penthouse interior" {title} {description} canonical={path}>
   <Fragment slot="head" set:html={schemaScript(webPageSchema({ path, title, description, breadcrumbs }))} />
   <Fragment slot="head" set:html={schemaScript(serviceSchema({ path, name: heading, description, areaServed: [...locationNames, 'South Florida'] }))} />
   <Fragment slot="head" set:html={schemaScript(faqSchema(faqs))} />

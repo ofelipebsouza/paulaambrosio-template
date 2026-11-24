@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
 import { schemaScript, serviceSchema, webPageSchema } from '../lib/seo';
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import dressingRoom from '../assets/editorial/bellini-portfolio/dressing-room-vanity.webp';
 import wardrobe from '../assets/editorial/bellini-portfolio/illuminated-wardrobe.webp';
 import bathroomVanity from '../assets/editorial/bellini-portfolio/bathroom-vanity.webp';
@@ -24,8 +24,9 @@ const scopes = [
   { title: 'Renovate what no longer serves you.', body: 'When the kitchen, baths or closets no longer suit daily life, we evaluate what can stay and what needs a redesign. Our team designs finishes and built in storage; independent contractors handle construction.' },
   { title: 'Bring the rooms together.', body: 'With a turnkey scope, the studio coordinates furnishings, purchasing, receiving, delivery and final styling, so decisions about finishes, millwork and furniture are made together.' },
 ];
+const sharePhoto = await getImage({ src: dressingRoom, width: 1200, height: 630, fit: "cover", format: "jpg", quality: 80 });
 ---
-<Layout {title} {description} canonical={path}>
+<Layout ogImage={sharePhoto.src} ogImageAlt="Concept rendering of a custom dressing room, not a Bellini residence" {title} {description} canonical={path}>
   <Fragment slot="head" set:html={schemaScript(webPageSchema({ path, title, description, breadcrumbs }))} />
   <Fragment slot="head" set:html={schemaScript(serviceSchema({ path, name: heading, description, areaServed: ['Bal Harbour'] }))} />
   <article>

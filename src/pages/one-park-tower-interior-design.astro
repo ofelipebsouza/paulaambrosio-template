@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import example from '../assets/projects/home-aa/web/01.webp';
 import Layout from '../layouts/Layout.astro';
 import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
@@ -62,13 +62,14 @@ const copy = {
   ],
   "disclaimer": "Paula Ambrosio Interior Design is an independent interior design studio and is not affiliated with the developer, sales team or condominium association of this building. Building names are used for identification only."
 };
-const city = locationUrl('miami');
+const city = locationUrl('north-miami');
 const turnkey = serviceUrl('turnkey-interior-design-miami');
 const penthouse = '/penthouse-interior-design-miami-beach/';
 const faqs = copy.faqs.map(([question, answer]) => ({ question, answer }));
-const breadcrumbs = [{ name: 'Locations', url: '/locations/' }, { name: 'Miami', url: city }, { name: 'ONE Park Tower', url: path }];
+const breadcrumbs = [{ name: 'Locations', url: '/locations/' }, { name: 'North Miami', url: city }, { name: 'ONE Park Tower', url: path }];
+const sharePhoto = await getImage({ src: example, width: 1200, height: 630, fit: "cover", format: "jpg", quality: 80 });
 ---
-<Layout title={copy.title} description={copy.meta} canonical={path}>
+<Layout ogImage={sharePhoto.src} ogImageAlt="North Miami residence by Paula Ambrosio Interior Design, shown for inspiration" title={copy.title} description={copy.meta} canonical={path}>
   <Fragment slot="head" set:html={schemaScript(webPageSchema({path, title:copy.title, description:copy.meta, breadcrumbs}))} />
   <Fragment slot="head" set:html={schemaScript(serviceSchema({path, name:copy.h1, description:copy.meta, areaServed:['North Miami']}))} />
   <Fragment slot="head" set:html={schemaScript(faqSchema(faqs))} />
@@ -101,7 +102,7 @@ const breadcrumbs = [{ name: 'Locations', url: '/locations/' }, { name: 'Miami',
       <h2 class="font-display text-4xl">{copy.sections[2][0]}</h2>
       <p class="mt-4 max-w-3xl leading-relaxed text-slate">{copy.sections[2][1]}</p>
       <ul class="mt-6 flex flex-wrap gap-x-6 gap-y-3">
-        <li><a href={turnkey} class="underline underline-offset-4">Turnkey Interior Design</a></li><li><a href="/millwork/" class="underline underline-offset-4">Custom Millwork</a></li><li><a href={penthouse} class="underline underline-offset-4">Penthouse Interior Design</a></li><li><a href={city} class="underline underline-offset-4">Explore Miami Interior Design</a></li>
+        <li><a href={turnkey} class="underline underline-offset-4">Turnkey Interior Design</a></li><li><a href="/millwork/" class="underline underline-offset-4">Custom Millwork</a></li><li><a href={penthouse} class="underline underline-offset-4">Penthouse Interior Design</a></li><li><a href={city} class="underline underline-offset-4">Explore North Miami Interior Design</a></li>
       </ul>
     </section>
     <section class="container-editorial pb-16 lg:pb-24">

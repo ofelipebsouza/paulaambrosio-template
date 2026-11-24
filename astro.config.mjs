@@ -4,6 +4,7 @@ import mdx from '@astrojs/mdx';
 import vercel from '@astrojs/vercel';
 import tailwindcss from '@tailwindcss/vite';
 import { isPublicSitemapUrl } from './scripts/sitemap-policy.mjs';
+import { applySitemapLastmod } from './scripts/sitemap-lastmod.mjs';
 
 // https://astro.build/config
 export default defineConfig({
@@ -16,7 +17,7 @@ export default defineConfig({
 	// src/pages/api/contact.ts), which is why the Vercel adapter is required.
 	output: 'static',
 	adapter: vercel(),
-	integrations: [sitemap({ filter: isPublicSitemapUrl }), mdx()],
+	integrations: [sitemap({ filter: isPublicSitemapUrl, serialize: applySitemapLastmod }), mdx()],
 	vite: {
 		plugins: [tailwindcss()],
 	},

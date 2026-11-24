@@ -1,4 +1,6 @@
 ---
+import { getImage } from "astro:assets";
+import contactPhoto from "../assets/projects/home-aa/web/01.webp";
 import Layout from '../layouts/Layout.astro';
 import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
 import { webPageSchema, schemaScript } from '../lib/seo';
@@ -42,9 +44,10 @@ const fieldSpec = (field: ContactFieldName) =>
 const labelFor = (field: ContactFieldName) => fieldSpec(field).label;
 const isRequired = (field: ContactFieldName) => fieldSpec(field).required;
 const maxLengthFor = (field: ContactFieldName) => FIELD_LIMITS[field];
+const sharePhoto = await getImage({ src: contactPhoto, width: 1200, height: 630, fit: "cover", format: "jpg", quality: 80 });
 ---
 
-<Layout
+<Layout ogImage={sharePhoto.src} ogImageAlt="Warm Modern Residence designed by Paula Ambrosio Interior Design in North Miami"
 	title="Contact | Start Your Interior Design Project"
 	description="Start your project with Paula Ambrosio Interior Design. Tell us about your Miami or South Florida property and schedule a private design consultation."
 	canonical="/contact"
