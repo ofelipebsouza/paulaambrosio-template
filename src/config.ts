@@ -118,6 +118,7 @@ export const NAV_RIGHT = [
 		children: [
 			...FOOTER_LOCATIONS.slice(0, 1),
 			{ label: 'ONE Park Tower', href: '/one-park-tower-interior-design/' },
+			{ label: 'Rivage Bal Harbour', href: '/rivage-bal-harbour-interior-design/' },
 			...FOOTER_LOCATIONS.slice(1),
 		],
 	},

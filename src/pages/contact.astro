@@ -72,8 +72,8 @@ const sharePhoto = await getImage({ src: contactPhoto, width: 1200, height: 630,
 				<p class="eyebrow text-stone">Studio</p>
 				<p>1938 NE 149th St, North Miami, FL</p>
 				<p><a href="mailto:info@paulaambrosio.com" class="hover:text-stone">info@paulaambrosio.com</a></p>
-				<p><a href="tel:+17866589478" class="hover:text-stone">+1 (786) 658-9478</a></p>
-					<p><a href="tel:+17862085412" class="hover:text-stone">+1 (786) 208-5412</a></p>
+				<p>Studio: <a href="tel:+17866589478" class="hover:text-stone">+1 (786) 658-9478</a></p>
+					<p>Secondary line: <a href="tel:+17862085412" class="hover:text-stone">+1 (786) 208-5412</a></p>
 				</address>
 
 				<div class="mt-6 flex flex-wrap gap-3">
@@ -186,7 +186,7 @@ const sharePhoto = await getImage({ src: contactPhoto, width: 1200, height: 630,
 				</div>
 
 				<!-- Honeypot: hidden from visitors and assistive tech, irresistible to bots. -->
-				<div class="hidden" aria-hidden="true">
+				<div hidden class="hidden" aria-hidden="true">
 					<label for="contact-website">Website</label>
 					<input id="contact-website" name={HONEYPOT_FIELD} type="text" tabindex="-1" autocomplete="off" />
 				</div>

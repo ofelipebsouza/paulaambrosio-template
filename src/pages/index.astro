@@ -6,7 +6,7 @@ import ProjectGrid from '../components/projects/ProjectGrid.astro';
 import CtaBanner from '../components/ui/CtaBanner.astro';
 import HouzzServiceBadge from '../components/ui/HouzzServiceBadge.astro';
 import { webPageSchema, schemaScript } from '../lib/seo';
-import { SITE, serviceUrl, FOOTER_LOCATIONS } from '../config';
+import { SITE, serviceUrl, FOOTER_LOCATIONS, MESSAGING } from '../config';
 import { HOME_OG } from '../lib/og';
 import { getHomeHeroProjects } from '../lib/home-hero';
 import paulaProfile from '../assets/paula-profile.webp';
@@ -169,6 +169,7 @@ const processSteps = [
 			<div class="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
 				<a href="/contact/" class="btn-primary" data-analytics-event="cta_start_project" data-analytics-location="hero">Start Your Project</a>
 				<a href="/services/" class="btn-secondary" data-analytics-event="cta_explore_services" data-analytics-location="hero">Explore Our Services</a>
+				<a href={MESSAGING.whatsapp} class="btn-secondary" target="_blank" rel="noopener noreferrer">Chat on WhatsApp</a>
 			</div>
 		</div>
 	</section>
