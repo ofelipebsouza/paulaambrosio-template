@@ -1,0 +1,67 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import CtaBanner from '../../components/ui/CtaBanner.astro';
+import { webPageSchema, schemaScript } from '../../lib/seo';
+import type { BreadcrumbEntry } from '../../lib/seo';
+import photo01 from '../../assets/projects/home-aa/web/01.webp';
+import photo02 from '../../assets/projects/home-aa/web/02.webp';
+import photo04 from '../../assets/projects/home-aa/web/04.webp';
+import photo05 from '../../assets/projects/home-aa/web/05.webp';
+
+const path = '/press/florida-design-miami-22-3/';
+const title = 'Featured in Florida Design Miami | Volume 22.3 (2026)';
+const description = 'A sponsored Florida Design Miami magazine feature from Paula Ambrosio Interior Design, featuring a warm modern turnkey residence and original project photography.';
+const breadcrumbs: BreadcrumbEntry[] = [
+	{ name: 'Press', url: '/press/' },
+	{ name: 'Florida Design Miami', url: path },
+];
+const gallery = [
+	{ image: photo02, alt: 'Stone console and tall oak wall panels with softly illuminated display shelving' },
+	{ image: photo04, alt: 'Oak-paneled entry with a tall mirror and floating console' },
+	{ image: photo05, alt: 'Kitchen with pale cabinetry, integrated counter lighting and linear ceiling fixture' },
+];
+---
+
+<Layout title={title + ' | Paula Ambrosio Interior Design'} description={description} canonical={path}>
+	<Fragment slot="head" set:html={schemaScript(webPageSchema({ path, title, description, breadcrumbs }))} />
+
+	<article>
+		<section class="container-editorial pt-16 pb-10 lg:pt-24">
+			<Breadcrumbs items={breadcrumbs} />
+			<p class="eyebrow mt-10 text-stone">Press · Sponsored feature</p>
+			<h1 class="font-display mt-4 max-w-4xl text-display">{title}</h1>
+			<p class="mt-6 max-w-2xl text-lede text-slate">A warm modern turnkey residence featured in Florida Design Miami, Volume 22.3.</p>
+		</section>
+		<figure class="container-editorial">
+			<img src={photo01.src} width={photo01.width} height={photo01.height} alt="Living room with an oak television wall, floating console and cream swivel chairs" class="h-auto w-full" loading="eager" decoding="async" />
+			<figcaption class="mt-3 text-sm text-stone">Photography: Gabriel Matarazzo (GABBA Visuals)</figcaption>
+		</figure>
+		<section class="container-editorial py-16 lg:grid lg:grid-cols-12 lg:gap-14 lg:py-20">
+			<div class="mb-8 lg:col-span-4 lg:mb-0">
+				<p class="eyebrow text-stone">Florida Design Miami</p>
+				<p class="mt-4 text-sm text-slate">Volume 22.3 · 2026</p>
+				<p class="mt-2 text-sm text-slate">Studio-provided text from the sponsored feature.</p>
+				<a href="https://palmbeachmedia.com/online-store-fdm/" target="_blank" rel="noopener noreferrer" class="mt-6 inline-block text-sm underline underline-offset-4 hover:text-stone">Browse publisher’s issues</a>
+			</div>
+			<div class="prose-editorial lg:col-span-7 lg:col-start-6">
+				<h2 class="font-display text-3xl">Luxury defined by how a space feels</h2>
+				<p>Luxury is defined not by what fills a space, but by how it makes you feel. This featured residence reflects the philosophy of Paula Ambrosio Interior Design: creating timeless interiors where elegance, comfort, and functionality exist in perfect harmony.</p>
+				<p>Founded by sisters Paula and Amanda Ambrosio, the Miami based studio creates sophisticated residential and commercial spaces tailored to each client’s lifestyle.</p>
+				<p>This turnkey project showcases custom millwork, refined neutral tones, natural stone, and carefully selected finishes that balance beauty and everyday functionality.</p>
+				<p>Every phase, from design and planning to procurement, project management, construction coordination, and final styling, was handled by the studio, ensuring a seamless experience and exceptional attention to detail.</p>
+				<p><a href="/projects/home-aa/">Explore the complete residence</a></p>
+			</div>
+		</section>
+		<section class="container-editorial pb-20">
+			<h2 class="font-display mb-8 text-3xl">Inside the residence</h2>
+			<div class="grid grid-cols-1 items-start gap-6 sm:grid-cols-2">
+				{gallery.map(({image, alt}) => (
+					<img src={image.src} width={image.width} height={image.height} alt={alt} class="h-auto w-full" loading="lazy" decoding="async" />
+				))}
+			</div>
+			<p class="mt-4 text-sm text-stone">Photography: Gabriel Matarazzo (GABBA Visuals)</p>
+		</section>
+	</article>
+	<CtaBanner />
+</Layout>

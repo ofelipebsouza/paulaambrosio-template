@@ -4,18 +4,19 @@ import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
 import CtaBanner from '../components/ui/CtaBanner.astro';
 import { webPageSchema, schemaScript } from '../lib/seo';
 import type { BreadcrumbEntry } from '../lib/seo';
+import floridaDesignPhoto from '../assets/projects/home-aa/web/01.webp';
 
 const breadcrumbs: BreadcrumbEntry[] = [{ name: 'Press', url: '/press' }];
 
 const articles = [
 	{
-		title: 'Florida Design Miami',
+		title: 'Featured in Florida Design Miami | Volume 22.3 (2026)',
 		publication: 'Florida Design',
-		description: 'Featured in the Miami edition of Florida Design magazine, showcasing luxury residential work across South Florida.',
-		image: 'https://framerusercontent.com/images/ORm0Rfr2yRKJcQWbUpd1e9YFp8.png?width=853&height=1389',
-		width: 853,
-		height: 1389,
-		url: 'https://issuu.com/pbmg/docs/florida_design_miami_22.3',
+		description: 'Explore our studio’s sponsored magazine feature on a warm modern turnkey residence, with original project photography.',
+		image: floridaDesignPhoto.src,
+		width: floridaDesignPhoto.width,
+		height: floridaDesignPhoto.height,
+		url: '/press/florida-design-miami-22-3/',
 	},
 	{
 		title: 'A Trajetória de Uma Brasileira nos EUA',
@@ -43,15 +44,6 @@ const articles = [
 		width: 279,
 		height: 450,
 		url: 'https://www.dwell.com/home/turnkey-contemporary-marvel-in-boca-raton-with-sleek-features-and-loft-9ab9ca10',
-	},
-	{
-		title: 'Desafios em Conquistas nos EUA',
-		publication: 'Business Feed',
-		description: 'How a Brazilian designer transformed challenges into achievements building a luxury design business in the United States.',
-		image: 'https://framerusercontent.com/images/v34jMaftkc3aQhKWqw3H5OnSGU.png?width=279&height=450',
-		width: 279,
-		height: 450,
-		url: 'https://businessfeed.com.br/paula-ambrosio-a-trajetoria-de-uma-brasileira-que-transformou-desafios-em-conquistas-nos-estados-unidos/',
 	},
 ];
 ---
@@ -85,8 +77,8 @@ const articles = [
 			{articles.map((article) => (
 				<a
 					href={article.url}
-					target="_blank"
-					rel="noopener noreferrer"
+					target={article.url.startsWith('/') ? undefined : '_blank'}
+					rel={article.url.startsWith('/') ? undefined : 'noopener noreferrer'}
 					class="group mb-4 block break-inside-avoid bg-linen transition-colors hover:bg-sand sm:mb-8"
 				>
 					<div class="overflow-hidden">
