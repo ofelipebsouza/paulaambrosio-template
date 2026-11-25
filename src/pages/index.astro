@@ -8,15 +8,36 @@ import HouzzServiceBadge from '../components/ui/HouzzServiceBadge.astro';
 import { webPageSchema, schemaScript } from '../lib/seo';
 import { SITE, serviceUrl, FOOTER_LOCATIONS, MESSAGING } from '../config';
 import { HOME_OG } from '../lib/og';
-import { getHomeHeroProjects } from '../lib/home-hero';
+import aaLiving from '../assets/projects/home-aa/web/01.webp';
+import aaKitchen from '../assets/projects/home-aa/web/05.webp';
+import aaIsland from '../assets/projects/home-aa/web/07.webp';
+import sKitchen from '../assets/projects/home-s/web/01.webp';
+import sBedroom from '../assets/projects/home-s/web/04.webp';
+import drFoyer from '../assets/projects/home-dr/web/01.webp';
+import aaEntry from '../assets/projects/home-aa/web/04.webp';
+import sOffice from '../assets/projects/home-s/web/08.webp';
+import drFireplace from '../assets/projects/home-dr/web/13.webp';
+import sMedia from '../assets/projects/home-s/web/09.webp';
 import paulaProfile from '../assets/paula-profile.webp';
 
 const allProjects = (await getCollection('projects')).filter((p) => !p.data.draft);
 
-const heroSlides = getHomeHeroProjects(allProjects).map((p) => ({
-	src: p.data.featuredImage,
-	alt: p.data.imageAlt ?? p.data.title,
-}));
+// A curated sequence of completed residences using studio project photography.
+const heroSlides = [
+	{ src: aaLiving, alt: 'Living room with an oak television wall, floating console and cream swivel chairs' },
+	{ src: sKitchen, alt: 'Kitchen with a pale waterfall island, counter stools and integrated cabinetry' },
+	{ src: aaKitchen, alt: 'Warm oak kitchen with integrated counter lighting and a linear ceiling fixture' },
+	{ src: drFoyer, alt: 'Double-height foyer with a curved staircase and polished pale floor' },
+	{ src: sBedroom, alt: 'Bedroom with an upholstered channel headboard and matching floating nightstands' },
+	{ src: aaIsland, alt: 'Natural veined stone kitchen island framed by tall oak panels' },
+];
+
+const detailSlides = [
+	{ src: aaEntry, alt: 'Oak-paneled entry with a tall mirror and floating console' },
+	{ src: sOffice, alt: 'Home office with a sculptural stone desk and suspended linear lighting' },
+	{ src: drFireplace, alt: 'Living room with a dark stone fireplace, cream seating and tall curtains' },
+	{ src: sMedia, alt: 'Walnut television surround with low cabinets and an illuminated display niche' },
+];
 
 // Only the first photo competes for initial bandwidth. Smaller variants
 // let narrow screens use an appropriately sized, sharp image.
@@ -98,7 +119,7 @@ const processSteps = [
 	}))} />
 
 	<!-- 1. Hero: crossfade carousel, title sits below -->
-	<section class="bg-bone pb-20 text-center lg:pb-28">
+	<section class="bg-bone pb-12 text-center lg:pb-16">
 		<div id="hero-carousel" class="relative w-full overflow-hidden min-h-[80vw] sm:min-h-0 sm:aspect-[16/10] lg:aspect-[21/8]">
 			{heroShots.map((shot, i) => (
 				<div
@@ -138,6 +159,10 @@ const processSteps = [
 			<!-- Gradient fade into bone background -->
 			<div class="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-bone via-bone/70 to-transparent lg:h-64"></div>
 
+			<button type="button" id="hero-pause" aria-pressed="false" class="absolute right-4 top-4 z-10 hidden rounded-sm bg-bone/90 px-3 py-2 text-xs font-medium text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-brass motion-safe:lg:block">
+				Pause slideshow
+			</button>
+
 			<!-- Dot indicators -->
 			<div class="absolute bottom-5 left-1/2 -translate-x-1/2 flex items-center gap-2.5 z-10" role="tablist" aria-label="Select image">
 				{heroSlides.map((_, i) => (
@@ -174,8 +199,37 @@ const processSteps = [
 		</div>
 	</section>
 
+	<!-- A swipeable editorial sequence, distinct from the hero. No automatic motion. -->
+	<section class="bg-bone pb-4" aria-labelledby="home-details-title">
+		<h2 id="home-details-title" class="sr-only">Selected residential interior details</h2>
+		<div class="container-editorial">
+			<div
+				tabindex="0"
+				role="region"
+				aria-label="Selected interior photographs. Scroll horizontally to explore."
+				class="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brass sm:gap-4 lg:grid lg:grid-cols-4 lg:overflow-visible lg:pb-0"
+			>
+				{detailSlides.map((photo) => (
+					<figure class="w-[82%] shrink-0 snap-start overflow-hidden bg-linen sm:w-[47%] lg:w-auto">
+						<Image
+							src={photo.src}
+							alt={photo.alt}
+							widths={[400, 640, 800]}
+							sizes="(min-width: 1024px) 24vw, (min-width: 640px) 47vw, 82vw"
+							quality={65}
+							loading="lazy"
+							decoding="async"
+							class="aspect-[4/5] h-auto w-full object-cover"
+						/>
+					</figure>
+				))}
+			</div>
+			<p class="mt-3 text-center text-xs tracking-wide text-stone lg:hidden">Swipe to explore</p>
+		</div>
+	</section>
+
 	<!-- 2. Intro -->
-	<section class="container-editorial py-24 lg:py-32">
+	<section class="container-editorial py-16 lg:py-24">
 		<div class="mx-auto max-w-3xl text-center fade-up">
 			<div class="ornament-divider mb-8">
 				<span class="ornament-divider-diamond"></span>
@@ -428,6 +482,8 @@ const processSteps = [
 	let timer: ReturnType<typeof setTimeout>;
 	let navigation = 0;
 	let pageLoaded = document.readyState === 'complete';
+	let paused = false;
+	const pauseButton = document.querySelector<HTMLButtonElement>('#hero-pause');
 
 	const autoRotate = window.matchMedia('(min-width: 1024px) and (prefers-reduced-motion: no-preference)');
 
@@ -453,7 +509,7 @@ const processSteps = [
 
 	function startTimer() {
 		clearTimeout(timer);
-		if (pageLoaded && autoRotate.matches && slides.length > 1) {
+		if (pageLoaded && !paused && autoRotate.matches && slides.length > 1) {
 			timer = setTimeout(() => void goTo((current + 1) % slides.length), 8000);
 		}
 	}
@@ -482,6 +538,13 @@ const processSteps = [
 	// Phones and reduced-motion visitors can still select every photo without
 	// an automatic download or a photo swap while the first view is loading.
 	dots.forEach((dot, i) => dot.addEventListener('click', () => void goTo(i)));
+	pauseButton?.addEventListener('click', () => {
+		paused = !paused;
+		pauseButton.setAttribute('aria-pressed', String(paused));
+		pauseButton.textContent = paused ? 'Resume slideshow' : 'Pause slideshow';
+		if (paused) navigation++;
+		startTimer();
+	});
 	autoRotate.addEventListener('change', startTimer);
 	if (pageLoaded) {
 		startTimer();
