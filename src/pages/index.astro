@@ -11,32 +11,39 @@ import { HOME_OG } from '../lib/og';
 import aaLiving from '../assets/projects/home-aa/web/01.webp';
 import aaKitchen from '../assets/projects/home-aa/web/05.webp';
 import aaIsland from '../assets/projects/home-aa/web/07.webp';
-import sKitchen from '../assets/projects/home-s/web/01.webp';
-import sBedroom from '../assets/projects/home-s/web/04.webp';
+import sKitchen from '../assets/projects/home-s/web/17.webp';
+import sBedroom from '../assets/projects/home-s/web/03.webp';
+import drMedia from '../assets/projects/home-dr/web/12.webp';
+import drBar from '../assets/projects/home-dr/web/03.webp';
+import salonWide from '../assets/projects/commercial-hs/web/17.webp';
 import drFoyer from '../assets/projects/home-dr/web/01.webp';
 import aaEntry from '../assets/projects/home-aa/web/04.webp';
-import sOffice from '../assets/projects/home-s/web/08.webp';
+import aaStoneDetail from '../assets/projects/home-aa/web/02.webp';
 import drFireplace from '../assets/projects/home-dr/web/13.webp';
-import sMedia from '../assets/projects/home-s/web/09.webp';
+import salonDetail from '../assets/projects/commercial-hs/web/09.webp';
 import paulaProfile from '../assets/paula-profile.webp';
 
 const allProjects = (await getCollection('projects')).filter((p) => !p.data.draft);
 
-// A curated sequence of completed residences using studio project photography.
+// Wide completed project photographs belong in the hero; the portrait
+// kitchen and suite details are shown in the editorial sequence below.
 const heroSlides = [
 	{ src: aaLiving, alt: 'Living room with an oak television wall, floating console and cream swivel chairs' },
-	{ src: sKitchen, alt: 'Kitchen with a pale waterfall island, counter stools and integrated cabinetry' },
+	{ src: drMedia, alt: 'Living room with illuminated light oak television wall and full-height sheer curtains' },
+	{ src: salonWide, alt: 'Completed salon with backlit arched mirrors, pale cabinetry and indoor trees' },
 	{ src: aaKitchen, alt: 'Warm oak kitchen with integrated counter lighting and a linear ceiling fixture' },
 	{ src: drFoyer, alt: 'Double-height foyer with a curved staircase and polished pale floor' },
-	{ src: sBedroom, alt: 'Bedroom with an upholstered channel headboard and matching floating nightstands' },
 	{ src: aaIsland, alt: 'Natural veined stone kitchen island framed by tall oak panels' },
+	{ src: drBar, alt: 'Custom bar with illuminated oak display shelves, black stone and glass-front wine refrigerators' },
 ];
 
 const detailSlides = [
 	{ src: aaEntry, alt: 'Oak-paneled entry with a tall mirror and floating console' },
-	{ src: sOffice, alt: 'Home office with a sculptural stone desk and suspended linear lighting' },
+	{ src: sKitchen, alt: 'Pale kitchen island framed by full-height built-in cabinetry and a recessed counter' },
+	{ src: salonDetail, alt: 'Salon lounge with a rust-colored sofa, arched opening and hanging greenery' },
+	{ src: sBedroom, alt: 'Primary bedroom with a tailored channel headboard, white bedding and brass wall light' },
+	{ src: aaStoneDetail, alt: 'Floating natural stone console with a warm oak backdrop and styled display shelf' },
 	{ src: drFireplace, alt: 'Living room with a dark stone fireplace, cream seating and tall curtains' },
-	{ src: sMedia, alt: 'Walnut television surround with low cabinets and an illuminated display niche' },
 ];
 
 // Only the first photo competes for initial bandwidth. Smaller variants
@@ -201,16 +208,16 @@ const processSteps = [
 
 	<!-- A swipeable editorial sequence, distinct from the hero. No automatic motion. -->
 	<section class="bg-bone pb-4" aria-labelledby="home-details-title">
-		<h2 id="home-details-title" class="sr-only">Selected residential interior details</h2>
+		<h2 id="home-details-title" class="sr-only">Selected interior details from residential and commercial projects</h2>
 		<div class="container-editorial">
 			<div
 				tabindex="0"
 				role="region"
 				aria-label="Selected interior photographs. Scroll horizontally to explore."
-				class="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brass sm:gap-4 lg:grid lg:grid-cols-4 lg:overflow-visible lg:pb-0"
+				class="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brass sm:gap-4 lg:gap-4"
 			>
 				{detailSlides.map((photo) => (
-					<figure class="w-[82%] shrink-0 snap-start overflow-hidden bg-linen sm:w-[47%] lg:w-auto">
+					<figure class="w-[82%] shrink-0 snap-start overflow-hidden bg-linen sm:w-[47%] lg:w-[23.5%]">
 						<Image
 							src={photo.src}
 							alt={photo.alt}
@@ -224,7 +231,7 @@ const processSteps = [
 					</figure>
 				))}
 			</div>
-			<p class="mt-3 text-center text-xs tracking-wide text-stone lg:hidden">Swipe to explore</p>
+			<p class="mt-3 text-center text-xs tracking-wide text-stone"><span class="lg:hidden">Swipe to explore</span><span class="hidden lg:inline">Scroll to explore</span></p>
 		</div>
 	</section>
 
