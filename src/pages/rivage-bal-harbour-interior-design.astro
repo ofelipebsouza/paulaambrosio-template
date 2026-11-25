@@ -1,6 +1,7 @@
 ---
 import { Image, getImage } from 'astro:assets';
 import example from '../assets/projects/home-s/web/09.webp';
+import millworkDetail from '../assets/projects/home-s/web/06.webp';
 import Layout from '../layouts/Layout.astro';
 import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
 import FAQ from '../components/ui/FAQ.astro';
@@ -14,7 +15,7 @@ const heading = 'Interior Design for Rivage Bal Harbour Owners';
 const description = 'Interior design for Rivage Bal Harbour owners. Furniture, art and bespoke millwork that turn a finished oceanfront residence into a personal home.';
 const breadcrumbs = [{ name: 'Locations', url: '/locations/' }, { name: 'Bal Harbour', url: city }, { name: 'Rivage Bal Harbour', url: path }];
 const packages = [
-  { name: 'Design + Furniture', text: 'A complete furniture, lighting and art plan with curated selections. We can include pieces by Uultis when they suit your home.' },
+  { name: 'Design + Furniture', text: 'A complete furniture, lighting and art plan with curated selections. We can include pieces by Uultis, a premium Brazilian furniture brand for which Paula serves as Brand Director in the United States, when they suit your home.' },
   { name: 'Design + Furniture + Millwork', text: 'Furnishings and lighting plus bespoke pieces such as media walls, library shelving, bars and display cabinetry.' },
   { name: 'Turnkey Arrival', text: 'We coordinate procurement, receiving, installation and final styling, down to linens and tabletop. If some pieces need more time, we can plan the essentials first.' },
 ];
@@ -24,9 +25,9 @@ const faqs = [
   { question: 'Can you work before I receive the keys?', answer: 'Yes. We start with your floor plan and agree on room priorities, then verify final measurements in person once authorized access is available.' },
   { question: 'Do you coordinate with the building?', answer: 'Yes. We check the association’s requirements and coordinate delivery, elevator reservations and installation within the approved windows.' },
 ];
-const sharePhoto = await getImage({ src: example, width: 1200, height: 630, fit: "cover", format: "jpg", quality: 80 });
+const sharePhoto = await getImage({ src: millworkDetail, width: 1200, height: 630, fit: "cover", format: "jpg", quality: 80 });
 ---
-<Layout ogImage={sharePhoto.src} ogImageAlt="Boca Raton portfolio residence, shown for inspiration" {title} {description} canonical={path}>
+<Layout ogImage={sharePhoto.src} ogImageAlt="Illuminated stone vanity and custom millwork, a studio portfolio detail" {title} {description} canonical={path}>
   <Fragment slot="head" set:html={schemaScript(webPageSchema({ path, title, description, breadcrumbs }))} />
   <Fragment slot="head" set:html={schemaScript(serviceSchema({ path, name: heading, description, areaServed: ['Bal Harbour'] }))} />
   <Fragment slot="head" set:html={schemaScript(faqSchema(faqs))} />
@@ -85,13 +86,13 @@ const sharePhoto = await getImage({ src: example, width: 1200, height: 630, fit:
     </section>
     <section aria-labelledby="faq-heading" class="container-editorial py-16 lg:py-24">
       <h2 id="faq-heading" class="font-display text-3xl">Frequently asked questions</h2>
-      <div class="mt-7 max-w-3xl"><FAQ {faqs} context="rivage-bal-harbour" /></div>
+      <div class="mt-7 max-w-3xl"><FAQ {faqs} context="rivage-bal-harbour" questionHeadings /></div>
     </section>
     <section aria-labelledby="start-heading" class="border-t border-sand bg-linen py-16 lg:py-24">
       <div class="container-editorial">
-        <h2 id="start-heading" class="font-display text-4xl">Begin your Rivage project</h2>
+        <h2 id="start-heading" class="font-display text-4xl">Start Your Rivage Project</h2>
         <p class="mt-4 max-w-3xl leading-relaxed text-slate">Tell us about your residence, your expected closing date and how you want it to feel.</p>
-        <a href="/contact/" class="btn-primary mt-7 inline-flex" data-analytics-event="cta_start_project" data-analytics-location="footer">Start Your Project</a>
+        <a href="/contact/" class="btn-primary mt-7 inline-flex" data-analytics-event="cta_start_project" data-analytics-location="footer">Start Your Rivage Project</a>
         <p class="mt-8 max-w-3xl text-sm text-slate">Paula Ambrosio Interior Design is an independent interior design studio and is not affiliated with the developer, sales team or condominium association of Rivage Bal Harbour. Building names are used for identification only.</p>
       </div>
     </section>
