@@ -5,10 +5,14 @@ import CtaBanner from '../components/ui/CtaBanner.astro';
 import { webPageSchema, schemaScript } from '../lib/seo';
 import type { BreadcrumbEntry } from '../lib/seo';
 import floridaDesignPhoto from '../assets/projects/home-aa/web/01.webp';
+import homebodyPhoto from '../assets/projects/home-aa/web/03.webp';
+import coastalMinimalismPhoto from '../assets/projects/home-s/web/01.webp';
+import etherealGeometryPhoto from '../assets/projects/home-dr/web/01.webp';
+import studioPortrait from '../assets/paula-profile.webp';
 
 const breadcrumbs: BreadcrumbEntry[] = [{ name: 'Press', url: '/press' }];
 
-const articles = [
+const articles: { title: string; publication: string; description: string; image: string; width: number; height: number; url: string; imageAlt?: string; imageCaption?: string }[] = [
 	{
 		title: 'Featured in Florida Design Miami | Volume 22.3 (2026)',
 		publication: 'Florida Design',
@@ -17,6 +21,50 @@ const articles = [
 		width: floridaDesignPhoto.width,
 		height: floridaDesignPhoto.height,
 		url: '/press/florida-design-miami-22-3/',
+	},
+	{
+		title: 'The Details That Define a Luxury Home, From Custom Millwork to Curated Furniture',
+		publication: 'Homebody Magazine · Sponsored feature',
+		description: 'An exploration of the studio’s approach to custom cabinetry, thoughtful materials, lighting and fully coordinated interiors. November 2026.',
+		image: homebodyPhoto.src,
+		width: homebodyPhoto.width,
+		height: homebodyPhoto.height,
+		imageAlt: 'Custom oak cabinetry with an illuminated glass display and stone coffee station',
+		imageCaption: 'Representative studio portfolio photograph: Gabriel Matarazzo (GABBA Visuals).',
+		url: 'https://www.homebodymagazine.com/the-sanctuary/the-details-that-define-a-luxury-home-from-custom-millwork-to-curated-furniture',
+	},
+	{
+		title: 'A Study in Coastal Minimalism — SM Residence by Paula Ambrosio',
+		publication: 'The Architectural Authority',
+		description: 'A featured Boca Raton residence that brings together quiet material palettes, modern cabinetry and light-filled interiors.',
+		image: coastalMinimalismPhoto.src,
+		width: coastalMinimalismPhoto.width,
+		height: coastalMinimalismPhoto.height,
+		imageAlt: 'Pale kitchen island and integrated cabinetry in a Boca Raton residence',
+		imageCaption: 'Project photography: MCA Estudio.',
+		url: 'https://www.thearchitecturalauthority.com/article/a-study-in-coastal-minimalism-sm-residence-by-paula-ambrosio',
+	},
+	{
+		title: 'Ethereal Geometry – D&R Project by Paula Ambrosio',
+		publication: 'The Architectural Authority',
+		description: 'A project feature exploring the balance of sculptural architecture, custom millwork and layered lighting in a Boca Raton home.',
+		image: etherealGeometryPhoto.src,
+		width: etherealGeometryPhoto.width,
+		height: etherealGeometryPhoto.height,
+		imageAlt: 'Double height foyer with a curved white staircase and pale stone flooring',
+		imageCaption: 'Project photography: GABBA Visuals.',
+		url: 'https://www.thearchitecturalauthority.com/article/ethereal-geometry-dr-project-by-paula-ambrosio',
+	},
+	{
+		title: 'DCOTA Welcomes 300+ Professional Designers and Enthusiasts to WINTER MARKET 2024',
+		publication: 'Miami Living Magazine',
+		description: 'Coverage of the 2024 DCOTA Winter Market, where Paula joined a Brazilian design panel moderated by Florida Design’s editorial director.',
+		image: studioPortrait.src,
+		width: studioPortrait.width,
+		height: studioPortrait.height,
+		imageAlt: 'Portrait of the studio cofounders, Paula and Amanda Ambrosio',
+		imageCaption: 'Studio portrait of the cofounders; not event photography.',
+		url: 'https://www.miamilivingmagazine.com/post/dcota-welcomes-300-professional-designers-and-enthusiasts-to-winter-market-2024',
 	},
 	{
 		title: 'A Trajetória de Uma Brasileira nos EUA',
@@ -84,7 +132,7 @@ const articles = [
 					<div class="overflow-hidden">
 						<img
 							src={article.image}
-							alt={article.title}
+							alt={article.imageAlt ?? article.title}
 							width={article.width}
 							height={article.height}
 							class="h-auto w-full transition-transform duration-700 group-hover:scale-[1.03]"
@@ -96,6 +144,7 @@ const articles = [
 						<p class="eyebrow text-stone">{article.publication}</p>
 						<h3 class="font-display mt-2 text-lg leading-snug">{article.title}</h3>
 						<p class="mt-2 text-sm leading-relaxed text-slate">{article.description}</p>
+						{article.imageCaption && <p class="mt-3 text-xs leading-relaxed text-slate">{article.imageCaption}</p>}
 					</div>
 				</a>
 			))}
