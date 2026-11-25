@@ -11,14 +11,14 @@ const title = 'The Delmore Interior Design | Paula Ambrosio Interior Design';
 const description = 'Independent interior design for The Delmore owners in Surfside. Plan furniture, custom millwork and interior furnishings during the design stage.';
 const breadcrumbs = [{ name: 'Locations', url: '/locations/' }, { name: 'Surfside', url: city }, { name: 'The Delmore', url: path }];
 const packages = [
-  { name: 'Design + Furniture', text: 'A measured layout and selections for furniture, rugs, lighting, window treatments and outdoor seating. We prioritize what you need for your first stay.' },
-  { name: 'Design + Furniture + Custom Millwork', text: 'Add custom pieces where the layout calls for them, such as a shallow foyer cabinet, a concealed desk or a media unit with space for equipment and ventilation.' },
-  { name: 'Turnkey Arrival', text: 'We coordinate purchasing, receiving, installation and final styling within the agreed scope. We track what can be installed for your first stay and what may need a later visit.' },
+  { name: 'Design + Furniture', text: 'We develop a furniture plan that respects the expansive glazing, curved geometry and multiple seating areas. Selections include lighting, upholstery, rugs and terrace furniture appropriate for coastal exposure.' },
+  { name: 'Design + Furniture + Custom Millwork', text: 'We explore tailored storage, media walls and a study or bar that integrates with the architecture. Custom fabrication follows verified dimensions and final specifications.' },
+  { name: 'Turnkey Arrival', text: 'For owners who prefer one coordinated process, we plan purchasing, receiving, installation and styling. Scheduling depends on confirmed building access and supplier lead times.' },
 ];
 const faqs = [
-  { question: 'Can you begin before I have the keys?', answer: 'Yes. We can review the floor plan, set room priorities and develop furniture layouts remotely. We verify site dimensions, access and approval requirements before releasing orders that depend on them.' },
-  { question: 'What if my residence already has furniture or built in storage?', answer: 'We inventory what is included and what you want to keep. Then we focus on the gaps, such as task lighting, flexible guest seating, window treatments or storage at the entry.' },
-  { question: 'Can installation be scheduled around my first visit?', answer: 'We plan toward your preferred arrival date. We can confirm installation dates only after building access, reservations and supplier lead times are confirmed.' },
+  { question: 'Is now too early to plan interiors at The Delmore?', answer: 'Early planning can help you clarify priorities, study the current floor plan and make preliminary selections. It does not require committing to construction or delivery dates.' },
+  { question: 'How do you furnish a residence with curved glazing?', answer: 'We study the actual plan, clearances, sightlines and light exposure. We compare furniture arrangements before specifying any custom shapes or sizes.' },
+  { question: 'When can custom millwork be ordered?', answer: 'We can develop concepts beforehand. Fabrication depends on verified dimensions, building rules, final specifications and approval of shop drawings.' },
 ];
 ---
 <Layout {title} {description} canonical={path}>
@@ -65,7 +65,7 @@ const faqs = [
       </ul>
     </section>
     <section aria-labelledby="faq-heading" class="container-editorial pb-16 lg:pb-24">
-      <h2 id="faq-heading" class="font-display text-3xl">Questions before closing</h2>
+      <h2 id="faq-heading" class="font-display text-3xl">Questions during preconstruction</h2>
       <div class="mt-7 max-w-3xl"><FAQ {faqs} context="the-delmore" /></div>
     </section>
     <section aria-labelledby="start-heading" class="border-t border-sand bg-linen py-16 lg:py-24">
