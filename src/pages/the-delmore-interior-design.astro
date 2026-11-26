@@ -1,0 +1,80 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
+import FAQ from '../components/ui/FAQ.astro';
+import { faqSchema, schemaScript, serviceSchema, webPageSchema } from '../lib/seo';
+
+const path = '/the-delmore-interior-design/';
+const city = '/interior-designer-surfside/';
+const heading = 'Interior Design for The Delmore Owners in Surfside';
+const title = 'The Delmore Interior Design | Paula Ambrosio Interior Design';
+const description = 'Independent interior design for The Delmore owners in Surfside. Plan furniture, custom millwork and interior furnishings during the design stage.';
+const breadcrumbs = [{ name: 'Locations', url: '/locations/' }, { name: 'Surfside', url: city }, { name: 'The Delmore', url: path }];
+const packages = [
+  { name: 'Design + Furniture', text: 'We develop a furniture plan that respects the expansive glazing, curved geometry and multiple seating areas. Selections include lighting, upholstery, rugs and terrace furniture appropriate for coastal exposure.' },
+  { name: 'Design + Furniture + Custom Millwork', text: 'We explore tailored storage, media walls and a study or bar that integrates with the architecture. Custom fabrication follows verified dimensions and final specifications.' },
+  { name: 'Turnkey Arrival', text: 'For owners who prefer one coordinated process, we plan purchasing, receiving, installation and styling. Scheduling depends on confirmed building access and supplier lead times.' },
+];
+const faqs = [
+  { question: 'Is now too early to plan interiors at The Delmore?', answer: 'Early planning can help you clarify priorities, study the current floor plan and make preliminary selections. It does not require committing to construction or delivery dates.' },
+  { question: 'How do you furnish a residence with curved glazing?', answer: 'We study the actual plan, clearances, sightlines and light exposure. We compare furniture arrangements before specifying any custom shapes or sizes.' },
+  { question: 'When can custom millwork be ordered?', answer: 'We can develop concepts beforehand. Fabrication depends on verified dimensions, building rules, final specifications and approval of shop drawings.' },
+];
+---
+<Layout {title} {description} canonical={path}>
+  <Fragment slot="head" set:html={schemaScript(webPageSchema({ path, title, description, breadcrumbs }))} />
+  <Fragment slot="head" set:html={schemaScript(serviceSchema({ path, name: heading, description, areaServed: ['Surfside'] }))} />
+  <Fragment slot="head" set:html={schemaScript(faqSchema(faqs))} />
+  <article>
+    <header class="border-b border-sand bg-linen py-16 lg:py-24">
+      <div class="container-editorial">
+        <Breadcrumbs items={breadcrumbs} />
+        <p class="eyebrow mt-8 text-stone">Surfside · Furniture and custom millwork</p>
+        <h1 class="font-display mt-4 max-w-4xl text-display">{heading}</h1>
+        <p class="mt-6 max-w-2xl text-lede text-slate">Planning a future oceanfront residence begins with understanding its architecture. Our independent North Miami studio helps owners develop furniture layouts and custom millwork concepts before site access is available.</p>
+        <a href="/contact/" class="btn-primary mt-8 inline-flex" data-analytics-event="cta_start_project" data-analytics-location="hero">Plan Your Residence</a>
+      </div>
+    </header>
+    <section aria-labelledby="layout-heading" class="container-editorial grid gap-10 py-16 lg:grid-cols-2 lg:py-24">
+      <div>
+        <h2 id="layout-heading" class="font-display text-4xl">Design around the curved architecture</h2>
+        <p class="mt-4 leading-relaxed text-slate">The <a href="https://www.zha.com/projects/architecture/the-delmore" class="underline underline-offset-4">architect’s project overview</a> describes deep residential floorplates arranged to bring natural light into living spaces. We consider circulation, view corridors and curved façade geometry when choosing furnishings. A curved wall does not automatically call for curved furniture: first, we study the actual plan and furniture clearances.</p>
+      </div>
+      <div>
+        <h2 class="font-display text-4xl">Give large living areas distinct purposes</h2>
+        <p class="mt-4 leading-relaxed text-slate">A generous oceanfront living area can feel disconnected if it is treated as one large seating group. We explore conversational seating, quieter reading areas and dining zones that retain the views. Upholstery, window treatments and outdoor furnishings are selected with coastal conditions and light exposure in mind.</p>
+      </div>
+    </section>
+    <section aria-labelledby="access-heading" class="border-y border-sand bg-linen py-16 lg:py-24">
+      <div class="container-editorial">
+        <h2 id="access-heading" class="font-display text-4xl">Plan ahead without committing to installation dates</h2>
+        <p class="mt-4 max-w-3xl leading-relaxed text-slate">During preconstruction, we develop furniture concepts and a preliminary procurement plan. We wait for verified interior dimensions, building access rules and final construction specifications before releasing custom orders. Larger pieces may need special handling; this is reviewed when delivery access is confirmed.</p>
+        <p class="mt-4 max-w-3xl leading-relaxed text-slate">For out of town owners, we can review drawings and materials remotely. We distinguish concepts that can be decided now from details that depend on the completed residence and the association’s requirements.</p>
+      </div>
+    </section>
+    <section aria-labelledby="packages-heading" class="container-editorial py-16 lg:py-24">
+      <h2 id="packages-heading" class="font-display text-4xl">Choose what you want us to handle</h2>
+      <div class="mt-8 grid gap-8 lg:grid-cols-3">
+        {packages.map(({ name, text }) => <div class="border-t border-sand pt-5"><h3 class="font-display text-2xl">{name}</h3><p class="mt-3 leading-relaxed text-slate">{text}</p></div>)}
+      </div>
+      <ul class="mt-8 flex flex-wrap gap-x-6 gap-y-3">
+        <li><a href="/turnkey-interior-design-miami/" class="underline underline-offset-4">Turnkey Interior Design</a></li>
+        <li><a href="/millwork/" class="underline underline-offset-4">Custom Millwork</a></li>
+        <li><a href="/penthouse-interior-design-miami-beach/" class="underline underline-offset-4">Penthouse Interior Design</a></li>
+        <li><a href={city} class="underline underline-offset-4">Surfside Interior Design</a></li>
+      </ul>
+    </section>
+    <section aria-labelledby="faq-heading" class="container-editorial pb-16 lg:pb-24">
+      <h2 id="faq-heading" class="font-display text-3xl">Questions during preconstruction</h2>
+      <div class="mt-7 max-w-3xl"><FAQ {faqs} context="the-delmore" /></div>
+    </section>
+    <section aria-labelledby="start-heading" class="border-t border-sand bg-linen py-16 lg:py-24">
+      <div class="container-editorial">
+        <h2 id="start-heading" class="font-display text-4xl">Start with your floor plan</h2>
+        <p class="mt-4 max-w-3xl leading-relaxed text-slate">Share your plan and tell us how you intend to live in the residence. We can discuss early design priorities, furniture selections and custom cabinetry, with final site measurements and installation planning to follow when access is authorized.</p>
+        <a href="/contact/" class="btn-primary mt-7 inline-flex" data-analytics-event="cta_start_project" data-analytics-location="footer">Discuss Your Project</a>
+        <p class="mt-8 max-w-3xl text-sm text-slate">Paula Ambrosio Interior Design is an independent interior design studio and is not affiliated with the developer, sales team or condominium association of this building. Building names are used for identification only.</p>
+      </div>
+    </section>
+  </article>
+</Layout>
